@@ -64,6 +64,9 @@ public class User implements Serializable {
     @NotNull(message = "This field cannot be NULL")
     private String saltPassword;
 
+    @NotNull(message = "This field cannot be NULL")
+    private Boolean isActive;
+
     private String position;
 
     private String department;
