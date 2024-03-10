@@ -1,5 +1,6 @@
 package rs.edu.raf.userservice.domains.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -10,6 +11,8 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Builder
@@ -17,13 +20,13 @@ import java.io.Serializable;
 @RequiredArgsConstructor
 @Entity
 @Table(
-        name = "users",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"email", "jmbg"})})
-public class User implements Serializable {
+        name="employees",
+        uniqueConstraints = {@UniqueConstraint( columnNames = {"email", "jmbg"})})
+public class Employee implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    private Long employeeId;
 
     @NotNull(message = "This field cannot be NULL")
     @Size(max = 20, message = "The input is too long")
@@ -32,6 +35,10 @@ public class User implements Serializable {
     @NotNull(message = "This field cannot be NULL")
     @Size(max = 20, message = "The input is too long")
     private String lastName;
+
+    @NotNull(message = "This field cannot be NULL")
+    @Size(max = 20, message = "The input is too long")
+    private String username;
 
     @NotNull(message = "This field cannot be NULL")
     private String jmbg;
@@ -60,4 +67,12 @@ public class User implements Serializable {
 
     @NotNull(message = "This field cannot be NULL")
     private Boolean isActive;
+
+    private String position;
+
+    private String department;
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "employees")
+    private List<Role> roles = new ArrayList<>();
 }
