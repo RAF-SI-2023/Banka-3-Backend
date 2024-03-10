@@ -1,4 +1,4 @@
-package rs.edu.raf.userservice.model.enums;
+package rs.edu.raf.userservice.domains.model.enums;
 
 public enum PermissionName {
     ADMIN_USER,

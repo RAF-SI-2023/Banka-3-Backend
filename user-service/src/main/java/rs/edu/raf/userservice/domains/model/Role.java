@@ -1,4 +1,4 @@
-package rs.edu.raf.userservice.model;
+package rs.edu.raf.userservice.domains.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -6,33 +6,35 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import rs.edu.raf.userservice.model.enums.PermissionName;
+import rs.edu.raf.userservice.domains.model.enums.RoleName;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+
 import java.util.List;
+
 
 @Data
 @Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
-@Table(name="permissions")
-public class Permission {
+@Table(name="roles")
+public class Role implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long permissionId;
+    private Long roleId;
 
     @Enumerated(EnumType.STRING)
-    private PermissionName permissionName;
+    private RoleName roleName;
 
     @JsonIgnore
     @ManyToMany
     @JoinTable(
-            name = "user_permissions",
-            joinColumns = @JoinColumn(name = "permissionId"),
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "roleId"),
             inverseJoinColumns = @JoinColumn(name = "userId")
     )
     private List<User> users = new ArrayList<>();
-
 }
