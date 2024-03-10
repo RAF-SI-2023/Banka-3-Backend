@@ -1,4 +1,4 @@
-package rs.edu.raf.userservice.dto;
+package rs.edu.raf.userservice.domains.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
