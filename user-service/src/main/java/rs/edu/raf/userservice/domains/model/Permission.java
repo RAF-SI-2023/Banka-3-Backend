@@ -29,10 +29,10 @@ public class Permission {
     @JsonIgnore
     @ManyToMany
     @JoinTable(
-            name = "user_permissions",
+            name = "role_permissions",
             joinColumns = @JoinColumn(name = "permissionId"),
-            inverseJoinColumns = @JoinColumn(name = "userId")
+            inverseJoinColumns = @JoinColumn(name = "roleId")
     )
-    private List<User> users = new ArrayList<>();
+    private List<Role> roles = new ArrayList<>();
 
 }
