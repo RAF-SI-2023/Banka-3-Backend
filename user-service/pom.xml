@@ -18,7 +18,7 @@
 
     <properties>
         <java.version>17</java.version>
-
+        <swagger.version>2.9.2</swagger.version>
         <revision>${project.version}</revision>
         <finalName>${project.artifactId}-${revision}</finalName>
     </properties>
@@ -50,6 +50,18 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
+        </dependency>
+
+        <!-- Documentation -->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>${swagger.version}</version>
         </dependency>
 
         <dependency>
