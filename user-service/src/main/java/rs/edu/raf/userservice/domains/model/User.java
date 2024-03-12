@@ -1,5 +1,6 @@
 package rs.edu.raf.userservice.domains.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -45,17 +46,16 @@ public class User implements Serializable {
     @NotNull(message = "This field cannot be NULL")
     private String phoneNumber;
 
-    @NotNull(message = "This field cannot be NULL")
     private String address;
 
     @NotNull(message = "This field cannot be NULL")
     @Email
     private String email;
 
-    @NotNull(message = "This field cannot be NULL")
+    @JsonIgnore
     private String password;
 
-    @NotNull(message = "This field cannot be NULL")
+    @JsonIgnore
     private String saltPassword;
 
     @NotNull(message = "This field cannot be NULL")
