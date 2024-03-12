@@ -2,10 +2,7 @@ package rs.edu.raf.userservice.filters;
 
 import io.jsonwebtoken.Jwt;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +12,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import rs.edu.raf.userservice.services.UserService;
 import rs.edu.raf.userservice.utils.JwtUtil;
 
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 
@@ -29,7 +30,7 @@ public class JwtFilter extends OncePerRequestFilter {
         this.jwtUtil=jwtUtil;
     }
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
 
         //
         String authHeader=request.getHeader("Authorization");
@@ -43,7 +44,7 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         if(username!=null && SecurityContextHolder.getContext().getAuthentication()==null){
-            UserDetails userDetails = this.userService.loadUserByEmail(username);
+            UserDetails userDetails = this.userService.loadUserByUsername(username);
 
             if(jwtUtil.validateToken(jwt,userDetails)){
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(

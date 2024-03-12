@@ -20,11 +20,12 @@ import rs.edu.raf.userservice.services.UserService;
 
 @EnableWebSecurity
 @EnableAsync
+
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter{
     private final UserService userService;
     private final JwtFilter jwtFilter;
 
-    @Autowired
+
     public SpringSecurityConfig(UserService userService, JwtFilter jwtFilter) {
         this.userService = userService;
         this.jwtFilter = jwtFilter;
@@ -54,7 +55,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter{
 //                .antMatchers("/api/users/login").permitAll()
 //                .antMatchers("/api/users/add/**").hasAuthority("can_create_users")
 //                .antMatchers("/api/users/update/**").hasAuthority("can_update_users")
-
 
 
 
