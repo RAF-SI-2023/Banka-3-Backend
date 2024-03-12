@@ -1,4 +1,4 @@
-package zews.Email_Service.entity;
+package rs.edu.raf.userservice.domains.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

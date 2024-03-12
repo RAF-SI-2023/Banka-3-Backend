@@ -1,9 +1,9 @@
-package zews.Email_Service.service;
+package rs.edu.raf.userservice.services;
 
-import org.springframework.stereotype.Service;
-import zews.Email_Service.entity.AccountActivation;
-import zews.Email_Service.repository.AccountActivationRepository;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.stereotype.Service;
+import rs.edu.raf.userservice.domains.model.AccountActivation;
+import rs.edu.raf.userservice.repositories.AccountActivationRepository;
 
 import java.util.Date;
 import java.util.List;

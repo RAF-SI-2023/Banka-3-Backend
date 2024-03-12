@@ -1,12 +1,12 @@
-package zews.Email_Service.controller;
+package rs.edu.raf.userservice.controllers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import zews.Email_Service.entity.AccountActivation;
-import zews.Email_Service.entity.AccountActivationDto;
-import zews.Email_Service.service.AccountActivationService;
+import rs.edu.raf.userservice.domains.dto.AccountActivationDto;
+import rs.edu.raf.userservice.domains.model.AccountActivation;
+import rs.edu.raf.userservice.services.AccountActivationService;
 
 import java.util.List;
 

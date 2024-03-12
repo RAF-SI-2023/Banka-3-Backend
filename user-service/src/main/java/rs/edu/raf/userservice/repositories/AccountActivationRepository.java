@@ -1,7 +1,8 @@
-package zews.Email_Service.repository;
+package rs.edu.raf.userservice.repositories;
+
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import zews.Email_Service.entity.AccountActivation;
+import rs.edu.raf.userservice.domains.model.AccountActivation;
 
 import java.util.Optional;
 
