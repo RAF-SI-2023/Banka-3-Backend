@@ -18,7 +18,6 @@
 
     <properties>
         <java.version>17</java.version>
-        <swagger.version>2.9.2</swagger.version>
         <revision>${project.version}</revision>
         <finalName>${project.artifactId}-${revision}</finalName>
     </properties>
@@ -35,7 +34,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
-            <version>2.6.1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -64,20 +62,9 @@
 
         <!-- Documentation -->
         <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger-ui</artifactId>
-            <version>${swagger.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger2</artifactId>
-            <version>${swagger.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.0.3</version>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.6.9</version>
         </dependency>
 
         <dependency>
