@@ -1,13 +1,13 @@
 package rs.edu.raf.userservice.domains.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import rs.edu.raf.userservice.domains.model.Role;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
@@ -43,5 +43,5 @@ public class EmployeeUpdateDto {
     private Boolean isActive;
 
     @NotNull
-    private List<Role> roles;
+    private Role roles;
 }

@@ -30,5 +30,5 @@ public class EmployeeDto {
     private String position;
     private String department;
 
-    private List<Role> roles = new ArrayList<>();
+    private Role roles;
 }

@@ -24,24 +24,45 @@ public class EmployeeService {
 
 
     public EmployeeDto create(EmployeeCreateDto employeeCreateDto){
-        Employee employee = new Employee(null, employeeCreateDto.getFirstName(), employeeCreateDto.getLastName(),
-                employeeCreateDto.getUsername(), employeeCreateDto.getJmbg(), employeeCreateDto.getDateOfBirth(),
-                employeeCreateDto.getGender(), employeeCreateDto.getPhoneNumber(), employeeCreateDto.getAddress(),
-                employeeCreateDto.getEmail(), employeeCreateDto.getPassword(), null, true, employeeCreateDto.getPosition(),
-                employeeCreateDto.getDepartment(), employeeCreateDto.getRoles());
 
+        Employee employee = new Employee();
+
+        employee.setFirstName(employeeCreateDto.getFirstName());
+        employee.setLastName(employeeCreateDto.getLastName());
+        employee.setUsername(employeeCreateDto.getUsername());
+        employee.setJmbg(employeeCreateDto.getJmbg());
+        employee.setEmail(employeeCreateDto.getEmail());
+        employee.setDateOfBirth(employeeCreateDto.getDateOfBirth());
+        employee.setGender(employeeCreateDto.getGender());
+        employee.setAddress(employeeCreateDto.getAddress());
+        employee.setDepartment(employeeCreateDto.getDepartment());
+        employee.setPosition(employeeCreateDto.getPosition());
+        employee.setPhoneNumber(employeeCreateDto.getPhoneNumber());//ako nije aktivan ne moze update
+        employee.setIsActive(true);
+        employee.setRoles(employeeCreateDto.getRoles());
+
+        employee.setPassword(employeeCreateDto.getPassword());
+
+
+        //salt password
         employeeRepository.save(employee);
         return convertEmployeeToDto(employee);
     }
 
     public EmployeeDto delete(Employee employee){
-        employeeRepository.delete(employee);
+//        employeeRepository.delete(employee);
+        employee.setIsActive(false);
+        employeeRepository.save(employee);
         return convertEmployeeToDto(employee);
     }
 
     public EmployeeDto update(EmployeeUpdateDto employeeUpdateDto, Long id){
         Employee employee = employeeRepository.findById(id).orElseThrow(() -> new NotFoundException("user not found"));
 
+        employee.setIsActive(employeeUpdateDto.getIsActive());
+        if(!employee.getIsActive()){
+            return null;
+        }
         employee.setFirstName(employeeUpdateDto.getFirstName());
         employee.setLastName(employeeUpdateDto.getLastName());
         employee.setUsername(employeeUpdateDto.getUsername());
@@ -52,8 +73,8 @@ public class EmployeeService {
         employee.setAddress(employeeUpdateDto.getAddress());
         employee.setDepartment(employeeUpdateDto.getDepartment());
         employee.setPosition(employeeUpdateDto.getPosition());
-        employee.setPhoneNumber(employeeUpdateDto.getPhoneNumber());
-        employee.setIsActive(employeeUpdateDto.getIsActive());
+        employee.setPhoneNumber(employeeUpdateDto.getPhoneNumber());//ako nije aktivan ne moze update
+        employee.setRoles(employeeUpdateDto.getRoles());
 
         employee.setPassword(employeeUpdateDto.getPassword());
 
@@ -64,7 +85,7 @@ public class EmployeeService {
     }
 
     public List<EmployeeDto> findAll(){
-        List<EmployeeDto> dtos;
+//        List<EmployeeDto> dtos;
 
         return employeeRepository.findAll().stream().map(this::convertEmployeeToDto).collect(Collectors.toList());
     }
@@ -113,6 +134,7 @@ public class EmployeeService {
         dto.setPosition(employee.getPosition());
         dto.setPhoneNumber(employee.getPhoneNumber());
         dto.setIsActive(employee.getIsActive());
+        dto.setRoles(employee.getRoles());
 
         dto.setPassword(employee.getPassword());
 

@@ -2,19 +2,25 @@
 package rs.edu.raf.userservice.controllers;
 
 
+import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
-import rs.edu.raf.userservice.domains.dto.RegisterUserDto;
-import rs.edu.raf.userservice.domains.model.User;
+import rs.edu.raf.userservice.domains.dto.CreateUserDto;
+import rs.edu.raf.userservice.domains.dto.UpdateUserDto;
+import rs.edu.raf.userservice.domains.dto.UserDto;
+import rs.edu.raf.userservice.domains.dto.login.LoginResponse;
 import rs.edu.raf.userservice.services.UserService;
 
-import rs.edu.raf.userservice.domains.dto.LoginRequest;
+import rs.edu.raf.userservice.domains.dto.login.LoginRequest;
 import rs.edu.raf.userservice.utils.JwtUtil;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api/v1/user")
 public class UserController {
 
@@ -23,13 +29,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private JwtUtil jwtUtil;
+    private final AuthenticationManager authenticationManager;
 
-    public UserController() {
-    }
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public void getAllUsers() {
@@ -38,98 +39,64 @@ public class UserController {
 
     // ovo je kompletno
     @PostMapping("/login")
-    public ResponseEntity<?> login(LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
 
-        User user = userService.findByEmail(loginRequest.getEmail());
-
-        if (user != null) {
-            if (user.getPassword().equals(loginRequest.getPassword())) {
-                /// izmeniti u JWT utls da se u claim stavi email od korisnika, a ne username
-                return new ResponseEntity<>(jwtUtil.generateToken(user.getEmail()),HttpStatus.OK);
-            }
-            return new ResponseEntity<>("Pogresan password !",HttpStatus.BAD_REQUEST);
-        }
-
-
-        return new ResponseEntity<>("Pogresan email !",HttpStatus.BAD_REQUEST);
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+        }catch (Exception e){
+            return ResponseEntity.status(401).build();
+        };
+        return ResponseEntity.ok(new LoginResponse(jwtUtil.generateToken(userService.getUserByEmail(loginRequest.getEmail()))));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(RegisterUserDto registerUserDto) {
+    public ResponseEntity<?> register(@RequestBody CreateUserDto createUserDto) {
 
-        User user = User.builder()
-                .firstName(registerUserDto.getFirstName())
-                .lastName(registerUserDto.getLastName())
-                .jmbg(registerUserDto.getJmbg())
-                .dateOfBirth(registerUserDto.getDateOfBirth())
-                .gender(registerUserDto.getGender())
-                .phoneNumber(registerUserDto.getPhoneNumber())
-                .address(registerUserDto.getAddress())
-                .email(registerUserDto.getEmail())
-                .build();
-
-        userService.addUser(user);
+        userService.addUser(createUserDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public User getUserById(@PathVariable Long id) {
-
-////        return userService.findById(id).orElse(null);
-        return null;
+    public UserDto getUserById(@PathVariable Long id) {
+        return userService.getUserById(id).orElse(null);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public User createUser(@RequestBody User user) {
-
-////        return userService.save(user);
-        return null;
+    public UserDto createUser(@RequestBody CreateUserDto createUserDto) {
+        return userService.addUser(createUserDto);
     }
 
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
+    @PutMapping(value = "/{id}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public User updateUser(@RequestBody User updatedUser) {
-
-////        return userService.save(updatedUser);
-        return null;
+    public UserDto updateUser(@RequestBody UpdateUserDto updatedUser,@PathVariable Long id) {
+          return userService.updateUser(updatedUser, id);
     }
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-//        if(userService.findById(id) != null) {
-////            userService.deleteById(id);
-//        return ResponseEntity.ok().build();
-        // }
+        if(userService.getUserById(id) != null) {
+            userService.deactivateUser(id);
+        return ResponseEntity.ok().build();
+         }
         return ResponseEntity.notFound().build();
     }
 
     @GetMapping(value = "/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public User getUserByEmail(@PathVariable String email) {
-
-////        return userService.findByEmail(email).orElse(null);
-        return null;
-    }
-
-    @GetMapping(value = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public User getUserByUsername(@PathVariable String username) {
-
-//////        return userService.findByUsername(email).orElse(null);
-        return null;
+    public UserDto getUserByEmail(@PathVariable String email) {
+        return userService.getUserByEmail(email);
     }
 
     @GetMapping(value = "/{mobileNumber}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public User getUserByMobileNumber(@PathVariable String mobileNumber) {
-
-////        return userService.findByMobileNumber(mobileNumber).orElse(null);
-        return null;
+    public UserDto getUserByMobileNumber(@PathVariable String mobileNumber) {
+        return userService.getUserByMobileNumber(mobileNumber);
     }
 
     @GetMapping(value = "/{jmbg}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public User getUserByJMBG(@PathVariable String jmbg) {
-////        return userService.findByJmbg(jmbg).orElse(null);
-//
-        return null;
+    public UserDto getUserByJMBG(@PathVariable String jmbg) {
+      return userService.getUserByJmbg(jmbg);
+
     }
 }

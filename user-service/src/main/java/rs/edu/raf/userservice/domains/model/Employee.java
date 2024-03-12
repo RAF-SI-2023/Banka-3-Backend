@@ -1,27 +1,23 @@
 package rs.edu.raf.userservice.domains.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
+import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
-@Table(
-        name="employees",
-        uniqueConstraints = {@UniqueConstraint( columnNames = {"email", "jmbg"})})
+
 public class Employee implements Serializable {
 
     @Id
