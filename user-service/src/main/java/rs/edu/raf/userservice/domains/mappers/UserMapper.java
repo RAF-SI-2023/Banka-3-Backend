@@ -14,7 +14,10 @@ import rs.edu.raf.userservice.domains.model.User;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface UserMapper {
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
+
     UserDto userToUserDto(User user);
+
     User userCreateDtoToUser(CreateUserDto userCreateDto);
+
     void updateUserFromUserUpdateDto(@MappingTarget User user, UpdateUserDto userUpdateDto);
 }
