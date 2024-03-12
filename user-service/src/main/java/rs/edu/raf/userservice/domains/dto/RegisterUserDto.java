@@ -1,14 +1,13 @@
 package rs.edu.raf.userservice.domains.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class RegistrerUserDto {
+public class RegisterUserDto {
 
     private String firstName;
     private String lastName;
