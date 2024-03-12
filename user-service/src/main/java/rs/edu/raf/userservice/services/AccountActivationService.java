@@ -11,9 +11,9 @@ import java.util.Optional;
 
 @Service
 public class AccountActivationService {
-    private AccountActivationRepository accountActivationRepository;
-    private TaskScheduler taskScheduler;
-    private EmailService emailService;
+    private final AccountActivationRepository accountActivationRepository;
+    private final TaskScheduler taskScheduler;
+    private final EmailService emailService;
 
     public AccountActivationService(AccountActivationRepository accountActivationRepository, TaskScheduler taskScheduler, EmailService emailService) {
         this.accountActivationRepository = accountActivationRepository;
@@ -25,7 +25,7 @@ public class AccountActivationService {
      * Funkcija vraca sve Entitete iz baze tipa AccountActivation.
      * Moze se obrisati kasnije.
      */
-    public List<AccountActivation> allAccountActivations(){
+    public List<AccountActivation> allAccountActivations() {
         return accountActivationRepository.findAll();
     }
 
@@ -33,9 +33,9 @@ public class AccountActivationService {
      * Za prosledjeni kod i email adresu, funckija vraca true ukoliko
      * je kod aktivan, ili false ako nije aktivan ili nepostoji.
      */
-    public boolean findByEmailAndCode(String email, int code){
+    public boolean findByEmailAndCode(String email, int code) {
         Optional<AccountActivation> accountActivation = accountActivationRepository.findByEmailAndCode(email, code);
-        if (accountActivation.isPresent()){
+        if (accountActivation.isPresent()) {
             return accountActivation.get().isActive();
         }
         return false;
@@ -48,18 +48,18 @@ public class AccountActivationService {
      * posle 5 minuta.
      * Vraca kompletan objekat tipa AccountActivation
      */
-    public AccountActivation addAccountActivation(AccountActivation accountActivation){
+    public AccountActivation addAccountActivation(AccountActivation accountActivation) {
         AccountActivation activation = accountActivationRepository.save(accountActivation);
         scheduleDeactivation(activation.getId());   //zakazivanje deaktivacije koda
-        emailService.sendSimpleMessage(activation.getEmail(), "Aktivacija naloga za Banku3","Vas kod za aktivaciju naloga je: " + activation.getCode()); //slanje koda na Mail
+        emailService.sendSimpleMessage(activation.getEmail(), "Aktivacija naloga za Banku3", "Vas kod za aktivaciju naloga je: " + activation.getCode()); //slanje koda na Mail
         return activation;
     }
 
     //zakazivanje deaktivacije koda
-    private void scheduleDeactivation(Long id){
+    private void scheduleDeactivation(Long id) {
         taskScheduler.schedule(() -> {
             Optional<AccountActivation> accountActivation = accountActivationRepository.findById(id);
-            if (accountActivation.isPresent()){
+            if (accountActivation.isPresent()) {
                 AccountActivation activation = accountActivation.get();
                 activation.setActive(false);
                 accountActivationRepository.save(activation);

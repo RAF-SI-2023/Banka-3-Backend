@@ -1,10 +1,10 @@
 package rs.edu.raf.userservice.domains.model;
 
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
+import javax.persistence.*;
 import java.util.Date;
 import java.util.concurrent.ThreadLocalRandom;
 
