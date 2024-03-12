@@ -2,7 +2,7 @@ package rs.edu.raf.userservice.domains.exceptions;
 
 import org.springframework.http.HttpStatus;
 
-public class CustomException extends RuntimeException{
+public class CustomException extends RuntimeException {
     private ErrorCode errorCode;
     private HttpStatus httpStatus;
 

@@ -1,8 +1,5 @@
 package rs.edu.raf.userservice.filters;
 
-import io.jsonwebtoken.Jwt;
-
-
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,26 +24,25 @@ public class JwtFilter extends OncePerRequestFilter {
 
     public JwtFilter(UserService userService, JwtUtil jwtUtil) {
         this.userService = userService;
-        this.jwtUtil=jwtUtil;
+        this.jwtUtil = jwtUtil;
     }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-
-        //
-        String authHeader=request.getHeader("Authorization");
-        String jwt=null;
-        String username=null;
+        String authHeader = request.getHeader("Authorization");
+        String jwt = null;
+        String username = null;
 
 
-        if(authHeader!=null && authHeader.startsWith("Bearer ")){
-            jwt=authHeader.substring(7);
-            username=jwtUtil.extractUsername(jwt);
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            jwt = authHeader.substring(7);
+            username = jwtUtil.extractUsername(jwt);
         }
 
-        if(username!=null && SecurityContextHolder.getContext().getAuthentication()==null){
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userService.loadUserByUsername(username);
 
-            if(jwtUtil.validateToken(jwt,userDetails)){
+            if (jwtUtil.validateToken(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
 

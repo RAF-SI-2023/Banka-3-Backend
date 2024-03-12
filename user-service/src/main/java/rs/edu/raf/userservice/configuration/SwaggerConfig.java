@@ -7,7 +7,6 @@ import io.swagger.v3.oas.models.info.License;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Collections;
 @Configuration
 public class SwaggerConfig {
     // Ovo treba da se promeni u naziv mikroservisa.

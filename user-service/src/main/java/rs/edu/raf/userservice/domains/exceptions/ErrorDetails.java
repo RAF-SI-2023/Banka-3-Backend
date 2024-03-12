@@ -15,7 +15,9 @@ import java.time.Instant;
 public class ErrorDetails {
     @JsonProperty("error_code")
     private ErrorCode errorCode;
+
     @JsonProperty("error_message")
     private String errorMessage;
+
     private Instant timestamp;
 }

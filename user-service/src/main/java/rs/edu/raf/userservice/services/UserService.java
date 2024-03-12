@@ -24,10 +24,10 @@ import java.util.stream.Collectors;
 @Service
 public class UserService implements UserDetailsService, UserServiceInterface {
 
-    @Autowired
-    private UserRepository userRepository;
     private final Pattern emailPattern = Pattern.compile("^[a-z0-9_.-]+@(.+)$");
     private final Pattern jmbgPattern = Pattern.compile("[0-9]{13}");
+    @Autowired
+    private UserRepository userRepository;
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -45,6 +45,7 @@ public class UserService implements UserDetailsService, UserServiceInterface {
 
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), new ArrayList<>());
     }
+
     @Override
     public Optional<UserDto> getUserById(Long id) {
         Optional<User> user = userRepository.findById(id);
@@ -53,10 +54,10 @@ public class UserService implements UserDetailsService, UserServiceInterface {
 
     @Override
     public UserDto addUser(CreateUserDto createUserDto) {
-        if(!emailPattern.matcher(createUserDto.getEmail()).matches()) {
+        if (!emailPattern.matcher(createUserDto.getEmail()).matches()) {
             throw new ValidationException("invalid email");
         }
-        if(!jmbgPattern.matcher(createUserDto.getJmbg()).matches()) {
+        if (!jmbgPattern.matcher(createUserDto.getJmbg()).matches()) {
             throw new ValidationException("invalid jmbg");
         }
         User user = UserMapper.INSTANCE.userCreateDtoToUser(createUserDto);

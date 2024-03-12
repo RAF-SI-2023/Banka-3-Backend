@@ -1,16 +1,13 @@
 package rs.edu.raf.userservice.domains.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import rs.edu.raf.userservice.domains.model.enums.PermissionName;
 
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
