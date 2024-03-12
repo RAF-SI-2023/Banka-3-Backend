@@ -1,15 +1,15 @@
 package rs.edu.raf.userservice.domains.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-
+import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 @Data
@@ -17,9 +17,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
-@Table(
-        name = "users",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"email", "jmbg"})})
+
 public class User implements Serializable {
 
     @Id
@@ -46,6 +44,7 @@ public class User implements Serializable {
     @NotNull(message = "This field cannot be NULL")
     private String phoneNumber;
 
+    @NotNull
     private String address;
 
     @NotNull(message = "This field cannot be NULL")
@@ -53,9 +52,11 @@ public class User implements Serializable {
     private String email;
 
     @JsonIgnore
+    @NotNull
     private String password;
 
     @JsonIgnore
+    @NotNull
     private String saltPassword;
 
     @NotNull(message = "This field cannot be NULL")

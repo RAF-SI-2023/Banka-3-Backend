@@ -1,6 +1,6 @@
 package rs.edu.raf.userservice.services;
 
-import jakarta.validation.ValidationException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,6 +14,7 @@ import rs.edu.raf.userservice.domains.mappers.UserMapper;
 import rs.edu.raf.userservice.domains.model.User;
 import rs.edu.raf.userservice.repositories.UserRepository;
 
+import javax.validation.ValidationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

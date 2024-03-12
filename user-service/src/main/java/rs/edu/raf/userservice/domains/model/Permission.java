@@ -1,7 +1,10 @@
 package rs.edu.raf.userservice.domains.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
-@Table(name="permissions")
+
 public class Permission {
 
     @Id
