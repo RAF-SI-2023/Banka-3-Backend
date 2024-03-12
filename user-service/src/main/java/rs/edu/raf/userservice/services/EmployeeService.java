@@ -1,6 +1,7 @@
 package rs.edu.raf.userservice.services;
 
 import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
 import rs.edu.raf.userservice.domains.dto.EmployeeCreateDto;
 import rs.edu.raf.userservice.domains.dto.EmployeeDto;
 import rs.edu.raf.userservice.domains.dto.EmployeeUpdateDto;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Service
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
