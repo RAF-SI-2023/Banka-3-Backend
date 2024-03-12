@@ -1,15 +1,24 @@
 package rs.edu.raf.userservice.services;
 
+import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import rs.edu.raf.userservice.domains.dto.CreateUserDto;
+import rs.edu.raf.userservice.domains.dto.UpdateUserDto;
+import rs.edu.raf.userservice.domains.dto.UserDto;
+import rs.edu.raf.userservice.domains.exceptions.NotFoundException;
+import rs.edu.raf.userservice.domains.mappers.UserMapper;
 import rs.edu.raf.userservice.domains.model.User;
 import rs.edu.raf.userservice.repositories.UserRepository;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService, UserServiceInterface {
@@ -23,22 +32,11 @@ public class UserService implements UserDetailsService, UserServiceInterface {
         this.userRepository = userRepository;
     }
 
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
 
-    public void addUser(User user) {
-        userRepository.save(user);
-    }
-
-    //Po defaultu je ovo metoda koja se poziva kada se korisnik loguje
-    //Ovde se proverava da li korisnik postoji u bazi
-    //Ako postoji, vraca se objekat koji implementira UserDetails interfejs
-    //Ovaj objekat se koristi za autentifikaciju korisnika
-    //Ukoliko korisnik ne postoji, baca se izuzetak
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = this.findByEmail(email);
+
+        User user = this.userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("user not found"));
 
         if (user == null) {
             throw new UsernameNotFoundException("User with the email: " + email + " not found");

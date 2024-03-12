@@ -65,4 +65,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter{
         //Prestace da se crveni kada se UserService sredi. Cekamo kolege da zavrse to
         httpSecurity.addFilterBefore(this.jwtFilter, UsernamePasswordAuthenticationFilter.class);
     }
+    @Override
+    @Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception{
+        return super.authenticationManager();
+    }
 }
