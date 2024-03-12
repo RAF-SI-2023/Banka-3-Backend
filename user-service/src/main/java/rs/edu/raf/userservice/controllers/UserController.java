@@ -23,55 +23,57 @@ public class UserController {
     public void getAllUsers() {
 
     }
-//    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-//    public User getUserById(@PathVariable Long id) {
-//
+   @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+   public User getUserById(@PathVariable Long id) {
+
 ////        return userService.findById(id).orElse(null);
-//    }
-//
-//    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
-//            produces = MediaType.APPLICATION_JSON_VALUE)
-//    public User createUser(@RequestBody User user){
-//
+   }
+
+   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
+           produces = MediaType.APPLICATION_JSON_VALUE)
+   public User createUser(@RequestBody User user){
+
 ////        return userService.save(user);
-//    }
-//
-//    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
-//            produces = MediaType.APPLICATION_JSON_VALUE)
-//    public User updateUser(@RequestBody User updatedUser){
-//
+   }
+
+   @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
+           produces = MediaType.APPLICATION_JSON_VALUE)
+   public User updateUser(@RequestBody User updatedUser){
+
 ////        return userService.save(updatedUser);
-//    }
-//
-//    @DeleteMapping(value = "/{id}")
-//    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-////        if(userService.findById(id) != null) {
+   }
+
+   @DeleteMapping(value = "/{id}")
+   public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+//        if(userService.findById(id) != null) {
 ////            userService.deleteById(id);
-////            return ResponseEntity.ok().build();
-////        }
-////        return ResponseEntity.notFound().build();
-//    }
-    //    @GetMapping(value = "/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
-//    public User getUserByEmail(@PathVariable String email) {
-//
+           return ResponseEntity.ok().build();
+       // }
+       return ResponseEntity.notFound().build();
+   }
+    
+    @GetMapping(value = "/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public User getUserByEmail(@PathVariable String email) {
+
 ////        return userService.findByEmail(email).orElse(null);
-//    }
-//    @GetMapping(value = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
-////    public User getUserByUsername(@PathVariable String username) {
-////
+    }
+    
+    @GetMapping(value = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public User getUserByUsername(@PathVariable String username) {
+
 //////        return userService.findByUsername(email).orElse(null);
-////    }
-    //    @GetMapping(value = "/{mobileNumber}", produces = MediaType.APPLICATION_JSON_VALUE)
-//    public User getUserByMobileNumber(@PathVariable String mobileNumber) {
-//
+   }
+    
+    @GetMapping(value = "/{mobileNumber}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public User getUserByMobileNumber(@PathVariable String mobileNumber) {
+
 ////        return userService.findByMobileNumber(mobileNumber).orElse(null);
-//    }
-    //    @GetMapping(value = "/{jmbg}", produces = MediaType.APPLICATION_JSON_VALUE)
-//    public User getUserByJMBG(@PathVariable String jmbg) {
+    }    
+    
+    @GetMapping(value = "/{jmbg}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public User getUserByJMBG(@PathVariable String jmbg) {
 ////        return userService.findByJmbg(jmbg).orElse(null);
 //
-//    }
-
-
+    }
 
 }
