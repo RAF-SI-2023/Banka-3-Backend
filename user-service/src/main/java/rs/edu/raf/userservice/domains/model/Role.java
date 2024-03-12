@@ -30,11 +30,6 @@ public class Role implements Serializable {
     private RoleName roleName;
 
     @JsonIgnore
-    @ManyToMany
-    @JoinTable(
-            name = "emoployee_roles",
-            joinColumns = @JoinColumn(name = "roleId"),
-            inverseJoinColumns = @JoinColumn(name = "employeeId")
-    )
+    @OneToMany(mappedBy = "roles")
     private List<Employee> employees = new ArrayList<>();
 }

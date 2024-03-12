@@ -73,6 +73,7 @@ public class Employee implements Serializable {
     private String department;
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "employees")
-    private List<Role> roles = new ArrayList<>();
+    @ManyToOne()
+    @JoinColumn(name = "roleId")
+    private Role roles;
 }
