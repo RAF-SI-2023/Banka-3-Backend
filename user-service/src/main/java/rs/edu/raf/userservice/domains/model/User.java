@@ -17,7 +17,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
-
+@Table(name = "users")
 public class User implements Serializable {
 
     @Id
@@ -44,7 +44,6 @@ public class User implements Serializable {
     @NotNull(message = "This field cannot be NULL")
     private String phoneNumber;
 
-    @NotNull
     private String address;
 
     @NotNull(message = "This field cannot be NULL")
@@ -52,11 +51,9 @@ public class User implements Serializable {
     private String email;
 
     @JsonIgnore
-    @NotNull
     private String password;
 
     @JsonIgnore
-    @NotNull
     private String saltPassword;
 
     @NotNull(message = "This field cannot be NULL")
