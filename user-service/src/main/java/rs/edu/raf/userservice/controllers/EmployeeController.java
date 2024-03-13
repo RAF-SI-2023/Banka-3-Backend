@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import rs.edu.raf.userservice.services.EmoloyeeService;
 
 @RestController
-@RequestMapping("/employee")
+@RequestMapping("/api/v1/employee")
 public class EmployeeController {
 
     /*
@@ -23,6 +23,11 @@ public class EmployeeController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public EmployeeDto createEmployee(@RequestBody CreateEmployeeDto createEmployeeDto) {
         return emoloyeeService.createEmployee(createEmployeeDto);
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public EmployeeDto findAllEmployees() {
+        return emoloyeeService.findAllEmployees();
     }
 
     @PutMapping(value = "/{id}",
@@ -46,32 +51,27 @@ public class EmployeeController {
         return emoloyeeService.findEmployeeById(id).orElse(null);
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public EmployeeDto findAllEmployees() {
-        return emoloyeeService.findAllEmployees();
-    }
-
-    @GetMapping(value = "/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/findByEmail/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
     public EmployeeDto findEmployeeByEmail(@PathVariable String email) {
         return emoloyeeService.findEmployeeByEmail(email);
     }
 
-    @GetMapping(value = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/findByUsername/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
     public EmployeeDto findEmployeeByUsername(@PathVariable String username) {
         return emoloyeeService.findEmployeeByUsername(username);
     }
 
-    @GetMapping(value = "/{mobileNumber}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/findByMobileNumber/{mobileNumber}", produces = MediaType.APPLICATION_JSON_VALUE)
     public EmployeeDto findEmployeeByMobileNumber(@PathVariable String mobileNumber) {
         return emoloyeeService.findEmployeeByMobileNumber(mobileNumber);
     }
 
-    @GetMapping(value = "/{jmbg}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/findByJmbg/{jmbg}", produces = MediaType.APPLICATION_JSON_VALUE)
     public EmployeeDto findEmployeeByJMBG(@PathVariable String jmbg) {
         return emoloyeeService.findEmployeeByJmbg(jmbg);
     }
 
-    @GetMapping(value = "/{position}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/findByPosition/{position}", produces = MediaType.APPLICATION_JSON_VALUE)
     public EmployeeDto findEmployeeByPosition(@PathVariable String position) {
         return emoloyeeService.findEmployeeByPosition(position);
     }
