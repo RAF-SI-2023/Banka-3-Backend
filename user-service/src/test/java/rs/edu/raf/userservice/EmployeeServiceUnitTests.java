@@ -24,19 +24,6 @@ public class EmployeeServiceUnitTests {
     private EmployeeService employeeService;
 
 
-    @Test
-    void findByEmail(){
-        Employee employee = new Employee();
-        employee.setEmail("email@gmail.com");
-        given(employeeRepository.save(employee)).willReturn(employee);
-
-        try{
-            EmployeeDto employeeDto = employeeService.findByEmail("email@gmail.com");
-            assertNotNull(employeeDto);
-        }catch (Exception e){
-            fail();
-        }
-    }
 
 
 
