@@ -1,5 +1,8 @@
 package rs.edu.raf.userservice.services;
 
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import rs.edu.raf.userservice.domains.dto.EmployeeCreateDto;
@@ -7,13 +10,15 @@ import rs.edu.raf.userservice.domains.dto.EmployeeDto;
 import rs.edu.raf.userservice.domains.dto.EmployeeUpdateDto;
 import rs.edu.raf.userservice.domains.exceptions.NotFoundException;
 import rs.edu.raf.userservice.domains.model.Employee;
+import rs.edu.raf.userservice.domains.model.User;
 import rs.edu.raf.userservice.repositories.EmployeeRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class EmployeeService {
+public class EmployeeService implements UserDetailsService {
 
     private final EmployeeRepository employeeRepository;
 
@@ -137,7 +142,7 @@ public class EmployeeService {
         dto.setPosition(employee.getPosition());
         dto.setPhoneNumber(employee.getPhoneNumber());
         dto.setIsActive(employee.getIsActive());
-        dto.setRoles(employee.getRoles());
+        dto.setRole(employee.getRoles());
 
         dto.setPassword(employee.getPassword());
 
@@ -145,4 +150,15 @@ public class EmployeeService {
     }
 
 
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+
+        Employee user = this.employeeRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("user not found"));
+
+        if (user == null) {
+            throw new UsernameNotFoundException("User with the email: " + email + " not found");
+        }
+
+        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), new ArrayList<>());
+    }
 }

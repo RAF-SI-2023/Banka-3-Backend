@@ -6,13 +6,10 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import rs.edu.raf.userservice.domains.model.Role;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class EmployeeDto {
+public class EmployeeDto implements AuthenticationDetails {
 
     private Long employeeId;
     private String firstName;
@@ -24,11 +21,14 @@ public class EmployeeDto {
     private String phoneNumber;
     private String address;
     private String email;
-    private String password;
     private String saltPassword;
     private Boolean isActive;
     private String position;
     private String department;
+    private Role role;
 
-    private Role roles;
+    @Override
+    public Role getRole() {
+        return role;
+    }
 }

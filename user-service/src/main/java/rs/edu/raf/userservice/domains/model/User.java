@@ -58,4 +58,8 @@ public class User implements Serializable {
 
     @NotNull(message = "This field cannot be NULL")
     private Boolean isActive;
+
+    @ManyToOne()
+    @JoinColumn(name = "roleId")
+    private Role roles;
 }

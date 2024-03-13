@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import rs.edu.raf.userservice.domains.dto.AuthenticationDetails;
 import rs.edu.raf.userservice.domains.dto.UserDto;
 
 import java.util.Date;
@@ -29,11 +30,12 @@ public class JwtUtil {
         return extractAllClaims(token).getExpiration().before(new Date());
     }
 
-    public String generateToken(UserDto userDto) {
+    public String generateToken(AuthenticationDetails authenticationDetails) {
         Map<String, Object> claims = new HashMap<>();
+
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(userDto.getEmail())
+                .setSubject(authenticationDetails.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
                 .signWith(SignatureAlgorithm.HS512, SECRET_KEY).compact();
