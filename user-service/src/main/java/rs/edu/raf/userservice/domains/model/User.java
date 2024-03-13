@@ -61,5 +61,5 @@ public class User implements Serializable {
 
     @ManyToOne()
     @JoinColumn(name = "roleId")
-    private Role roles;
+    private Role role;
 }

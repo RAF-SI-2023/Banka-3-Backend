@@ -1,7 +1,7 @@
 package rs.edu.raf.userservice.domains.model.enums;
 
 public enum PermissionName {
-    ADMIN_USER,
+    ADD_USERS,
     READ_USERS,
     CREATE_USERS,
     UPDATE_USERS,

@@ -2,6 +2,7 @@ package rs.edu.raf.userservice.services;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -11,6 +12,7 @@ import rs.edu.raf.userservice.domains.dto.UpdateUserDto;
 import rs.edu.raf.userservice.domains.dto.UserDto;
 import rs.edu.raf.userservice.domains.exceptions.NotFoundException;
 import rs.edu.raf.userservice.domains.mappers.UserMapper;
+import rs.edu.raf.userservice.domains.model.Role;
 import rs.edu.raf.userservice.domains.model.User;
 import rs.edu.raf.userservice.repositories.UserRepository;
 
@@ -33,7 +35,6 @@ public class UserService implements UserDetailsService, UserServiceInterface {
         this.userRepository = userRepository;
     }
 
-
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
@@ -49,7 +50,7 @@ public class UserService implements UserDetailsService, UserServiceInterface {
     @Override
     public Optional<UserDto> getUserById(Long id) {
         Optional<User> user = userRepository.findById(id);
-        return user.map(UserMapper.INSTANCE::userToUserDto);//TODO dodaj exception ako treba
+        return user.map(UserMapper.INSTANCE::userToUserDto);
     }
 
     @Override
