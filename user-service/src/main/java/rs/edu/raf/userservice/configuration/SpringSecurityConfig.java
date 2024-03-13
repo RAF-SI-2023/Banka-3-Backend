@@ -10,30 +10,33 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import rs.edu.raf.userservice.filters.JwtFilter;
+import rs.edu.raf.userservice.services.CustomDetailsService;
+import rs.edu.raf.userservice.services.EmployeeService;
 import rs.edu.raf.userservice.services.UserService;
 
 @EnableWebSecurity
 @EnableAsync
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserService userService;
+    private final EmployeeService employeeService;
     private final JwtFilter jwtFilter;
 
 
-    public SpringSecurityConfig(UserService userService, JwtFilter jwtFilter) {
+    public SpringSecurityConfig(UserService userService, EmployeeService employeeService, JwtFilter jwtFilter) {
         this.userService = userService;
+        this.employeeService = employeeService;
         this.jwtFilter = jwtFilter;
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(this.userService);
+        CustomDetailsService customDetailsService = new CustomDetailsService(userService, employeeService);
+        auth.userDetailsService(customDetailsService);
     }
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
 
-
-        // TODO: Promeniti da podrzava rute za usera
         httpSecurity
                 .cors()
                 .and()
@@ -41,6 +44,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .disable()
                 .authorizeRequests()
                 .antMatchers("/api/v1/user/auth/**").permitAll()
+                .antMatchers("/api/v1/employee/auth/**").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
                 .antMatchers("/swagger-ui/**").permitAll()
                 .antMatchers("/v3/**").permitAll()

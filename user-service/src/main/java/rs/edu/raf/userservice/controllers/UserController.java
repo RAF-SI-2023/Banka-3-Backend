@@ -22,7 +22,6 @@ import rs.edu.raf.userservice.utils.JwtUtil;
 @RequestMapping("/api/v1/user")
 public class UserController {
 
-
     private final AuthenticationManager authenticationManager;
 
     @Autowired
@@ -33,7 +32,6 @@ public class UserController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public void getAllUsers() {
-
     }
 
     @PostMapping("/auth/login")

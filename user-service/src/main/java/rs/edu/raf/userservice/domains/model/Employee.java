@@ -1,6 +1,5 @@
 package rs.edu.raf.userservice.domains.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +16,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
-
 public class Employee implements Serializable {
 
     @Id
@@ -49,9 +47,6 @@ public class Employee implements Serializable {
     private String phoneNumber;
 
     @NotNull(message = "This field cannot be NULL")
-    private String address;
-
-    @NotNull(message = "This field cannot be NULL")
     @Email
     private String email;
 
@@ -59,16 +54,16 @@ public class Employee implements Serializable {
     private String password;
 
     @NotNull(message = "This field cannot be NULL")
-    private String saltPassword;
-
-    @NotNull(message = "This field cannot be NULL")
     private Boolean isActive;
+
+    private String address;
 
     private String position;
 
     private String department;
 
-    @JsonIgnore
+    private String saltPassword;
+
     @ManyToOne()
     @JoinColumn(name = "roleId")
     private Role roles;

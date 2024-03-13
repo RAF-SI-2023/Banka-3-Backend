@@ -30,4 +30,8 @@ public class Role implements Serializable {
     @JsonIgnore
     @OneToMany(mappedBy = "roles")
     private List<Employee> employees = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "roles")
+    private List<User> users = new ArrayList<>();
 }
