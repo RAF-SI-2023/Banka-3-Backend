@@ -1,5 +1,7 @@
 package rs.edu.raf.userservice.services;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -10,6 +12,8 @@ import rs.edu.raf.userservice.domains.dto.EmployeeDto;
 import rs.edu.raf.userservice.domains.dto.EmployeeUpdateDto;
 import rs.edu.raf.userservice.domains.exceptions.NotFoundException;
 import rs.edu.raf.userservice.domains.model.Employee;
+import rs.edu.raf.userservice.domains.model.Permission;
+import rs.edu.raf.userservice.domains.model.Role;
 import rs.edu.raf.userservice.domains.model.User;
 import rs.edu.raf.userservice.repositories.EmployeeRepository;
 
@@ -46,9 +50,9 @@ public class EmployeeService implements UserDetailsService {
         employee.setPosition(employeeCreateDto.getPosition());
         employee.setPhoneNumber(employeeCreateDto.getPhoneNumber());
         employee.setIsActive(true);
-        employee.setRoles(employeeCreateDto.getRoles());
+        employee.setRole(employeeCreateDto.getRoles());
 
-        employee.setPassword(employeeCreateDto.getPassword());
+//        employee.setPassword(employeeCreateDto.getPassword());
         employee.setSaltPassword(passwordEncoder.encode(employee.getPassword()));
 
         employeeRepository.save(employee);
@@ -80,12 +84,12 @@ public class EmployeeService implements UserDetailsService {
         employee.setDepartment(employeeUpdateDto.getDepartment());
         employee.setPosition(employeeUpdateDto.getPosition());
         employee.setPhoneNumber(employeeUpdateDto.getPhoneNumber());//ako nije aktivan ne moze update
-        employee.setRoles(employeeUpdateDto.getRoles());
+        employee.setRole(employeeUpdateDto.getRoles());
 
-        if (!employee.getPassword().equals(employeeUpdateDto.getPassword())) {
-            employee.setPassword(employeeUpdateDto.getPassword());
-            employee.setSaltPassword(passwordEncoder.encode(employee.getPassword()));
-        }
+//        if (!employee.getPassword().equals(employeeUpdateDto.getPassword())) {
+//            employee.setPassword(employeeUpdateDto.getPassword());
+//            employee.setSaltPassword(passwordEncoder.encode(employee.getPassword()));
+//        }
 
         employeeRepository.save(employee);
         return convertEmployeeToDto(employee);
@@ -142,9 +146,7 @@ public class EmployeeService implements UserDetailsService {
         dto.setPosition(employee.getPosition());
         dto.setPhoneNumber(employee.getPhoneNumber());
         dto.setIsActive(employee.getIsActive());
-        dto.setRole(employee.getRoles());
-
-        dto.setPassword(employee.getPassword());
+        dto.setRole(employee.getRole());
 
         return dto;
     }
@@ -153,12 +155,20 @@ public class EmployeeService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        Employee user = this.employeeRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("user not found"));
+        Employee employee = this.employeeRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("user not found"));
 
-        if (user == null) {
+        if (employee == null) {
             throw new UsernameNotFoundException("User with the email: " + email + " not found");
         }
 
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), new ArrayList<>());
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        Role role = employee.getRole();
+        List<Permission> permissions = role.getPermissions();
+
+        for (Permission permission : permissions) {
+            authorities.add(new SimpleGrantedAuthority(permission.getPermissionName().name()));
+        }
+
+        return new org.springframework.security.core.userdetails.User(employee.getEmail(), employee.getPassword(), authorities);
     }
 }

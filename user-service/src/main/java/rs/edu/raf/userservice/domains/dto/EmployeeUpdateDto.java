@@ -31,8 +31,8 @@ public class EmployeeUpdateDto {
     private String jmbg;
     @NotBlank
     private String address;
-    @NotBlank
-    private String password;
+//    @NotBlank
+//    private String password;
     @NotBlank
     private String department;
     @NotBlank
@@ -41,7 +41,6 @@ public class EmployeeUpdateDto {
     private String phoneNumber;
     @NotNull
     private Boolean isActive;
-
     @NotNull
     private Role roles;
 }

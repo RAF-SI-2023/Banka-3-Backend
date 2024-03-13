@@ -5,34 +5,28 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
 import rs.edu.raf.userservice.domains.model.enums.PermissionName;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
-
-public class Permission {
+public class Permission implements GrantedAuthority {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long permissionId;
 
     @Enumerated(EnumType.STRING)
     private PermissionName permissionName;
 
-    @JsonIgnore
-    @ManyToMany
-    @JoinTable(
-            name = "role_permissions",
-            joinColumns = @JoinColumn(name = "permissionId"),
-            inverseJoinColumns = @JoinColumn(name = "roleId")
-    )
-    private List<Role> roles = new ArrayList<>();
-
+    @Override
+    public String getAuthority() {
+        return permissionName.toString();
+    }
 }

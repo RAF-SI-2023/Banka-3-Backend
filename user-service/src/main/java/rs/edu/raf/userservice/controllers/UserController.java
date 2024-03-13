@@ -51,7 +51,6 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDto getUserById(@PathVariable Long id) {
         return userService.getUserById(id).orElse(null);

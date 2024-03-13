@@ -17,21 +17,29 @@ import java.util.List;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
-
 public class Role implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long roleId;
 
     @Enumerated(EnumType.STRING)
     private RoleName roleName;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "roles")
+    @OneToMany(mappedBy = "role")
     private List<Employee> employees = new ArrayList<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "roles")
+    @OneToMany(mappedBy = "role")
     private List<User> users = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "role_permissions",
+            joinColumns = @JoinColumn(name = "roleId"),
+            inverseJoinColumns = @JoinColumn(name = "permissionId")
+    )
+    private List<Permission> permissions = new ArrayList<>();
 }

@@ -21,7 +21,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     private final EmployeeService employeeService;
     private final JwtFilter jwtFilter;
 
-
     public SpringSecurityConfig(UserService userService, EmployeeService employeeService, JwtFilter jwtFilter) {
         this.userService = userService;
         this.employeeService = employeeService;

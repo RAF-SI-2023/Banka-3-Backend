@@ -35,8 +35,8 @@ public class EmployeeCreateDto {
     private String jmbg;
     @NotBlank
     private String address;
-    @NotBlank
-    private String password;
+//    @NotBlank
+//    private String password;
 //    @NotBlank
 //    private String saltPassword;
     @NotBlank
