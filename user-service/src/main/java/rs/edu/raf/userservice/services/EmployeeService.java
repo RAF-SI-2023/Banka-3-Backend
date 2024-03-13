@@ -1,6 +1,5 @@
 package rs.edu.raf.userservice.services;
 
-import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import rs.edu.raf.userservice.domains.dto.EmployeeCreateDto;
@@ -11,7 +10,6 @@ import rs.edu.raf.userservice.domains.model.Employee;
 import rs.edu.raf.userservice.repositories.EmployeeRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,13 +18,14 @@ public class EmployeeService {
     private final EmployeeRepository employeeRepository;
 
     private final PasswordEncoder passwordEncoder;
-    public EmployeeService(EmployeeRepository employeeRepository, PasswordEncoder passwordEncoder){
+
+    public EmployeeService(EmployeeRepository employeeRepository, PasswordEncoder passwordEncoder) {
         this.employeeRepository = employeeRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
 
-    public EmployeeDto create(EmployeeCreateDto employeeCreateDto){
+    public EmployeeDto create(EmployeeCreateDto employeeCreateDto) {
 
         Employee employee = new Employee();
 
@@ -51,18 +50,18 @@ public class EmployeeService {
         return convertEmployeeToDto(employee);
     }
 
-    public EmployeeDto delete(Employee employee){
-//        employeeRepository.delete(employee);
+    public EmployeeDto delete(Long id) {
+        Employee employee = employeeRepository.findById(id).orElseThrow(() -> new NotFoundException("employee not found"));
         employee.setIsActive(false);
         employeeRepository.save(employee);
         return convertEmployeeToDto(employee);
     }
 
-    public EmployeeDto update(EmployeeUpdateDto employeeUpdateDto, Long id){
+    public EmployeeDto update(EmployeeUpdateDto employeeUpdateDto, Long id) {
         Employee employee = employeeRepository.findById(id).orElseThrow(() -> new NotFoundException("user not found"));
 
         employee.setIsActive(employeeUpdateDto.getIsActive());
-        if(!employee.getIsActive()){
+        if (!employee.getIsActive()) {
             return null;
         }
         employee.setFirstName(employeeUpdateDto.getFirstName());
@@ -78,7 +77,7 @@ public class EmployeeService {
         employee.setPhoneNumber(employeeUpdateDto.getPhoneNumber());//ako nije aktivan ne moze update
         employee.setRoles(employeeUpdateDto.getRoles());
 
-        if(!employee.getPassword().equals(employeeUpdateDto.getPassword())){
+        if (!employee.getPassword().equals(employeeUpdateDto.getPassword())) {
             employee.setPassword(employeeUpdateDto.getPassword());
             employee.setSaltPassword(passwordEncoder.encode(employee.getPassword()));
         }
@@ -87,41 +86,42 @@ public class EmployeeService {
         return convertEmployeeToDto(employee);
     }
 
-    public List<EmployeeDto> findAll(){
+    public List<EmployeeDto> findAll() {
 //        List<EmployeeDto> dtos;
 
         return employeeRepository.findAll().stream().map(this::convertEmployeeToDto).collect(Collectors.toList());
     }
-    public EmployeeDto findById(Long id){
+
+    public EmployeeDto findById(Long id) {
         Employee employee = employeeRepository.findById(id).orElseThrow(() -> new NotFoundException("user not found"));
         return convertEmployeeToDto(employee);
     }
 
-    public EmployeeDto findByEmail(String email){
+    public EmployeeDto findByEmail(String email) {
         Employee employee = employeeRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("user not found"));
         return convertEmployeeToDto(employee);
     }
 
-    public EmployeeDto findByUsername(String username){
+    public EmployeeDto findByUsername(String username) {
         Employee employee = employeeRepository.findByUsername(username).orElseThrow(() -> new NotFoundException("user not found"));
         return convertEmployeeToDto(employee);
     }
 
-    public EmployeeDto findByMobileNumber(String mobileNumber){
+    public EmployeeDto findByMobileNumber(String mobileNumber) {
         Employee employee = employeeRepository.findByPhoneNumber(mobileNumber).orElseThrow(() -> new NotFoundException("user not found"));
         return convertEmployeeToDto(employee);
     }
 
-    public EmployeeDto findByJmbg(String jmbg){
+    public EmployeeDto findByJmbg(String jmbg) {
         Employee employee = employeeRepository.findByJmbg(jmbg).orElseThrow(() -> new NotFoundException("user not found"));
         return convertEmployeeToDto(employee);
     }
 
-    public List<EmployeeDto> findByPosition(String position){
+    public List<EmployeeDto> findByPosition(String position) {
         return employeeRepository.findByPosition(position).stream().map(this::convertEmployeeToDto).collect(Collectors.toList());
     }
 
-    private EmployeeDto convertEmployeeToDto(Employee employee){
+    private EmployeeDto convertEmployeeToDto(Employee employee) {
         EmployeeDto dto = new EmployeeDto();
 
         dto.setEmployeeId(employee.getEmployeeId());
