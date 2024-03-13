@@ -1,4 +1,9 @@
 package rs.edu.raf.userservice.domains.exceptions;
 
-public class ForbiddenException {
+import org.springframework.http.HttpStatus;
+
+public class ForbiddenException extends CustomException{
+    public ForbiddenException(String message) {
+        super(message, ErrorCode.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
 }

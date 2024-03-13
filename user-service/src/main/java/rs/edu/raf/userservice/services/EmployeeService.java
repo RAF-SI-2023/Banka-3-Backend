@@ -1,15 +1,12 @@
 package rs.edu.raf.userservice.services;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import rs.edu.raf.userservice.domains.dto.EmployeeCreateDto;
 import rs.edu.raf.userservice.domains.dto.EmployeeDto;
 import rs.edu.raf.userservice.domains.dto.EmployeeUpdateDto;
+import rs.edu.raf.userservice.domains.exceptions.ForbiddenException;
 import rs.edu.raf.userservice.domains.exceptions.NotFoundException;
 import rs.edu.raf.userservice.domains.model.Employee;
 import rs.edu.raf.userservice.domains.model.Permission;
@@ -99,35 +96,36 @@ public class EmployeeService implements UserDetailsService {
 //        List<EmployeeDto> dtos;
 
         return employeeRepository.findAll().stream().map(this::convertEmployeeToDto).collect(Collectors.toList());
+        //TODO NE MOGU DA BACIM EXCEPTION
     }
-
-    public EmployeeDto findById(Long id) {
-        Employee employee = employeeRepository.findById(id).orElseThrow(() -> new NotFoundException("user not found"));
+    public EmployeeDto findById(Long id){
+        Employee employee = employeeRepository.findById(id).orElseThrow(() -> new NotFoundException("user with" + id + " not found"));
         return convertEmployeeToDto(employee);
     }
 
-    public EmployeeDto findByEmail(String email) {
-        Employee employee = employeeRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("user not found"));
+    public EmployeeDto findByEmail(String email){
+        Employee employee = employeeRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("user with" + email + " not found"));
         return convertEmployeeToDto(employee);
     }
 
-    public EmployeeDto findByUsername(String username) {
-        Employee employee = employeeRepository.findByUsername(username).orElseThrow(() -> new NotFoundException("user not found"));
+    public EmployeeDto findByUsername(String username){
+        Employee employee = employeeRepository.findByUsername(username).orElseThrow(() -> new NotFoundException("user with" + username + " not found"));
+        return convertEmployeeToDto(employee);//TODO MISLIM DA TREBA IZ USERDETAILS DA BUDE OVA METODA
+    }
+
+    public EmployeeDto findByMobileNumber(String mobileNumber){
+        Employee employee = employeeRepository.findByPhoneNumber(mobileNumber).orElseThrow(() -> new NotFoundException("user with" + mobileNumber + " not found"));
         return convertEmployeeToDto(employee);
     }
 
-    public EmployeeDto findByMobileNumber(String mobileNumber) {
-        Employee employee = employeeRepository.findByPhoneNumber(mobileNumber).orElseThrow(() -> new NotFoundException("user not found"));
-        return convertEmployeeToDto(employee);
-    }
-
-    public EmployeeDto findByJmbg(String jmbg) {
-        Employee employee = employeeRepository.findByJmbg(jmbg).orElseThrow(() -> new NotFoundException("user not found"));
+    public EmployeeDto findByJmbg(String jmbg){
+        Employee employee = employeeRepository.findByJmbg(jmbg).orElseThrow(() -> new NotFoundException("user with" + jmbg + " not found"));
         return convertEmployeeToDto(employee);
     }
 
     public List<EmployeeDto> findByPosition(String position) {
         return employeeRepository.findByPosition(position).stream().map(this::convertEmployeeToDto).collect(Collectors.toList());
+        //TODO NE MOGU DA BACIM EXCEPTION
     }
 
     private EmployeeDto convertEmployeeToDto(Employee employee) {

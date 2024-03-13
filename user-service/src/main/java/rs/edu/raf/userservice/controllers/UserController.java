@@ -14,8 +14,11 @@ import rs.edu.raf.userservice.domains.dto.UpdateUserDto;
 import rs.edu.raf.userservice.domains.dto.UserDto;
 import rs.edu.raf.userservice.domains.dto.login.LoginRequest;
 import rs.edu.raf.userservice.domains.dto.login.LoginResponse;
+import rs.edu.raf.userservice.domains.exceptions.NotFoundException;
 import rs.edu.raf.userservice.services.UserService;
 import rs.edu.raf.userservice.utils.JwtUtil;
+
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -31,7 +34,8 @@ public class UserController {
     private JwtUtil jwtUtil;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public void getAllUsers() {
+    public List<UserDto> getAllUsers() {
+        return userService.getUsers();
     }
 
     @PostMapping("/auth/login")
@@ -53,7 +57,7 @@ public class UserController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDto getUserById(@PathVariable Long id) {
-        return userService.getUserById(id).orElse(null);
+        return userService.getUserById(id);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
