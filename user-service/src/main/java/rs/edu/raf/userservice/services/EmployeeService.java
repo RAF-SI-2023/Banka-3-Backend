@@ -1,6 +1,7 @@
 package rs.edu.raf.userservice.services;
 
 import org.springframework.data.domain.Page;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import rs.edu.raf.userservice.domains.dto.EmployeeCreateDto;
 import rs.edu.raf.userservice.domains.dto.EmployeeDto;
@@ -18,8 +19,10 @@ public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
 
-    public EmployeeService(EmployeeRepository employeeRepository){
+    private final PasswordEncoder passwordEncoder;
+    public EmployeeService(EmployeeRepository employeeRepository, PasswordEncoder passwordEncoder){
         this.employeeRepository = employeeRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -37,14 +40,13 @@ public class EmployeeService {
         employee.setAddress(employeeCreateDto.getAddress());
         employee.setDepartment(employeeCreateDto.getDepartment());
         employee.setPosition(employeeCreateDto.getPosition());
-        employee.setPhoneNumber(employeeCreateDto.getPhoneNumber());//ako nije aktivan ne moze update
+        employee.setPhoneNumber(employeeCreateDto.getPhoneNumber());
         employee.setIsActive(true);
         employee.setRoles(employeeCreateDto.getRoles());
 
         employee.setPassword(employeeCreateDto.getPassword());
+        employee.setSaltPassword(passwordEncoder.encode(employee.getPassword()));
 
-
-        //salt password
         employeeRepository.save(employee);
         return convertEmployeeToDto(employee);
     }
@@ -76,11 +78,12 @@ public class EmployeeService {
         employee.setPhoneNumber(employeeUpdateDto.getPhoneNumber());//ako nije aktivan ne moze update
         employee.setRoles(employeeUpdateDto.getRoles());
 
-        employee.setPassword(employeeUpdateDto.getPassword());
+        if(!employee.getPassword().equals(employeeUpdateDto.getPassword())){
+            employee.setPassword(employeeUpdateDto.getPassword());
+            employee.setSaltPassword(passwordEncoder.encode(employee.getPassword()));
+        }
 
         employeeRepository.save(employee);
-
-        //encode new password ako je promenjen
         return convertEmployeeToDto(employee);
     }
 
