@@ -1,11 +1,8 @@
 package rs.edu.raf.userservice.utils;
 
-import io.jsonwebtoken.*;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import rs.edu.raf.userservice.domains.dto.UserDto;
