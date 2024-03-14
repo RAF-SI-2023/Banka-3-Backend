@@ -1,21 +1,20 @@
 package rs.edu.raf.userservice.domains.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
+@ToString
 public class Employee implements Serializable {
 
     @Id
@@ -67,4 +66,12 @@ public class Employee implements Serializable {
     @ManyToOne()
     @JoinColumn(name = "roleId")
     private Role role;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "employee_permissions",
+            joinColumns = @JoinColumn(name = "employeeId"),
+            inverseJoinColumns = @JoinColumn(name = "permissionId")
+    )
+    private List<Permission> permissions;
 }

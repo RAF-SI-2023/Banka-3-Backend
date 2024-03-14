@@ -35,19 +35,30 @@ public class BootstrapData implements CommandLineRunner {
         Permission addUserPermission = Permission.builder()
                 .permissionName(PermissionName.ADD_USERS)
                 .build();
-        permissionRepository.save(addUserPermission);
+
+        Permission readUsersPermission = Permission.builder()
+                .permissionName(PermissionName.READ_USERS)
+                .build();
 
         List<Permission> permissions = new ArrayList<>();
         permissions.add(addUserPermission);
+        permissions.add(readUsersPermission);
+        permissionRepository.saveAll(permissions);
 
-        Role role = Role.builder()
-                .roleName(RoleName.ADMIN)
-                .permissions(permissions)
+        Role adminRole = Role.builder()
+                .roleName(RoleName.ADMIN).build();
+
+        Role normalUserRole = Role.builder()
+                .roleName(RoleName.USER)
                 .build();
 
-        roleRepository.save(role);
+        List<Role> roles = new ArrayList<>();
+        roles.add(adminRole);
+        roles.add(normalUserRole);
 
-        User admin = User.builder()
+        roleRepository.saveAll(roles);
+
+        User user1 = User.builder()
                 .firstName("User1")
                 .lastName("User1")
                 .email("user@user.com")
@@ -57,6 +68,7 @@ public class BootstrapData implements CommandLineRunner {
                 .isActive(true)
                 .gender("male")
                 .dateOfBirth(1710274123787L)
+                .role(normalUserRole)
                 .build();
 
         Employee employee = Employee.builder()
@@ -70,10 +82,11 @@ public class BootstrapData implements CommandLineRunner {
                 .isActive(true)
                 .gender("male")
                 .dateOfBirth(1710274123787L)
-                .role(role)
+                .role(adminRole)
+                .permissions(permissions)
                 .build();
 
-        userRepository.save(admin);
+        userRepository.save(user1);
         employeeRepository.save(employee);
     }
 }

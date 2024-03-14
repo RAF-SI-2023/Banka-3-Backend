@@ -1,10 +1,7 @@
 package rs.edu.raf.userservice.domains.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import rs.edu.raf.userservice.domains.model.enums.RoleName;
 
 import javax.persistence.*;
@@ -17,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
+@ToString
 public class Role implements Serializable {
 
     @Id
@@ -35,11 +33,4 @@ public class Role implements Serializable {
     @OneToMany(mappedBy = "role")
     private List<User> users = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "role_permissions",
-            joinColumns = @JoinColumn(name = "roleId"),
-            inverseJoinColumns = @JoinColumn(name = "permissionId")
-    )
-    private List<Permission> permissions = new ArrayList<>();
 }

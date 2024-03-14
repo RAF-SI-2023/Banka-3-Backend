@@ -147,6 +147,7 @@ public class EmployeeService implements UserDetailsService {
         dto.setPhoneNumber(employee.getPhoneNumber());
         dto.setIsActive(employee.getIsActive());
         dto.setRole(employee.getRole());
+        dto.setPermissions(employee.getPermissions());
 
         return dto;
     }
@@ -162,8 +163,7 @@ public class EmployeeService implements UserDetailsService {
         }
 
         List<GrantedAuthority> authorities = new ArrayList<>();
-        Role role = employee.getRole();
-        List<Permission> permissions = role.getPermissions();
+        List<Permission> permissions = employee.getPermissions();
 
         for (Permission permission : permissions) {
             authorities.add(new SimpleGrantedAuthority(permission.getPermissionName().name()));

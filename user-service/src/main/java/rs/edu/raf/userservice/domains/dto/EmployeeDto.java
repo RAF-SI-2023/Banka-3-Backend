@@ -4,11 +4,17 @@ package rs.edu.raf.userservice.domains.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import rs.edu.raf.userservice.domains.model.Permission;
 import rs.edu.raf.userservice.domains.model.Role;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @RequiredArgsConstructor
+@ToString
 public class EmployeeDto implements AuthenticationDetails {
 
     private Long employeeId;
@@ -21,14 +27,24 @@ public class EmployeeDto implements AuthenticationDetails {
     private String phoneNumber;
     private String address;
     private String email;
-    private String saltPassword;
     private Boolean isActive;
     private String position;
     private String department;
     private Role role;
+    private List<Permission> permissions;
 
     @Override
     public Role getRole() {
         return role;
+    }
+
+    @Override
+    public Long getId() {
+        return employeeId;
+    }
+
+    @Override
+    public List<Permission> getPermissions() {
+        return permissions;
     }
 }

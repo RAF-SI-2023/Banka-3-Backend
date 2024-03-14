@@ -3,7 +3,11 @@ package rs.edu.raf.userservice.domains.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import rs.edu.raf.userservice.domains.model.Permission;
 import rs.edu.raf.userservice.domains.model.Role;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -25,4 +29,15 @@ public class UserDto implements AuthenticationDetails {
     public Role getRole() {
         return role;
     }
+
+    @Override
+    public Long getId() {
+        return userId;
+    }
+
+    @Override
+    public List<Permission> getPermissions() {
+        return new ArrayList<>();
+    }
+
 }
