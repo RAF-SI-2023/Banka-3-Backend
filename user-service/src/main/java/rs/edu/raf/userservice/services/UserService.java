@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @Service
 public class UserService implements UserDetailsService, UserServiceInterface {
 
-    private final Pattern emailPattern = Pattern.compile("^[a-z0-9_.-]+@(.+)$");
+    private final Pattern emailPattern = Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$");
     private final Pattern jmbgPattern = Pattern.compile("[0-9]{13}");
     @Autowired
     private UserRepository userRepository;
@@ -37,7 +37,7 @@ public class UserService implements UserDetailsService, UserServiceInterface {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        User user = this.userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("user not found"));
+        User user = this.userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("user not found"));
 
         if (user == null) {
             throw new UsernameNotFoundException("User with the email: " + email + " not found");
