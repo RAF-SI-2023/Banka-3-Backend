@@ -36,10 +36,11 @@ public class JwtUtil {
     public String generateToken(AuthenticationDetails authenticationDetails) {
         Map<String, Object> claims = new HashMap<>();
 
-        List<String> permissions = authenticationDetails.getRole().getPermissions().stream()
+        List<String> permissions = authenticationDetails.getPermissions().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
+        claims.put("id", authenticationDetails.getId());
         claims.put("role", authenticationDetails.getRole().getRoleName());
         claims.put("permissions", permissions);
 
