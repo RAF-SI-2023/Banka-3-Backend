@@ -1,14 +1,11 @@
 package rs.edu.raf.userservice;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import rs.edu.raf.userservice.domains.dto.user.CreateUserDto;
 import rs.edu.raf.userservice.domains.dto.user.UpdateUserDto;
 import rs.edu.raf.userservice.domains.dto.user.UserDto;
@@ -19,7 +16,6 @@ import rs.edu.raf.userservice.repositories.UserRepository;
 import rs.edu.raf.userservice.services.UserService;
 
 import javax.validation.ValidationException;
-import javax.validation.constraints.Null;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,37 +34,37 @@ class UserServiceApplicationTests {
     UserService userService;
 
     @Test
-    public void testLoadUserByUsername(){
-          User user = createDummyUser("pera123@gmail.com");
+    public void testLoadUserByUsername() {
+        User user = createDummyUser("pera123@gmail.com");
 
-          given(userRepository.findByEmail("pera123@gmail.com")).willReturn(Optional.of(user));
+        given(userRepository.findByEmail("pera123@gmail.com")).willReturn(Optional.of(user));
 
-          UserDetails userDetails = userService.loadUserByUsername("pera123@gmail.com");
+        UserDetails userDetails = userService.loadUserByUsername("pera123@gmail.com");
 
-          assertEquals(userDetails.getUsername(), user.getEmail());
-          assertEquals(userDetails.getPassword(), user.getPassword());
+        assertEquals(userDetails.getUsername(), user.getEmail());
+        assertEquals(userDetails.getPassword(), user.getPassword());
     }
 
     @Test
-    public void testLoadUserByUsername_FailUserIsNull(){
+    public void testLoadUserByUsername_FailUserIsNull() {
 
         given(userRepository.findByEmail("pera123@gmaill.com")).willReturn(null);
-        //exception porveriti
-        assertThrows(Exception.class, ()-> userService.loadUserByUsername("pera123@gmail.com"));
+
+        assertThrows(Exception.class, () -> userService.loadUserByUsername("pera123@gmail.com"));
     }
 
     @Test
-    public void testLoadUserByUsername_UserIsNotActive(){
+    public void testLoadUserByUsername_UserIsNotActive() {
         User user = createDummyUser("pera123@gmail.com");
         user.setIsActive(false);
 
         given(userRepository.findByEmail(anyString())).willReturn(Optional.of(user));
 
-        assertThrows(ForbiddenException.class, ()-> userService.loadUserByUsername("pera123@gmail.com"));
+        assertThrows(ForbiddenException.class, () -> userService.loadUserByUsername("pera123@gmail.com"));
     }
 
     @Test
-    public void getUserByIdTest(){
+    public void getUserByIdTest() {
         User user = createDummyUser("pera123@gmail.com");
 
         given(userRepository.findById(1L)).willReturn(Optional.of(user));
@@ -82,18 +78,17 @@ class UserServiceApplicationTests {
     }
 
     @Test
-    public void getUserByIdTest_NotFound(){
+    public void getUserByIdTest_NotFound() {
 
         given(userRepository.findById(1L)).willReturn(null);
-        //exception porveriti
-        assertThrows(Exception.class, ()-> userService.getUserById(1L));
+
+        assertThrows(Exception.class, () -> userService.getUserById(1L));
 
     }
 
 
-    /**pitaj strahinju o create userDTO**/
     @Test
-    public void addUserTest(){
+    public void addUserTest() {
         CreateUserDto createUserDto = createDummyCreateUserDto("pera123@gmail.com");
         User user = createDummyUser("pera123@gmail.com");
         user.setAddress(null);
@@ -109,30 +104,28 @@ class UserServiceApplicationTests {
         assertEquals(userDto.getJmbg(), user.getJmbg());
     }
 
-
-    /**email patern ne radi bas najbolje "pera123@gada" prolazi**/
     @Test
-    public void addUserTest_FailEmail(){
-        CreateUserDto createUserDto = createDummyCreateUserDto("pera123daa.com");
+    public void addUserTest_FailEmail() {
+        CreateUserDto createUserDto = createDummyCreateUserDto("pera123@daa");
 
-        assertThrows(ValidationException.class, ()->userService.addUser(createUserDto));
+        assertThrows(ValidationException.class, () -> userService.addUser(createUserDto));
     }
 
     @Test
-    public void addUserTest_FailJMBG(){
+    public void addUserTest_FailJMBG() {
         CreateUserDto createUserDto = createDummyCreateUserDto("pera123@gmail.com");
         createUserDto.setJmbg("1234");
 
-        assertThrows(ValidationException.class, ()->userService.addUser(createUserDto));
+        assertThrows(ValidationException.class, () -> userService.addUser(createUserDto));
     }
 
     @Test
-    public void deactivateUserTest(){
+    public void deactivateUserTest() {
         User user = createDummyUser("pera123@gmail.com");
 
         given(userRepository.findById(1L)).willReturn(Optional.of(user));
         given(userRepository.save(user)).willReturn(user);
-        UserDto userDto= userService.deactivateUser(1L);
+        UserDto userDto = userService.deactivateUser(1L);
 
         assertEquals(user.getEmail(), userDto.getEmail());
         assertEquals(user.getJmbg(), userDto.getJmbg());
@@ -140,16 +133,16 @@ class UserServiceApplicationTests {
     }
 
     @Test
-    public void deactivateUserTest_Fail(){
+    public void deactivateUserTest_Fail() {
         User user = createDummyUser("pera123@gmail.com");
 
         given(userRepository.findById(1L)).willReturn(null);
-        //exception porveriti
-        assertThrows(NullPointerException.class, ()->userService.deactivateUser(1L));
+
+        assertThrows(NullPointerException.class, () -> userService.deactivateUser(1L));
     }
 
     @Test
-    public void updateUserTest(){
+    public void updateUserTest() {
         User user = createDummyUser("pera123@gmail.com");
         UpdateUserDto updateUserDto = createDummyUpdateUserDto();
         updateUserDto.setFirstName("Mika");
@@ -166,23 +159,22 @@ class UserServiceApplicationTests {
     }
 
     @Test
-    public void updateUserTest_Fail(){
+    public void updateUserTest_Fail() {
 
         given(userRepository.findById(1L)).willReturn(null);
 
-        //exception porveriti
-        assertThrows(NullPointerException.class, ()->userService.deactivateUser(1L));
+        assertThrows(NullPointerException.class, () -> userService.deactivateUser(1L));
     }
 
     @Test
-    public void getUsersTest(){
+    public void getUsersTest() {
         User user1 = createDummyUser("pera123@gmail.com");
         User user2 = createDummyUser("mika123@gmail.com");
         user2.setFirstName("Mika");
         user2.setLastName("Mikic");
         user2.setJmbg("0987654321098");
 
-        List<User> users = List.of(user1,user2);
+        List<User> users = List.of(user1, user2);
 
         given(userRepository.findAll()).willReturn(users);
 
@@ -192,7 +184,7 @@ class UserServiceApplicationTests {
             boolean found = false;
             for (User u : users) {
                 if (udto.getEmail().equals(u.getEmail()) &&
-                    udto.getJmbg().equals(u.getJmbg())) {
+                        udto.getJmbg().equals(u.getJmbg())) {
                     found = true;
                     break;
                 }
@@ -204,16 +196,16 @@ class UserServiceApplicationTests {
     }
 
     @Test
-    public void getUsers_Empty(){
+    public void getUsers_Empty() {
         List<User> users = List.of();
 
         given(userRepository.findAll()).willReturn(users);
 
-        assertThrows(NotFoundException.class, ()->userService.getUsers());
+        assertThrows(NotFoundException.class, () -> userService.getUsers());
     }
 
     @Test
-    public void getUserByEmailTest(){
+    public void getUserByEmailTest() {
         User user = createDummyUser("pera123@gmail.com");
 
         given(userRepository.findByEmail("pera123@gmail.com")).willReturn(Optional.of(user));
@@ -225,16 +217,15 @@ class UserServiceApplicationTests {
     }
 
     @Test
-    public void getUserByEmailTest_Fail(){
+    public void getUserByEmailTest_Fail() {
 
         given(userRepository.findByEmail("pera123@gmail.com")).willReturn(null);
 
-        //exception porveriti
-        assertThrows(NullPointerException.class, ()-> userService.getUserByEmail("pera123@gmail.com"));
+        assertThrows(NullPointerException.class, () -> userService.getUserByEmail("pera123@gmail.com"));
     }
 
     @Test
-    public void getUserByPhoneNumberTest(){
+    public void getUserByPhoneNumberTest() {
         User user = createDummyUser("pera123@gmail.com");
 
         given(userRepository.findByPhoneNumber("+3123214254")).willReturn(Optional.of(user));
@@ -247,16 +238,15 @@ class UserServiceApplicationTests {
     }
 
     @Test
-    public void getUserByPhoneNumberTest_Fail(){
+    public void getUserByPhoneNumberTest_Fail() {
 
         given(userRepository.findByPhoneNumber("+3123214254")).willReturn(null);
 
-        //exception porveriti
-        assertThrows(NullPointerException.class, ()-> userService.getUserByMobileNumber("+3123214254"));
+        assertThrows(NullPointerException.class, () -> userService.getUserByMobileNumber("+3123214254"));
     }
 
     @Test
-    public void getUserByJMBGTest(){
+    public void getUserByJMBGTest() {
         User user = createDummyUser("pera123@gmail.com");
 
         given(userRepository.findByJmbg("1234567890123")).willReturn(Optional.of(user));
@@ -269,17 +259,15 @@ class UserServiceApplicationTests {
     }
 
     @Test
-    public void getUserByJMBG_Fail(){
+    public void getUserByJMBG_Fail() {
 
         given(userRepository.findByPhoneNumber("+3123214254")).willReturn(null);
 
-        //exception porveriti
-        assertThrows(NullPointerException.class, ()-> userService.getUserByMobileNumber("+3123214254"));
+        assertThrows(NullPointerException.class, () -> userService.getUserByMobileNumber("+3123214254"));
     }
 
 
-
-    private CreateUserDto createDummyCreateUserDto(String email){
+    private CreateUserDto createDummyCreateUserDto(String email) {
         CreateUserDto user = new CreateUserDto();
         user.setFirstName("Pera");
         user.setLastName("Peric");
@@ -292,7 +280,7 @@ class UserServiceApplicationTests {
         return user;
     }
 
-    private User createDummyUser(String email){
+    private User createDummyUser(String email) {
         User user = new User();
         user.setUserId(1L);
         user.setFirstName("Pera");
@@ -309,7 +297,7 @@ class UserServiceApplicationTests {
         return user;
     }
 
-    private UpdateUserDto createDummyUpdateUserDto(){
+    private UpdateUserDto createDummyUpdateUserDto() {
         UpdateUserDto user = new UpdateUserDto();
         user.setFirstName("Pera");
         user.setLastName("Peric");
