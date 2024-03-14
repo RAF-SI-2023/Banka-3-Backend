@@ -49,7 +49,6 @@ public class Employee implements Serializable {
     @Email
     private String email;
 
-    @NotNull(message = "This field cannot be NULL")
     private String password;
 
     @NotNull(message = "This field cannot be NULL")

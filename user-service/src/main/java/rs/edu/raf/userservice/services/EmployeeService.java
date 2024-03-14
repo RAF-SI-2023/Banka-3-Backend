@@ -104,7 +104,11 @@ public class EmployeeService implements UserDetailsService {
     public List<EmployeeDto> search(String firstName, String lastName, String email, String role) {
         RoleName roleNameEnum;
         try {
-            roleNameEnum = RoleName.valueOf(role.toUpperCase());
+            if(role.isEmpty()){
+                roleNameEnum = null;
+            }else{
+                roleNameEnum = RoleName.valueOf(role.toUpperCase());
+            }
         } catch (Exception e) {
             throw new NotFoundException("No employees found matching the criteria");
         }
