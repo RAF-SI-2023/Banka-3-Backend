@@ -100,11 +100,6 @@ public class EmployeeController {
         return employeeService.findByMobileNumber(mobileNumber);
     }
 
-    @GetMapping(value = "/findByJmbg/{jmbg}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public EmployeeDto findEmployeeByJMBG(@PathVariable String jmbg) {
-        return employeeService.findByJmbg(jmbg);
-    }
-
     @GetMapping(value = "/findByPosition/{position}", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<EmployeeDto> findEmployeeByPosition(@PathVariable String position) {
         return employeeService.findByPosition(position);
