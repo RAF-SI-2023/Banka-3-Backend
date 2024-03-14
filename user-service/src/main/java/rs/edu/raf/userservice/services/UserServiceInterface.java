@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface UserServiceInterface {
 
-    Optional<UserDto> getUserById(Long id);
+    UserDto getUserById(Long id);
     UserDto addUser(CreateUserDto createUserDto);
     UserDto deactivateUser(Long id);
     UserDto updateUser(UpdateUserDto user, Long id);

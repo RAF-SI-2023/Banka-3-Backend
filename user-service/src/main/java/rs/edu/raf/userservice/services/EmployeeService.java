@@ -14,7 +14,6 @@ import rs.edu.raf.userservice.domains.exceptions.NotFoundException;
 import rs.edu.raf.userservice.domains.model.Employee;
 import rs.edu.raf.userservice.domains.model.Permission;
 import rs.edu.raf.userservice.domains.model.Role;
-import rs.edu.raf.userservice.domains.model.User;
 import rs.edu.raf.userservice.repositories.EmployeeRepository;
 
 import java.util.ArrayList;
@@ -67,7 +66,7 @@ public class EmployeeService implements UserDetailsService {
     }
 
     public EmployeeDto update(EmployeeUpdateDto employeeUpdateDto, Long id) {
-        Employee employee = employeeRepository.findById(id).orElseThrow(() -> new NotFoundException("user not found"));
+        Employee employee = employeeRepository.findById(id).orElseThrow(() -> new NotFoundException("employee with" + id + " not found"));
 
         employee.setIsActive(employeeUpdateDto.getIsActive());
         if (!employee.getIsActive()) {
@@ -99,35 +98,36 @@ public class EmployeeService implements UserDetailsService {
 //        List<EmployeeDto> dtos;
 
         return employeeRepository.findAll().stream().map(this::convertEmployeeToDto).collect(Collectors.toList());
+        //TODO NE MOGU DA BACIM EXCEPTION
     }
-
-    public EmployeeDto findById(Long id) {
-        Employee employee = employeeRepository.findById(id).orElseThrow(() -> new NotFoundException("user not found"));
+    public EmployeeDto findById(Long id){
+        Employee employee = employeeRepository.findById(id).orElseThrow(() -> new NotFoundException("employee with" + id + " not found"));
         return convertEmployeeToDto(employee);
     }
 
-    public EmployeeDto findByEmail(String email) {
-        Employee employee = employeeRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("user not found"));
+    public EmployeeDto findByEmail(String email){
+        Employee employee = employeeRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("employee with" + email + " not found"));
         return convertEmployeeToDto(employee);
     }
 
-    public EmployeeDto findByUsername(String username) {
-        Employee employee = employeeRepository.findByUsername(username).orElseThrow(() -> new NotFoundException("user not found"));
+    public EmployeeDto findByUsername(String username){
+        Employee employee = employeeRepository.findByUsername(username).orElseThrow(() -> new NotFoundException("employee with" + username + " not found"));
+        return convertEmployeeToDto(employee);//TODO MISLIM DA TREBA IZ USERDETAILS DA BUDE OVA METODA
+    }
+
+    public EmployeeDto findByMobileNumber(String mobileNumber){
+        Employee employee = employeeRepository.findByPhoneNumber(mobileNumber).orElseThrow(() -> new NotFoundException("employee with" + mobileNumber + " not found"));
         return convertEmployeeToDto(employee);
     }
 
-    public EmployeeDto findByMobileNumber(String mobileNumber) {
-        Employee employee = employeeRepository.findByPhoneNumber(mobileNumber).orElseThrow(() -> new NotFoundException("user not found"));
-        return convertEmployeeToDto(employee);
-    }
-
-    public EmployeeDto findByJmbg(String jmbg) {
-        Employee employee = employeeRepository.findByJmbg(jmbg).orElseThrow(() -> new NotFoundException("user not found"));
+    public EmployeeDto findByJmbg(String jmbg){
+        Employee employee = employeeRepository.findByJmbg(jmbg).orElseThrow(() -> new NotFoundException("employee with" + jmbg + " not found"));
         return convertEmployeeToDto(employee);
     }
 
     public List<EmployeeDto> findByPosition(String position) {
         return employeeRepository.findByPosition(position).stream().map(this::convertEmployeeToDto).collect(Collectors.toList());
+        //TODO NE MOGU DA BACIM EXCEPTION
     }
 
     private EmployeeDto convertEmployeeToDto(Employee employee) {
@@ -155,10 +155,10 @@ public class EmployeeService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        Employee employee = this.employeeRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("user not found"));
+        Employee employee = this.employeeRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("employee not found"));
 
         if (employee == null) {
-            throw new UsernameNotFoundException("User with the email: " + email + " not found");
+            throw new UsernameNotFoundException("employee with the email: " + email + " not found");
         }
 
         List<GrantedAuthority> authorities = new ArrayList<>();

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import rs.edu.raf.userservice.domains.dto.CreateUserDto;
 import rs.edu.raf.userservice.domains.dto.UpdateUserDto;
 import rs.edu.raf.userservice.domains.dto.UserDto;
+import rs.edu.raf.userservice.domains.exceptions.ForbiddenException;
 import rs.edu.raf.userservice.domains.exceptions.NotFoundException;
 import rs.edu.raf.userservice.domains.mappers.UserMapper;
 import rs.edu.raf.userservice.domains.model.Role;
@@ -43,14 +44,17 @@ public class UserService implements UserDetailsService, UserServiceInterface {
         if (user == null) {
             throw new UsernameNotFoundException("User with the email: " + email + " not found");
         }
+        if(!user.getIsActive()) {
+            throw new ForbiddenException("user not active");
+        }
 
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), new ArrayList<>());
     }
 
     @Override
-    public Optional<UserDto> getUserById(Long id) {
+    public UserDto getUserById(Long id) {
         Optional<User> user = userRepository.findById(id);
-        return user.map(UserMapper.INSTANCE::userToUserDto);
+        return user.map(UserMapper.INSTANCE::userToUserDto).orElseThrow(() -> new NotFoundException("user with" + id + " not found"));
     }
 
     @Override
@@ -69,14 +73,14 @@ public class UserService implements UserDetailsService, UserServiceInterface {
 
     @Override
     public UserDto deactivateUser(Long id) {
-        User newUser = userRepository.findById(id).orElseThrow();//TODO dodaj exception
+        User newUser = userRepository.findById(id).orElseThrow(() -> new NotFoundException("user with" + id + " not found"));
         newUser.setIsActive(false);
         return UserMapper.INSTANCE.userToUserDto(userRepository.save(newUser));
     }
 
     @Override
     public UserDto updateUser(UpdateUserDto user, Long id) {
-        User newUser = userRepository.findById(id).orElseThrow();//TODO dodaj exception
+        User newUser = userRepository.findById(id).orElseThrow(() -> new NotFoundException("user with" + id + " not found"));//TODO dodaj exception
         UserMapper.INSTANCE.updateUserFromUserUpdateDto(newUser, user);
         userRepository.save(newUser);
         return UserMapper.INSTANCE.userToUserDto(newUser);
@@ -85,24 +89,27 @@ public class UserService implements UserDetailsService, UserServiceInterface {
     @Override
     public List<UserDto> getUsers() {
         List<User> listaUsera = userRepository.findAll();
+        if (listaUsera.isEmpty()){
+            throw new NotFoundException("not found users");
+        }
         return listaUsera.stream().map(UserMapper.INSTANCE::userToUserDto).collect(Collectors.toList());
     }
 
     @Override
     public UserDto getUserByEmail(String email) {
         Optional<User> user = userRepository.findByEmail(email);
-        return user.map(UserMapper.INSTANCE::userToUserDto).orElseThrow(() -> new NotFoundException("user not found"));
+        return user.map(UserMapper.INSTANCE::userToUserDto).orElseThrow(() -> new NotFoundException("user with" + email + " not found"));
     }
 
     @Override
     public UserDto getUserByMobileNumber(String mobileNumber) {
         Optional<User> user = userRepository.findByPhoneNumber(mobileNumber);
-        return user.map(UserMapper.INSTANCE::userToUserDto).orElseThrow(() -> new NotFoundException("user not found"));
+        return user.map(UserMapper.INSTANCE::userToUserDto).orElseThrow(() -> new NotFoundException("user with" + mobileNumber + " not found"));
     }
 
     @Override
     public UserDto getUserByJmbg(String jmbg) {
         Optional<User> user = userRepository.findByJmbg(jmbg);
-        return user.map(UserMapper.INSTANCE::userToUserDto).orElseThrow(() -> new NotFoundException("user not found"));
+        return user.map(UserMapper.INSTANCE::userToUserDto).orElseThrow(() -> new NotFoundException("user with" + jmbg + " not found"));
     }
 }
