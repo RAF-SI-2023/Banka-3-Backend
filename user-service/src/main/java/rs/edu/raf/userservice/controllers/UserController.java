@@ -34,11 +34,6 @@ public class UserController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<UserDto> getAllUsers() {
-        return userService.getUsers();
-    }
-
     @PostMapping("/auth/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
@@ -48,6 +43,11 @@ public class UserController {
         }
 
         return ResponseEntity.ok(new LoginResponse(jwtUtil.generateToken(userService.getUserByEmail(loginRequest.getEmail()))));
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<UserDto> getAllUsers() {
+        return userService.getUsers();
     }
 
     @PostMapping("/register")

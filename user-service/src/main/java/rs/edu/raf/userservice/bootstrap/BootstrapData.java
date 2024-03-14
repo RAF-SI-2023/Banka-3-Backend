@@ -58,7 +58,7 @@ public class BootstrapData implements CommandLineRunner {
 
         roleRepository.saveAll(roles);
 
-        User admin = User.builder()
+        User user1 = User.builder()
                 .firstName("User1")
                 .lastName("User1")
                 .email("user@user.com")
@@ -86,7 +86,7 @@ public class BootstrapData implements CommandLineRunner {
                 .permissions(permissions)
                 .build();
 
-        userRepository.save(admin);
+        userRepository.save(user1);
         employeeRepository.save(employee);
     }
 }
