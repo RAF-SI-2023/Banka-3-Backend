@@ -17,5 +17,4 @@ public class PermissionService {
         return permissionRepository.findAll();
     }
 
-
 }

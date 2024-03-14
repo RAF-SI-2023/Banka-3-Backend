@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import rs.edu.raf.userservice.domains.model.Role;
 import rs.edu.raf.userservice.repositories.RoleRepository;
-import rs.edu.raf.userservice.repositories.UserRepository;
 
 import java.util.List;
 
