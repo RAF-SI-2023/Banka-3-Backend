@@ -2,18 +2,16 @@ package rs.edu.raf.userservice.services;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import rs.edu.raf.userservice.domains.dto.CreateUserDto;
-import rs.edu.raf.userservice.domains.dto.UpdateUserDto;
-import rs.edu.raf.userservice.domains.dto.UserDto;
+import rs.edu.raf.userservice.domains.dto.user.CreateUserDto;
+import rs.edu.raf.userservice.domains.dto.user.UpdateUserDto;
+import rs.edu.raf.userservice.domains.dto.user.UserDto;
 import rs.edu.raf.userservice.domains.exceptions.ForbiddenException;
 import rs.edu.raf.userservice.domains.exceptions.NotFoundException;
 import rs.edu.raf.userservice.domains.mappers.UserMapper;
-import rs.edu.raf.userservice.domains.model.Role;
 import rs.edu.raf.userservice.domains.model.User;
 import rs.edu.raf.userservice.repositories.UserRepository;
 

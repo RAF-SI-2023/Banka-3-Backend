@@ -1,10 +1,11 @@
-package rs.edu.raf.userservice.domains.dto;
+package rs.edu.raf.userservice.domains.dto.employee;
 
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import rs.edu.raf.userservice.domains.dto.AuthenticationDetails;
 import rs.edu.raf.userservice.domains.model.Permission;
 import rs.edu.raf.userservice.domains.model.Role;
 

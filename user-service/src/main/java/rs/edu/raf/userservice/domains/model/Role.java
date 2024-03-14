@@ -19,7 +19,6 @@ public class Role implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonIgnore
     private Long roleId;
 
     @Enumerated(EnumType.STRING)

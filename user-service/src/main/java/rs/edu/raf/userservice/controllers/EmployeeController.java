@@ -10,9 +10,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
-import rs.edu.raf.userservice.domains.dto.EmployeeCreateDto;
-import rs.edu.raf.userservice.domains.dto.EmployeeDto;
-import rs.edu.raf.userservice.domains.dto.EmployeeUpdateDto;
+import rs.edu.raf.userservice.domains.dto.employee.EmployeeCreateDto;
+import rs.edu.raf.userservice.domains.dto.employee.EmployeeDto;
+import rs.edu.raf.userservice.domains.dto.employee.EmployeeUpdateDto;
 import rs.edu.raf.userservice.domains.dto.login.LoginRequest;
 import rs.edu.raf.userservice.domains.dto.login.LoginResponse;
 import rs.edu.raf.userservice.services.EmployeeService;
@@ -58,7 +58,7 @@ public class EmployeeController {
         return employeeService.create(createEmployeeDto);
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/getAll",produces = MediaType.APPLICATION_JSON_VALUE)
     public List<EmployeeDto> findAllEmployees() {
         return employeeService.findAll();
     }

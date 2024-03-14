@@ -5,9 +5,9 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
-import rs.edu.raf.userservice.domains.dto.CreateUserDto;
-import rs.edu.raf.userservice.domains.dto.UpdateUserDto;
-import rs.edu.raf.userservice.domains.dto.UserDto;
+import rs.edu.raf.userservice.domains.dto.user.CreateUserDto;
+import rs.edu.raf.userservice.domains.dto.user.UpdateUserDto;
+import rs.edu.raf.userservice.domains.dto.user.UserDto;
 import rs.edu.raf.userservice.domains.model.User;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE,

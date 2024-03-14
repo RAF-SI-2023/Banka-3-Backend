@@ -7,13 +7,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import rs.edu.raf.userservice.domains.dto.EmployeeCreateDto;
-import rs.edu.raf.userservice.domains.dto.EmployeeDto;
-import rs.edu.raf.userservice.domains.dto.EmployeeUpdateDto;
+import rs.edu.raf.userservice.domains.dto.employee.EmployeeCreateDto;
+import rs.edu.raf.userservice.domains.dto.employee.EmployeeDto;
+import rs.edu.raf.userservice.domains.dto.employee.EmployeeUpdateDto;
 import rs.edu.raf.userservice.domains.exceptions.NotFoundException;
 import rs.edu.raf.userservice.domains.model.Employee;
 import rs.edu.raf.userservice.domains.model.Permission;
-import rs.edu.raf.userservice.domains.model.Role;
 import rs.edu.raf.userservice.repositories.EmployeeRepository;
 
 import java.util.ArrayList;
@@ -52,7 +51,7 @@ public class EmployeeService implements UserDetailsService {
         employee.setRole(employeeCreateDto.getRoles());
 
 //        employee.setPassword(employeeCreateDto.getPassword());
-        employee.setSaltPassword(passwordEncoder.encode(employee.getPassword()));
+//        employee.setSaltPassword(passwordEncoder.encode(employee.getPassword()));
 
         employeeRepository.save(employee);
         return convertEmployeeToDto(employee);

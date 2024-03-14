@@ -1,8 +1,5 @@
-package rs.edu.raf.userservice.domains.dto;
+package rs.edu.raf.userservice.domains.dto.employee;
 
-//import jakarta.validation.constraints.Email;
-//import jakarta.validation.constraints.NotBlank;
-//import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +13,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class EmployeeCreateDto {
-
+public class EmployeeUpdateDto {
     @NotBlank
     private String firstName;
     @NotBlank
@@ -37,17 +33,14 @@ public class EmployeeCreateDto {
     private String address;
 //    @NotBlank
 //    private String password;
-//    @NotBlank
-//    private String saltPassword;
     @NotBlank
     private String department;
     @NotBlank
     private String position;
     @NotBlank
     private String phoneNumber;
-
-//    private Boolean isActive;
-
+    @NotNull
+    private Boolean isActive;
     @NotNull
     private Role roles;
 }
