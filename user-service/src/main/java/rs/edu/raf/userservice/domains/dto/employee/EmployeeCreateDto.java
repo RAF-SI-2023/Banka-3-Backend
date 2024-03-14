@@ -49,5 +49,5 @@ public class EmployeeCreateDto {
 //    private Boolean isActive;
 
     @NotNull
-    private Role roles;
+    private Role role;
 }
