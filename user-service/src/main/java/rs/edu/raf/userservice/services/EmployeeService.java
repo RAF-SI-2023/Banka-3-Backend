@@ -1,5 +1,6 @@
 package rs.edu.raf.userservice.services;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,6 +17,7 @@ import rs.edu.raf.userservice.domains.mappers.UserMapper;
 import rs.edu.raf.userservice.domains.model.Employee;
 import rs.edu.raf.userservice.domains.model.Permission;
 import rs.edu.raf.userservice.domains.model.User;
+import rs.edu.raf.userservice.domains.model.enums.RoleName;
 import rs.edu.raf.userservice.repositories.EmployeeRepository;
 
 import java.util.ArrayList;
@@ -88,6 +90,18 @@ public class EmployeeService implements UserDetailsService {
 
     public List<EmployeeDto> findByPosition(String position) {
         return employeeRepository.findByPosition(position).stream().map(EmployeeMapper.INSTANCE::employeeToEmployeeDto).collect(Collectors.toList());
+    }
+
+    public List<EmployeeDto> search(String firstName, String lastName, String email, String role) {
+        RoleName roleNameEnum;
+        try {
+            roleNameEnum = RoleName.valueOf(role.toUpperCase());
+        } catch (Exception e) {
+            throw new NotFoundException("No employees found matching the criteria");
+        }
+        List<Employee> employees = employeeRepository.findEmployees(firstName, lastName, email, roleNameEnum)
+                .orElseThrow(() -> new NotFoundException("No employees found matching the criteria"));
+        return employees.stream().map(EmployeeMapper.INSTANCE::employeeToEmployeeDto).collect(Collectors.toList());
     }
 
     @Override
