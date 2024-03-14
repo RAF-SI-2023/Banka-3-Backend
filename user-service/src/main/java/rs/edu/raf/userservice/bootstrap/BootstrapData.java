@@ -35,10 +35,16 @@ public class BootstrapData implements CommandLineRunner {
         Permission addUserPermission = Permission.builder()
                 .permissionName(PermissionName.ADD_USERS)
                 .build();
+
+        Permission readUsersPermission = Permission.builder()
+                .permissionName(PermissionName.READ_USERS)
+                .build();
         permissionRepository.save(addUserPermission);
+        permissionRepository.save(readUsersPermission);
 
         List<Permission> permissions = new ArrayList<>();
         permissions.add(addUserPermission);
+        permissions.add(readUsersPermission);
 
         Role role = Role.builder()
                 .roleName(RoleName.ADMIN)

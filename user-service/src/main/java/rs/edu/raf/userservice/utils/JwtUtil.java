@@ -3,6 +3,7 @@ package rs.edu.raf.userservice.utils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import rs.edu.raf.userservice.domains.dto.AuthenticationDetails;
@@ -10,7 +11,9 @@ import rs.edu.raf.userservice.domains.dto.UserDto;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtUtil {
@@ -33,7 +36,12 @@ public class JwtUtil {
     public String generateToken(AuthenticationDetails authenticationDetails) {
         Map<String, Object> claims = new HashMap<>();
 
-        claims.put("role", authenticationDetails.getRole());
+        List<String> permissions = authenticationDetails.getRole().getPermissions().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+
+        claims.put("role", authenticationDetails.getRole().getRoleName());
+        claims.put("permissions", permissions);
 
         return Jwts.builder()
                 .setClaims(claims)
