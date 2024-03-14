@@ -9,12 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
-import rs.edu.raf.userservice.domains.dto.CreateUserDto;
-import rs.edu.raf.userservice.domains.dto.UpdateUserDto;
-import rs.edu.raf.userservice.domains.dto.UserDto;
+import rs.edu.raf.userservice.domains.dto.user.CreateUserDto;
+import rs.edu.raf.userservice.domains.dto.user.UpdateUserDto;
+import rs.edu.raf.userservice.domains.dto.user.UserDto;
 import rs.edu.raf.userservice.domains.dto.login.LoginRequest;
 import rs.edu.raf.userservice.domains.dto.login.LoginResponse;
-import rs.edu.raf.userservice.domains.exceptions.NotFoundException;
 import rs.edu.raf.userservice.services.UserService;
 import rs.edu.raf.userservice.utils.JwtUtil;
 
@@ -45,7 +44,7 @@ public class UserController {
         return ResponseEntity.ok(new LoginResponse(jwtUtil.generateToken(userService.getUserByEmail(loginRequest.getEmail()))));
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<UserDto> getAllUsers() {
         return userService.getUsers();
     }

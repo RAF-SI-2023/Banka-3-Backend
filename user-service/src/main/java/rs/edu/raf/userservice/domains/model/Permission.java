@@ -19,7 +19,6 @@ public class Permission implements GrantedAuthority {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonIgnore
     private Long permissionId;
 
     @Enumerated(EnumType.STRING)

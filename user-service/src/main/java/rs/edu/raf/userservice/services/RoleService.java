@@ -13,7 +13,6 @@ import java.util.List;
 public class RoleService {
 
     private RoleRepository roleRepository;
-    private final UserRepository userRepository;
 
     public List<Role> getAllRoles() {
         return roleRepository.findAll();

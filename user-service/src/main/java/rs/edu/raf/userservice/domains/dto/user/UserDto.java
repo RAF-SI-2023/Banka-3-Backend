@@ -1,8 +1,9 @@
-package rs.edu.raf.userservice.domains.dto;
+package rs.edu.raf.userservice.domains.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import rs.edu.raf.userservice.domains.dto.AuthenticationDetails;
 import rs.edu.raf.userservice.domains.model.Permission;
 import rs.edu.raf.userservice.domains.model.Role;
 

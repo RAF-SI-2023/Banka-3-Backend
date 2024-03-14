@@ -1,13 +1,10 @@
 package rs.edu.raf.userservice.services;
 
-import rs.edu.raf.userservice.domains.dto.CreateUserDto;
-import rs.edu.raf.userservice.domains.dto.UpdateUserDto;
-import rs.edu.raf.userservice.domains.dto.UserDto;
-import rs.edu.raf.userservice.domains.model.Role;
-import rs.edu.raf.userservice.domains.model.User;
+import rs.edu.raf.userservice.domains.dto.user.CreateUserDto;
+import rs.edu.raf.userservice.domains.dto.user.UpdateUserDto;
+import rs.edu.raf.userservice.domains.dto.user.UserDto;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface UserServiceInterface {
 

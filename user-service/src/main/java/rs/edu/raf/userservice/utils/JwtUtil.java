@@ -7,7 +7,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import rs.edu.raf.userservice.domains.dto.AuthenticationDetails;
-import rs.edu.raf.userservice.domains.dto.UserDto;
 
 import java.util.Date;
 import java.util.HashMap;

@@ -15,7 +15,7 @@ public class RoleController {
 
     private final RoleService roleService;
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAllRoles() {
         return ResponseEntity.ok(roleService.getAllRoles());
     }
