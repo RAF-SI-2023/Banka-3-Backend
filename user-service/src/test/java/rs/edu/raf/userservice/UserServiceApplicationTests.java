@@ -16,6 +16,7 @@ import rs.edu.raf.userservice.repositories.UserRepository;
 import rs.edu.raf.userservice.services.UserService;
 
 import javax.validation.ValidationException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -266,6 +267,20 @@ class UserServiceApplicationTests {
         assertThrows(NullPointerException.class, () -> userService.getUserByMobileNumber("+3123214254"));
     }
 
+    @Test
+    public void searchTestSuccess() {
+        User user = createDummyUser("pera123@gmail.com");
+        List<User> users = new ArrayList<>();
+        users.add(user);
+
+        given(userRepository.findUsers("p", null, null)).willReturn(Optional.of(users));
+
+        List<UserDto> actual = userService.search("p", null, null);
+        List<UserDto> expected = new ArrayList<>();
+        expected.add(createDummyUserDto());
+
+        assertEquals(expected, actual);
+    }
 
     private CreateUserDto createDummyCreateUserDto(String email) {
         CreateUserDto user = new CreateUserDto();
@@ -309,5 +324,21 @@ class UserServiceApplicationTests {
         user.setIsActive(true);
 
         return user;
+    }
+
+    private UserDto createDummyUserDto() {
+        UserDto userDto = new UserDto();
+        userDto.setUserId(1L);
+        userDto.setFirstName("Pera");
+        userDto.setLastName("Peric");
+        userDto.setJmbg("1234567890123");
+        userDto.setDateOfBirth(123L);
+        userDto.setGender("M");
+        userDto.setPhoneNumber("+3123214254");
+        userDto.setAddress("Mika Mikic 13");
+        userDto.setEmail("pera123@gmail.com");
+        userDto.setIsActive(true);
+
+        return userDto;
     }
 }

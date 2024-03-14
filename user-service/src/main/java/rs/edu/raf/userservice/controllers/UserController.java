@@ -97,4 +97,11 @@ public class UserController {
         return userService.getUserByJmbg(jmbg);
 
     }
+
+    @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> searchUsers(@RequestParam(value = "firstName", required = false) String firstName,
+                                             @RequestParam(value = "lastName", required = false) String lastName,
+                                             @RequestParam(value = "email", required = false) String email) {
+        return ResponseEntity.ok(this.userService.search(firstName, lastName, email));
+    }
 }
