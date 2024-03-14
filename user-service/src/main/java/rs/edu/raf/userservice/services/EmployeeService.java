@@ -11,12 +11,16 @@ import rs.edu.raf.userservice.domains.dto.employee.EmployeeCreateDto;
 import rs.edu.raf.userservice.domains.dto.employee.EmployeeDto;
 import rs.edu.raf.userservice.domains.dto.employee.EmployeeUpdateDto;
 import rs.edu.raf.userservice.domains.exceptions.NotFoundException;
+import rs.edu.raf.userservice.domains.mappers.EmployeeMapper;
+import rs.edu.raf.userservice.domains.mappers.UserMapper;
 import rs.edu.raf.userservice.domains.model.Employee;
 import rs.edu.raf.userservice.domains.model.Permission;
+import rs.edu.raf.userservice.domains.model.User;
 import rs.edu.raf.userservice.repositories.EmployeeRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,34 +38,16 @@ public class EmployeeService implements UserDetailsService {
 
     public EmployeeDto create(EmployeeCreateDto employeeCreateDto) {
 
-        Employee employee = new Employee();
-
-        employee.setFirstName(employeeCreateDto.getFirstName());
-        employee.setLastName(employeeCreateDto.getLastName());
-        employee.setUsername(employeeCreateDto.getUsername());
-        employee.setJmbg(employeeCreateDto.getJmbg());
-        employee.setEmail(employeeCreateDto.getEmail());
-        employee.setDateOfBirth(employeeCreateDto.getDateOfBirth());
-        employee.setGender(employeeCreateDto.getGender());
-        employee.setAddress(employeeCreateDto.getAddress());
-        employee.setDepartment(employeeCreateDto.getDepartment());
-        employee.setPosition(employeeCreateDto.getPosition());
-        employee.setPhoneNumber(employeeCreateDto.getPhoneNumber());
+        Employee employee = EmployeeMapper.INSTANCE.employeeCreateDtoToEmployee(employeeCreateDto);
         employee.setIsActive(true);
-        employee.setRole(employeeCreateDto.getRoles());
-
-//        employee.setPassword(employeeCreateDto.getPassword());
-//        employee.setSaltPassword(passwordEncoder.encode(employee.getPassword()));
-
         employeeRepository.save(employee);
-        return convertEmployeeToDto(employee);
+        return EmployeeMapper.INSTANCE.employeeToEmployeeDto(employee);
     }
 
     public EmployeeDto delete(Long id) {
-        Employee employee = employeeRepository.findById(id).orElseThrow(() -> new NotFoundException("employee not found"));
+        Employee employee = employeeRepository.findById(id).orElseThrow(() -> new NotFoundException("user with" + id + " not found"));
         employee.setIsActive(false);
-        employeeRepository.save(employee);
-        return convertEmployeeToDto(employee);
+        return EmployeeMapper.INSTANCE.employeeToEmployeeDto(employeeRepository.save(employee));
     }
 
     public EmployeeDto update(EmployeeUpdateDto employeeUpdateDto, Long id) {
@@ -71,86 +57,38 @@ public class EmployeeService implements UserDetailsService {
         if (!employee.getIsActive()) {
             return null;
         }
-        employee.setFirstName(employeeUpdateDto.getFirstName());
-        employee.setLastName(employeeUpdateDto.getLastName());
-        employee.setUsername(employeeUpdateDto.getUsername());
-        employee.setJmbg(employeeUpdateDto.getJmbg());
-        employee.setEmail(employeeUpdateDto.getEmail());
-        employee.setDateOfBirth(employeeUpdateDto.getDateOfBirth());
-        employee.setGender(employeeUpdateDto.getGender());
-        employee.setAddress(employeeUpdateDto.getAddress());
-        employee.setDepartment(employeeUpdateDto.getDepartment());
-        employee.setPosition(employeeUpdateDto.getPosition());
-        employee.setPhoneNumber(employeeUpdateDto.getPhoneNumber());//ako nije aktivan ne moze update
-        employee.setRole(employeeUpdateDto.getRoles());
 
-//        if (!employee.getPassword().equals(employeeUpdateDto.getPassword())) {
-//            employee.setPassword(employeeUpdateDto.getPassword());
-//            employee.setSaltPassword(passwordEncoder.encode(employee.getPassword()));
-//        }
-
+        EmployeeMapper.INSTANCE.updateEmployeeFromEmployeeUpdateDto(employee, employeeUpdateDto);
         employeeRepository.save(employee);
-        return convertEmployeeToDto(employee);
+        return EmployeeMapper.INSTANCE.employeeToEmployeeDto(employee);
     }
 
     public List<EmployeeDto> findAll() {
-//        List<EmployeeDto> dtos;
-
-        return employeeRepository.findAll().stream().map(this::convertEmployeeToDto).collect(Collectors.toList());
-        //TODO NE MOGU DA BACIM EXCEPTION
+        return employeeRepository.findAll().stream().map(EmployeeMapper.INSTANCE::employeeToEmployeeDto).collect(Collectors.toList());
     }
     public EmployeeDto findById(Long id){
-        Employee employee = employeeRepository.findById(id).orElseThrow(() -> new NotFoundException("employee with" + id + " not found"));
-        return convertEmployeeToDto(employee);
+        Optional<Employee> employee = employeeRepository.findById(id);
+        return employee.map(EmployeeMapper.INSTANCE::employeeToEmployeeDto).orElseThrow(() -> new NotFoundException("user with" + id + " not found"));
     }
 
     public EmployeeDto findByEmail(String email){
-        Employee employee = employeeRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("employee with" + email + " not found"));
-        return convertEmployeeToDto(employee);
+        Optional<Employee> employee = employeeRepository.findByEmail(email);
+        return employee.map(EmployeeMapper.INSTANCE::employeeToEmployeeDto).orElseThrow(() -> new NotFoundException("user with" + email + " not found"));
     }
 
     public EmployeeDto findByUsername(String username){
-        Employee employee = employeeRepository.findByUsername(username).orElseThrow(() -> new NotFoundException("employee with" + username + " not found"));
-        return convertEmployeeToDto(employee);//TODO MISLIM DA TREBA IZ USERDETAILS DA BUDE OVA METODA
+        Optional<Employee> employee = employeeRepository.findByUsername(username);
+        return employee.map(EmployeeMapper.INSTANCE::employeeToEmployeeDto).orElseThrow(() -> new NotFoundException("user with" + username + " not found"));
     }
 
     public EmployeeDto findByMobileNumber(String mobileNumber){
-        Employee employee = employeeRepository.findByPhoneNumber(mobileNumber).orElseThrow(() -> new NotFoundException("employee with" + mobileNumber + " not found"));
-        return convertEmployeeToDto(employee);
-    }
-
-    public EmployeeDto findByJmbg(String jmbg){
-        Employee employee = employeeRepository.findByJmbg(jmbg).orElseThrow(() -> new NotFoundException("employee with" + jmbg + " not found"));
-        return convertEmployeeToDto(employee);
+        Optional<Employee> employee = employeeRepository.findByPhoneNumber(mobileNumber);
+        return employee.map(EmployeeMapper.INSTANCE::employeeToEmployeeDto).orElseThrow(() -> new NotFoundException("user with" + mobileNumber + " not found"));
     }
 
     public List<EmployeeDto> findByPosition(String position) {
-        return employeeRepository.findByPosition(position).stream().map(this::convertEmployeeToDto).collect(Collectors.toList());
-        //TODO NE MOGU DA BACIM EXCEPTION
+        return employeeRepository.findByPosition(position).stream().map(EmployeeMapper.INSTANCE::employeeToEmployeeDto).collect(Collectors.toList());
     }
-
-    private EmployeeDto convertEmployeeToDto(Employee employee) {
-        EmployeeDto dto = new EmployeeDto();
-
-        dto.setEmployeeId(employee.getEmployeeId());
-        dto.setFirstName(employee.getFirstName());
-        dto.setLastName(employee.getLastName());
-        dto.setUsername(employee.getUsername());
-        dto.setJmbg(employee.getJmbg());
-        dto.setEmail(employee.getEmail());
-        dto.setDateOfBirth(employee.getDateOfBirth());
-        dto.setGender(employee.getGender());
-        dto.setAddress(employee.getAddress());
-        dto.setDepartment(employee.getDepartment());
-        dto.setPosition(employee.getPosition());
-        dto.setPhoneNumber(employee.getPhoneNumber());
-        dto.setIsActive(employee.getIsActive());
-        dto.setRole(employee.getRole());
-        dto.setPermissions(employee.getPermissions());
-
-        return dto;
-    }
-
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

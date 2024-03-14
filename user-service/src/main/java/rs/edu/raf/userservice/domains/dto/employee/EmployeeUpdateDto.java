@@ -3,6 +3,7 @@ package rs.edu.raf.userservice.domains.dto.employee;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import rs.edu.raf.userservice.domains.model.Permission;
 import rs.edu.raf.userservice.domains.model.Role;
 
 import javax.validation.constraints.Email;
@@ -31,8 +32,6 @@ public class EmployeeUpdateDto {
     private String jmbg;
     @NotBlank
     private String address;
-//    @NotBlank
-//    private String password;
     @NotBlank
     private String department;
     @NotBlank
@@ -42,5 +41,6 @@ public class EmployeeUpdateDto {
     @NotNull
     private Boolean isActive;
     @NotNull
-    private Role roles;
+    private Role role;
+    private List<Permission> permissions;
 }
