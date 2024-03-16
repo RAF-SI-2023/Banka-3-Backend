@@ -137,7 +137,7 @@ public class BootstrapData implements CommandLineRunner {
                 .phoneNumber("063111111111")
                 .password(passwordEncoder.encode("user1234"))
                 .isActive(true)
-                .gender('M')
+                .gender("M")
                 .dateOfBirth(1710274123787L)
                 .build();
 
@@ -149,7 +149,7 @@ public class BootstrapData implements CommandLineRunner {
                 .phoneNumber("063111111111")
                 .password(passwordEncoder.encode("user1234"))
                 .isActive(true)
-                .gender('M')
+                .gender("M")
                 .dateOfBirth(1710274123787L)
                 .build();
 

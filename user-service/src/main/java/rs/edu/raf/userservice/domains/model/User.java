@@ -39,7 +39,8 @@ public class User implements Serializable {
     private Long dateOfBirth;
 
     @NotNull(message = "This field cannot be NULL")
-    private Character gender;
+    @Size(max=1)
+    private String gender;
 
     @NotNull(message = "This field cannot be NULL")
     private String phoneNumber;
