@@ -15,6 +15,7 @@ public class CreateUserDto {
     private String jmbg;
     private String dateOfBirth;
     private String gender;
+    private String address;
     private String phoneNumber;
     @Email
     private String email;

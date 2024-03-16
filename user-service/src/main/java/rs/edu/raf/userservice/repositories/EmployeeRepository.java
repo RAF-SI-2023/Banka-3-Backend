@@ -21,10 +21,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
     Optional<Employee> findByPhoneNumber(String phoneNumber);
 
-    Optional<Employee> findByJmbg(String jmbg);
-
-    List<Employee> findByPosition(String position);
-
     @Query("SELECT e FROM Employee e WHERE " +
             "(:firstName IS NULL OR LOWER(e.firstName) LIKE LOWER(CONCAT('%', :firstName, '%'))) AND " +
             "(:lastName IS NULL OR LOWER(e.lastName) LIKE LOWER(CONCAT('%', :lastName, '%'))) AND " +

@@ -19,12 +19,13 @@ import rs.edu.raf.userservice.domains.dto.login.LoginResponse;
 import rs.edu.raf.userservice.services.EmployeeService;
 import rs.edu.raf.userservice.utils.JwtUtil;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@CrossOrigin
+@CrossOrigin("*")
 @RequestMapping("/api/v1/employee")
 public class EmployeeController {
 
@@ -60,6 +61,7 @@ public class EmployeeController {
         return employeeService.create(createEmployeeDto);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(path = "/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<EmployeeDto> findAllEmployees() {
         return employeeService.findAll();
@@ -80,8 +82,7 @@ public class EmployeeController {
         return ResponseEntity.notFound().build();
     }
 
-    @PreAuthorize("hasAuthority('READ_USERS')")
-    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/findById/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> findEmployeeById(@PathVariable Long id) {
         return ResponseEntity.ok(employeeService.findById(id));
     }
@@ -94,16 +95,6 @@ public class EmployeeController {
     @GetMapping(value = "/findByUsername/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
     public EmployeeDto findEmployeeByUsername(@PathVariable String username) {
         return employeeService.findByUsername(username);
-    }
-
-    @GetMapping(value = "/findByMobileNumber/{mobileNumber}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public EmployeeDto findEmployeeByMobileNumber(@PathVariable String mobileNumber) {
-        return employeeService.findByMobileNumber(mobileNumber);
-    }
-
-    @GetMapping(value = "/findByPosition/{position}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<EmployeeDto> findEmployeeByPosition(@PathVariable String position) {
-        return employeeService.findByPosition(position);
     }
 
     @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)

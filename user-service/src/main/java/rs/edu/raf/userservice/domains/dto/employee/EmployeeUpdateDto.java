@@ -9,6 +9,7 @@ import rs.edu.raf.userservice.domains.model.Role;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 @Data
@@ -27,15 +28,12 @@ public class EmployeeUpdateDto {
     @NotNull
     private Long dateOfBirth;
     @NotBlank
+    @Size(max=1)
     private String gender;
     @NotBlank
     private String jmbg;
     @NotBlank
     private String address;
-    @NotBlank
-    private String department;
-    @NotBlank
-    private String position;
     @NotBlank
     private String phoneNumber;
     @NotNull

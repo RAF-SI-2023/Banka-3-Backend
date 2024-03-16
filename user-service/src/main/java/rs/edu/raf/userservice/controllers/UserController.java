@@ -87,17 +87,6 @@ public class UserController {
         return userService.getUserByEmail(email);
     }
 
-    @GetMapping(value = "/findByMobileNum/{mobileNumber}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserDto getUserByMobileNumber(@PathVariable String mobileNumber) {
-        return userService.getUserByMobileNumber(mobileNumber);
-    }
-
-    @GetMapping(value = "/findByJMBG/{jmbg}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserDto getUserByJMBG(@PathVariable String jmbg) {
-        return userService.getUserByJmbg(jmbg);
-
-    }
-
     @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> searchUsers(@RequestParam(value = "firstName", required = false) String firstName,
                                              @RequestParam(value = "lastName", required = false) String lastName,
