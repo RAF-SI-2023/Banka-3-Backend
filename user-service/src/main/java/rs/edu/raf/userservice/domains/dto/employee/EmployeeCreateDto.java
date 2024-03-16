@@ -1,8 +1,5 @@
 package rs.edu.raf.userservice.domains.dto.employee;
 
-//import jakarta.validation.constraints.Email;
-//import jakarta.validation.constraints.NotBlank;
-//import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +9,6 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -31,17 +27,15 @@ public class EmployeeCreateDto {
     @NotNull
     private Long dateOfBirth;
     @NotBlank
-    @Size(max=1)
+    @Size(max = 1)
     private String gender;
     @NotBlank
     private String jmbg;
     @NotBlank
     private String address;
     @NotBlank
+    @Size(min = 9, max = 10)
     private String phoneNumber;
-
-//    private Boolean isActive;
-
     @NotNull
     private Role role;
 }
