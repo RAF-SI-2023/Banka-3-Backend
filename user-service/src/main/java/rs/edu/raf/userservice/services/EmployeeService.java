@@ -96,11 +96,6 @@ public class EmployeeService implements UserDetailsService {
                 "user with" + mobileNumber + " not found"));
     }
 
-    public List<EmployeeDto> findByPosition(String position) {
-        return employeeRepository.findByPosition(position).stream().map(EmployeeMapper.INSTANCE::employeeToEmployeeDto)
-                .collect(Collectors.toList());
-    }
-
     public List<EmployeeDto> search(String firstName, String lastName, String email, String role) {
         RoleName roleNameEnum;
         try {

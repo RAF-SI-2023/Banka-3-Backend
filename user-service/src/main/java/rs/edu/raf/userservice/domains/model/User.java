@@ -17,7 +17,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = {"email"})})
 public class User implements Serializable {
 
     @Id
@@ -39,7 +39,7 @@ public class User implements Serializable {
     private Long dateOfBirth;
 
     @NotNull(message = "This field cannot be NULL")
-    private String gender;
+    private Character gender;
 
     @NotNull(message = "This field cannot be NULL")
     private String phoneNumber;
@@ -53,13 +53,9 @@ public class User implements Serializable {
     @JsonIgnore
     private String password;
 
-    @JsonIgnore
-    private String saltPassword;
-
     @NotNull(message = "This field cannot be NULL")
     private Boolean isActive;
 
-    @ManyToOne()
-    @JoinColumn(name = "roleId")
-    private Role role;
+    private Boolean codeActive = false;
+
 }

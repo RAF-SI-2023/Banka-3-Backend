@@ -29,8 +29,6 @@ public class EmployeeDto implements AuthenticationDetails {
     private String address;
     private String email;
     private Boolean isActive;
-    private String position;
-    private String department;
     private Role role;
     private List<Permission> permissions;
 
