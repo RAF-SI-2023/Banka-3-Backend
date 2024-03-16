@@ -17,7 +17,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = {"email"})})
 public class User implements Serializable {
 
     @Id
