@@ -22,10 +22,10 @@ public class Permission implements GrantedAuthority {
     private Long permissionId;
 
     @Enumerated(EnumType.STRING)
-    @JsonIgnore
     private PermissionName permissionName;
 
     @Override
+    @JsonIgnore
     public String getAuthority() {
         return permissionName.toString();
     }

@@ -131,6 +131,7 @@ public class EmployeeService implements UserDetailsService {
         for (Permission permission : permissions) {
             authorities.add(new SimpleGrantedAuthority(permission.getPermissionName().name()));
         }
+        authorities.add(new SimpleGrantedAuthority(employee.getRole().getRoleName().toString()));
 
         return new org.springframework.security.core.userdetails.User(employee.getEmail(), employee.getPassword(),
                 authorities);
