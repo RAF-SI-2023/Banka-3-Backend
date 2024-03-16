@@ -104,18 +104,6 @@ public class UserService implements UserDetailsService, UserServiceInterface {
     }
 
     @Override
-    public UserDto getUserByMobileNumber(String mobileNumber) {
-        Optional<User> user = userRepository.findByPhoneNumber(mobileNumber);
-        return user.map(UserMapper.INSTANCE::userToUserDto).orElseThrow(() -> new NotFoundException("user with" + mobileNumber + " not found"));
-    }
-
-    @Override
-    public UserDto getUserByJmbg(String jmbg) {
-        Optional<User> user = userRepository.findByJmbg(jmbg);
-        return user.map(UserMapper.INSTANCE::userToUserDto).orElseThrow(() -> new NotFoundException("user with" + jmbg + " not found"));
-    }
-
-    @Override
     public List<UserDto> search(String firstName, String lastName, String email) {
         List<User> users = userRepository.findUsers(firstName, lastName, email)
                 .orElseThrow(() -> new NotFoundException("No users found matching the criteria"));

@@ -20,9 +20,5 @@ public interface UserServiceInterface {
 
     UserDto getUserByEmail(String email);
 
-    UserDto getUserByMobileNumber(String mobileNumber);
-
-    UserDto getUserByJmbg(String jmbg);
-
     List<UserDto> search(String firstName, String lastName, String email);
 }

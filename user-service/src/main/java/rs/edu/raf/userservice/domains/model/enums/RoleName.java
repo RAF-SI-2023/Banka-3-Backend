@@ -1,7 +1,9 @@
 package rs.edu.raf.userservice.domains.model.enums;
 
 public enum RoleName {
-    EMPLOYEE,
-    ADMIN,
-    USER
+    ROLE_ADMIN,
+    ROLE_BANKING_OFFICER,
+    ROLE_CLIENT_ADVISOR,
+    ROLE_LOAN_OFFICIER,
+    ROLE_CREDIT_OFFICER
 }
