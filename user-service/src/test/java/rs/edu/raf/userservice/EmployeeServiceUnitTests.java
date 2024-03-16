@@ -12,6 +12,8 @@ import rs.edu.raf.userservice.domains.dto.employee.EmployeeUpdateDto;
 import rs.edu.raf.userservice.domains.dto.user.CreateUserDto;
 import rs.edu.raf.userservice.domains.dto.user.UpdateUserDto;
 import rs.edu.raf.userservice.domains.dto.user.UserDto;
+import rs.edu.raf.userservice.domains.exceptions.ForbiddenException;
+import rs.edu.raf.userservice.domains.exceptions.NotFoundException;
 import rs.edu.raf.userservice.domains.model.Employee;
 import rs.edu.raf.userservice.domains.model.User;
 import rs.edu.raf.userservice.domains.model.enums.RoleName;
@@ -85,6 +87,17 @@ public class EmployeeServiceUnitTests {
     }
 
     @Test
+    public void updateEmployeeTest_Fail(){
+        EmployeeUpdateDto employeeUpdateDto = createDummyEmployeeUpdateDto();
+        employeeUpdateDto.setIsActive(false);
+        Employee employee = createDummyEmployee("employee123@gmail.com");
+        given(employeeRepository.findById(1L)).willReturn(Optional.of(employee));
+
+
+        assertNull(employeeService.update(employeeUpdateDto, 1L));
+    }
+
+    @Test
     public void findAllEmployeeTest(){
         Employee employee1 = createDummyEmployee("employee1@gmail.com");
         Employee employee2 = createDummyEmployee("employee2@gmail.com");
@@ -132,8 +145,8 @@ public class EmployeeServiceUnitTests {
     public void findByUsernameTest() {
         Employee employee = createDummyEmployee("employee123@gmail.com");
 
-        given(employeeRepository.findByEmail("employee123@gmail.com")).willReturn(Optional.of(employee));
-        EmployeeDto employeeDto = employeeService.findByEmail("employee123@gmail.com");
+        given(employeeRepository.findByUsername("perica")).willReturn(Optional.of(employee));
+        EmployeeDto employeeDto = employeeService.findByUsername("perica");
         assertEquals(employee.getUsername(), employeeDto.getUsername());
         assertEquals(employee.getJmbg(), employeeDto.getJmbg());
     }
@@ -147,41 +160,14 @@ public class EmployeeServiceUnitTests {
     }
 
     @Test
-    public void findByPositionTest() {
-        String position="pos";
-        Employee employee1 = createDummyEmployee("employee1@gmail.com");
-        Employee employee2 = createDummyEmployee("employee2@gmail.com");
-        employee1.setPosition(position);
-        employee2.setPosition(position);
-
-        List<Employee> employees = List.of(employee1, employee2);
-        given(employeeRepository.findByPosition("pos")).willReturn(employees);
-
-        List<EmployeeDto> userDtos = employeeService.findByPosition(position);
-
-        for (EmployeeDto edto : userDtos) {
-            boolean found = false;
-            for (Employee e : employees) {
-                if (edto.getEmail().equals(e.getEmail()) && edto.getJmbg().equals(e.getJmbg())) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                fail("Employee not found");
-            }
-        }
-    }
-
-    @Test
     public void searchTest() {
         Employee employee1 = createDummyEmployee("employee1@gmail.com");
         Employee employee2 = createDummyEmployee("employee2@gmail.com");
 
         List<Employee> employees = List.of(employee1, employee2);
-        given(employeeRepository.findEmployees("Pera","Peric",null, RoleName.EMPLOYEE)).willReturn(Optional.of(employees));
+        given(employeeRepository.findEmployees("Pera","Peric",null, RoleName.ROLE_BANKING_OFFICER)).willReturn(Optional.of(employees));
 
-        List<EmployeeDto> employeeDtos = employeeService.search("Pera","Peric",null,"EMPLOYEE");
+        List<EmployeeDto> employeeDtos = employeeService.search("Pera","Peric",null,"ROLE_BANKING_OFFICER");
 
         for (EmployeeDto edto : employeeDtos) {
             boolean found = false;
@@ -209,6 +195,14 @@ public class EmployeeServiceUnitTests {
         assertEquals(userDetails.getPassword(), employee.getPassword());
     }
 
+    @Test
+    public void loadUserByUsername_Not_Active() {
+        Employee employee = createDummyEmployee("employee@gmail.com");
+        employee.setIsActive(false);
+        given(employeeRepository.findByEmail("employee@gmail.com")).willReturn(Optional.of(employee));
+
+        assertThrows(ForbiddenException.class, ()-> employeeService.loadUserByUsername("employee@gmail.com"));
+    }
 
 
 
@@ -217,6 +211,7 @@ public class EmployeeServiceUnitTests {
         employee.setEmployeeId(1L);
         employee.setFirstName("Pera");
         employee.setLastName("Peric");
+        employee.setUsername("perica");
         employee.setJmbg("1234567890123");
         employee.setDateOfBirth(123L);
         employee.setGender("M");
@@ -225,8 +220,6 @@ public class EmployeeServiceUnitTests {
         employee.setPassword("pera1234");
         employee.setIsActive(true);
         employee.setAddress("Mika Mikic 13");
-        employee.setPosition("Pozicija");
-        employee.setDepartment("Department");
         employee.setPermissions(new ArrayList<>()); //zbog metode loadUserByUsername
 
         return employee;
@@ -242,8 +235,6 @@ public class EmployeeServiceUnitTests {
         employee.setGender("M");
         employee.setJmbg("1234567890123");
         employee.setAddress("Mika Mikic 13");
-        employee.setDepartment("Department");
-        employee.setPosition("Pozicija");
         employee.setPhoneNumber("+3123214254");
         employee.setIsActive(true);
 
@@ -260,8 +251,6 @@ public class EmployeeServiceUnitTests {
         employee.setGender("M");
         employee.setJmbg("1234567890123");
         employee.setAddress("Mika Mikic 13");
-        employee.setDepartment("Department");
-        employee.setPosition("Pozicija");
         employee.setPhoneNumber("+3123214254");
 
         return employee;

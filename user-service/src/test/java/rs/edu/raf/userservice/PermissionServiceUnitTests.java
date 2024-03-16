@@ -28,22 +28,33 @@ public class PermissionServiceUnitTests {
     @Test
     public void testGetAllPermissions() {
 
-        Permission addPermission = new Permission();
-        addPermission.setPermissionName(PermissionName.ADD_USERS);
-        Permission readPermission = new Permission();
-        readPermission.setPermissionName(PermissionName.READ_USERS);
-        Permission createPermission = new Permission();
-        createPermission.setPermissionName(PermissionName.CREATE_USERS);
-        Permission updatePermission = new Permission();
-        updatePermission.setPermissionName(PermissionName.UPDATE_USERS);
-        Permission deletePermission = new Permission();
-        deletePermission.setPermissionName(PermissionName.DELETE_USERS);
+        Permission canBuyPermission = new Permission();
+        canBuyPermission.setPermissionName(PermissionName.CAN_BUY);
+        Permission canWatchPermission = new Permission();
+        canWatchPermission.setPermissionName(PermissionName.CAN_WATCH);
+        Permission canTradePermission = new Permission();
+        canTradePermission.setPermissionName(PermissionName.CAN_TRADE);
+        Permission canSellPermission = new Permission();
+        canSellPermission.setPermissionName(PermissionName.CAN_SELL);
 
-        List<Permission> permissionList = List.of(addPermission, readPermission, createPermission, updatePermission, deletePermission);
+        List<Permission> permissionList = List.of(canBuyPermission, canWatchPermission, canTradePermission, canSellPermission);
 
         given(permissionRepository.findAll()).willReturn(permissionList);
 
         List<Permission> permissions = permissionService.getAllPermissions();
         assertEquals(permissionList, permissions);
     }
+
+    @Test
+    public void testGetPermissionByName(){
+        Permission canBuyPermission = new Permission();
+        canBuyPermission.setPermissionName(PermissionName.CAN_BUY);
+
+        given(permissionRepository.findByPermissionName("CAN_BUY")).willReturn(canBuyPermission);
+
+        Permission permission = permissionService.getPermissionByName("CAN_BUY");
+
+        assertEquals(permission.getPermissionName(), canBuyPermission.getPermissionName());
+    }
+
 }
