@@ -1,5 +1,7 @@
 package rs.edu.raf.userservice.services;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -7,9 +9,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import rs.edu.raf.userservice.domains.dto.employee.EmployeeCreateDto;
 import rs.edu.raf.userservice.domains.dto.employee.EmployeeDto;
 import rs.edu.raf.userservice.domains.dto.employee.EmployeeUpdateDto;
+import rs.edu.raf.userservice.domains.dto.employee.SetPasswordDTO;
 import rs.edu.raf.userservice.domains.exceptions.ForbiddenException;
 import rs.edu.raf.userservice.domains.exceptions.NotFoundException;
 import rs.edu.raf.userservice.domains.mappers.EmployeeMapper;
@@ -17,6 +21,7 @@ import rs.edu.raf.userservice.domains.model.Employee;
 import rs.edu.raf.userservice.domains.model.Permission;
 import rs.edu.raf.userservice.domains.model.enums.RoleName;
 import rs.edu.raf.userservice.repositories.EmployeeRepository;
+import rs.edu.raf.userservice.utils.EmailServiceClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,10 +34,12 @@ public class EmployeeService implements UserDetailsService {
     private final EmployeeRepository employeeRepository;
 
     private final PasswordEncoder passwordEncoder;
+    private final EmailServiceClient emailServiceClient;
 
-    public EmployeeService(EmployeeRepository employeeRepository, PasswordEncoder passwordEncoder) {
+    public EmployeeService(EmployeeRepository employeeRepository, PasswordEncoder passwordEncoder, EmailServiceClient emailServiceClient) {
         this.employeeRepository = employeeRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailServiceClient = emailServiceClient;
     }
 
 
@@ -40,6 +47,7 @@ public class EmployeeService implements UserDetailsService {
 
         Employee employee = EmployeeMapper.INSTANCE.employeeCreateDtoToEmployee(employeeCreateDto);
         employee.setIsActive(true);
+        emailServiceClient.sendEmailToEmailService(employee.getEmail());
         employeeRepository.save(employee);
         return EmployeeMapper.INSTANCE.employeeToEmployeeDto(employee);
     }
@@ -135,5 +143,13 @@ public class EmployeeService implements UserDetailsService {
 
         return new org.springframework.security.core.userdetails.User(employee.getEmail(), employee.getPassword(),
                 authorities);
+    }
+
+    public String setPassword(SetPasswordDTO passwordDTO) {
+        Employee employee = employeeRepository.findByEmail(passwordDTO.getEmail())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        employee.setPassword(passwordEncoder.encode(passwordDTO.getPassword()));
+        employeeRepository.save(employee);
+        return "Successfully updated password for " + passwordDTO.getEmail();
     }
 }
