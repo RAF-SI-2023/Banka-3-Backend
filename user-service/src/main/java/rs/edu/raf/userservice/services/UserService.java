@@ -113,7 +113,8 @@ public class UserService implements UserDetailsService, UserServiceInterface {
 
 
     /**
-     * Metoda koja preko repository update-uje user element i dodaje mu sifru koristecu UPDATE query.
+     * Metoda koja preko repository update-uje user element i dodaje mu sifru koristeci UPDATE query.
+     * Takodje "aktivira" nalog - postavlja isActive na true.
      * Poziva se iz userControllera na putanji /setPassword
      *
      */
@@ -121,6 +122,8 @@ public class UserService implements UserDetailsService, UserServiceInterface {
     public UserDto setUserPassword(SetPasswordDTO user1) {
         Optional<User> optionalUser = userRepository.findByEmail(user1.getEmail());
         User user = optionalUser.get();
+        user.setIsActive(true);
+        userRepository.save(user);
 
         userRepository.setUserPassword(user1.getPassword(), user.getUserId());
 
