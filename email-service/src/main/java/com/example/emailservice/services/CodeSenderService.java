@@ -27,12 +27,20 @@ public class CodeSenderService {
     }
 
 
-
+    /**
+     *
+     * Ova klasa prima, u obliku codeSenderDto, e-mail, kod za aktivaciju, password i confirmPassword iz kontrolera/
+     * Proverava da li se sifre podudaraju, pa zatim trazi da li u bazi postoji taj kod.
+     * Ako postoji proverava da li je proslo 5 minuta (300000 milisek) i ako nije dozvoljava aktivaciju naloga, a u suprotnom salje 401.
+     * Aktivacija naloga podrazumeva hesiranje sifre, a zatim setovanje iste na user service koristeci OkHttp biblioteku.
+     * Nakon zavrsetka posla salje 200 OK response.
+     */
     public ResponseEntity<String> activateUser(CodeSenderDto codeSenderDto){
 
-        CodeSender cs = codeSenderRepository.findCodeSenderByCode(codeSenderDto.getCode()).get();
         if(!codeSenderDto.getPassword().equals(codeSenderDto.getConfirmPassword()))
             return ResponseEntity.status(400).body("Password and confirm password do not match!");
+
+        CodeSender cs = codeSenderRepository.findCodeSenderByCode(codeSenderDto.getCode()).get();
 
         if(cs.getCodeSenderID() == null)
             return ResponseEntity.status(400).body("Code not valid.");
@@ -40,14 +48,14 @@ public class CodeSenderService {
         if(System.currentTimeMillis() - cs.getDate() > 300000)
             return ResponseEntity.status(401).body("5 minutes have passed");
 
-        SetPasswordDto setPass = new SetPasswordDto(codeSenderDto.getEmail(), codeSenderDto.getPassword());
-        setPass.setPassword(passwordEncoder.encode(setPass.getPassword())); //TODO da li ovde raditi pass encoding?
+        SetPasswordDto setPasswordDto = new SetPasswordDto(codeSenderDto.getEmail(), codeSenderDto.getPassword());
+        setPasswordDto.setPassword(passwordEncoder.encode(setPasswordDto.getPassword())); //TODO da li ovde raditi pass encoding?
 
         // Convert DTO to JSON string using Jackson
         ObjectMapper mapper = new ObjectMapper();
         String jsonBody = null;
         try {
-            jsonBody = mapper.writeValueAsString(setPass);
+            jsonBody = mapper.writeValueAsString(setPasswordDto);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(500).body("Password not set.");
