@@ -1,27 +1,26 @@
-package com.example.emailservice.services;
+package com.example.emailservice.service.impl;
 
-import com.example.emailservice.domains.dto.CodeSenderDto;
+import com.example.emailservice.dto.CodeSenderDto;
 import com.example.emailservice.domains.dto.SetPasswordDto;
 import com.example.emailservice.domains.model.CodeSender;
-import com.example.emailservice.repositories.CodeSenderRepository;
+import com.example.emailservice.repository.CodeSenderRepository;
+import com.example.emailservice.service.CodeSenderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.time.LocalTime;
 
 @Service
-public class CodeSenderService {
+public class CodeSenderServiceImpl implements CodeSenderService {
 
     private final CodeSenderRepository codeSenderRepository;
 
     private final PasswordEncoder passwordEncoder;
 
-    public CodeSenderService(CodeSenderRepository codeSenderRepository, PasswordEncoder passwordEncoder) {
+    public CodeSenderServiceImpl(CodeSenderRepository codeSenderRepository, PasswordEncoder passwordEncoder) {
         this.codeSenderRepository = codeSenderRepository;
         this.passwordEncoder = passwordEncoder;
     }

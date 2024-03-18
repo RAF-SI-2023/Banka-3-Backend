@@ -1,9 +1,8 @@
-package com.example.emailservice.controllers;
+package com.example.emailservice.controller;
 
 
-import com.example.emailservice.domains.dto.CodeSenderDto;
-import com.example.emailservice.repositories.CodeSenderRepository;
-import com.example.emailservice.services.CodeSenderService;
+import com.example.emailservice.dto.CodeSenderDto;
+import com.example.emailservice.service.impl.CodeSenderServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -17,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class CodeSenderController {
 
     @Autowired
-    private CodeSenderService codeSenderService;
+    private CodeSenderServiceImpl codeSenderService;
     @PostMapping(value = "/activateUser", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> activateUser(@RequestBody CodeSenderDto codeSenderDto) {

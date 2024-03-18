@@ -1,4 +1,4 @@
-package com.example.emailservice.domains.dto;
+package com.example.emailservice.dto;
 
 
 import lombok.AllArgsConstructor;

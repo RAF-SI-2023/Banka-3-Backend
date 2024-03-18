@@ -1,4 +1,4 @@
-package com.example.emailservice.model;
+package com.example.emailservice.domains.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

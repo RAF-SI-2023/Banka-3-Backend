@@ -2,12 +2,11 @@ package com.example.emailservice.service.impl;
 
 import com.example.emailservice.client.UserServiceClient;
 import com.example.emailservice.dto.SetPasswordDTO;
-import com.example.emailservice.model.EmployeeActivation;
+import com.example.emailservice.domains.model.EmployeeActivation;
 import com.example.emailservice.repository.EmployeeActivationRepository;
 import com.example.emailservice.service.EmailService;
 import com.example.emailservice.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package com.example.emailservice.repositories;
+package com.example.emailservice.repository;
 
 import com.example.emailservice.domains.model.CodeSender;
 import org.springdoc.core.providers.JavadocProvider;
