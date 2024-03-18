@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import rs.edu.raf.userservice.domains.dto.employee.SetPasswordDTO;
 import rs.edu.raf.userservice.domains.dto.user.CreateUserDto;
 import rs.edu.raf.userservice.domains.dto.user.UpdateUserDto;
 import rs.edu.raf.userservice.domains.dto.user.UserDto;
@@ -109,4 +110,22 @@ public class UserService implements UserDetailsService, UserServiceInterface {
                 .orElseThrow(() -> new NotFoundException("No users found matching the criteria"));
         return users.stream().map(UserMapper.INSTANCE::userToUserDto).collect(Collectors.toList());
     }
+
+
+    /**
+     * Metoda koja preko repository update-uje user element i dodaje mu sifru koristecu UPDATE query.
+     * Poziva se iz userControllera na putanji /setPassword
+     *
+     */
+    @Override
+    public UserDto setUserPassword(SetPasswordDTO user1) {
+        Optional<User> optionalUser = userRepository.findByEmail(user1.getEmail());
+        User user = optionalUser.get();
+
+        userRepository.setUserPassword(user1.getPassword(), user.getUserId());
+
+        return optionalUser.map(UserMapper.INSTANCE::userToUserDto).orElseThrow(() -> new NotFoundException("user with" + user.getEmail() + " not found"));
+    }
+
+
 }

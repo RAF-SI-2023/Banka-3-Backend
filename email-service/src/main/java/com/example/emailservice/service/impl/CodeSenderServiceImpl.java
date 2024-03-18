@@ -2,7 +2,8 @@ package com.example.emailservice.service.impl;
 
 import com.example.emailservice.dto.CodeSenderDto;
 import com.example.emailservice.domains.dto.SetPasswordDto;
-import com.example.emailservice.domains.model.CodeSender;
+import com.example.emailservice.dto.SetPasswordDTO;
+import com.example.emailservice.model.CodeSender;
 import com.example.emailservice.repository.CodeSenderRepository;
 import com.example.emailservice.service.CodeSenderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,7 +48,7 @@ public class CodeSenderServiceImpl implements CodeSenderService {
         if(System.currentTimeMillis() - cs.getDate() > 300000)
             return ResponseEntity.status(401).body("5 minutes have passed");
 
-        SetPasswordDto setPasswordDto = new SetPasswordDto(codeSenderDto.getEmail(), codeSenderDto.getPassword());
+        SetPasswordDTO setPasswordDto = new SetPasswordDTO(codeSenderDto.getEmail(), codeSenderDto.getPassword());
         setPasswordDto.setPassword(passwordEncoder.encode(setPasswordDto.getPassword())); //TODO da li ovde raditi pass encoding?
 
         // Convert DTO to JSON string using Jackson

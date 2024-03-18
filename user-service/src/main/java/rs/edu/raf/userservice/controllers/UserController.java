@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
+import rs.edu.raf.userservice.domains.dto.employee.SetPasswordDTO;
 import rs.edu.raf.userservice.domains.dto.user.CreateUserDto;
 import rs.edu.raf.userservice.domains.dto.user.UpdateUserDto;
 import rs.edu.raf.userservice.domains.dto.user.UserDto;
@@ -92,5 +93,16 @@ public class UserController {
                                          @RequestParam(value = "lastName", required = false) String lastName,
                                          @RequestParam(value = "email", required = false) String email) {
         return ResponseEntity.ok(this.userService.search(firstName, lastName, email));
+    }
+    @PostMapping( value = "/setPassword",consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> setPassword(@RequestBody SetPasswordDTO setPasswordDTO){
+
+        UserDto userDto = userService.setUserPassword(setPasswordDTO);
+
+        if(userDto == null)
+            return ResponseEntity.status(500).body("Invalid email adress");
+
+        return ResponseEntity.ok().build();
     }
 }
