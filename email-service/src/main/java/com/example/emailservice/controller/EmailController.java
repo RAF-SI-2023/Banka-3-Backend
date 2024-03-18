@@ -11,12 +11,19 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class EmailController {
     private final EmployeeService employeeService;
+
+    /***
+     *Kada se kreira employee, user service salje request na employeeCreated da bi se napravio
+     *identifier koji vazi 5 minuta i
+     *
+     */
     @GetMapping("employeeCreated")
     public ResponseEntity<Void> employeeCreated(@RequestParam(name = "email") String email) {
         employeeService.employeeCreated(email);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
-    @PostMapping("changePassword/{identifier}")
+
+    @PostMapping("setPassword/{identifier}")
     public ResponseEntity<String> changePassword(@PathVariable(name = "identifier") String identifier,
                                                  @RequestBody String password){
         return ResponseEntity.ok(employeeService.changePassword(identifier, password));
