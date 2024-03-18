@@ -21,7 +21,7 @@ public class CodeSender {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long passwordRestartID;
+    private Long codeSenderID;
 
     @NotNull(message = "This field cannot be NULL")
     @Email
