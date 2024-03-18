@@ -1,5 +1,6 @@
 package rs.edu.raf.userservice.services;
 
+import rs.edu.raf.userservice.domains.dto.employee.SetPasswordDTO;
 import rs.edu.raf.userservice.domains.dto.user.CreateUserDto;
 import rs.edu.raf.userservice.domains.dto.user.UpdateUserDto;
 import rs.edu.raf.userservice.domains.dto.user.UserDto;
@@ -21,4 +22,6 @@ public interface UserServiceInterface {
     UserDto getUserByEmail(String email);
 
     List<UserDto> search(String firstName, String lastName, String email);
+
+    UserDto setUserPassword(SetPasswordDTO user);
 }
