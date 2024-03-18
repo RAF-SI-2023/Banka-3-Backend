@@ -1,6 +1,6 @@
 package com.example.emailservice.repository;
 
-import com.example.emailservice.model.EmployeeActivation;
+import com.example.emailservice.domains.model.EmployeeActivation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
