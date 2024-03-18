@@ -49,7 +49,7 @@ public class CodeSenderServiceImpl implements CodeSenderService {
             return ResponseEntity.status(401).body("5 minutes have passed");
 
         SetPasswordDTO setPasswordDto = new SetPasswordDTO(codeSenderDto.getEmail(), codeSenderDto.getPassword());
-        setPasswordDto.setPassword(passwordEncoder.encode(setPasswordDto.getPassword())); //TODO da li ovde raditi pass encoding?
+        //setPasswordDto.setPassword(passwordEncoder.encode(setPasswordDto.getPassword())); //TODO da li ovde raditi pass encoding?
 
         // Convert DTO to JSON string using Jackson
         ObjectMapper mapper = new ObjectMapper();

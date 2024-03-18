@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import rs.edu.raf.userservice.domains.dto.employee.SetPasswordDTO;
 import rs.edu.raf.userservice.domains.dto.user.CreateUserDto;
@@ -28,10 +29,12 @@ public class UserService implements UserDetailsService, UserServiceInterface {
 
     private final Pattern emailPattern = Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$");
     private final Pattern jmbgPattern = Pattern.compile("[0-9]{13}");
+    private final PasswordEncoder passwordEncoder;
     @Autowired
     private UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository) {
+        this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
     }
 
@@ -125,7 +128,8 @@ public class UserService implements UserDetailsService, UserServiceInterface {
         user.setIsActive(true);
         userRepository.save(user);
 
-        userRepository.setUserPassword(user1.getPassword(), user.getUserId());
+        String password = passwordEncoder.encode(user1.getPassword());
+        userRepository.setUserPassword(password, user.getUserId()); //TODO dodati pattern za sifru
 
         return optionalUser.map(UserMapper.INSTANCE::userToUserDto).orElseThrow(() -> new NotFoundException("user with" + user.getEmail() + " not found"));
     }
