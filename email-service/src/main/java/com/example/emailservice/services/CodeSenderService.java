@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -16,7 +17,16 @@ import java.time.LocalTime;
 @Service
 public class CodeSenderService {
 
-    private CodeSenderRepository codeSenderRepository;
+    private final CodeSenderRepository codeSenderRepository;
+
+    private final PasswordEncoder passwordEncoder;
+
+    public CodeSenderService(CodeSenderRepository codeSenderRepository, PasswordEncoder passwordEncoder) {
+        this.codeSenderRepository = codeSenderRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+
 
     public ResponseEntity<String> activateUser(CodeSenderDto codeSenderDto){
 
@@ -31,6 +41,7 @@ public class CodeSenderService {
             return ResponseEntity.status(401).body("5 minutes have passed");
 
         SetPasswordDto setPass = new SetPasswordDto(codeSenderDto.getEmail(), codeSenderDto.getPassword());
+        setPass.setPassword(passwordEncoder.encode(setPass.getPassword())); //TODO da li ovde raditi pass encoding?
 
         // Convert DTO to JSON string using Jackson
         ObjectMapper mapper = new ObjectMapper();
