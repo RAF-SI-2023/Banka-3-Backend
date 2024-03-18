@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import rs.edu.raf.userservice.domains.dto.user.CreateUserDto;
+import rs.edu.raf.userservice.domains.dto.user.IsUserActiveDto;
 import rs.edu.raf.userservice.domains.dto.user.UpdateUserDto;
 import rs.edu.raf.userservice.domains.dto.user.UserDto;
 import rs.edu.raf.userservice.domains.exceptions.ForbiddenException;
@@ -14,6 +15,7 @@ import rs.edu.raf.userservice.domains.exceptions.NotFoundException;
 import rs.edu.raf.userservice.domains.mappers.UserMapper;
 import rs.edu.raf.userservice.domains.model.User;
 import rs.edu.raf.userservice.repositories.UserRepository;
+import rs.edu.raf.userservice.utils.EmailServiceUserClient;
 
 import javax.validation.ValidationException;
 import java.util.ArrayList;
@@ -27,8 +29,12 @@ public class UserService implements UserDetailsService, UserServiceInterface {
 
     private final Pattern emailPattern = Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$");
     private final Pattern jmbgPattern = Pattern.compile("[0-9]{13}");
+
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private EmailServiceUserClient emailServiceUserClient;
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -108,5 +114,24 @@ public class UserService implements UserDetailsService, UserServiceInterface {
         List<User> users = userRepository.findUsers(firstName, lastName, email)
                 .orElseThrow(() -> new NotFoundException("No users found matching the criteria"));
         return users.stream().map(UserMapper.INSTANCE::userToUserDto).collect(Collectors.toList());
+    }
+
+    /**
+     * Metoda na osnovu email-a korisnika vraca isUserActiveDto koji sadrzi email i codeActive atribut korisnika.
+     * @param email
+     * @return IsUserActiveDto
+     */
+    @Override
+    public IsUserActiveDto isUserActive(String email) {
+        Optional<User> user = userRepository.findByEmail(email);
+        return user.map(UserMapper.INSTANCE::userToIsUserActiveDto).orElseThrow(() -> new NotFoundException("user with" + email + " not found"));
+    }
+
+    /**
+     * Metoda obavestava email service da se zahteva kod za aktivaciju korisnickog naloga sa prosledjenim email-om
+     * @param email
+     */
+    public void requestCodeFromEmailService(String email) {
+        emailServiceUserClient.requestCodeFromEmailService(email);
     }
 }

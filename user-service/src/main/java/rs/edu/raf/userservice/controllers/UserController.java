@@ -10,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import rs.edu.raf.userservice.domains.dto.user.CreateUserDto;
+import rs.edu.raf.userservice.domains.dto.user.IsUserActiveDto;
 import rs.edu.raf.userservice.domains.dto.user.UpdateUserDto;
 import rs.edu.raf.userservice.domains.dto.user.UserDto;
 import rs.edu.raf.userservice.domains.dto.login.LoginRequest;
@@ -92,5 +93,14 @@ public class UserController {
                                          @RequestParam(value = "lastName", required = false) String lastName,
                                          @RequestParam(value = "email", required = false) String email) {
         return ResponseEntity.ok(this.userService.search(firstName, lastName, email));
+    }
+
+    @GetMapping(value = "/isUserActive/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> isUserActive(@PathVariable String email) {
+        IsUserActiveDto isUserActiveDto = userService.isUserActive(email);
+        if(!isUserActiveDto.getCodeActive());
+            userService.requestCodeFromEmailService(email);
+
+        return ResponseEntity.ok(isUserActiveDto);
     }
 }
