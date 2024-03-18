@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import rs.edu.raf.userservice.domains.dto.employee.EmployeeCreateDto;
 import rs.edu.raf.userservice.domains.dto.employee.EmployeeDto;
 import rs.edu.raf.userservice.domains.dto.employee.EmployeeUpdateDto;
+import rs.edu.raf.userservice.domains.dto.employee.SetPasswordDTO;
 import rs.edu.raf.userservice.domains.dto.login.LoginRequest;
 import rs.edu.raf.userservice.domains.dto.login.LoginResponse;
 import rs.edu.raf.userservice.services.EmployeeService;
@@ -84,6 +85,11 @@ public class EmployeeController {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping(value = "/changePassword")
+    public ResponseEntity<String> changePassword(@RequestBody SetPasswordDTO passwordDTO){
+        return ResponseEntity.ok(employeeService.setPassword(passwordDTO));
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
