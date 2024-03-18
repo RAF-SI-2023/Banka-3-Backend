@@ -1,10 +1,8 @@
 package com.example.emailservice.service.impl;
 
-import com.example.emailservice.client.UserServiceClientUser;
 import com.example.emailservice.dto.CodeSenderDto;
-import com.example.emailservice.dto.CodeSenderEntityDto;
-import com.example.emailservice.dto.SetPasswordDTO;
-import com.example.emailservice.model.CodeSender;
+import com.example.emailservice.domains.dto.SetPasswordDto;
+import com.example.emailservice.domains.model.CodeSender;
 import com.example.emailservice.repository.CodeSenderRepository;
 import com.example.emailservice.service.CodeSenderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,12 +17,11 @@ import java.io.IOException;
 public class CodeSenderServiceImpl implements CodeSenderService {
 
     private final CodeSenderRepository codeSenderRepository;
-    private final UserServiceClientUser userServiceClientUser;
+
     private final PasswordEncoder passwordEncoder;
 
-    public CodeSenderServiceImpl(CodeSenderRepository codeSenderRepository, UserServiceClientUser userServiceClientUser, PasswordEncoder passwordEncoder) {
+    public CodeSenderServiceImpl(CodeSenderRepository codeSenderRepository, PasswordEncoder passwordEncoder) {
         this.codeSenderRepository = codeSenderRepository;
-        this.userServiceClientUser = userServiceClientUser;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -37,7 +34,7 @@ public class CodeSenderServiceImpl implements CodeSenderService {
      * Aktivacija naloga podrazumeva hesiranje sifre, a zatim setovanje iste na user service koristeci OkHttp biblioteku.
      * Nakon zavrsetka posla salje 200 OK response.
      */
-    public ResponseEntity<String> activateUserOkHttp(CodeSenderDto codeSenderDto){
+    public ResponseEntity<String> activateUser(CodeSenderDto codeSenderDto){
 
         if(!codeSenderDto.getPassword().equals(codeSenderDto.getConfirmPassword()))
             return ResponseEntity.status(400).body("Password and confirm password do not match!");
@@ -50,8 +47,8 @@ public class CodeSenderServiceImpl implements CodeSenderService {
         if(System.currentTimeMillis() - cs.getDate() > 300000)
             return ResponseEntity.status(401).body("5 minutes have passed");
 
-        SetPasswordDTO setPasswordDto = new SetPasswordDTO(codeSenderDto.getEmail(), codeSenderDto.getPassword());
-        //setPasswordDto.setPassword(passwordEncoder.encode(setPasswordDto.getPassword()));
+        SetPasswordDto setPasswordDto = new SetPasswordDto(codeSenderDto.getEmail(), codeSenderDto.getPassword());
+        setPasswordDto.setPassword(passwordEncoder.encode(setPasswordDto.getPassword())); //TODO da li ovde raditi pass encoding?
 
         // Convert DTO to JSON string using Jackson
         ObjectMapper mapper = new ObjectMapper();
@@ -90,47 +87,4 @@ public class CodeSenderServiceImpl implements CodeSenderService {
 
         return ResponseEntity.ok("Success.");
     }
-
-    /**
-     *
-     * Ova klasa prima, u obliku codeSenderDto, e-mail, kod za aktivaciju, password i confirmPassword iz kontrolera/
-     * Proverava da li se sifre podudaraju, pa zatim trazi da li u bazi postoji taj kod.
-     * Ako postoji proverava da li je proslo 5 minuta (300000 milisek) i ako nije dozvoljava aktivaciju naloga, a u suprotnom salje 401.
-     * Aktivacija naloga podrazumeva setovanje sifre na user service koristeci FeignClient framework.
-     * Nakon zavrsetka posla salje 200 OK response.
-     */
-    public ResponseEntity<String> activateUser(CodeSenderDto codeSenderDto){
-
-
-        if(!codeSenderDto.getPassword().equals(codeSenderDto.getConfirmPassword()))
-            return ResponseEntity.status(400).body("Password and confirm password do not match!");
-
-        CodeSender cs = codeSenderRepository.findCodeSenderByCode(codeSenderDto.getCode()).get();
-
-        if(cs.getCodeSenderID() == null)
-            return ResponseEntity.status(400).body("Code not valid.");
-
-        if(System.currentTimeMillis() - cs.getDate() > 300000)
-            return ResponseEntity.status(401).body("5 minutes have passed");
-
-        SetPasswordDTO setPasswordDto = new SetPasswordDTO(codeSenderDto.getPassword(), codeSenderDto.getEmail());
-        //setPasswordDto.setPassword(passwordEncoder.encode(setPasswordDto.getPassword()));
-        userServiceClientUser.setPassword(setPasswordDto);
-
-        return ResponseEntity.ok("Success.");
-    }
-
-    @Override
-    public CodeSenderEntityDto findCodeSenderByCode(Integer code) {
-
-        CodeSender codeSender = codeSenderRepository.findCodeSenderByCode(code).get();
-        return CodeSenderEntityDto.builder()
-                .email(codeSender.getEmail())
-                .code(codeSender.getCode())
-                .date(codeSender.getDate())
-                .active(codeSender.getActive())
-                .build();
-    }
-
-
 }
