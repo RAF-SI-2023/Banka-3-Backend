@@ -12,4 +12,5 @@ import java.io.Serializable;
 public class ResetPasswordDTO implements Serializable {
     private String newPassword;
     private String email;
+
 }
