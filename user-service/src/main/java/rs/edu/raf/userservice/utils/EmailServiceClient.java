@@ -15,6 +15,6 @@ public interface EmailServiceClient {
     @RequestMapping(method = RequestMethod.GET, value = "employeeCreated")
     ResponseEntity<Void> sendEmailToEmailService(@RequestParam(name = "email") String email);
 
-    @RequestMapping(method = RequestMethod.GET, value = "resetPassword")
+    @RequestMapping(method = RequestMethod.GET, value = "tryPasswordReset ")
     ResponseEntity<Void> sendEmailToEmailServiceForResetPassword(@RequestParam(name = "email") String email);
 }
