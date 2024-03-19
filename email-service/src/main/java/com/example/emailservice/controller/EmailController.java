@@ -29,4 +29,17 @@ public class EmailController {
         String response = employeeService.changePassword(identifier, password);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("resetPassword")
+    public ResponseEntity<Void> tryResetPassword(@RequestParam(name = "email") String email) {
+        employeeService.tryResetPassword(email);
+        return new ResponseEntity<Void>(HttpStatus.OK);
+    }
+
+    @PostMapping("resetPassword/{identifier}")
+    public ResponseEntity<String> resetPassword(@PathVariable(name = "identifier") String identifier,
+                                                 @RequestBody String password){
+        return ResponseEntity.ok(employeeService.resetPassword(identifier, password));
+    }
+
 }

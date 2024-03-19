@@ -1,4 +1,4 @@
-package com.example.emailservice.dto;
+package rs.edu.raf.userservice.domains.dto.employee;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
