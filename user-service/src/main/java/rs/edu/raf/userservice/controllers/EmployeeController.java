@@ -87,6 +87,7 @@ public class EmployeeController {
 
     @PostMapping(value = "/resetPassword")
     public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordDTO resetPasswordDTO){
+
         return ResponseEntity.ok(employeeService.resetPassword(resetPasswordDTO));
     }
 

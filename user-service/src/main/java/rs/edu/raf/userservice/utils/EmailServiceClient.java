@@ -10,12 +10,10 @@ import org.springframework.web.bind.annotation.RequestParam;
  * Salje se get zahtev na putanju sa prosledjenim mejlom kao parametrom
  */
 @FeignClient(value = "emailServiceClient",
-        url = "${emailServiceLocation}/")
+        url = "${emailServiceLocation}/employee/")
 public interface EmailServiceClient {
-    @RequestMapping(method = RequestMethod.GET, value = "employee/employeeCreated")
+    @RequestMapping(method = RequestMethod.GET, value = "employeeCreated")
     ResponseEntity<Void> sendEmailToEmailService(@RequestParam(name = "email") String email);
-
-    @RequestMapping(method = RequestMethod.GET, value = "user/tryChangePassword ")
 
     @RequestMapping(method = RequestMethod.GET, value = "resetPassword")
     ResponseEntity<Void> sendEmailToEmailServiceForResetPassword(@RequestParam(name = "email") String email);
