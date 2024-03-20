@@ -20,6 +20,7 @@ public class CodeSenderController {
     @PostMapping(value = "/activateUser", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> activateUser(@RequestBody CodeSenderDto codeSenderDto) {
-        return codeSenderService.activateUser(codeSenderDto);
+        return codeSenderService.activateUser(codeSenderDto); //feignClient
+        //return codeSenderService.activateUserOkHttp(codeSenderDto); //OkHttp
     }
 }
