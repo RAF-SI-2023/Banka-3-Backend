@@ -124,7 +124,7 @@ public class UserService implements UserDetailsService, UserServiceInterface {
     @Override
     public UserDto setUserPassword(SetPasswordDTO user1) {
         Optional<User> optionalUser = userRepository.findByEmail(user1.getEmail());
-        System.out.println(user1);
+        System.out.println(optionalUser + " " + user1);
 
         User user = optionalUser.get();
         user.setIsActive(true);

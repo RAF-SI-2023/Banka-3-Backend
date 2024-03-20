@@ -10,8 +10,6 @@ import com.example.emailservice.service.EmailService;
 import com.example.emailservice.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 
-import org.apache.coyote.Response;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -55,7 +53,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public String changePassword(String identifier, String password) {
         EmployeeActivation employeeActivation =
                 employeeActivationRepository.findEmployeeActivationByIdentifierAndActivationPossibleIsTrue(identifier)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Activation is not possible"));
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Activation is not possible"));
         SetPasswordDTO passwordDTO = new SetPasswordDTO(password, employeeActivation.getEmail());
         ResponseEntity<String> response = userServiceClient.setPassword(passwordDTO);
         if(!response.getStatusCode().is2xxSuccessful()){
