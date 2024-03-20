@@ -95,12 +95,19 @@ public class UserController {
         return ResponseEntity.ok(this.userService.search(firstName, lastName, email));
     }
 
-    @GetMapping(value = "/isUserActive/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> isUserActive(@PathVariable String email) {
+    /**
+     * Metoda kao parametar putanje prima korisnicki email i vraca IsUserActiveDto (koji sadrzi email i codeActive polja)
+     * kao JSON. U slucaju da je korisnicki nalog neaktivan, servis obavestava email-servis da je potrebno kreirati aktivacioni
+     * kod za isti i poslati ga na korisnikov email.
+     * @param email
+     * @return IsUserActiveDto
+     */
+    @GetMapping(path = "/isUserActive/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public IsUserActiveDto isUserActive(@PathVariable String email) {
         IsUserActiveDto isUserActiveDto = userService.isUserActive(email);
-        if(!isUserActiveDto.getCodeActive());
+        if(isUserActiveDto.getCodeActive() == null || !isUserActiveDto.getCodeActive())
             userService.requestCodeFromEmailService(email);
 
-        return ResponseEntity.ok(isUserActiveDto);
+        return isUserActiveDto;
     }
 }

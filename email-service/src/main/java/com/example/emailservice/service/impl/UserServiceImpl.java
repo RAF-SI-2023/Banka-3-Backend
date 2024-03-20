@@ -17,12 +17,20 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private CodeSenderRepository codeSenderRepository;
 
+    private Random randomCodeGenerator = new Random();
+
+    /**
+     * Metoda na osnovu prosledjenog email-a kreira CodeSender objekat koji sadrzi nasumicno generisan aktivacioni kod
+     * i cuva ga u bazi, a vraca ActivationCodeDto koji sadrzi sam kod.
+     * @param email
+     * @return ActivationCodeDto
+     */
     @Override
     public ActivationCodeDto generateActivationCode(String email) {
 
         CodeSender codeSender = new CodeSender();
         codeSender.setEmail(email);
-        codeSender.setCode(new Random().nextInt(100000, 999999));
+        codeSender.setCode(randomCodeGenerator.nextInt(100000, 999999));
         codeSender.setCreateTime(new Date().getTime());
         codeSenderRepository.save(codeSender);
 

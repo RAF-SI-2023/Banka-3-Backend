@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
 import rs.edu.raf.userservice.domains.dto.user.CreateUserDto;
+import rs.edu.raf.userservice.domains.dto.user.IsUserActiveDto;
 import rs.edu.raf.userservice.domains.dto.user.UpdateUserDto;
 import rs.edu.raf.userservice.domains.dto.user.UserDto;
 import rs.edu.raf.userservice.domains.exceptions.ForbiddenException;
@@ -219,6 +220,23 @@ class UserServiceApplicationTests {
     }
 
     @Test
+    public void getIsUserActive() {
+        User user = createDummyUser("pera123@gmail.com");
+
+        given(userRepository.findByEmail("pera123@gmail.com")).willReturn(Optional.of(user));
+
+        UserDto userDto = userService.getUserByEmail("pera123@gmail.com");
+
+        assertEquals(user.getEmail(), userDto.getEmail());
+        assertEquals(user.getJmbg(), userDto.getJmbg());
+
+        IsUserActiveDto isUserActiveDto = createDummyIsUserActiveDto("pera123@gmail.com");
+
+        assertEquals(user.getEmail(), isUserActiveDto.getEmail());
+        assertEquals(user.getCodeActive(), isUserActiveDto.getCodeActive());
+    }
+
+    @Test
     public void getUserByEmailTest_Fail() {
 
         given(userRepository.findByEmail("pera123@gmail.com")).willReturn(null);
@@ -267,6 +285,7 @@ class UserServiceApplicationTests {
         user.setEmail(email);
         user.setPassword("pera1234");
         user.setIsActive(true);
+        user.setCodeActive(false);
 
         return user;
     }
@@ -299,5 +318,13 @@ class UserServiceApplicationTests {
         userDto.setIsActive(true);
 
         return userDto;
+    }
+
+    private IsUserActiveDto createDummyIsUserActiveDto(String email) {
+        IsUserActiveDto isUserActiveDto = new IsUserActiveDto();
+        isUserActiveDto.setEmail(email);
+        isUserActiveDto.setCodeActive(false);
+
+        return isUserActiveDto;
     }
 }
