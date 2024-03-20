@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "userServiceClient", url = "${userServiceLocation}/user")
+@FeignClient(name = "userServiceClientUser", url = "${userServiceLocation}/user")
 public interface UserServiceClientUser {
 
     @PostMapping(value = "/setPassword",
