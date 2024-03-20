@@ -32,5 +32,5 @@ public class EmployeeActivation implements Serializable {
     @NotNull(message = "This field cannot be NULL")
     private LocalDateTime activationTimestamp;
     @Column(name = "activation_possible")
-    private boolean activationPossible = false;
+    private boolean activationPossible = true;
 }
