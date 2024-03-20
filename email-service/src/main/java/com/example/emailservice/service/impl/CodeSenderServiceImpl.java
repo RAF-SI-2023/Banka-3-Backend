@@ -2,6 +2,7 @@ package com.example.emailservice.service.impl;
 
 import com.example.emailservice.client.UserServiceClientUser;
 import com.example.emailservice.dto.CodeSenderDto;
+import com.example.emailservice.dto.CodeSenderEntityDto;
 import com.example.emailservice.dto.SetPasswordDTO;
 import com.example.emailservice.model.CodeSender;
 import com.example.emailservice.repository.CodeSenderRepository;
@@ -19,7 +20,6 @@ public class CodeSenderServiceImpl implements CodeSenderService {
 
     private final CodeSenderRepository codeSenderRepository;
     private final UserServiceClientUser userServiceClientUser;
-
     private final PasswordEncoder passwordEncoder;
 
     public CodeSenderServiceImpl(CodeSenderRepository codeSenderRepository, UserServiceClientUser userServiceClientUser, PasswordEncoder passwordEncoder) {
@@ -101,6 +101,7 @@ public class CodeSenderServiceImpl implements CodeSenderService {
      */
     public ResponseEntity<String> activateUser(CodeSenderDto codeSenderDto){
 
+
         if(!codeSenderDto.getPassword().equals(codeSenderDto.getConfirmPassword()))
             return ResponseEntity.status(400).body("Password and confirm password do not match!");
 
@@ -112,12 +113,23 @@ public class CodeSenderServiceImpl implements CodeSenderService {
         if(System.currentTimeMillis() - cs.getDate() > 300000)
             return ResponseEntity.status(401).body("5 minutes have passed");
 
-        SetPasswordDTO setPasswordDto = new SetPasswordDTO(codeSenderDto.getEmail(), codeSenderDto.getPassword());
+        SetPasswordDTO setPasswordDto = new SetPasswordDTO(codeSenderDto.getPassword(), codeSenderDto.getEmail());
         //setPasswordDto.setPassword(passwordEncoder.encode(setPasswordDto.getPassword()));
-
-        userServiceClientUser.setUserPassword(setPasswordDto);
+        userServiceClientUser.setPassword(setPasswordDto);
 
         return ResponseEntity.ok("Success.");
+    }
+
+    @Override
+    public CodeSenderEntityDto findCodeSenderByCode(Integer code) {
+
+        CodeSender codeSender = codeSenderRepository.findCodeSenderByCode(code).get();
+        return CodeSenderEntityDto.builder()
+                .email(codeSender.getEmail())
+                .code(codeSender.getCode())
+                .date(codeSender.getDate())
+                .active(codeSender.getActive())
+                .build();
     }
 
 

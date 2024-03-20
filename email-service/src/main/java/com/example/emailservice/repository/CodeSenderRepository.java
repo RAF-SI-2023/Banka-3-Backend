@@ -5,12 +5,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Optional;
 
 @Repository
 public interface CodeSenderRepository extends JpaRepository<CodeSender, Long> {
 
-    @Query("SELECT c from CodeSender c where c.code = :code")
-    Optional<CodeSender> findCodeSenderByCode(@Param("code") Integer code);
+    Optional<CodeSender> findCodeSenderByCode(@RequestParam("code") Integer code);
+
 }

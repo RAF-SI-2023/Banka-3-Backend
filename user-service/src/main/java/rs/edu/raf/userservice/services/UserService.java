@@ -124,14 +124,16 @@ public class UserService implements UserDetailsService, UserServiceInterface {
     @Override
     public UserDto setUserPassword(SetPasswordDTO user1) {
         Optional<User> optionalUser = userRepository.findByEmail(user1.getEmail());
+        System.out.println(user1);
+
         User user = optionalUser.get();
         user.setIsActive(true);
+        String password = passwordEncoder.encode(user1.getPassword());
+        user.setPassword(password);
         userRepository.save(user);
 
-        String password = passwordEncoder.encode(user1.getPassword());
-        userRepository.setUserPassword(password, user.getUserId()); //TODO dodati pattern za sifru
-
         return optionalUser.map(UserMapper.INSTANCE::userToUserDto).orElseThrow(() -> new NotFoundException("user with" + user.getEmail() + " not found"));
+
     }
 
 

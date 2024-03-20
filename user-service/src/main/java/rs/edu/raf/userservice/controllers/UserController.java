@@ -94,15 +94,15 @@ public class UserController {
                                          @RequestParam(value = "email", required = false) String email) {
         return ResponseEntity.ok(this.userService.search(firstName, lastName, email));
     }
-    @PostMapping( value = "/setPassword",consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/setPassword", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> setPassword(@RequestBody SetPasswordDTO setPasswordDTO){
 
         UserDto userDto = userService.setUserPassword(setPasswordDTO);
 
-        if(userDto == null)
+        if(userDto == null) {
             return ResponseEntity.status(500).body("Invalid email adress");
+        }
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body("Password set");
     }
 }

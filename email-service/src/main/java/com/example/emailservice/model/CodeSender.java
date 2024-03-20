@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -28,7 +29,7 @@ public class CodeSender {
     private String email;
 
     @NotNull(message = "This field cannot be NULL")
-    @Size(max = 6, message = "The input is too long") //
+    @Max(value = 999999, message = "The input is too long") //
     private Integer code;
 
     @NotNull(message = "This field cannot be NULL")

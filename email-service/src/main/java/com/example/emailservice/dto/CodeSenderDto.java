@@ -1,15 +1,13 @@
 package com.example.emailservice.dto;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
 @RequiredArgsConstructor
 @ToString
+@Builder
 public class CodeSenderDto {
 
     private String email;
