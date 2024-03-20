@@ -1,5 +1,6 @@
 package com.example.emailservice.controller;
 
+import com.example.emailservice.model.PasswordReset;
 import com.example.emailservice.service.EmailService;
 import com.example.emailservice.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +24,9 @@ public class UserEmailController {
     private EmailService emailService;
 
     @GetMapping("resetPassword")
-    public String resetPassword() {
-        return  "Radi";
+    public String resetPassword(@RequestParam (name = "email") String email) {
+        PasswordReset passwordReset = userService.generateResetCode(email);
+        return  passwordReset.getEmail() + passwordReset.getIdentifier();
     }
 
 
