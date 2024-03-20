@@ -6,9 +6,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.server.ResponseStatusException;
 import rs.edu.raf.userservice.domains.dto.employee.EmployeeCreateDto;
 import rs.edu.raf.userservice.domains.dto.employee.EmployeeDto;
 import rs.edu.raf.userservice.domains.dto.employee.EmployeeUpdateDto;
+import rs.edu.raf.userservice.domains.dto.employee.SetPasswordDTO;
 import rs.edu.raf.userservice.domains.dto.user.CreateUserDto;
 import rs.edu.raf.userservice.domains.dto.user.UpdateUserDto;
 import rs.edu.raf.userservice.domains.dto.user.UserDto;
@@ -27,6 +30,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class EmployeeServiceUnitTests {
@@ -34,6 +38,8 @@ public class EmployeeServiceUnitTests {
     @Mock
     private EmployeeRepository employeeRepository;
 
+    @Mock
+    private PasswordEncoder passwordEncoder;
     @InjectMocks
     private EmployeeService employeeService;
 
@@ -203,7 +209,25 @@ public class EmployeeServiceUnitTests {
 
         assertThrows(ForbiddenException.class, ()-> employeeService.loadUserByUsername("employee@gmail.com"));
     }
+    @Test
+    public void setPasswordTest() {
+        Employee employee = createDummyEmployee("employee@gmail.com");
+        SetPasswordDTO setPasswordDTO = new SetPasswordDTO("pera1234", "employee@gmail.com");
 
+        given(employeeRepository.findByEmail("employee@gmail.com")).willReturn(Optional.of(employee));
+        given(employeeRepository.save(employee)).willReturn(employee);
+        when(passwordEncoder.encode("pera1234")).thenReturn("encodedPassword");
+
+        //TODO DA VIDIMO DAL TREBA DA SE PROVERI DAL JE PASSWORD ISTI
+        String result = employeeService.setPassword(setPasswordDTO);
+        assertEquals("Successfully updated password for " + setPasswordDTO.getEmail(), result);
+    }
+    @Test
+    public void setPasswordTest_Fail() {
+        given(employeeRepository.findByEmail("email@gmail.com")).willReturn(Optional.empty());
+        SetPasswordDTO setPasswordDTO = new SetPasswordDTO("pera1234", "email@gmail.com");
+        assertThrows(ResponseStatusException.class, () -> employeeService.setPassword(setPasswordDTO));
+    }
 
 
     private Employee createDummyEmployee(String email) {
