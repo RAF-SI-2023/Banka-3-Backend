@@ -32,4 +32,9 @@ public class CodeSenderController {
     public CodeSenderEntityDto findCodeSenderByCode(@PathVariable("code") Integer code){
         return codeSenderService.findCodeSenderByCode(code);
     }
+    
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = "/findByCode/{code}")
+    public CodeSenderEntityDto findCodeSenderByCode(@PathVariable("code") Integer code){
+        return codeSenderService.findCodeSenderByCode(code);
+    }
 }
