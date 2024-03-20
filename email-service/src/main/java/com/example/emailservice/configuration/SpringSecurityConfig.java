@@ -30,8 +30,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .disable()
                 .authorizeRequests()
                 .antMatchers("/api/v1/employee/**").permitAll()
-                .antMatchers("/api/v1/user/**").permitAll()
+                .antMatchers("/api/**").permitAll()
                 .antMatchers("/user/**").permitAll()
+
                 .antMatchers("/h2-console/**").permitAll()
                 .antMatchers("/swagger-ui/**").permitAll()
                 .antMatchers("/v3/**").permitAll()

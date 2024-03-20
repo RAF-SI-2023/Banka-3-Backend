@@ -36,3 +36,8 @@ import java.time.LocalDateTime;
         private boolean activationPossible = false;
     }
 
+    @NotNull(message = "This field cannot be NULL")
+    private LocalDateTime activationTimestamp;
+    @Column(name = "activation_possible")
+    private boolean activationPossible = true;
+}
