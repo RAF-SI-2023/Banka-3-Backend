@@ -24,8 +24,7 @@ public class UserEmailController {
 
     @GetMapping("resetPassword")
     public String resetPassword() {
-//        employeeService.employeeCreated(email);
-        return  "radi";
+        return  "Radi";
     }
 
 
