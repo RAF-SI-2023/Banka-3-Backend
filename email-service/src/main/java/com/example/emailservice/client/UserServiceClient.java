@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
  *Kada se pozove metoda i posalje objekat, u pozadini se izvrsava http zahtev
  *
  */
+
+
 @FeignClient(name = "userServiceClient", url = "${userServiceLocation}/employee")
 public interface UserServiceClient {
 
@@ -19,8 +21,11 @@ public interface UserServiceClient {
             consumes = "application/json")
     ResponseEntity<String> setPassword(@RequestBody SetPasswordDTO passwordDTO);
 
+    /**
+     * Meotda za komunikaciju sa user servisom, prosledjuje se mejl i nova sifra zaposlenog*/
     @PostMapping(value = "/resetPassword",
-            produces = "application/json",
-            consumes = "application/json")
+            produces = "application/json"
+            , consumes = "application/json"
+    )
     ResponseEntity<String> resetPassword(@RequestBody ResetPasswordDTO passwordDTO);
 }

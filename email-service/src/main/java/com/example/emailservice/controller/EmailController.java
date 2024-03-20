@@ -30,12 +30,20 @@ public class EmailController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Kada zaposleni zatrazi promenu sifre, svoj email salje na ovu rutu
+     * Meotda salje mejl na prosledjeni email iz request parametra
+     * */
     @GetMapping("resetPassword")
     public ResponseEntity<Void> tryResetPassword(@RequestParam(name = "email") String email) {
         employeeService.tryResetPassword(email);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
+    /**
+     * Ova metoda se poziva nakon sto je zaposleni prosledio novu sifru, proverava validnost
+     * identifera i menja sifru
+     * */
     @PostMapping("resetPassword/{identifier}")
     public ResponseEntity<String> resetPassword(@PathVariable(name = "identifier") String identifier,
                                                  @RequestBody String password){

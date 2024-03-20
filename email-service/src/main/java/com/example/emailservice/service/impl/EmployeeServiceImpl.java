@@ -71,6 +71,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         return "Password successfully changed";
     }
 
+    /**
+     * Metoda pravi identifer i proverava da li zaposleni postoji u bazi da bi poslala email
+     * i postavlja tajmer na pet minuta, ako prodje pet minuta, link nije vlaidan
+     * */
     @Override
     public void tryResetPassword(String email) {
         String identifier = UUID.randomUUID().toString();
@@ -83,7 +87,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeActivationRepository.save(employeeActivation);
         emailService.sendSimpleMessage(email, getReturnValue(), getLocation(identifier));
         new Thread(()->{
-            long activationAvailableTime = 5*60*60;
+            long activationAvailableTime = 300000;
             try {
                 sleep(activationAvailableTime);
                 employeeActivation.setActivationPossible(false);
@@ -94,6 +98,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         }).start();
     }
 
+
+    /**
+     * Salje se nova sifra user servisu ukoliko je identifer dobar*/
     @Override
     public String resetPassword(String identifier, String newPassword) {
         EmployeeActivation employeeActivation =
@@ -119,6 +126,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     protected String getLocation(String identifier){
-        return "http://localhost:8081/employee/resetPassword/" + identifier;
+        return "http://localhost:8081/api/v1/employee/resetPassword/" + identifier;
     }
 }
