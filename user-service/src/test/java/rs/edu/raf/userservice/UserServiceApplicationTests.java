@@ -95,6 +95,7 @@ class UserServiceApplicationTests {
         user.setAddress(null);
         user.setPassword(null);
         user.setUserId(null);
+        user.setCodeActive(null);
         given(userRepository.save(user)).willReturn(user);
 
         UserDto userDto = userService.addUser(createUserDto);
@@ -223,48 +224,6 @@ class UserServiceApplicationTests {
         given(userRepository.findByEmail("pera123@gmail.com")).willReturn(null);
 
         assertThrows(NullPointerException.class, () -> userService.getUserByEmail("pera123@gmail.com"));
-    }
-
-    @Test
-    public void getUserByPhoneNumberTest() {
-        User user = createDummyUser("pera123@gmail.com");
-
-        given(userRepository.findByPhoneNumber("+3123214254")).willReturn(Optional.of(user));
-
-        UserDto userDto = userService.getUserByMobileNumber("+3123214254");
-
-        assertEquals(user.getPhoneNumber(), userDto.getPhoneNumber());
-        assertEquals(user.getEmail(), userDto.getEmail());
-        assertEquals(user.getJmbg(), userDto.getJmbg());
-    }
-
-    @Test
-    public void getUserByPhoneNumberTest_Fail() {
-
-        given(userRepository.findByPhoneNumber("+3123214254")).willReturn(null);
-
-        assertThrows(NullPointerException.class, () -> userService.getUserByMobileNumber("+3123214254"));
-    }
-
-    @Test
-    public void getUserByJMBGTest() {
-        User user = createDummyUser("pera123@gmail.com");
-
-        given(userRepository.findByJmbg("1234567890123")).willReturn(Optional.of(user));
-
-        UserDto userDto = userService.getUserByJmbg("1234567890123");
-
-        assertEquals(user.getPhoneNumber(), userDto.getPhoneNumber());
-        assertEquals(user.getEmail(), userDto.getEmail());
-        assertEquals(user.getJmbg(), userDto.getJmbg());
-    }
-
-    @Test
-    public void getUserByJMBG_Fail() {
-
-        given(userRepository.findByPhoneNumber("+3123214254")).willReturn(null);
-
-        assertThrows(NullPointerException.class, () -> userService.getUserByMobileNumber("+3123214254"));
     }
 
     @Test

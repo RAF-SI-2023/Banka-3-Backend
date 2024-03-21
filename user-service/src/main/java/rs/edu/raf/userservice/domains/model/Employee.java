@@ -15,6 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Entity
 @ToString
+@Table(name = "employees", uniqueConstraints = {@UniqueConstraint(columnNames = {"email"})})
 public class Employee implements Serializable {
 
     @Id
@@ -40,6 +41,7 @@ public class Employee implements Serializable {
     private Long dateOfBirth;
 
     @NotNull(message = "This field cannot be NULL")
+    @Size(max=1)
     private String gender;
 
     @NotNull(message = "This field cannot be NULL")
@@ -56,12 +58,6 @@ public class Employee implements Serializable {
 
     private String address;
 
-    private String position;
-
-    private String department;
-
-    private String saltPassword;
-
     @ManyToOne()
     @JoinColumn(name = "roleId")
     private Role role;
@@ -73,4 +69,13 @@ public class Employee implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "permissionId")
     )
     private List<Permission> permissions;
+
+    @OneToMany
+    private List<Account> accounts;
+
+    @OneToMany
+    private List<ForeignAccount> foreignAccounts;
+
+    @OneToMany
+    private List<CompanyAccount> companyAccounts;
 }

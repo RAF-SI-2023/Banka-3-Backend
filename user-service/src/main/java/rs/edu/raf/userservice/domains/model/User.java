@@ -11,13 +11,15 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = {"email"})})
 public class User implements Serializable {
 
     @Id
@@ -39,6 +41,7 @@ public class User implements Serializable {
     private Long dateOfBirth;
 
     @NotNull(message = "This field cannot be NULL")
+    @Size(max=1)
     private String gender;
 
     @NotNull(message = "This field cannot be NULL")
@@ -53,13 +56,14 @@ public class User implements Serializable {
     @JsonIgnore
     private String password;
 
-    @JsonIgnore
-    private String saltPassword;
-
     @NotNull(message = "This field cannot be NULL")
-    private Boolean isActive;
+    private boolean isActive;
 
-    @ManyToOne()
-    @JoinColumn(name = "roleId")
-    private Role role;
+    @OneToMany
+    private List<Account> accounts = new ArrayList<>();
+
+    @OneToMany
+    private List<ForeignAccount> foreignAccounts = new ArrayList<>();
+
+    private Boolean codeActive = false;
 }

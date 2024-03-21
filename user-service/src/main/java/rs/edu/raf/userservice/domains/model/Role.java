@@ -2,6 +2,7 @@ package rs.edu.raf.userservice.domains.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
 import rs.edu.raf.userservice.domains.model.enums.RoleName;
 
 import javax.persistence.*;
@@ -15,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Entity
 @ToString
-public class Role implements Serializable {
+public class Role implements Serializable, GrantedAuthority {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,8 +29,9 @@ public class Role implements Serializable {
     @OneToMany(mappedBy = "role")
     private List<Employee> employees = new ArrayList<>();
 
+    @Override
     @JsonIgnore
-    @OneToMany(mappedBy = "role")
-    private List<User> users = new ArrayList<>();
-
+    public String getAuthority() {
+        return roleName.toString();
+    }
 }

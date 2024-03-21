@@ -3,10 +3,7 @@ package rs.edu.raf.userservice.controllers;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import rs.edu.raf.userservice.services.PermissionService;
 
 @RestController
@@ -20,5 +17,10 @@ public class PermissionController {
     @GetMapping(path = "/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAllRoles() {
         return ResponseEntity.ok(permissionService.getAllPermissions());
+    }
+
+    @GetMapping(value = "/findByPermissionName", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> findByRoleName(@RequestParam(value = "permissionName") String permissionName){
+        return ResponseEntity.ok(this.permissionService.getPermissionByName(permissionName));
     }
 }

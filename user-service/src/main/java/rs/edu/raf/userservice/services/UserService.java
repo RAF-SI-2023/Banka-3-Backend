@@ -2,18 +2,20 @@ package rs.edu.raf.userservice.services;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import rs.edu.raf.userservice.domains.dto.user.CreateUserDto;
-import rs.edu.raf.userservice.domains.dto.user.UpdateUserDto;
-import rs.edu.raf.userservice.domains.dto.user.UserDto;
+import org.springframework.web.server.ResponseStatusException;
+import rs.edu.raf.userservice.domains.dto.user.*;
 import rs.edu.raf.userservice.domains.exceptions.ForbiddenException;
 import rs.edu.raf.userservice.domains.exceptions.NotFoundException;
 import rs.edu.raf.userservice.domains.mappers.UserMapper;
 import rs.edu.raf.userservice.domains.model.User;
 import rs.edu.raf.userservice.repositories.UserRepository;
+import rs.edu.raf.userservice.utils.EmailServiceClient;
 
 import javax.validation.ValidationException;
 import java.util.ArrayList;
@@ -30,8 +32,15 @@ public class UserService implements UserDetailsService, UserServiceInterface {
     @Autowired
     private UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
+    @Autowired
+    private EmailServiceClient emailServiceClient;
+
+    private final PasswordEncoder passwordEncoder;
+
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+
     }
 
     @Override
@@ -43,7 +52,7 @@ public class UserService implements UserDetailsService, UserServiceInterface {
         if (user == null) {
             throw new UsernameNotFoundException("User with the email: " + email + " not found");
         }
-        if (!user.getIsActive()) {
+        if (!user.isActive()) {
             throw new ForbiddenException("user not active");
         }
 
@@ -66,7 +75,7 @@ public class UserService implements UserDetailsService, UserServiceInterface {
             throw new ValidationException("invalid jmbg");
         }
         User user = UserMapper.INSTANCE.userCreateDtoToUser(createUserDto);
-        user.setIsActive(true);
+        user.setActive(false);
         userRepository.save(user);
         return UserMapper.INSTANCE.userToUserDto(user);
     }
@@ -75,7 +84,7 @@ public class UserService implements UserDetailsService, UserServiceInterface {
     public UserDto deactivateUser(Long id) {
         User newUser = userRepository.findById(id).orElseThrow(() -> new NotFoundException("user with" + id + " not " +
                 "found"));
-        newUser.setIsActive(false);
+        newUser.setActive(false);
         return UserMapper.INSTANCE.userToUserDto(userRepository.save(newUser));
     }
 
@@ -104,21 +113,37 @@ public class UserService implements UserDetailsService, UserServiceInterface {
     }
 
     @Override
-    public UserDto getUserByMobileNumber(String mobileNumber) {
-        Optional<User> user = userRepository.findByPhoneNumber(mobileNumber);
-        return user.map(UserMapper.INSTANCE::userToUserDto).orElseThrow(() -> new NotFoundException("user with" + mobileNumber + " not found"));
-    }
-
-    @Override
-    public UserDto getUserByJmbg(String jmbg) {
-        Optional<User> user = userRepository.findByJmbg(jmbg);
-        return user.map(UserMapper.INSTANCE::userToUserDto).orElseThrow(() -> new NotFoundException("user with" + jmbg + " not found"));
-    }
-
-    @Override
     public List<UserDto> search(String firstName, String lastName, String email) {
         List<User> users = userRepository.findUsers(firstName, lastName, email)
                 .orElseThrow(() -> new NotFoundException("No users found matching the criteria"));
         return users.stream().map(UserMapper.INSTANCE::userToUserDto).collect(Collectors.toList());
+    }
+
+    public IsUserActiveDTO isUserActive(String email){
+        User user = userRepository.findByEmail(email).orElseThrow(()-> new NotFoundException("User with" + email + " not found"));
+
+        if (!user.isActive()) {
+            emailServiceClient.sendUserActivationEmailToEmailService(email);
+        }
+        return UserMapper.INSTANCE.userToIsAUserActiveDTO(user);
+    }
+
+    public String setPassword(SetPasswordDTO setPasswordDTO){
+        User user = userRepository.findByEmail(setPasswordDTO.getEmail())
+                                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        user.setPassword(passwordEncoder.encode(setPasswordDTO.getPassword()));
+        user.setActive(true);
+        userRepository.save(user);
+        return "Successfully updated password for " + setPasswordDTO.getEmail();
+    }
+
+    public String resetPassword(ResetUserPasswordDTO resetPasswordDTO) {
+        System.out.println(resetPasswordDTO.getEmail());
+        User user = userRepository.findByEmail(resetPasswordDTO.getEmail())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        user.setPassword(passwordEncoder.encode(resetPasswordDTO.getPassword()));
+        userRepository.save(user);
+        return "Successfully reseted password for " + resetPasswordDTO.getEmail();
     }
 }

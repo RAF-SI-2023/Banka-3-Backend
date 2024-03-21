@@ -13,7 +13,6 @@ import rs.edu.raf.userservice.services.RoleService;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,18 +27,39 @@ public class RoleServiceUnitTests {
     @Test
     public void testGetAllRoles() {
 
-        Role userRole = new Role();
-        userRole.setRoleName(RoleName.USER);
         Role adminRole = new Role();
-        userRole.setRoleName(RoleName.ADMIN);
-        Role employeeRole = new Role();
-        userRole.setRoleName(RoleName.EMPLOYEE);
+        adminRole.setRoleName(RoleName.ROLE_ADMIN);
 
-        List<Role> rolesList = List.of(userRole, adminRole, employeeRole);
+        Role loanOfficierRole = new Role();
+        loanOfficierRole.setRoleName(RoleName.ROLE_LOAN_OFFICIER);
+
+        Role clientAdvisorRole = new Role();
+        clientAdvisorRole.setRoleName(RoleName.ROLE_CLIENT_ADVISOR);
+
+        Role bankingOfficerRole = new Role();
+        bankingOfficerRole.setRoleName(RoleName.ROLE_BANKING_OFFICER);
+
+        Role creditOfficierRole = new Role();
+        creditOfficierRole.setRoleName(RoleName.ROLE_CREDIT_OFFICER);
+
+        List<Role> rolesList = List.of(adminRole, loanOfficierRole, clientAdvisorRole, bankingOfficerRole, creditOfficierRole);
 
         given(roleRepository.findAll()).willReturn(rolesList);
 
         List<Role> roles = roleService.getAllRoles();
         assertEquals(rolesList, roles);
     }
+
+    @Test
+    public void testGetRoleByName(){
+        Role adminRole = new Role();
+        adminRole.setRoleName(RoleName.ROLE_ADMIN);
+
+        given(roleRepository.findByRoleName("ROLE_ADMIN")).willReturn(adminRole);
+
+        Role role = roleService.getRoleByName("ROLE_ADMIN");
+
+        assertEquals(adminRole.getRoleName(), role.getRoleName());
+    }
+
 }
