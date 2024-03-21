@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import rs.edu.raf.userservice.domains.dto.employee.SetPasswordDTO;
 import rs.edu.raf.userservice.domains.dto.user.CreateUserDto;
 import rs.edu.raf.userservice.domains.dto.user.ResetUserPasswordDTO;
 import rs.edu.raf.userservice.domains.dto.user.UpdateUserDto;
@@ -130,5 +131,28 @@ public class UserService implements UserDetailsService, UserServiceInterface {
         user.setPassword(passwordEncoder.encode(resetPasswordDTO.getPassword()));
         userRepository.save(user);
         return "Successfully reseted password for " + resetPasswordDTO.getEmail();
+    }
+
+    //TODO promena imena u resetUserPassword^
+
+    /**
+     * Metoda koja preko repository update-uje user element i dodaje mu sifru koristeci UPDATE query.
+     * Takodje "aktivira" nalog - postavlja isActive na true.
+     * Poziva se iz userControllera na putanji /setPassword
+     *
+     */
+    @Override
+    public UserDto setUserPassword(SetPasswordDTO user1) {
+        Optional<User> optionalUser = userRepository.findByEmail(user1.getEmail());
+        System.out.println(optionalUser + " " + user1);
+
+        User user = optionalUser.get();
+        user.setIsActive(true);
+        String password = passwordEncoder.encode(user1.getPassword());
+        user.setPassword(password);
+        userRepository.save(user);
+
+        return optionalUser.map(UserMapper.INSTANCE::userToUserDto).orElseThrow(() -> new NotFoundException("user with" + user.getEmail() + " not found"));
+
     }
 }

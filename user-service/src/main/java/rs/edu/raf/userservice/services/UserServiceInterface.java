@@ -23,5 +23,5 @@ public interface UserServiceInterface {
 
     List<UserDto> search(String firstName, String lastName, String email);
 
-    UserDto setUserPassword(SetPasswordDTO user);
+    UserDto setUserPassword(SetPasswordDTO user1);
 }
