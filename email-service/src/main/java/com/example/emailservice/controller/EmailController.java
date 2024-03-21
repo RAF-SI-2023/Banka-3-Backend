@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 @CrossOrigin
 @RestController
-@RequestMapping(value = "api/v1/employee")
+@RequestMapping(value = "/api/v1/employee")
 @RequiredArgsConstructor
 public class EmailController {
     private final EmployeeService employeeService;

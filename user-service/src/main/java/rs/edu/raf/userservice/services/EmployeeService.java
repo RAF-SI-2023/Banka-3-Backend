@@ -152,7 +152,6 @@ public class EmployeeService implements UserDetailsService {
     public String resetPassword(ResetPasswordDTO resetPasswordDTO) {
         Employee employee = employeeRepository.findByEmail(resetPasswordDTO.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-        emailServiceClient.sendEmailToEmailServiceForResetPassword(employee.getEmail());
         employee.setPassword(passwordEncoder.encode(resetPasswordDTO.getNewPassword()));
         employeeRepository.save(employee);
         return "Successfully reseted password for " + resetPasswordDTO.getEmail();

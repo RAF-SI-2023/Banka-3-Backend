@@ -136,11 +136,27 @@ public class BootstrapData implements CommandLineRunner {
                 .permissions(List.of(canTrade,canBuy))
                 .build();
 
+        Employee employee4 = Employee.builder()
+                .firstName("Strahinja")
+                .lastName("Ljubicic")
+                .username("nino")
+                .email("sljubicic7120rn@raf.rs")
+                .jmbg("1111111111")
+                .phoneNumber("063555555")
+                .password(passwordEncoder.encode("admin1234"))
+                .isActive(true)
+                .gender("M")
+                .dateOfBirth(1710274123787L)
+                .role(creditOfficer)
+                .permissions(List.of(canTrade,canBuy))
+                .build();
+
         List<Employee> employees = new ArrayList<>();
         employees.add(employee1);
         employees.add(employee2);
         employees.add(employee3);
         employees.add(employeeJ);
+        employees.add(employee4);
 
         employeeRepository.saveAll(employees);
 

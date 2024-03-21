@@ -126,7 +126,6 @@ public class UserService implements UserDetailsService, UserServiceInterface {
         System.out.println(resetPasswordDTO.getEmail());
         User user = userRepository.findByEmail(resetPasswordDTO.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-        emailServiceClient.sendEmailToEmailServiceForResetPassword(user.getEmail());
         user.setPassword(passwordEncoder.encode(resetPasswordDTO.getPassword()));
         userRepository.save(user);
         return "Successfully reseted password for " + resetPasswordDTO.getEmail();

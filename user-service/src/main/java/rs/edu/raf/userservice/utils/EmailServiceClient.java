@@ -14,7 +14,4 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface EmailServiceClient {
     @RequestMapping(method = RequestMethod.GET, value = "employee/employeeCreated")
     ResponseEntity<Void> sendEmailToEmailService(@RequestParam(name = "email") String email);
-
-    @RequestMapping(method = RequestMethod.GET, value = "resetPassword")
-    ResponseEntity<Void> sendEmailToEmailServiceForResetPassword(@RequestParam(name = "email") String email);
 }
