@@ -26,7 +26,7 @@ public class UserEmailController {
         return  passwordReset.getEmail() + passwordReset.getIdentifier();
     }
 
-    @PostMapping("tryChangePassword/{identifier}")
+    @PostMapping("tryPasswordReset/{identifier}")
     public String tryChangePassword(@PathVariable(name = "identifier") String identifier,
     @RequestBody String password) {
         return userService.tryChangePassword(identifier, password);
