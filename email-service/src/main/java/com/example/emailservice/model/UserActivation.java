@@ -11,7 +11,7 @@ import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "is_active_user", indexes = @Index( columnList = "email, identifier, code, date, active"))
+@Table(name = "user_activation", indexes = @Index( columnList = "email, code, timeCreated, activationPossible"))
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,11 +24,7 @@ public class UserActivation {
     @Email
     private String email;
 
-    @Column(name = "identifier")
-    @NotNull(message = "This field cannot be NULL")
-    @Size(max = 32, message = "The input is too long")
-    private String identifier;
-
+    @Size(min = 6, max = 6)
     @NotNull(message = "This field cannot be NULL")
     Integer code;
 

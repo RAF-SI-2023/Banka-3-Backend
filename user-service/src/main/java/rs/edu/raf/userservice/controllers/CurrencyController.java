@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rs.edu.raf.userservice.domains.model.Currency;
+import rs.edu.raf.userservice.domains.model.enums.CurrencyName;
 import rs.edu.raf.userservice.repositories.CurrencyRepository;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public class CurrencyController {
 
     @GetMapping("/findByMark?mark={mark}")
     public Currency findByName(String mark) {
-        return currencyRepository.findByName(mark).orElse(null);
+        CurrencyName currencyName = CurrencyName.valueOf(mark);
+        return currencyRepository.findByName(currencyName).orElse(null);
     }
 }

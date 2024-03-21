@@ -119,6 +119,7 @@ public class EmployeeService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
+        System.out.println(email);
         Employee employee = this.employeeRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(
                 "employee not found"));
 

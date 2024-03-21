@@ -10,5 +10,5 @@ import java.util.Optional;
 @Repository
 public interface ForeignAccountRepository extends JpaRepository<ForeignAccount, Long>{
     Optional<ForeignAccount> findByAccountNumber(String accountNumber);
-    Optional<List<ForeignAccount>> findByUserId(Long userId);
+    Optional<List<ForeignAccount>> findByUser_UserId(Long userId);
 }

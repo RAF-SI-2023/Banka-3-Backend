@@ -4,16 +4,12 @@ import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import rs.edu.raf.userservice.domains.model.Employee;
-import rs.edu.raf.userservice.domains.model.Permission;
-import rs.edu.raf.userservice.domains.model.Role;
-import rs.edu.raf.userservice.domains.model.User;
+import rs.edu.raf.userservice.domains.model.*;
+import rs.edu.raf.userservice.domains.model.enums.AccountTypeName;
+import rs.edu.raf.userservice.domains.model.enums.CurrencyName;
 import rs.edu.raf.userservice.domains.model.enums.PermissionName;
 import rs.edu.raf.userservice.domains.model.enums.RoleName;
-import rs.edu.raf.userservice.repositories.EmployeeRepository;
-import rs.edu.raf.userservice.repositories.PermissionRepository;
-import rs.edu.raf.userservice.repositories.RoleRepository;
-import rs.edu.raf.userservice.repositories.UserRepository;
+import rs.edu.raf.userservice.repositories.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +20,8 @@ import java.util.List;
 public class BootstrapData implements CommandLineRunner {
 
     private final UserRepository userRepository;
+    private final CurrencyRepository currencyRepository;
+    private final AccountTypeRepository accountTypeRepository;
 
     private final PasswordEncoder passwordEncoder;
     private final EmployeeRepository employeeRepository;
@@ -189,6 +187,17 @@ public class BootstrapData implements CommandLineRunner {
         users.add(user2);
 
         userRepository.saveAll(users);
+        Currency currency = Currency.builder()
+                .mark("RSD")
+                .name(CurrencyName.DINAR)
+                .build();
+        AccountType accountType = AccountType.builder()
+                        .accountType(AccountTypeName.ZA_MLADE)
+                        .monthlyFee(0)
+                        .build();
+        accountTypeRepository.save(accountType);
+
+        currencyRepository.save(currency);
 
     }
 }

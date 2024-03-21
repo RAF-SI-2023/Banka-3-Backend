@@ -41,7 +41,6 @@ public class UserServiceImpl implements UserService {
         Integer code = new Random().nextInt(100000,999999);
         UserActivation userActivation = new UserActivation(null,
                                                     email,
-                                                    identifier,
                                                     code,
                                                     LocalDateTime.now(),
                                         true);

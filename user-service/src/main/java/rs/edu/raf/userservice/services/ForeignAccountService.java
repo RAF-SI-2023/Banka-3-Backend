@@ -5,6 +5,8 @@ import rs.edu.raf.userservice.domains.dto.foreignaccount.ForeignAccountCreateDto
 import rs.edu.raf.userservice.domains.dto.foreignaccount.ForeignAccountDto;
 import rs.edu.raf.userservice.domains.mappers.ForeignAccountMapper;
 import rs.edu.raf.userservice.domains.model.ForeignAccount;
+import rs.edu.raf.userservice.domains.model.enums.AccountTypeName;
+import rs.edu.raf.userservice.domains.model.enums.CurrencyName;
 import rs.edu.raf.userservice.repositories.*;
 
 import java.util.List;
@@ -48,10 +50,13 @@ public class ForeignAccountService {
         ForeignAccount foreignAccount = new ForeignAccount();
         foreignAccount.setAccountNumber(randAccNumber());
         foreignAccount.setBalance(facd.getBalance());
-        foreignAccount.setCurrency(currencyRepository.findByName(facd.getCurrency()).orElseThrow());
-        foreignAccount.setAccountType(accountTypeRepository.findByName(facd.getAccountType()).orElseThrow());
-        foreignAccount.setUser(userRepository.getReferenceById(userId));
-        foreignAccount.setEmployee(employeeRepository.getReferenceById(facd.getEmployeeId()));
+        CurrencyName currencyName = CurrencyName.valueOf(facd.getCurrency());
+        foreignAccount.setCurrency(currencyRepository.findByName(currencyName).orElseThrow());
+        AccountTypeName accountTypeName = AccountTypeName.valueOf(facd.getAccountType());
+        foreignAccount.setAccountType(accountTypeRepository.findByAccountType(accountTypeName).orElseThrow());
+
+        foreignAccount.setUser(userRepository.findById(facd.getUserId()).orElseThrow());
+        foreignAccount.setEmployee(employeeRepository.findById(facd.getEmployeeId()).orElseThrow());
         foreignAccount.setActive(true);
         foreignAccount.setCreationDate(System.currentTimeMillis());
         foreignAccount.setExpireDate(System.currentTimeMillis() + 31556952000L);
@@ -69,7 +74,7 @@ public class ForeignAccountService {
     }
 
     public List<ForeignAccountDto> findByUser(Long userId){
-        List<ForeignAccount> accs = foreignAccountRepository.findByUserId(userId).orElseThrow();
+        List<ForeignAccount> accs = foreignAccountRepository.findByUser_UserId(userId).orElseThrow();
         return accs.stream().map(ForeignAccountMapper.INSTANCE::foreignAccountToForeignAccountDto).collect(Collectors.toList());
     }
 
