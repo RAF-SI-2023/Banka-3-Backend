@@ -29,6 +29,7 @@ public class EmailController {
         String response = employeeService.changePassword(identifier, password);
         return ResponseEntity.ok(response);
     }
+
     /**
      * Kada zaposleni zatrazi promenu sifre, svoj email salje na ovu rutu
      * Meotda salje mejl na prosledjeni email iz request parametra

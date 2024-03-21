@@ -20,7 +20,6 @@ public interface UserServiceClient {
             consumes = "application/json")
     ResponseEntity<String> setPassword(@RequestBody SetPasswordDTO passwordDTO);
 
-
     /**
      * Meotda za komunikaciju sa user servisom, prosledjuje se mejl i nova sifra zaposlenog*/
     @PostMapping(value = "/resetPassword",

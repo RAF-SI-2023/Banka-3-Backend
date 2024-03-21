@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
+
+
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
 
