@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
         passwordResetRepository.save(passwordReset);
         emailService.sendSimpleMessage(email, "Reset password request", "localhost:4200/resetPassword/" + identifier);
         new Thread(()->{
-            long activationAvailableTime = 5*60*60;
+            long activationAvailableTime = 5*60*1000;
             try {
                 sleep(activationAvailableTime);
                 passwordReset.setActive(false);
@@ -59,16 +59,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public String tryChangePassword(String identifier, String password) {
         PasswordReset passwordReset =  passwordResetRepository.findByIdentifier(identifier).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request not found."));
-        if(passwordReset.getActive()){
-            ResetUserPasswordDTO resetPasswordDTO = new ResetUserPasswordDTO(password, passwordReset.getEmail());
-            ResponseEntity<String> response = userServiceClient.resetUserPassword(resetPasswordDTO);
-            if(!response.getStatusCode().is2xxSuccessful()){
-                throw new ResponseStatusException(response.getStatusCode(), response.getBody());
-            }
-            return "Password successfully changed";
-        }else{
-            return "Password reset failed";
-        }
+        return identifier;
+//        if(passwordReset.getActive()){
+//            ResetUserPasswordDTO resetPasswordDTO = new ResetUserPasswordDTO(password, passwordReset.getEmail());
+//            ResponseEntity<String> response = userServiceClient.resetUserPassword(resetPasswordDTO);
+//            if(!response.getStatusCode().is2xxSuccessful()){
+//                throw new ResponseStatusException(response.getStatusCode(), response.getBody());
+//            }
+//            return "Password successfully changed";
+//        }else{
+//            return "Password reset failed";
+//        }
     }
 
 }
