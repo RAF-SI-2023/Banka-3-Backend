@@ -153,22 +153,9 @@ public class BootstrapData implements CommandLineRunner {
                 .dateOfBirth(1710274123787L)
                 .build();
 
-        User user3 = User.builder()
-                .firstName("Marko")
-                .lastName("Markovic")
-                .email("marko@user.com")
-                .jmbg("1111111111")
-                .phoneNumber("063111111111")
-                .password(passwordEncoder.encode("user1234"))
-                .isActive(false)
-                .gender("M")
-                .dateOfBirth(1710274123787L)
-                .build();
-
         List<User> users = new ArrayList<>();
         users.add(user1);
         users.add(user2);
-        users.add(user3);
 
         userRepository.saveAll(users);
 
