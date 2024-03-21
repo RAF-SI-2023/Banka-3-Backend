@@ -74,6 +74,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         return "Employee account activation";
     }
     protected String getText(String identifier){
-        return "http://localhost:8081/employee/setPassword/" + identifier;
+        return "http://localhost:4200/change-password/" + identifier;
     }
 }
