@@ -114,42 +114,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         return "Password successfully changed";
     }
 
-    @Override
-    public void tryResetPassword(String email) {
-        String identifier = UUID.randomUUID().toString();
-        EmployeeActivation employeeActivation = new EmployeeActivation(
-                null,
-                email,
-                identifier,
-                LocalDateTime.now(),
-                true);
-        employeeActivationRepository.save(employeeActivation);
-        emailService.sendSimpleMessage(email, getReturnValue(), getLocation(identifier));
-        new Thread(()->{
-            long activationAvailableTime = 5*60*60;
-            try {
-                sleep(activationAvailableTime);
-                employeeActivation.setActivationPossible(false);
-                employeeActivationRepository.save(employeeActivation);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }).start();
-    }
-
-    @Override
-    public String resetPassword(String identifier, String newPassword) {
-        EmployeeActivation employeeActivation =
-                employeeActivationRepository.findEmployeeActivationByIdentifierAndActivationPossibleIsTrue(identifier)
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Activation is not possible"));
-        ResetPasswordDTO resetPasswordDTO = new ResetPasswordDTO(newPassword, employeeActivation.getEmail());
-        ResponseEntity<String> response = userServiceClient.resetPassword(resetPasswordDTO);
-        if(!response.getStatusCode().is2xxSuccessful()){
-            throw new ResponseStatusException(response.getStatusCode(), response.getBody());
-        }
-        return "Password successfully changed";
-    }
-
     protected String getSubject(){
         return "Employee account activation";
     }
@@ -165,11 +129,4 @@ public class EmployeeServiceImpl implements EmployeeService {
         return "http://localhost:8081/api/v1/employee/resetPassword/" + identifier;
     }
 
-    protected String getReturnValue(){
-        return "Employee asked for password change";
-    }
-
-    protected String getLocation(String identifier){
-        return "http://localhost:8081/employee/resetPassword/" + identifier;
-    }
 }
