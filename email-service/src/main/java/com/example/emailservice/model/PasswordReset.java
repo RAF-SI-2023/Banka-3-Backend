@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
-@Table(name = "password_reset", indexes = @Index(name = "identifierIx", columnList = "email, identifier, date, active"))
+@Table(name = "password_reset", indexes = @Index(name = "identifierII", columnList = "email, identifier, date, active"))
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
