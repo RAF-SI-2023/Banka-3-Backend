@@ -3,8 +3,8 @@ package com.example.emailservice.service.impl;
 import com.example.emailservice.client.UserServiceClient;
 import com.example.emailservice.dto.ResetUserPasswordDTO;
 import com.example.emailservice.dto.TryPasswordResetDTO;
-import com.example.emailservice.model.UserActivation;
 import com.example.emailservice.model.PasswordReset;
+import com.example.emailservice.model.UserActivation;
 import com.example.emailservice.repository.PasswordResetRepository;
 import com.example.emailservice.repository.UserActivationRepository;
 import com.example.emailservice.service.EmailService;
@@ -36,16 +36,15 @@ public class UserServiceImpl implements UserService {
     private UserActivationRepository userActivationRepository;
 
     @Override
-    public void  userActivation(String email){
-        String identifier = UUID.randomUUID().toString();
-        Integer code = new Random().nextInt(100000,999999);
+    public void userActivation(String email) {
+        Integer code = new Random().nextInt(100000, 999999);
         UserActivation userActivation = new UserActivation(null,
                                                     email,
                                                     code,
                                                     LocalDateTime.now(),
                                         true);
         userActivationRepository.save(userActivation);
-        emailService.sendSimpleMessage(email, getSubject(), getText(identifier, code));
+        emailService.sendSimpleMessage(email, getSubject(), getText(code));
         new Thread(() -> {
             long activationAvailableTime = 5 * 60 * 1000;
             try {
@@ -59,9 +58,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String setUserPassword(String identifier, String password) {
+    public String setUserPassword(int code, String password) {
         Optional<UserActivation> userActivationOptional =
-                userActivationRepository.findUserActivationByIdentifierAndActivationPossibleIsTrue(identifier);
+                userActivationRepository.findUserActivationByCodeAndActivationPossibleIsTrue(code);
         UserActivation userActivation = userActivationOptional.get();
 
 
@@ -114,8 +113,8 @@ public class UserServiceImpl implements UserService {
         return "User account activation";
     }
 
-    protected String getText(String identifier, Integer code) {
-        return "Code for acite:" + code + "\nhttp://localhost:4200/change-password/" + identifier;
+    protected String getText(Integer code) {
+        return "Your activation code is:" + code;
     }
 
 }

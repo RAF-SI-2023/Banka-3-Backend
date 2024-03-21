@@ -24,7 +24,6 @@ public class UserActivation {
     @Email
     private String email;
 
-    @Size(min = 6, max = 6)
     @NotNull(message = "This field cannot be NULL")
     Integer code;
 

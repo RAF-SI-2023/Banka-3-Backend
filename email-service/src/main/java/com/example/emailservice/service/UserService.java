@@ -7,7 +7,7 @@ public interface UserService {
 
     void  userActivation(String email);
 
-    String setUserPassword(String identifier, String password);
+    String setUserPassword(int code, String password);
     PasswordReset generateResetCode(String email);
 
     String tryChangePassword(TryPasswordResetDTO tryPasswordResetDTO);

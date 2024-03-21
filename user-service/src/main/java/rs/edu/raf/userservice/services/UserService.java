@@ -120,8 +120,11 @@ public class UserService implements UserDetailsService, UserServiceInterface {
     }
 
     public IsUserActiveDTO isUserActive(String email){
-        User user = userRepository.findByEmail(email)
-                                    .orElseThrow(()-> new NotFoundException("User with" + email + " not found"));
+        User user = userRepository.findByEmail(email).orElseThrow(()-> new NotFoundException("User with" + email + " not found"));
+
+        if (!user.getIsActive()) {
+            emailServiceClient.sendUserActivationEmailToEmailService(email);
+        }
         return UserMapper.INSTANCE.userToIsAUserActiveDTO(user);
     }
 

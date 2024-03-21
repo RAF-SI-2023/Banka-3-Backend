@@ -66,5 +66,4 @@ public class User implements Serializable {
     private List<ForeignAccount> foreignAccounts = new ArrayList<>();
 
     private Boolean codeActive = false;
-
 }

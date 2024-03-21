@@ -9,5 +9,5 @@ import java.util.Optional;
 @Repository
 public interface UserActivationRepository extends JpaRepository<UserActivation,Long>{
 
-    Optional<UserActivation> findUserActivationByIdentifierAndActivationPossibleIsTrue(String identidier);
+    Optional<UserActivation> findUserActivationByCodeAndActivationPossibleIsTrue(int code);
 }
