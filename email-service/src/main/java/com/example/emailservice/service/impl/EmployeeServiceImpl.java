@@ -126,6 +126,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     protected String getLocation(String identifier){
-        return "http://localhost:8081/api/v1/employee/resetPassword/" + identifier;
+        return "http://localhost:4200/password-confirm/" + identifier;
     }
 }
