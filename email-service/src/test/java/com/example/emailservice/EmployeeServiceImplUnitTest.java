@@ -31,7 +31,6 @@ public class EmployeeServiceImplUnitTest {
     private UserServiceClient userServiceClient;
     @Mock
     private EmailService emailService;
-
     @InjectMocks
     private EmployeeServiceImpl employeeServiceImpl;
 
@@ -93,4 +92,69 @@ public class EmployeeServiceImplUnitTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
         assertEquals("Password change failed", exception.getReason());
     }
+
+    /**Testovi za resetovanje rasvorda zaposlenog*/
+
+    /**Test koji treba da prodje, testira slanje mejla na prosledjeni email zaposlenog*/
+    @Test
+    public void tryResetPasswordTest() throws InterruptedException {
+        String email = "test@example.com";
+        String identifier = UUID.randomUUID().toString();
+        EmployeeActivation employeeActivation = new EmployeeActivation(null, email, identifier, LocalDateTime.now(), true);
+        when(employeeActivationRepository.save(any())).thenReturn(employeeActivation);
+        doNothing().when(emailService).sendSimpleMessage(anyString(), anyString(), anyString());
+
+        employeeServiceImpl.tryResetPassword(email);
+
+        verify(employeeActivationRepository, times(1)).save(any());
+        verify(emailService, times(1)).sendSimpleMessage(eq(email), anyString(), anyString());
+        Thread.sleep(400);
+        verify(employeeActivationRepository, times(1)).save(any());
+    }
+
+    /**Test koji treba da prodje, testira prosledjivanje nove sifre zaposlenog*/
+    @Test
+    public void resetPasswordTest() {
+        String identifier = UUID.randomUUID().toString();
+        String newPassword = "newPassword";
+        String email = "test@example.com";
+        EmployeeActivation employeeActivation = new EmployeeActivation(null, email, identifier, LocalDateTime.now(), true);
+        when(employeeActivationRepository.findEmployeeActivationByIdentifierAndActivationPossibleIsTrue(identifier)).thenReturn(Optional.of(employeeActivation));
+        ResponseEntity<String> successfulResponse = ResponseEntity.ok("Password successfully updated");
+        when(userServiceClient.resetPassword(any())).thenReturn(successfulResponse);
+
+        String result = employeeServiceImpl.resetPassword(identifier, newPassword);
+
+        assertEquals("Password successfully changed", result);
+    }
+
+    /**Test koji failuje na exception, jer je zaposleni prosledio neodgovarajuci identifikator,
+     * proveravamo da li se dobija dobar exception*/
+    @Test
+    public void resetPasswordTest_Fail_InvalidIdentifier() {
+        String invalidIdentifier = "invalidIdentifier";
+        String newPassword = "newPassword";
+        given(employeeActivationRepository.findEmployeeActivationByIdentifierAndActivationPossibleIsTrue(invalidIdentifier))
+                .willReturn(Optional.empty());
+        assertThrows(ResponseStatusException.class, () -> employeeServiceImpl.resetPassword(invalidIdentifier, newPassword));
+    }
+
+    /**Test koji proverava ponasanje kada user service vrati neuspesan odgovor*/
+    @Test
+    public void resetPasswordTest_Fail_UserServiceError() {
+        String identifier = UUID.randomUUID().toString();
+        String newPassword = "newPassword";
+        String email = "test@example.com";
+        EmployeeActivation employeeActivation = new EmployeeActivation(null, email, identifier, LocalDateTime.now(), true);
+        when(employeeActivationRepository.findEmployeeActivationByIdentifierAndActivationPossibleIsTrue(identifier)).thenReturn(Optional.of(employeeActivation));
+        ResponseEntity<String> failedResponse = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Password change failed");
+        when(userServiceClient.resetPassword(any())).thenReturn(failedResponse);
+
+        ResponseStatusException exception =
+                assertThrows(ResponseStatusException.class, () -> employeeServiceImpl.resetPassword(identifier, newPassword));
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
+        assertEquals("Password change failed", exception.getReason());
+    }
+
+
 }
