@@ -16,6 +16,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(name = "userServiceClient", url = "${userServiceLocation}")
 public interface UserServiceClient {
+
+    @PostMapping(value = "/user/setPassword",
+            produces = "application/json",
+            consumes = "application/json")
+    ResponseEntity<String> setUserPassword(@RequestBody SetPasswordDTO passwordDTO);
+
     @PostMapping(value = "/employee/setPassword",
             produces = "application/json",
             consumes = "application/json")

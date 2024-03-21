@@ -1,5 +1,6 @@
 package com.example.emailservice.controller;
 
+import com.example.emailservice.dto.SetUserPasswordCodeDTO;
 import com.example.emailservice.dto.TryPasswordResetDTO;
 import com.example.emailservice.model.PasswordReset;
 import com.example.emailservice.service.EmailService;
@@ -20,6 +21,18 @@ public class UserEmailController {
 
     @Autowired
     private EmailService emailService;
+
+    @GetMapping("/userActivation")
+    public ResponseEntity<Void> userActivation(@RequestParam(name = "email") String email){
+        userService.userActivation(email);
+        return new ResponseEntity<Void>(HttpStatus.OK);
+    }
+
+    @PostMapping("/activateUser")
+    public ResponseEntity<?> setUserPassword(@RequestBody SetUserPasswordCodeDTO setUserPasswordCodeDTO){
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     @GetMapping("/resetPassword")
     public String resetPassword(@RequestParam (name = "email") String email) {

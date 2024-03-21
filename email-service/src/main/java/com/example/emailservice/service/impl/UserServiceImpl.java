@@ -3,8 +3,10 @@ package com.example.emailservice.service.impl;
 import com.example.emailservice.client.UserServiceClient;
 import com.example.emailservice.dto.ResetUserPasswordDTO;
 import com.example.emailservice.dto.TryPasswordResetDTO;
+import com.example.emailservice.model.UserActivation;
 import com.example.emailservice.model.PasswordReset;
 import com.example.emailservice.repository.PasswordResetRepository;
+import com.example.emailservice.repository.UserActivationRepository;
 import com.example.emailservice.service.EmailService;
 import com.example.emailservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 
 import static java.lang.Thread.sleep;
@@ -27,6 +31,43 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserServiceClient userServiceClient;
+
+    @Autowired
+    private UserActivationRepository userActivationRepository;
+
+    @Override
+    public void  userActivation(String email){
+        String identifier = UUID.randomUUID().toString();
+        Integer code = new Random().nextInt(100000,999999);
+        UserActivation userActivation = new UserActivation(null,
+                                                    email,
+                                                    identifier,
+                                                    code,
+                                                    LocalDateTime.now(),
+                                        true);
+        userActivationRepository.save(userActivation);
+        emailService.sendSimpleMessage(email, getSubject(), getText(identifier, code));
+        new Thread(() -> {
+            long activationAvailableTime = 5 * 60 * 1000;
+            try {
+                sleep(activationAvailableTime);
+                userActivation.setActivationPossible(false);
+                userActivationRepository.save(userActivation);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
+    }
+
+    @Override
+    public String setUserPassword(String identifier, String password) {
+        Optional<UserActivation> userActivationOptional =
+                userActivationRepository.findUserActivationByIdentifierAndActivationPossibleIsTrue(identifier);
+        UserActivation userActivation = userActivationOptional.get();
+
+
+        return null;
+    }
 
     @Override
     public PasswordReset generateResetCode(String email) {
@@ -68,6 +109,14 @@ public class UserServiceImpl implements UserService {
         } else {
             return "Password reset failed";
         }
+    }
+
+    protected String getSubject() {
+        return "User account activation";
+    }
+
+    protected String getText(String identifier, Integer code) {
+        return "Code for acite:" + code + "\nhttp://localhost:4200/change-password/" + identifier;
     }
 
 }
