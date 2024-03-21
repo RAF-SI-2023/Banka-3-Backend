@@ -49,6 +49,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/v1/user/auth/**").permitAll()
                 .antMatchers("/api/v1/user/**").permitAll()
                 .antMatchers("/api/v1/user/setPassword/**").permitAll()
+                .antMatchers("/api/v1/user/resetPassword/**").permitAll()
                 .antMatchers("/api/v1/employee/resetPassword/**").permitAll()
                 .antMatchers("/api/v1/employee/setPassword/**").permitAll()
                 .antMatchers("/api/v1/employee/auth/**").permitAll()

@@ -1,6 +1,7 @@
 package com.example.emailservice.client;
 
 import com.example.emailservice.dto.ResetPasswordDTO;
+
 import com.example.emailservice.dto.ResetUserPasswordDTO;
 import com.example.emailservice.dto.SetPasswordDTO;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -31,7 +32,6 @@ public interface UserServiceClient {
     )
     ResponseEntity<String> resetPassword(@RequestBody ResetPasswordDTO passwordDTO);
 
-
     @PostMapping(value = "/user/resetPassword",
             produces = "application/json"
             , consumes = "application/json"
@@ -44,4 +44,3 @@ public interface UserServiceClient {
             consumes = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<String> setUserPassword(@RequestBody SetPasswordDTO passwordDTO);
 
-}

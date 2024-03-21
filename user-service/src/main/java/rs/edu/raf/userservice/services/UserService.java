@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
 import rs.edu.raf.userservice.domains.dto.employee.SetPasswordDTO;
 import rs.edu.raf.userservice.domains.dto.user.CreateUserDto;
 import rs.edu.raf.userservice.domains.dto.user.ResetUserPasswordDTO;
@@ -155,4 +156,5 @@ public class UserService implements UserDetailsService, UserServiceInterface {
         return optionalUser.map(UserMapper.INSTANCE::userToUserDto).orElseThrow(() -> new NotFoundException("user with" + user.getEmail() + " not found"));
 
     }
+
 }

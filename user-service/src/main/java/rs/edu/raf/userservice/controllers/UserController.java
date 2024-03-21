@@ -103,6 +103,7 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+
     @PostMapping(value = "/setPassword", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> setUserPassword(@RequestBody SetPasswordDTO setPasswordDTO){
 
@@ -112,4 +113,5 @@ public class UserController {
         }
         return ResponseEntity.ok().body("Password set");
     }
+
 }

@@ -1,6 +1,7 @@
 package com.example.emailservice.service.impl;
 
 import com.example.emailservice.client.UserServiceClient;
+
 import com.example.emailservice.dto.CodeSenderDto;
 import com.example.emailservice.dto.ResetUserPasswordDTO;
 import com.example.emailservice.dto.SetPasswordDTO;
@@ -11,6 +12,13 @@ import com.example.emailservice.repository.PasswordResetRepository;
 import com.example.emailservice.service.EmailService;
 import com.example.emailservice.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.example.emailservice.dto.ResetUserPasswordDTO;
+import com.example.emailservice.model.PasswordReset;
+import com.example.emailservice.repository.PasswordResetRepository;
+import com.example.emailservice.service.EmailService;
+import com.example.emailservice.service.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -28,6 +37,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordResetRepository passwordResetRepository;
     @Autowired
+
     private CodeSenderRepository codeSenderRepository;
     @Autowired
     private EmailService emailService;
@@ -75,6 +85,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+
     /**
      *
      * Ova klasa prima, u obliku codeSenderDto, e-mail, kod za aktivaciju, password i confirmPassword iz kontrolera/
@@ -103,5 +114,6 @@ public class UserServiceImpl implements UserService {
 
         return ResponseEntity.ok("Success.");
     }
+
 
 }
