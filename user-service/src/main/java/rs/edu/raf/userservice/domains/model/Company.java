@@ -1,6 +1,7 @@
 package rs.edu.raf.userservice.domains.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -8,6 +9,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -44,8 +46,8 @@ public class Company implements Serializable {
     @Email
     private String email;
 
-    @OneToMany(mappedBy = "company")
-    private List<CompanyAccount> companyAccounts;
+    @OneToMany(mappedBy = "companyAccountId")
+    private List<CompanyAccount> companyAccounts = new ArrayList<>();
 
 
 

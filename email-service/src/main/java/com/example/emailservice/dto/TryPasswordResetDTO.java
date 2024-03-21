@@ -9,7 +9,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResetUserPasswordDTO implements Serializable {
-    private String email;
+public class TryPasswordResetDTO implements Serializable {
+    private String identifier;
     private String password;
 }

@@ -22,7 +22,6 @@ public class CompanyAccount implements Serializable {
     private Long companyAccountId;
 
     @ManyToOne
-    @JoinColumn(name="companyId")
     private Company company;
 
     @NotNull(message = "This field cannot be NULL")

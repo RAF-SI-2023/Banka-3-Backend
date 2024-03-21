@@ -9,10 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
-import rs.edu.raf.userservice.domains.dto.user.CreateUserDto;
-import rs.edu.raf.userservice.domains.dto.user.ResetUserPasswordDTO;
-import rs.edu.raf.userservice.domains.dto.user.UpdateUserDto;
-import rs.edu.raf.userservice.domains.dto.user.UserDto;
+import rs.edu.raf.userservice.domains.dto.user.*;
 import rs.edu.raf.userservice.domains.dto.login.LoginRequest;
 import rs.edu.raf.userservice.domains.dto.login.LoginResponse;
 import rs.edu.raf.userservice.services.UserService;
@@ -93,6 +90,16 @@ public class UserController {
                                          @RequestParam(value = "lastName", required = false) String lastName,
                                          @RequestParam(value = "email", required = false) String email) {
         return ResponseEntity.ok(this.userService.search(firstName, lastName, email));
+    }
+
+    @GetMapping(value ="/isUserActive/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public IsUserActiveDTO isUserActive(@PathVariable String email){
+        return this.userService.isUserActive(email);
+    }
+
+    @PostMapping(value = "/setPassword")
+    public ResponseEntity<?> setPassword(@RequestBody SetPasswordDTO setPasswordDTO){
+        return ResponseEntity.ok(userService.setPassword(setPasswordDTO));
     }
 
     @PostMapping("/resetPassword")

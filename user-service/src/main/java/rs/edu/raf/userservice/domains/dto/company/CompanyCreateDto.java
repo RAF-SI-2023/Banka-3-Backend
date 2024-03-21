@@ -22,7 +22,7 @@ public class CompanyCreateDto {
     private String email;
     @NotBlank
     @Size(min=100000000, max=999999999)
-    private int PIB; //unique
+    private int pib; //unique
     @NotBlank
     @Size(min=10000000, max=99999999)
     private int matBr; //unique

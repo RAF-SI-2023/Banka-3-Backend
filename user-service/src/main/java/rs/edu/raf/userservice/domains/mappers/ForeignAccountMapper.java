@@ -1,6 +1,7 @@
 package rs.edu.raf.userservice.domains.mappers;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 import rs.edu.raf.userservice.domains.dto.foreignaccount.ForeignAccountDto;
 import rs.edu.raf.userservice.domains.model.ForeignAccount;
@@ -12,5 +13,7 @@ public interface ForeignAccountMapper {
 
     ForeignAccountDto foreignAccountToForeignAccountDto(rs.edu.raf.userservice.domains.model.ForeignAccount foreignAccount);
 
+    @Mapping(target = "currency", ignore = true)
+    @Mapping(target = "accountType", ignore = true)
     ForeignAccount foreignAccountCreateDtoToForeignAccount(rs.edu.raf.userservice.domains.dto.foreignaccount.ForeignAccountCreateDto foreignAccountCreateDto);
 }

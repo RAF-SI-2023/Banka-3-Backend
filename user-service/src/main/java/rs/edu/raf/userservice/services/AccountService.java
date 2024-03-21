@@ -54,13 +54,16 @@ public class AccountService {
     public AccountDto create(AccountCreateDto accountCreateDto, Long userId) {
         Account account = AccountMapper.INSTANCE.accountCreateDtoToAccount(accountCreateDto);
         account.setAccountNumber(randAccNumber());
-        account.setUser(userRepository.getReferenceById(userId));
-        account.setEmployee(employeeRepository.getReferenceById(accountCreateDto.getEmployeeId()));
+        account.setUser(userRepository.findById(accountCreateDto.getUserId()).get());
+        account.setEmployee(employeeRepository.findById(accountCreateDto.getEmployeeId()).get());
         account.setCreationDate(System.currentTimeMillis());
         account.setExpireDate(System.currentTimeMillis() + 31556952000L);
         account.setActive(true);// 1 year
-        account.setCurrency(currencyRepository.findByName(accountCreateDto.getCurrency()).orElseThrow()); //problematicno moze li da bude long jebo me dan, isti problem ispod
-        account.setAccountType(accountTypeRepository.findByName(accountCreateDto.getAccountType()).orElseThrow());
+        CurrencyName currencyName = CurrencyName.valueOf(accountCreateDto.getCurrency());
+        account.setCurrency(currencyRepository.findByName(currencyName).orElseThrow()); //problematicno moze li da bude long jebo me dan, isti problem ispod
+        AccountTypeName accountTypeName = AccountTypeName.valueOf(accountCreateDto.getAccountType());
+        account.setAvailableBalance(accountCreateDto.getBalance());
+        account.setAccountType(accountTypeRepository.findByAccountType(accountTypeName).orElseThrow());
         account = accountRepository.save(account);
         return AccountMapper.INSTANCE.accountToAccountDto(account);
     }
@@ -82,7 +85,7 @@ public class AccountService {
     }
 
     public List<AccountDto> findByUser(Long userId) {
-        List<Account> accounts = accountRepository.findByUserId(userId).orElseThrow();
+        List<Account> accounts = accountRepository.findByUser_UserId(userId).orElseThrow();
         return accounts.stream().map(AccountMapper.INSTANCE::accountToAccountDto).collect(Collectors.toList());
     }
 }

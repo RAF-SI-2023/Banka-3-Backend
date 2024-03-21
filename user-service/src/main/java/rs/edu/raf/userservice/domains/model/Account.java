@@ -24,7 +24,7 @@ public class Account implements Serializable {
     @NotNull(message = "This field cannot be NULL")
     private String accountNumber;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "userId")
     private User user;
 
@@ -34,7 +34,7 @@ public class Account implements Serializable {
     @NotNull(message = "This field cannot be NULL")
     private Double availableBalance;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "employeeId")
     private Employee employee;
 
@@ -47,11 +47,11 @@ public class Account implements Serializable {
     @NotNull(message = "This field cannot be NULL")
     private boolean active;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "currencyId")
     private Currency currency;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "accountTypeId")
     private AccountType accountType;
 

@@ -11,8 +11,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ResetUserPasswordDTO implements Serializable {
-
     private String email;
-
     private String password;
 }

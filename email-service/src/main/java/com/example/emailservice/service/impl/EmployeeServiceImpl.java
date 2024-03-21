@@ -3,6 +3,7 @@ package com.example.emailservice.service.impl;
 import com.example.emailservice.client.UserServiceClient;
 import com.example.emailservice.dto.ResetPasswordDTO;
 import com.example.emailservice.dto.SetPasswordDTO;
+import com.example.emailservice.dto.TryPasswordResetDTO;
 import com.example.emailservice.model.EmployeeActivation;
 import com.example.emailservice.repository.EmployeeActivationRepository;
 import com.example.emailservice.service.EmailService;
@@ -25,6 +26,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeActivationRepository employeeActivationRepository;
     private final UserServiceClient userServiceClient;
     private final EmailService emailService;
+
     /***
      *Pravi se random identifier, objekat employeeActivation i cuva se u bazu
      *Posalje se mejl i onda se startuje timer da se za 5 minuta prebaci u false
@@ -41,8 +43,8 @@ public class EmployeeServiceImpl implements EmployeeService {
                 true);
         employeeActivationRepository.save(employeeActivation);
         emailService.sendSimpleMessage(email, getSubject(), getText(identifier));
-        new Thread(()->{
-            long activationAvailableTime = 5*60*1000;
+        new Thread(() -> {
+            long activationAvailableTime = 5 * 60 * 1000;
             try {
                 sleep(activationAvailableTime);
                 employeeActivation.setActivationPossible(false);
@@ -52,6 +54,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             }
         }).start();
     }
+
     /***
      *Prvo se trazi u bazi da li moze nalog da se aktivira(ako ne moze baca bad request exception)
      *Ako postoji u bazi email i sifra se salju na userService.
@@ -65,7 +68,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         SetPasswordDTO passwordDTO = new SetPasswordDTO(password, employeeActivation.getEmail());
         ResponseEntity<String> response = userServiceClient.setPassword(passwordDTO);
         System.out.println(response.toString());
-        if(!response.getStatusCode().is2xxSuccessful()){
+        if (!response.getStatusCode().is2xxSuccessful()) {
             throw new ResponseStatusException(response.getStatusCode(), response.getBody());
         }
         return "Password successfully changed";
@@ -74,7 +77,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     /**
      * Metoda pravi identifer i proverava da li zaposleni postoji u bazi da bi poslala email
      * i postavlja tajmer na pet minuta, ako prodje pet minuta, link nije vlaidan
-     * */
+     */
     @Override
     public void tryResetPassword(String email) {
         String identifier = UUID.randomUUID().toString();
@@ -86,7 +89,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 true);
         employeeActivationRepository.save(employeeActivation);
         emailService.sendSimpleMessage(email, getReturnValue(), getLocation(identifier));
-        new Thread(()->{
+        new Thread(() -> {
             long activationAvailableTime = 300000;
             try {
                 sleep(activationAvailableTime);
@@ -100,32 +103,36 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
     /**
-     * Salje se nova sifra user servisu ukoliko je identifer dobar*/
+     * Salje se nova sifra user servisu ukoliko je identifer dobar
+     */
     @Override
-    public String resetPassword(String identifier, String newPassword) {
+    public String resetPassword(TryPasswordResetDTO tryPasswordResetDTO) {
         EmployeeActivation employeeActivation =
-                employeeActivationRepository.findEmployeeActivationByIdentifierAndActivationPossibleIsTrue(identifier)
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Activation is not possible"));
-        ResetPasswordDTO resetPasswordDTO = new ResetPasswordDTO(newPassword, employeeActivation.getEmail());
+                employeeActivationRepository.findEmployeeActivationByIdentifierAndActivationPossibleIsTrue(tryPasswordResetDTO.getIdentifier())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Activation is not " +
+                                "possible"));
+        ResetPasswordDTO resetPasswordDTO = new ResetPasswordDTO(tryPasswordResetDTO.getPassword(),
+                employeeActivation.getEmail());
         ResponseEntity<String> response = userServiceClient.resetPassword(resetPasswordDTO);
-        if(!response.getStatusCode().is2xxSuccessful()){
+        if (!response.getStatusCode().is2xxSuccessful()) {
             throw new ResponseStatusException(response.getStatusCode(), response.getBody());
         }
         return "Password successfully changed";
     }
 
-    protected String getSubject(){
+    protected String getSubject() {
         return "Employee account activation";
     }
-    protected String getText(String identifier){
+
+    protected String getText(String identifier) {
         return "http://localhost:4200/change-password/" + identifier;
     }
 
-    protected String getReturnValue(){
+    protected String getReturnValue() {
         return "Employee asked for password change";
     }
 
-    protected String getLocation(String identifier){
-        return "http://localhost:8081/api/v1/employee/resetPassword/" + identifier;
+    protected String getLocation(String identifier) {
+        return "http://localhost:4200/employee/password-confirm/" + identifier;
     }
 }

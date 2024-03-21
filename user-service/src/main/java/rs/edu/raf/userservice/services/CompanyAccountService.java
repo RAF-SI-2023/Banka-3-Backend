@@ -8,6 +8,7 @@ import rs.edu.raf.userservice.domains.model.Company;
 import rs.edu.raf.userservice.domains.model.CompanyAccount;
 import rs.edu.raf.userservice.domains.model.Currency;
 import rs.edu.raf.userservice.domains.model.Employee;
+import rs.edu.raf.userservice.domains.model.enums.CurrencyName;
 import rs.edu.raf.userservice.repositories.*;
 
 import java.util.List;
@@ -34,7 +35,8 @@ public class CompanyAccountService {
 
 
     public CompanyAccountDto create(CompanyAccountCreateDto companyAccountCreateDto, Long companyId){
-        Currency c = currencyRepository.findByName(companyAccountCreateDto.getCurrency()).orElseThrow();
+        CurrencyName currencyName = CurrencyName.valueOf(companyAccountCreateDto.getCurrency());
+        Currency c = currencyRepository.findByName(currencyName).orElseThrow();
 
         CompanyAccount companyAccount = CompanyAccountMapper.INSTANCE.companyAccountCreateDtoToCompanyAccount(companyAccountCreateDto);
         companyAccount.setCompany(companyRepository.findById(companyId).orElse(null));
@@ -44,7 +46,9 @@ public class CompanyAccountService {
         companyAccount.setCreationDate(System.currentTimeMillis());
         companyAccount.setExpireDate(System.currentTimeMillis() + 31556952000L);
         companyAccount.setActive(true);
-        companyAccount = companyAccountRepository.save(companyAccount);
+        companyAccount.setBalance(companyAccountCreateDto.getBalance());
+        companyAccount.setAvailableBalance(companyAccountCreateDto.getBalance());
+        companyAccountRepository.save(companyAccount);
         return CompanyAccountMapper.INSTANCE.companyAccountToCompanyAccountDto(companyAccount);
     }
 
@@ -76,7 +80,7 @@ public class CompanyAccountService {
     }
 
     public List<CompanyAccountDto> findByCompany(Long companyId) {
-        List<CompanyAccount> accounts = companyAccountRepository.findByCompanyId(companyId).orElseThrow();
+        List<CompanyAccount> accounts = companyAccountRepository.findByCompany_CompanyId(companyId).orElseThrow();
         return accounts.stream().map(CompanyAccountMapper.INSTANCE::companyAccountToCompanyAccountDto)
                 .collect(Collectors.toList());
     }
