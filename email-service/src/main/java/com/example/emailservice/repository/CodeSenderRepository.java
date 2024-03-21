@@ -1,0 +1,17 @@
+package com.example.emailservice.repository;
+
+import com.example.emailservice.model.CodeSender;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.Optional;
+
+@Repository
+public interface CodeSenderRepository extends JpaRepository<CodeSender, Long> {
+
+    Optional<CodeSender> findCodeSenderByCode(@RequestParam("code") Integer code);
+
+}
