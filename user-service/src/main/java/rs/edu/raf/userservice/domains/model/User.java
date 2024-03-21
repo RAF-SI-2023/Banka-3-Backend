@@ -11,6 +11,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @Builder
@@ -56,6 +57,12 @@ public class User implements Serializable {
 
     @NotNull(message = "This field cannot be NULL")
     private Boolean isActive;
+
+    @OneToMany(mappedBy = "user")
+    private List<Account> accounts;
+
+    @OneToMany(mappedBy = "user")
+    private List<ForeignAccount> foreignAccounts;
 
     private Boolean codeActive = false;
 

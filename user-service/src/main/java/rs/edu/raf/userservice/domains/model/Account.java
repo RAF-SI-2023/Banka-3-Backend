@@ -22,7 +22,7 @@ public class Account implements Serializable {
     private Long accountId;
 
     @NotNull(message = "This field cannot be NULL")
-    private Long accountNumber;
+    private String accountNumber;
 
     @ManyToOne()
     @JoinColumn(name = "userId")

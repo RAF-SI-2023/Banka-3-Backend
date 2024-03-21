@@ -69,4 +69,13 @@ public class Employee implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "permissionId")
     )
     private List<Permission> permissions;
+
+    @OneToMany
+    private List<Account> accounts;
+
+    @OneToMany
+    private List<ForeignAccount> foreignAccounts;
+
+    @OneToMany
+    private List<CompanyAccount> companyAccounts;
 }

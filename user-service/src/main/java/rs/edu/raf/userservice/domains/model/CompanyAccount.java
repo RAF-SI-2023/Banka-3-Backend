@@ -48,6 +48,9 @@ public class CompanyAccount implements Serializable {
     @JoinColumn(name = "currencyId")
     private Currency currency;
 
+    @NotNull(message = "This field cannot be NULL")
+    private String accountNumber;
+
 
 
 
