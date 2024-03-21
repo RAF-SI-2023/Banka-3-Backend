@@ -151,7 +151,6 @@ public class BootstrapData implements CommandLineRunner {
                 .email("user@user.com")
                 .jmbg("1111111111")
                 .phoneNumber("063111111111")
-                .password(passwordEncoder.encode("user1234"))
                 .isActive(true)
                 .gender("M")
                 .dateOfBirth(1710274123787L)
