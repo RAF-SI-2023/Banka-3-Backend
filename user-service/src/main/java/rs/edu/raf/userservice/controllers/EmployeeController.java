@@ -3,28 +3,21 @@ package rs.edu.raf.userservice.controllers;
 
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
-import rs.edu.raf.userservice.domains.dto.employee.EmployeeCreateDto;
-import rs.edu.raf.userservice.domains.dto.employee.EmployeeDto;
-import rs.edu.raf.userservice.domains.dto.employee.EmployeeUpdateDto;
-import rs.edu.raf.userservice.domains.dto.employee.SetPasswordDTO;
+import rs.edu.raf.userservice.domains.dto.employee.*;
 import rs.edu.raf.userservice.domains.dto.login.LoginRequest;
 import rs.edu.raf.userservice.domains.dto.login.LoginResponse;
+import rs.edu.raf.userservice.domains.model.Employee;
 import rs.edu.raf.userservice.services.EmployeeService;
 import rs.edu.raf.userservice.utils.JwtUtil;
-
-import javax.validation.Valid;
-import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
@@ -87,9 +80,14 @@ public class EmployeeController {
         return ResponseEntity.notFound().build();
     }
 
-    @PostMapping(value = "/changePassword")
+    @PostMapping(value = "/setPassword")
     public ResponseEntity<String> changePassword(@RequestBody SetPasswordDTO passwordDTO){
         return ResponseEntity.ok(employeeService.setPassword(passwordDTO));
+    }
+
+    @PostMapping(value = "/resetPassword")
+    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordDTO resetPasswordDTO){
+        return ResponseEntity.ok(employeeService.resetPassword(resetPasswordDTO));
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -116,4 +114,5 @@ public class EmployeeController {
                                              @RequestParam(value = "role", required = false) String role) {
         return ResponseEntity.ok(this.employeeService.search(firstName, lastName, email, role));
     }
+
 }

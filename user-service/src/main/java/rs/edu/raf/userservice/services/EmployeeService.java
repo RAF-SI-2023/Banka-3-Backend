@@ -1,7 +1,6 @@
 package rs.edu.raf.userservice.services;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,10 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import rs.edu.raf.userservice.domains.dto.employee.EmployeeCreateDto;
-import rs.edu.raf.userservice.domains.dto.employee.EmployeeDto;
-import rs.edu.raf.userservice.domains.dto.employee.EmployeeUpdateDto;
-import rs.edu.raf.userservice.domains.dto.employee.SetPasswordDTO;
+import rs.edu.raf.userservice.domains.dto.employee.*;
 import rs.edu.raf.userservice.domains.exceptions.ForbiddenException;
 import rs.edu.raf.userservice.domains.exceptions.NotFoundException;
 import rs.edu.raf.userservice.domains.mappers.EmployeeMapper;
@@ -152,4 +148,14 @@ public class EmployeeService implements UserDetailsService {
         employeeRepository.save(employee);
         return "Successfully updated password for " + passwordDTO.getEmail();
     }
+
+    public String resetPassword(ResetPasswordDTO resetPasswordDTO) {
+        Employee employee = employeeRepository.findByEmail(resetPasswordDTO.getEmail())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        emailServiceClient.sendEmailToEmailServiceForResetPassword(employee.getEmail());
+        employee.setPassword(passwordEncoder.encode(resetPasswordDTO.getNewPassword()));
+        employeeRepository.save(employee);
+        return "Successfully reseted password for " + resetPasswordDTO.getEmail();
+    }
+
 }

@@ -10,11 +10,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import rs.edu.raf.userservice.filters.JwtFilter;
 import rs.edu.raf.userservice.services.CustomDetailsService;
 import rs.edu.raf.userservice.services.EmployeeService;
 import rs.edu.raf.userservice.services.UserService;
 
+@CrossOrigin("*")
 @EnableWebSecurity
 @EnableAsync
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -46,6 +48,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/api/v1/user/auth/**").permitAll()
                 .antMatchers("/api/v1/user/resetPassword/**").permitAll()
+                .antMatchers("/api/v1/employee/resetPassword/**").permitAll()
+                .antMatchers("/api/v1/employee/setPassword/**").permitAll()
                 .antMatchers("/api/v1/employee/auth/**").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
                 .antMatchers("/swagger-ui/**").permitAll()
