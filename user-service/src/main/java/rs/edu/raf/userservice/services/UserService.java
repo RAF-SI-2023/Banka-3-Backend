@@ -5,9 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import rs.edu.raf.userservice.domains.dto.employee.SetPasswordDTO;
 import rs.edu.raf.userservice.domains.dto.user.CreateUserDto;
 import rs.edu.raf.userservice.domains.dto.user.UpdateUserDto;
 import rs.edu.raf.userservice.domains.dto.user.UserDto;
@@ -29,12 +27,10 @@ public class UserService implements UserDetailsService, UserServiceInterface {
 
     private final Pattern emailPattern = Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$");
     private final Pattern jmbgPattern = Pattern.compile("[0-9]{13}");
-    private final PasswordEncoder passwordEncoder;
     @Autowired
     private UserRepository userRepository;
 
-    public UserService(PasswordEncoder passwordEncoder, UserRepository userRepository) {
-        this.passwordEncoder = passwordEncoder;
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
@@ -113,28 +109,4 @@ public class UserService implements UserDetailsService, UserServiceInterface {
                 .orElseThrow(() -> new NotFoundException("No users found matching the criteria"));
         return users.stream().map(UserMapper.INSTANCE::userToUserDto).collect(Collectors.toList());
     }
-
-
-    /**
-     * Metoda koja preko repository update-uje user element i dodaje mu sifru koristeci UPDATE query.
-     * Takodje "aktivira" nalog - postavlja isActive na true.
-     * Poziva se iz userControllera na putanji /setPassword
-     *
-     */
-    @Override
-    public UserDto setUserPassword(SetPasswordDTO user1) {
-        Optional<User> optionalUser = userRepository.findByEmail(user1.getEmail());
-        System.out.println(optionalUser + " " + user1);
-
-        User user = optionalUser.get();
-        user.setIsActive(true);
-        String password = passwordEncoder.encode(user1.getPassword());
-        user.setPassword(password);
-        userRepository.save(user);
-
-        return optionalUser.map(UserMapper.INSTANCE::userToUserDto).orElseThrow(() -> new NotFoundException("user with" + user.getEmail() + " not found"));
-
-    }
-
-
 }
