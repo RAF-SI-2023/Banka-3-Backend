@@ -5,10 +5,7 @@ import rs.edu.raf.userservice.domains.dto.foreignaccount.ForeignAccountCreateDto
 import rs.edu.raf.userservice.domains.dto.foreignaccount.ForeignAccountDto;
 import rs.edu.raf.userservice.domains.mappers.ForeignAccountMapper;
 import rs.edu.raf.userservice.domains.model.ForeignAccount;
-import rs.edu.raf.userservice.repositories.AccountTypeRepository;
-import rs.edu.raf.userservice.repositories.CurrencyRepository;
-import rs.edu.raf.userservice.repositories.ForeignAccountRepository;
-import rs.edu.raf.userservice.repositories.UserRepository;
+import rs.edu.raf.userservice.repositories.*;
 
 import java.util.List;
 import java.util.Random;
@@ -18,6 +15,7 @@ import java.util.stream.Collectors;
 public class ForeignAccountService {
 
     private final ForeignAccountRepository foreignAccountRepository;
+    private final EmployeeRepository employeeRepository;
 
     private final AccountTypeRepository accountTypeRepository;
 
@@ -26,9 +24,11 @@ public class ForeignAccountService {
     private final CurrencyRepository currencyRepository;
 
     public ForeignAccountService(ForeignAccountRepository foreignAccountRepository, AccountTypeRepository accountTypeRepository,
-                                 UserRepository userRepository, CurrencyRepository currencyRepository) {
+                                 UserRepository userRepository, EmployeeRepository employeeRepository,
+                                 CurrencyRepository currencyRepository) {
         this.foreignAccountRepository = foreignAccountRepository;
         this.accountTypeRepository = accountTypeRepository;
+        this.employeeRepository = employeeRepository;
         this.userRepository = userRepository;
         this.currencyRepository = currencyRepository;
     }
@@ -51,6 +51,7 @@ public class ForeignAccountService {
         foreignAccount.setCurrency(currencyRepository.findByName(facd.getCurrency()).orElseThrow());
         foreignAccount.setAccountType(accountTypeRepository.findByName(facd.getAccountType()).orElseThrow());
         foreignAccount.setUser(userRepository.getReferenceById(userId));
+        foreignAccount.setEmployee(employeeRepository.getReferenceById(facd.getEmployeeId()));
         foreignAccount.setActive(true);
         foreignAccount.setCreationDate(System.currentTimeMillis());
         foreignAccount.setExpireDate(System.currentTimeMillis() + 31556952000L);

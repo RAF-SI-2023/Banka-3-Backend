@@ -7,10 +7,8 @@ import rs.edu.raf.userservice.domains.mappers.CompanyAccountMapper;
 import rs.edu.raf.userservice.domains.model.Company;
 import rs.edu.raf.userservice.domains.model.CompanyAccount;
 import rs.edu.raf.userservice.domains.model.Currency;
-import rs.edu.raf.userservice.repositories.CompanyAccountRepository;
-import rs.edu.raf.userservice.repositories.CompanyRepository;
-import rs.edu.raf.userservice.repositories.CurrencyRepository;
-import rs.edu.raf.userservice.repositories.UserRepository;
+import rs.edu.raf.userservice.domains.model.Employee;
+import rs.edu.raf.userservice.repositories.*;
 
 import java.util.List;
 import java.util.Random;
@@ -23,8 +21,13 @@ public class CompanyAccountService {
     private final CurrencyRepository currencyRepository;
     private final CompanyRepository companyRepository;
 
-    public CompanyAccountService(CompanyAccountRepository companyAccountRepository, CurrencyRepository currencyRepository, CompanyRepository companyRepository) {
+    private final EmployeeRepository employeeRepository;
+
+    public CompanyAccountService(CompanyAccountRepository companyAccountRepository,
+                                 EmployeeRepository employeeRepository,
+                                 CurrencyRepository currencyRepository, CompanyRepository companyRepository) {
         this.companyAccountRepository = companyAccountRepository;
+        this.employeeRepository = employeeRepository;
         this.currencyRepository = currencyRepository;
         this.companyRepository = companyRepository;
     }
@@ -35,6 +38,7 @@ public class CompanyAccountService {
 
         CompanyAccount companyAccount = CompanyAccountMapper.INSTANCE.companyAccountCreateDtoToCompanyAccount(companyAccountCreateDto);
         companyAccount.setCompany(companyRepository.findById(companyId).orElse(null));
+        companyAccount.setEmployee(employeeRepository.findById(companyAccountCreateDto.getEmployeeId()).orElse(null));
         companyAccount.setCurrency(c);
         companyAccount.setAccountNumber(randAccNumber(c.getMark().equals("RSD")));
         companyAccount.setCreationDate(System.currentTimeMillis());

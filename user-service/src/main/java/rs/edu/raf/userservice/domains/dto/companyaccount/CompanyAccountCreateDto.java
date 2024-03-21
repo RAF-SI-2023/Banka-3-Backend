@@ -13,4 +13,5 @@ public class CompanyAccountCreateDto {
         private Double balance;
         private String currency;
         private String accountType;
+        private Long employeeId;
 }

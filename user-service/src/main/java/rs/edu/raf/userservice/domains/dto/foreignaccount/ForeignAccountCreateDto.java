@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 public class ForeignAccountCreateDto {
 
         private Long userId;
+        private Long employeeId;
         private Double balance;
         private String currency;
         private String accountType;

@@ -9,10 +9,7 @@ import rs.edu.raf.userservice.domains.model.AccountType;
 import rs.edu.raf.userservice.domains.model.Currency;
 import rs.edu.raf.userservice.domains.model.enums.AccountTypeName;
 import rs.edu.raf.userservice.domains.model.enums.CurrencyName;
-import rs.edu.raf.userservice.repositories.AccountRepository;
-import rs.edu.raf.userservice.repositories.AccountTypeRepository;
-import rs.edu.raf.userservice.repositories.CurrencyRepository;
-import rs.edu.raf.userservice.repositories.UserRepository;
+import rs.edu.raf.userservice.repositories.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,11 +27,16 @@ public class AccountService {
 
     private final UserRepository userRepository;
 
-    public AccountService(AccountRepository accountRepository, UserRepository userRepository, AccountTypeRepository accountTypeRepository, CurrencyRepository currencyRepository) {
+    private final EmployeeRepository employeeRepository;
+
+    public AccountService(AccountRepository accountRepository,
+                          EmployeeRepository employeeRepository,
+                          UserRepository userRepository, AccountTypeRepository accountTypeRepository, CurrencyRepository currencyRepository) {
         this.currencyRepository = currencyRepository;
         this.userRepository = userRepository;
         this.accountRepository = accountRepository;
         this.accountTypeRepository = accountTypeRepository;
+        this.employeeRepository = employeeRepository;
     }
 
     private String randAccNumber(){ //generise broj racuna
@@ -53,6 +55,7 @@ public class AccountService {
         Account account = AccountMapper.INSTANCE.accountCreateDtoToAccount(accountCreateDto);
         account.setAccountNumber(randAccNumber());
         account.setUser(userRepository.getReferenceById(userId));
+        account.setEmployee(employeeRepository.getReferenceById(accountCreateDto.getEmployeeId()));
         account.setCreationDate(System.currentTimeMillis());
         account.setExpireDate(System.currentTimeMillis() + 31556952000L);
         account.setActive(true);// 1 year
