@@ -46,7 +46,9 @@ public class CompanyAccountService {
         companyAccount.setCreationDate(System.currentTimeMillis());
         companyAccount.setExpireDate(System.currentTimeMillis() + 31556952000L);
         companyAccount.setActive(true);
-        companyAccount = companyAccountRepository.save(companyAccount);
+        companyAccount.setBalance(companyAccountCreateDto.getBalance());
+        companyAccount.setAvailableBalance(companyAccountCreateDto.getBalance());
+        companyAccountRepository.save(companyAccount);
         return CompanyAccountMapper.INSTANCE.companyAccountToCompanyAccountDto(companyAccount);
     }
 

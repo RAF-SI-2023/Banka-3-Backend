@@ -25,7 +25,7 @@ public class CompanyController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @PostMapping("/company")
+    @PostMapping
     public CompanyDto createCompany(@RequestBody CompanyCreateDto companyCreateDto) {
         return companyService.create(companyCreateDto);
     }

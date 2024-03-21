@@ -54,7 +54,7 @@ public class ForeignAccountService {
         foreignAccount.setCurrency(currencyRepository.findByName(currencyName).orElseThrow());
         AccountTypeName accountTypeName = AccountTypeName.valueOf(facd.getAccountType());
         foreignAccount.setAccountType(accountTypeRepository.findByAccountType(accountTypeName).orElseThrow());
-
+        foreignAccount.setAvailableBalance(facd.getBalance());
         foreignAccount.setUser(userRepository.findById(facd.getUserId()).orElseThrow());
         foreignAccount.setEmployee(employeeRepository.findById(facd.getEmployeeId()).orElseThrow());
         foreignAccount.setActive(true);
