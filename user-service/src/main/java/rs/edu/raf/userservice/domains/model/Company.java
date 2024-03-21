@@ -8,6 +8,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @Builder
@@ -42,6 +43,10 @@ public class Company implements Serializable {
     @NotNull(message = "This field cannot be NULL")
     @Email
     private String email;
+
+    @OneToMany(mappedBy = "company")
+    private List<CompanyAccount> companyAccounts;
+
 
 
 

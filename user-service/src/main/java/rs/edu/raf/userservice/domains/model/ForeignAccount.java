@@ -22,7 +22,7 @@ public class ForeignAccount implements Serializable {
     private Long foreignAccountId;
 
     @NotNull(message = "This field cannot be NULL")
-    private Long accountNumber;
+    private String accountNumber;
 
     @ManyToOne()
     @JoinColumn(name = "userId")
