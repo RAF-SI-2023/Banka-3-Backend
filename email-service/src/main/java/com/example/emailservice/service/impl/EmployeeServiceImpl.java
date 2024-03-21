@@ -164,12 +164,4 @@ public class EmployeeServiceImpl implements EmployeeService {
     protected String getLocation(String identifier){
         return "http://localhost:8081/api/v1/employee/resetPassword/" + identifier;
     }
-
-    protected String getReturnValue(){
-        return "Employee asked for password change";
-    }
-
-    protected String getLocation(String identifier){
-        return "http://localhost:8081/employee/resetPassword/" + identifier;
-    }
 }
