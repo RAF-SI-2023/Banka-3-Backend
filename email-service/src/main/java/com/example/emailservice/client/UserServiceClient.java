@@ -1,5 +1,6 @@
 package com.example.emailservice.client;
 
+import com.example.emailservice.dto.ResetPasswordDTO;
 import com.example.emailservice.dto.SetPasswordDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -10,11 +11,21 @@ import org.springframework.web.bind.annotation.RequestBody;
  *Kada se pozove metoda i posalje objekat, u pozadini se izvrsava http zahtev
  *
  */
+
+
 @FeignClient(name = "userServiceClient", url = "${userServiceLocation}/employee")
 public interface UserServiceClient {
+
     @PostMapping(value = "/setPassword",
             produces = "application/json",
             consumes = "application/json")
     ResponseEntity<String> setPassword(@RequestBody SetPasswordDTO passwordDTO);
 
+    /**
+     * Meotda za komunikaciju sa user servisom, prosledjuje se mejl i nova sifra zaposlenog*/
+    @PostMapping(value = "/resetPassword",
+            produces = "application/json"
+            , consumes = "application/json"
+    )
+    ResponseEntity<String> resetPassword(@RequestBody ResetPasswordDTO passwordDTO);
 }
