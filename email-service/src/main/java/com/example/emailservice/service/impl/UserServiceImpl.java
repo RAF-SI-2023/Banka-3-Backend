@@ -3,7 +3,6 @@ package com.example.emailservice.service.impl;
 import com.example.emailservice.client.UserServiceClient;
 import com.example.emailservice.dto.ResetUserPasswordDTO;
 import com.example.emailservice.model.PasswordReset;
-import com.example.emailservice.repository.CodeSenderRepository;
 import com.example.emailservice.repository.PasswordResetRepository;
 import com.example.emailservice.service.EmailService;
 import com.example.emailservice.service.UserService;
@@ -20,10 +19,6 @@ import static java.lang.Thread.sleep;
 
 @Service
 public class UserServiceImpl implements UserService {
-
-    @Autowired
-    private CodeSenderRepository codeSenderRepository;
-
     @Autowired
     private PasswordResetRepository passwordResetRepository;
     @Autowired
@@ -59,17 +54,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public String tryChangePassword(String identifier, String password) {
         PasswordReset passwordReset =  passwordResetRepository.findByIdentifier(identifier).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request not found."));
-        return identifier;
-//        if(passwordReset.getActive()){
-//            ResetUserPasswordDTO resetPasswordDTO = new ResetUserPasswordDTO(password, passwordReset.getEmail());
-//            ResponseEntity<String> response = userServiceClient.resetUserPassword(resetPasswordDTO);
-//            if(!response.getStatusCode().is2xxSuccessful()){
-//                throw new ResponseStatusException(response.getStatusCode(), response.getBody());
-//            }
-//            return "Password successfully changed";
-//        }else{
-//            return "Password reset failed";
-//        }
+//        return identifier;
+        if(passwordReset.getActive()){
+            ResetUserPasswordDTO resetPasswordDTO = new ResetUserPasswordDTO(password, passwordReset.getEmail());
+            ResponseEntity<String> response = userServiceClient.resetUserPassword(resetPasswordDTO);
+            if(!response.getStatusCode().is2xxSuccessful()){
+                throw new ResponseStatusException(response.getStatusCode(), response.getBody());
+            }
+            return "Password successfully changed";
+        }else{
+            return "Password reset failed";
+        }
     }
 
 }
