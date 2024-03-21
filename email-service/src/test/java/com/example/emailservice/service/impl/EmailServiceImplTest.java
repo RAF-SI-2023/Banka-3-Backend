@@ -1,6 +1,5 @@
-package com.example.emailservice;
+package com.example.emailservice.service.impl;
 
-import com.example.emailservice.service.impl.EmailServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,10 +10,9 @@ import org.springframework.mail.javamail.JavaMailSender;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @ExtendWith(MockitoExtension.class)
-public class EmailServiceImplUnitTest {
+public class EmailServiceImplTest {
 
     @Mock
     private JavaMailSender javaMailSender;
@@ -27,7 +25,7 @@ public class EmailServiceImplUnitTest {
         String subject = "Test Subject";
         String text = "Test Message";
 
-        emailService.sendSimpleMessage(to,subject,text);
+        emailService.sendSimpleMessage(to, subject, text);
         verify(javaMailSender, times(1)).send(any(SimpleMailMessage.class));
         verifyNoMoreInteractions(javaMailSender);
     }

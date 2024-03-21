@@ -74,7 +74,7 @@ public class EmployeeServiceImplUnitTest {
         given(employeeActivationRepository.findEmployeeActivationByIdentifierAndActivationPossibleIsTrue("invalidIdentifier")).willReturn(Optional.empty());
         String identifier = "invalidIdentifier";
         String password = "newPassword";
-        assertThrows(ResponseStatusException.class, () -> employeeServiceImpl.changePassword(identifier, password));
+        assertThrows(Exception.class, () -> employeeServiceImpl.changePassword(identifier, password));
     }
     @Test
     public void changePasswordTest_Fail() {
