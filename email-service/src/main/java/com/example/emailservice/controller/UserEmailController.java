@@ -30,8 +30,12 @@ public class UserEmailController {
 
     @PostMapping("/activateUser")
     public ResponseEntity<?> setUserPassword(@RequestBody SetUserPasswordCodeDTO setUserPasswordCodeDTO){
-
-        return new ResponseEntity<>(HttpStatus.OK);
+        Boolean userActivated = userService.setUserPassword(setUserPasswordCodeDTO);
+        if(userActivated){
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping("/resetPassword")

@@ -2,6 +2,8 @@ package com.example.emailservice.service.impl;
 
 import com.example.emailservice.client.UserServiceClient;
 import com.example.emailservice.dto.ResetUserPasswordDTO;
+import com.example.emailservice.dto.SetPasswordDTO;
+import com.example.emailservice.dto.SetUserPasswordCodeDTO;
 import com.example.emailservice.dto.TryPasswordResetDTO;
 import com.example.emailservice.model.PasswordReset;
 import com.example.emailservice.model.UserActivation;
@@ -14,9 +16,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import org.webjars.NotFoundException;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
@@ -39,10 +41,10 @@ public class UserServiceImpl implements UserService {
     public void userActivation(String email) {
         Integer code = new Random().nextInt(100000, 999999);
         UserActivation userActivation = new UserActivation(null,
-                                                    email,
-                                                    code,
-                                                    LocalDateTime.now(),
-                                        true);
+                email,
+                code,
+                LocalDateTime.now(),
+                true);
         userActivationRepository.save(userActivation);
         emailService.sendSimpleMessage(email, getSubject(), getText(code));
         new Thread(() -> {
@@ -58,13 +60,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String setUserPassword(int code, String password) {
-        Optional<UserActivation> userActivationOptional =
-                userActivationRepository.findUserActivationByCodeAndActivationPossibleIsTrue(code);
-        UserActivation userActivation = userActivationOptional.get();
-
-
-        return null;
+    public Boolean setUserPassword(SetUserPasswordCodeDTO setUserPasswordCodeDTO) {
+        UserActivation userActivation =
+                userActivationRepository.findUserActivationByCodeAndActivationPossibleIsTrue(setUserPasswordCodeDTO.getCode())
+                        .orElseThrow(() -> new NotFoundException("Activation code not found."));
+        if (userActivation.isActivationPossible()) {
+            userServiceClient.setUserPassword(new SetPasswordDTO(setUserPasswordCodeDTO.getPassword(),
+                    setUserPasswordCodeDTO.getEmail()));
+            return true;
+        }
+        return false;
     }
 
     @Override
