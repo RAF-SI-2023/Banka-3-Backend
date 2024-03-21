@@ -2,6 +2,7 @@ package com.example.emailservice.service.impl;
 
 import com.example.emailservice.client.UserServiceClient;
 import com.example.emailservice.dto.ResetUserPasswordDTO;
+import com.example.emailservice.dto.TryPasswordResetDTO;
 import com.example.emailservice.model.PasswordReset;
 import com.example.emailservice.repository.PasswordResetRepository;
 import com.example.emailservice.service.EmailService;
@@ -29,7 +30,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public PasswordReset generateResetCode(String email) {
-        String identifier = UUID.randomUUID().toString().replace("-", "");;
+        String identifier = UUID.randomUUID().toString().replace("-", "");
+        ;
         PasswordReset passwordReset = new PasswordReset(
                 null,
                 email,
@@ -38,8 +40,8 @@ public class UserServiceImpl implements UserService {
                 true);
         passwordResetRepository.save(passwordReset);
         emailService.sendSimpleMessage(email, "Reset password request", "localhost:4200/resetPassword/" + identifier);
-        new Thread(()->{
-            long activationAvailableTime = 5*60*1000;
+        new Thread(() -> {
+            long activationAvailableTime = 5 * 60 * 1000;
             try {
                 sleep(activationAvailableTime);
                 passwordReset.setActive(false);
@@ -52,17 +54,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String tryChangePassword(String identifier, String password) {
-        PasswordReset passwordReset =  passwordResetRepository.findByIdentifier(identifier).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request not found."));
-//        return identifier;
-        if(passwordReset.getActive()){
-            ResetUserPasswordDTO resetPasswordDTO = new ResetUserPasswordDTO(password, passwordReset.getEmail());
+    public String tryChangePassword(TryPasswordResetDTO tryPasswordResetDTO) {
+        PasswordReset passwordReset =
+                passwordResetRepository.findByIdentifier(tryPasswordResetDTO.getIdentifier()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request not found."));
+        if (passwordReset.getActive()) {
+            ResetUserPasswordDTO resetPasswordDTO = new ResetUserPasswordDTO(tryPasswordResetDTO.getPassword(),
+                    passwordReset.getEmail());
             ResponseEntity<String> response = userServiceClient.resetUserPassword(resetPasswordDTO);
-            if(!response.getStatusCode().is2xxSuccessful()){
+            if (!response.getStatusCode().is2xxSuccessful()) {
                 throw new ResponseStatusException(response.getStatusCode(), response.getBody());
             }
             return "Password successfully changed";
-        }else{
+        } else {
             return "Password reset failed";
         }
     }

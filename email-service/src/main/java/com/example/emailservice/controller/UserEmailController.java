@@ -1,5 +1,6 @@
 package com.example.emailservice.controller;
 
+import com.example.emailservice.dto.TryPasswordResetDTO;
 import com.example.emailservice.model.PasswordReset;
 import com.example.emailservice.service.EmailService;
 import com.example.emailservice.service.UserService;
@@ -20,22 +21,14 @@ public class UserEmailController {
     @Autowired
     private EmailService emailService;
 
-    @GetMapping("resetPassword")
+    @GetMapping("/resetPassword")
     public String resetPassword(@RequestParam (name = "email") String email) {
         PasswordReset passwordReset = userService.generateResetCode(email);
         return  passwordReset.getEmail() + passwordReset.getIdentifier();
     }
 
-    @PostMapping("tryPasswordReset/{identifier}")
-    public String tryChangePassword(@PathVariable(name = "identifier") String identifier,
-    @RequestBody String password) {
-        return userService.tryChangePassword(identifier, password);
-//        System.out.println(password);
-//        return identifier;
+    @PostMapping("/tryPasswordReset")
+    public String tryChangePassword(@RequestBody TryPasswordResetDTO tryPasswordResetDTO) {
+        return userService.tryChangePassword(tryPasswordResetDTO);
     }
-
-
-
-
-
 }
