@@ -106,6 +106,21 @@ public class BootstrapData implements CommandLineRunner {
                 .permissions(List.of(canSell,canWatch))
                 .build();
 
+        Employee employeeJ = Employee.builder()
+                .firstName("Jelena")
+                .lastName("Drljan")
+                .username("jace123")
+                .email("jdrljan4620rn@raf.rs")
+                .jmbg("1111111111")
+                .phoneNumber("063555555")
+                .password(passwordEncoder.encode("jace1234"))
+                .isActive(true)
+                .gender("F")
+                .dateOfBirth(1710274123787L)
+                .role(bankingOfficer)
+                .permissions(List.of(canSell,canWatch))
+                .build();
+
         Employee employee3 = Employee.builder()
                 .firstName("Ninoslav")
                 .lastName("Zlatanovic")
@@ -125,6 +140,7 @@ public class BootstrapData implements CommandLineRunner {
         employees.add(employee1);
         employees.add(employee2);
         employees.add(employee3);
+        employees.add(employeeJ);
 
         employeeRepository.saveAll(employees);
 

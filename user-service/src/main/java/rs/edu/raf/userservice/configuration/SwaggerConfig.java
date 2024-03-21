@@ -7,6 +7,7 @@ import io.swagger.v3.oas.models.info.License;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+
 @Configuration
 public class SwaggerConfig {
     private final String APP_TITLE = "user-service";
