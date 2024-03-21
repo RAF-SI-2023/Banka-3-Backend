@@ -75,7 +75,7 @@ public class UserService implements UserDetailsService, UserServiceInterface {
             throw new ValidationException("invalid jmbg");
         }
         User user = UserMapper.INSTANCE.userCreateDtoToUser(createUserDto);
-        user.setIsActive(true);
+        user.setIsActive(false);
         userRepository.save(user);
         return UserMapper.INSTANCE.userToUserDto(user);
     }
