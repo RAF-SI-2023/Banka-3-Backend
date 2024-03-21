@@ -25,7 +25,7 @@ public class UserActivation {
     private String email;
 
     @NotNull(message = "This field cannot be NULL")
-    Integer code;
+    int code;
 
     @NotNull
     private LocalDateTime timeCreated;

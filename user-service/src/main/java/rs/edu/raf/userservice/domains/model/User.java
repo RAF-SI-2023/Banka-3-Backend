@@ -57,7 +57,7 @@ public class User implements Serializable {
     private String password;
 
     @NotNull(message = "This field cannot be NULL")
-    private Boolean isActive;
+    private boolean isActive;
 
     @OneToMany
     private List<Account> accounts = new ArrayList<>();

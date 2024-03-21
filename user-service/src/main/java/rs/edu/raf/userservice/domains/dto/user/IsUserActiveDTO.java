@@ -11,5 +11,5 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class IsUserActiveDTO implements Serializable {
     private String email;
-    private Boolean isActive;
+    private boolean isActive;
 }

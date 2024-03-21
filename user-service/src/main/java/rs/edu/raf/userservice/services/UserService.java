@@ -52,7 +52,7 @@ public class UserService implements UserDetailsService, UserServiceInterface {
         if (user == null) {
             throw new UsernameNotFoundException("User with the email: " + email + " not found");
         }
-        if (!user.getIsActive()) {
+        if (!user.isActive()) {
             throw new ForbiddenException("user not active");
         }
 
@@ -75,7 +75,7 @@ public class UserService implements UserDetailsService, UserServiceInterface {
             throw new ValidationException("invalid jmbg");
         }
         User user = UserMapper.INSTANCE.userCreateDtoToUser(createUserDto);
-        user.setIsActive(false);
+        user.setActive(false);
         userRepository.save(user);
         return UserMapper.INSTANCE.userToUserDto(user);
     }
@@ -84,7 +84,7 @@ public class UserService implements UserDetailsService, UserServiceInterface {
     public UserDto deactivateUser(Long id) {
         User newUser = userRepository.findById(id).orElseThrow(() -> new NotFoundException("user with" + id + " not " +
                 "found"));
-        newUser.setIsActive(false);
+        newUser.setActive(false);
         return UserMapper.INSTANCE.userToUserDto(userRepository.save(newUser));
     }
 
@@ -122,7 +122,7 @@ public class UserService implements UserDetailsService, UserServiceInterface {
     public IsUserActiveDTO isUserActive(String email){
         User user = userRepository.findByEmail(email).orElseThrow(()-> new NotFoundException("User with" + email + " not found"));
 
-        if (!user.getIsActive()) {
+        if (!user.isActive()) {
             emailServiceClient.sendUserActivationEmailToEmailService(email);
         }
         return UserMapper.INSTANCE.userToIsAUserActiveDTO(user);
@@ -133,6 +133,7 @@ public class UserService implements UserDetailsService, UserServiceInterface {
                                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
         user.setPassword(passwordEncoder.encode(setPasswordDTO.getPassword()));
+        user.setActive(true);
         userRepository.save(user);
         return "Successfully updated password for " + setPasswordDTO.getEmail();
     }

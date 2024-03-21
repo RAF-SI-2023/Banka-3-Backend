@@ -11,6 +11,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class SetUserPasswordCodeDTO implements Serializable {
     String email;
-    Integer code;
+    int code;
     String password;
 }
