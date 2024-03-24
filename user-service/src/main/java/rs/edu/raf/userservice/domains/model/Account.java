@@ -32,6 +32,9 @@ public class Account implements Serializable {
     private Double balance;
 
     @NotNull(message = "This field cannot be NULL")
+    private Double reservedAmount;
+
+    @NotNull(message = "This field cannot be NULL")
     private Double availableBalance;
 
     @ManyToOne

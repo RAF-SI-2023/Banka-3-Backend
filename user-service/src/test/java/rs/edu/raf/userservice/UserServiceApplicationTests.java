@@ -57,7 +57,7 @@ class UserServiceApplicationTests {
     @Test
     public void testLoadUserByUsername_UserIsNotActive() {
         User user = createDummyUser("pera123@gmail.com");
-        user.setIsActive(false);
+        user.setActive(false);
 
         given(userRepository.findByEmail(anyString())).willReturn(Optional.of(user));
 
@@ -266,7 +266,7 @@ class UserServiceApplicationTests {
         user.setAddress("Mika Mikic 13");
         user.setEmail(email);
         user.setPassword("pera1234");
-        user.setIsActive(true);
+        user.setActive(true);
 
         return user;
     }
