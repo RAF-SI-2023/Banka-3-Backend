@@ -26,6 +26,7 @@
     <modules>
         <module>user-service</module>
         <module>email-service</module>
+        <module>bank-service</module>
     </modules>
 
     <build>
