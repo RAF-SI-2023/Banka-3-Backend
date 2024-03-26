@@ -3,11 +3,14 @@ package rs.edu.raf.userservice.services;
 import org.springframework.stereotype.Service;
 import rs.edu.raf.userservice.domains.dto.contact.ContactCreateDto;
 import rs.edu.raf.userservice.domains.dto.contact.ContactDto;
+import rs.edu.raf.userservice.domains.dto.contact.ContactUpdateDto;
 import rs.edu.raf.userservice.domains.dto.credit.CreditDto;
+import rs.edu.raf.userservice.domains.exceptions.NotFoundException;
 import rs.edu.raf.userservice.domains.mappers.ContactMapper;
 import rs.edu.raf.userservice.domains.mappers.CreditMapper;
 import rs.edu.raf.userservice.domains.mappers.ForeignAccountMapper;
 import rs.edu.raf.userservice.domains.model.Contact;
+import rs.edu.raf.userservice.domains.model.Employee;
 import rs.edu.raf.userservice.domains.model.ForeignAccount;
 import rs.edu.raf.userservice.domains.model.User;
 import rs.edu.raf.userservice.repositories.ContactRepository;
@@ -49,6 +52,20 @@ public class ContactService {
         contactRepository.save(contact);
 
         return ContactMapper.INSTANCE.contactToContactDto(contact);
+    }
+
+    public ContactDto updateContact(ContactUpdateDto contactUpdateDto, Long id){
+        Contact contact =
+                contactRepository.findById(id).orElseThrow(() -> new NotFoundException("contact with" + id + " not " +
+                        "found"));
+
+        contact.setAccountNumber(contactUpdateDto.getAccountNumber());
+        contact.setMyName(contactUpdateDto.getMyName());
+        contact.setName(contactUpdateDto.getName());
+
+        contactRepository.save(contact);
+        return ContactMapper.INSTANCE.contactToContactDto(contact);
+
     }
 
     public void deleteContact(Long id){
