@@ -68,5 +68,11 @@ public class User implements Serializable {
     @OneToMany
     private List<Credit> credits = new ArrayList<>();
 
+<<<<<<< HEAD
+=======
+    @OneToMany
+    private List<CreditRequest> creditsRequests = new ArrayList<>();
+
+>>>>>>> d809f3142c956df9112f7a4ff9dc2c694fbfb0d9
     private Boolean codeActive = false;
 }
