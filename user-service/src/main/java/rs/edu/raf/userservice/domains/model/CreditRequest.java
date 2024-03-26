@@ -1,12 +1,8 @@
 package rs.edu.raf.userservice.domains.model;
-
 import lombok.*;
 import rs.edu.raf.userservice.domains.model.enums.CreditRequestStatus;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Data
@@ -21,8 +17,9 @@ public class CreditRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "This field cannot be NULL")
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "userId")
+    private User user;
 
     @NotNull(message = "This field cannot be NULL")
     private String name;
@@ -49,6 +46,7 @@ public class CreditRequest {
     private int paymentPeriod;
 
     @NotNull(message = "This field cannot be NULL")
+    @Enumerated(EnumType.STRING)
     private CreditRequestStatus status;
 
     @NotNull(message = "This field cannot be NULL")
