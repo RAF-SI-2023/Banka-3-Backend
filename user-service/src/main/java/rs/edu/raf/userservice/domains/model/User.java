@@ -65,5 +65,8 @@ public class User implements Serializable {
     @OneToMany
     private List<ForeignAccount> foreignAccounts = new ArrayList<>();
 
+    @OneToMany
+    private List<Credit> credits = new ArrayList<>();
+
     private Boolean codeActive = false;
 }
