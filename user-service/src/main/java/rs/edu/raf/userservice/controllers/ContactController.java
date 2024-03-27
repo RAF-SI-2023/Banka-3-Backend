@@ -33,10 +33,10 @@ public class ContactController {
         return contactService.createContact(contactCreateDto, userId);
     }
 
-    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces =
+    @PutMapping(value = "/{contactId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces =
             MediaType.APPLICATION_JSON_VALUE)
-    public ContactDto updateContact(@RequestBody ContactUpdateDto contactUpdateDto, @PathVariable Long id) {
-        return contactService.updateContact(contactUpdateDto, id);
+    public ContactDto updateContact(@RequestBody ContactUpdateDto contactUpdateDto, @PathVariable Long contactId) {
+        return contactService.updateContact(contactUpdateDto, contactId);
     }
 
     @DeleteMapping("/{contactId}")
