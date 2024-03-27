@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ContactUpdateDto {
-
     private String myName;
     private String name;
     private String accountNumber;
