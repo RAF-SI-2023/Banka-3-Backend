@@ -16,4 +16,5 @@ public class CreditRequestDto {
     private String currencyMark;
     private Double amount;
     private int paymentPeriod;
+    private CreditRequestStatus status;
 }

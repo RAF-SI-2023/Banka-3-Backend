@@ -12,7 +12,7 @@ public class CreditDto {
 
     private User user;
     private String name;
-    private Long accountNumber;
+    private String accountNumber;
     private Double amount;
     private int paymentPeriod;
     private double fee;

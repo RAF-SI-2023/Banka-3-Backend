@@ -13,7 +13,7 @@ public class CreditRequestCreateDto {
     private Long id;
     private Long userId;
     private String name;
-    private Long accountNumber;
+    private String accountNumber;
     private Double amount;
     private String applianceReason;
     private Double monthlyPaycheck;

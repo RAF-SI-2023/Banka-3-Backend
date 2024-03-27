@@ -7,12 +7,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateCreditDto {
+public class CreditTransactionDto {
 
-    private Long userId;
-    private String name;
-    private String accountNumber;
-    private String currencyMark;
+    private String accountFrom;
+    private Long creditId;
     private Double amount;
-    private int paymentPeriod;
+    private String currencyMark;
+    private Long date;
 }

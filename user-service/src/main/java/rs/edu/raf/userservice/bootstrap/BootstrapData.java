@@ -12,6 +12,7 @@ import rs.edu.raf.userservice.domains.model.enums.RoleName;
 import rs.edu.raf.userservice.repositories.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -27,6 +28,7 @@ public class BootstrapData implements CommandLineRunner {
     private final EmployeeRepository employeeRepository;
     private final PermissionRepository permissionRepository;
     private final RoleRepository roleRepository;
+    private final AccountRepository accountRepository;
 
     @Override
     public void run(String... args) {
@@ -147,6 +149,7 @@ public class BootstrapData implements CommandLineRunner {
                 .firstName("User1")
                 .lastName("User1")
                 .email("user@user.com")
+                .password(passwordEncoder.encode("user1234"))
                 .jmbg("1111111111")
                 .phoneNumber("063111111111")
                 .isActive(true)
@@ -196,5 +199,19 @@ public class BootstrapData implements CommandLineRunner {
 
         currencyRepository.save(currency);
 
+        Account account = new Account();
+        account.setUser(user1);
+        account.setEmployee(employee3);
+        account.setBalance(100000.0);
+        account.setReservedAmount(20000.0);
+        account.setAvailableBalance(80000.0);
+        account.setAccountNumber("12849127014");
+        account.setCreationDate(new Date().getTime());
+        account.setExpireDate(new Date().getTime() + 1000 * 3600);
+        account.setActive(true);
+        account.setCurrency(currency);
+        account.setAccountType(accountType);
+
+        accountRepository.save(account);
     }
 }
