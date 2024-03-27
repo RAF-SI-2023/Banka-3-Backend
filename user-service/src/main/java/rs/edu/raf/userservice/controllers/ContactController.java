@@ -6,12 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import rs.edu.raf.userservice.domains.dto.contact.ContactCreateDto;
 import rs.edu.raf.userservice.domains.dto.contact.ContactDto;
 import rs.edu.raf.userservice.domains.dto.contact.ContactUpdateDto;
-import rs.edu.raf.userservice.domains.dto.credit.CreateCreditDto;
-import rs.edu.raf.userservice.domains.dto.credit.CreditDto;
-import rs.edu.raf.userservice.domains.dto.employee.EmployeeDto;
-import rs.edu.raf.userservice.domains.dto.employee.EmployeeUpdateDto;
-import rs.edu.raf.userservice.domains.dto.foreignaccount.ForeignAccountDto;
-import rs.edu.raf.userservice.domains.model.Contact;
 import rs.edu.raf.userservice.services.ContactService;
 
 import java.util.List;
@@ -30,13 +24,13 @@ public class ContactController {
     }
 
     @GetMapping(path = "/{userId}")
-    public List<ContactDto> getByUser(Long userId) {
+    public List<ContactDto> getByUser(@PathVariable Long userId) {
         return contactService.findByUserId(userId);
     }
 
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ContactDto createContact(@RequestBody ContactCreateDto contactCreateDto) {
-        return contactService.createContact(contactCreateDto);
+    @PostMapping(path = "/{userId}")
+    public ContactDto createContact(@RequestBody ContactCreateDto contactCreateDto, @PathVariable Long userId) {
+        return contactService.createContact(contactCreateDto, userId);
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces =

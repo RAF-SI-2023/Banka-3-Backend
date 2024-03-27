@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ContactCreateDto {
 
-    private Long userId;
     private String myName;
     private String name;
     private String accountNumber;

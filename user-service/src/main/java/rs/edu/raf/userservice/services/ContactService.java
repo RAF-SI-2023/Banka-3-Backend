@@ -45,9 +45,9 @@ public class ContactService {
 
     }
 
-    public ContactDto createContact(ContactCreateDto contactCreateDto){
+    public ContactDto createContact(ContactCreateDto contactCreateDto, Long userId){
         Contact contact = ContactMapper.INSTANCE.contactCreateDtoToContact(contactCreateDto);
-        User user = userRepository.findById(contactCreateDto.getUserId()).orElseThrow();
+        User user = userRepository.findById(userId).orElseThrow();
         contact.setUser(user);
         contactRepository.save(contact);
 
@@ -69,6 +69,6 @@ public class ContactService {
     }
 
     public void deleteContact(Long id){
-        contactRepository.delete(contactRepository.getById(id));
+        contactRepository.deleteById(id);
     }
 }
