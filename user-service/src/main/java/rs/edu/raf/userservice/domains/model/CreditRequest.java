@@ -1,9 +1,16 @@
 package rs.edu.raf.userservice.domains.model;
+
 import lombok.*;
 import rs.edu.raf.userservice.domains.model.enums.CreditRequestStatus;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 @Data
 @Builder
@@ -11,7 +18,7 @@ import javax.validation.constraints.NotNull;
 @RequiredArgsConstructor
 @Entity
 @ToString
-public class CreditRequest {
+public class CreditRequest implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +32,7 @@ public class CreditRequest {
     private String name;
 
     @NotNull(message = "This field cannot be NULL")
-    private Long accountNumber;
+    private String accountNumber;
 
     @NotNull(message = "This field cannot be NULL")
     private Double amount;
@@ -46,6 +53,7 @@ public class CreditRequest {
     private int paymentPeriod;
 
     @NotNull(message = "This field cannot be NULL")
+
     @Enumerated(EnumType.STRING)
     private CreditRequestStatus status;
 

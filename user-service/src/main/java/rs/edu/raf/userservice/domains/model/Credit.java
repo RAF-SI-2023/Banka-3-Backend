@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 @Data
 @Builder
@@ -11,7 +12,7 @@ import javax.validation.constraints.NotNull;
 @RequiredArgsConstructor
 @Entity
 @ToString
-public class Credit {
+public class Credit implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +26,7 @@ public class Credit {
     private String name;
 
     @NotNull(message = "This field cannot be NULL")
-    private Long accountNumber;
+    private String accountNumber;
 
     @NotNull(message = "This field cannot be NULL")
     private Double amount;
