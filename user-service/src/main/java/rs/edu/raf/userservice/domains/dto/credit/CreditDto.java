@@ -9,7 +9,6 @@ import rs.edu.raf.userservice.domains.model.User;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreditDto {
-
     private User user;
     private String name;
     private Long accountNumber;
