@@ -32,10 +32,11 @@ public class CreditService {
     private BankServiceClient bankServiceClient;
 
     public CreditService(CreditRepository creditRepository, UserRepository userRepository,
-                         AccountRepository accountRepository) {
+                         AccountRepository accountRepository, BankServiceClient bankServiceClient) {
         this.creditRepository = creditRepository;
         this.userRepository = userRepository;
         this.accountRepository = accountRepository;
+        this.bankServiceClient = bankServiceClient;
     }
 
     public List<CreditDto> findAll() {

@@ -19,12 +19,13 @@ import rs.edu.raf.userservice.repositories.AccountRepository;
 import rs.edu.raf.userservice.repositories.CreditRepository;
 import rs.edu.raf.userservice.repositories.UserRepository;
 import rs.edu.raf.userservice.services.CreditService;
+import rs.edu.raf.userservice.utils.BankServiceClient;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,6 +37,8 @@ public class CreditServiceTest {
     private UserRepository userRepository;
     @Mock
     private AccountRepository accountRepository;
+    @Mock
+    private BankServiceClient bankServiceClient;
     @InjectMocks
     private CreditService creditService;
 
@@ -52,8 +55,8 @@ public class CreditServiceTest {
 
         // Priprema podataka za test
         List<Credit> credits = Arrays.asList(
-                new Credit(1l, user, "Name", "123456789", 100.00, 50, 0.05, 280599l, 13022011l, 300.00, 20000.00, "RSD"),
-                new Credit(2l, user1, "Name", "123456789", 100.00, 50, 0.05, 280599l, 13022011l, 300.00, 20000.00, "RSD")
+                new Credit(1l, user, "Name", "123456789", BigDecimal.valueOf(100.00), 50, BigDecimal.valueOf(0.05), 280599l, 13022011l, BigDecimal.valueOf(300.00), BigDecimal.valueOf(20000.00), "RSD"),
+                new Credit(2l, user1, "Name", "123456789", BigDecimal.valueOf(100.00), 50, BigDecimal.valueOf(0.05), 280599l, 13022011l, BigDecimal.valueOf(300.00), BigDecimal.valueOf(20000.00), "RSD")
         );
 
         // Podešavanje ponašanja mock CreditRepository-ja
@@ -68,13 +71,12 @@ public class CreditServiceTest {
             assertEquals(credits.get(i).getUser(), result.get(i).getUser());
             assertEquals(credits.get(i).getName(), result.get(i).getName());
             assertEquals(credits.get(i).getAccountNumber(), result.get(i).getAccountNumber());
-            assertEquals(credits.get(i).getAmount(), result.get(i).getAmount());
+            assertEquals(credits.get(i).getAmount(), BigDecimal.valueOf(result.get(i).getAmount()));
             assertEquals(credits.get(i).getPaymentPeriod(), result.get(i).getPaymentPeriod());
-            assertEquals(credits.get(i).getFee(), result.get(i).getFee(), 0.001); // Podesite tačnost na vaš zahtev
             assertEquals(credits.get(i).getStartDate(), result.get(i).getStartDate());
             assertEquals(credits.get(i).getEndDate(), result.get(i).getEndDate());
-            assertEquals(credits.get(i).getMonthlyFee(), result.get(i).getMonthlyFee());
-            assertEquals(credits.get(i).getRemainingAmount(), result.get(i).getRemainingAmount());
+            assertEquals(credits.get(i).getMonthlyFee(), BigDecimal.valueOf(result.get(i).getMonthlyFee()));
+            assertEquals(credits.get(i).getRemainingAmount(), BigDecimal.valueOf(result.get(i).getRemainingAmount()));
             assertEquals(credits.get(i).getCurrencyMark(), result.get(i).getCurrencyMark());
         }
     }
@@ -100,8 +102,8 @@ public class CreditServiceTest {
         User user = new User();
         User user1 = new User();
 
-        Credit credit1 = new Credit(1l, user, "Name", "123456789", 100.00, 50, 0.05, 280599l, 13022011l, 300.00, 20000.00, "RSD");
-        Credit credit2 = new Credit(2l, user1, "Name", "123456789", 100.00, 50, 0.05, 280599l, 13022011l, 300.00, 20000.00, "RSD");
+        Credit credit1 = new Credit(1l, user, "Name", "123456789", BigDecimal.valueOf(100.00), 50, BigDecimal.valueOf(0.05), 280599l, 13022011l, BigDecimal.valueOf(300.00), BigDecimal.valueOf(20000.00), "RSD");
+        Credit credit2 = new Credit(2l, user1, "Name", "123456789", BigDecimal.valueOf(100.00), 50, BigDecimal.valueOf(0.05), 280599l, 13022011l, BigDecimal.valueOf(300.00), BigDecimal.valueOf(20000.00), "RSD");
         List<Credit> credits = Arrays.asList(credit1, credit2);
 
         when(creditRepository.findByUser_UserId(user.getUserId())).thenReturn(Optional.of(credits));
@@ -113,13 +115,12 @@ public class CreditServiceTest {
             assertEquals(credits.get(i).getUser(), result.get(i).getUser());
             assertEquals(credits.get(i).getName(), result.get(i).getName());
             assertEquals(credits.get(i).getAccountNumber(), result.get(i).getAccountNumber());
-            assertEquals(credits.get(i).getAmount(), result.get(i).getAmount());
+            assertEquals(credits.get(i).getAmount(), BigDecimal.valueOf(result.get(i).getAmount()));
             assertEquals(credits.get(i).getPaymentPeriod(), result.get(i).getPaymentPeriod());
-            assertEquals(credits.get(i).getFee(), result.get(i).getFee(), 0.001); // Podesite tačnost na vaš zahtev
             assertEquals(credits.get(i).getStartDate(), result.get(i).getStartDate());
             assertEquals(credits.get(i).getEndDate(), result.get(i).getEndDate());
-            assertEquals(credits.get(i).getMonthlyFee(), result.get(i).getMonthlyFee());
-            assertEquals(credits.get(i).getRemainingAmount(), result.get(i).getRemainingAmount());
+            assertEquals(credits.get(i).getMonthlyFee(), BigDecimal.valueOf(result.get(i).getMonthlyFee()));
+            assertEquals(credits.get(i).getRemainingAmount(), BigDecimal.valueOf(result.get(i).getRemainingAmount()));
             assertEquals(credits.get(i).getCurrencyMark(), result.get(i).getCurrencyMark());
         }
     }
@@ -138,7 +139,7 @@ public class CreditServiceTest {
     public void testFindById() {
         User user = new User();
         Long id = 123L;
-        Credit credit1 = new Credit(1l, user, "Name", "123456789", 100.00, 50, 0.05, 280599l, 13022011l, 300.00, 20000.00, "RSD");
+        Credit credit1 = new Credit(1l, user, "Name", "123456789", BigDecimal.valueOf(100.00), 50, BigDecimal.valueOf(0.05), 280599l, 13022011l, BigDecimal.valueOf(300.00), BigDecimal.valueOf(20000.00), "RSD");
 
         CreditDto expectedDto = new CreditDto(user, "Name", "123456789", 100.00, 50, 0.05, 280599l, 13022011l, 300.00, 20000.00, "RSD");
 
@@ -179,9 +180,9 @@ public class CreditServiceTest {
         user.setUserId(1L);
         Long userId = 1L;
         CreateCreditDto createCreditDto = new CreateCreditDto(userId, "Name", "123456789", "RSD", 100.00, 50);
-        Credit credit = new Credit(1l, user, "Name", "123456789", 100.00, 50, 0.05, 280599l, 13022011l, 300.00, 20000.00, "RSD");
+        Credit credit = new Credit(1l, user, "Name", "123456789", BigDecimal.valueOf(100.00), 50, BigDecimal.valueOf(0.05), 280599l, 13022011l, BigDecimal.valueOf(300.00), BigDecimal.valueOf(20000.00), "RSD");
         Account account = new Account();
-        account.setBalance(100000.0);
+        account.setAvailableBalance(BigDecimal.valueOf(10000.00));
 
 
         when(userRepository.findById(createCreditDto.getUserId())).thenReturn(Optional.of(user));
@@ -195,7 +196,37 @@ public class CreditServiceTest {
         assertEquals(createCreditDto.getName(), credit.getName());
         assertEquals(createCreditDto.getCurrencyMark(), credit.getCurrencyMark());
         assertEquals(createCreditDto.getPaymentPeriod(), credit.getPaymentPeriod());
-        assertEquals(createCreditDto.getAmount(), credit.getAmount());
+        assertEquals(BigDecimal.valueOf(createCreditDto.getAmount()), credit.getAmount());
+    }
 
+    @Test
+    public void testCreditMonthlyPay() {
+        // Priprema podataka za test
+        User user = new User();
+        User user1 = new User();
+
+
+
+        List<Credit> credits = new ArrayList<>();
+        Credit credit1 = new Credit(1l, user, "Name", "123456789", BigDecimal.valueOf(100.00), 50, BigDecimal.valueOf(0.05), 280599l, 13022011l, BigDecimal.valueOf(300.00), BigDecimal.valueOf(20000.00), "RSD");
+        Credit credit2 = new Credit(2l, user1, "Name", "123456789", BigDecimal.valueOf(100.00), 50, BigDecimal.valueOf(0.05), 280599l, 13022011l, BigDecimal.valueOf(300.00), BigDecimal.valueOf(20000.00), "RSD");
+        credits.add(credit1);
+        credits.add(credit2);
+
+        Account account = new Account();
+        account.setAvailableBalance(BigDecimal.valueOf(10000));
+
+        when(creditRepository.findAll()).thenReturn(credits);
+        when(accountRepository.findByAccountNumber(anyString())).thenReturn(Optional.of(account));
+
+        // Izvršavanje metode koju testiramo
+        creditService.creditMonthlyPay();
+
+        // Provera poziva save metoda
+        verify(accountRepository, times(credits.size())).save(any(Account.class));
+        verify(creditRepository, times(credits.size())).save(any(Credit.class));
+
+        // Provera poziva createCreditTransactions metoda
+        verify(bankServiceClient, times(1)).createCreditTransactions(anyList());
     }
 }
