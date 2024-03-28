@@ -6,6 +6,7 @@ import com.example.bankservice.domains.dto.ConfirmTransactionDto;
 import com.example.bankservice.domains.dto.TransactionDto;
 import com.example.bankservice.services.TransactionService;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -46,5 +47,10 @@ public class TransactionController {
     @PostMapping(value = "/confirmTransaction")
     public ResponseEntity<String> confirmTransaction(@RequestBody ConfirmTransactionDto confirmTransactionDto) {
         return transactionService.confirmTransaction(confirmTransactionDto);
+    }
+
+    @GetMapping(value = "/getAllTransactions/{accountId}")
+    public ResponseEntity<?> getAllTransactions(@PathVariable String accountId) {
+        return ResponseEntity.ok(transactionService.getAllTransactions(accountId));
     }
 }

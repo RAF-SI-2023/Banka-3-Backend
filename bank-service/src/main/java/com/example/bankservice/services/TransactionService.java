@@ -16,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -108,5 +109,18 @@ public class TransactionService {
                 transaction.getAmount(), transaction.getCurrencyMark()));
         transaction.setState(TransactionState.FINISHED);
         transactionRepository.save(transaction);
+    }
+
+    public List<TransactionDto> getAllTransactions(String accountId) {
+        Optional<List<Transaction>> optionalTransactionsFrom = transactionRepository.findAllTransactionsByAccountFrom(accountId);
+        Optional<List<Transaction>> optionalTransactionsTo = transactionRepository.findAllTransactionsByAccountTo(accountId);
+        List<Transaction> optionalTransactions;
+        if (!optionalTransactionsFrom.isPresent() && !optionalTransactionsTo.isPresent()) {
+            return null;
+        }
+        optionalTransactions = optionalTransactionsFrom.get();
+        optionalTransactions.addAll(optionalTransactionsTo.get());
+
+        return optionalTransactions.stream().map(TransactionMapper.INSTANCE::transactionToTransactionDto).collect(Collectors.toList());
     }
 }
