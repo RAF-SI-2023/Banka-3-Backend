@@ -130,8 +130,7 @@ public class AccountService {
         account.setActive(true);// 1 year
         account.setReservedAmount(0.0);
         CurrencyName currencyName = CurrencyName.valueOf(accountCreateDto.getCurrency());
-        account.setCurrency(currencyRepository.findByName(currencyName).orElseThrow()); //problematicno moze li da
-        // bude long jebo me dan, isti problem ispod
+        account.setCurrency(currencyRepository.findByName(currencyName).orElseThrow());
         AccountTypeName accountTypeName = AccountTypeName.valueOf(accountCreateDto.getAccountType());
         account.setAvailableBalance(accountCreateDto.getBalance());
         account.setAccountType(accountTypeRepository.findByAccountType(accountTypeName).orElseThrow());

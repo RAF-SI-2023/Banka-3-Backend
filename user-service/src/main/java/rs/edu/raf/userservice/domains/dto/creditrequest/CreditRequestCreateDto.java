@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreditRequestCreateDto {
-    private Long id;
     private Long userId;
     private String name;
     private String accountNumber;
