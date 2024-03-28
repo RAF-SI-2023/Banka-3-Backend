@@ -20,7 +20,7 @@ public class AccountDto {
     private String accountNumber;
     private User user;
     private BigDecimal availableBalance;
-    private BigDecimal reservedBalance;
+    private BigDecimal reservedAmount;
     private Long creationDate;
     private Long expireDate;
     private boolean active;
