@@ -1,6 +1,5 @@
 package rs.edu.raf.userservice.services;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import rs.edu.raf.userservice.domains.dto.creditrequest.CreditRequestCreateDto;
 import rs.edu.raf.userservice.domains.dto.creditrequest.CreditRequestDto;
@@ -13,7 +12,6 @@ import rs.edu.raf.userservice.repositories.CreditRequestRepository;
 import rs.edu.raf.userservice.repositories.UserRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
