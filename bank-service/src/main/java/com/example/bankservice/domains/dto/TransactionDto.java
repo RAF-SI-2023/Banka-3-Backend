@@ -11,12 +11,10 @@ import lombok.ToString;
 @RequiredArgsConstructor
 @ToString
 public class TransactionDto {
-
     private String accountFrom; //accountNumber
     private String accountTo;
     private Double amount;
     private String currencyMark;
     private Double sifraPlacanja;
     private String pozivNaBroj;
-
 }

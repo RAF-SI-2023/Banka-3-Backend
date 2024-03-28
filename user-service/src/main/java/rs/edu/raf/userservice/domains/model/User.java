@@ -68,7 +68,6 @@ public class User implements Serializable {
     @OneToMany
     private List<Credit> credits = new ArrayList<>();
 
-
     @OneToMany
     private List<Contact> contacts = new ArrayList<>();
 

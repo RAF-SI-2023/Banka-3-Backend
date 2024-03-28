@@ -4,6 +4,8 @@ import com.example.bankservice.domains.model.enums.TransactionState;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -29,12 +31,13 @@ public class Transaction implements Serializable {
     private Double amount;
 
     @NotNull(message = "This field cannot be NULL")
-    @Size(min = 3, max = 3, message = "Currency mark must be exactly 3 characters long")
+    @Size(min = 3, max = 4, message = "Currency mark must be exactly 3 characters long")
     private String currencyMark;
 
     @NotNull(message = "This field cannot be NULL")
-    @Size(min = 3, max = 3, message = "Sifra placanja must be exactly 3 characters long")
-    private Double sifraPlacanja;
+    @Min(value = 100, message = "Sifra placanja must be exactly 3 characters long")
+    @Max(value = 999, message = "Sifra placanja must be exactly 3 characters long")
+    private int sifraPlacanja;
 
     @NotNull(message = "This field cannot be NULL")
     private String pozivNaBroj;

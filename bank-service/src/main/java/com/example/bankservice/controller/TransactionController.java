@@ -2,6 +2,7 @@ package com.example.bankservice.controller;
 
 
 import com.example.bankservice.domains.dto.CheckEnoughBalanceDto;
+import com.example.bankservice.domains.dto.ConfirmTransactionDto;
 import com.example.bankservice.domains.dto.TransactionDto;
 import com.example.bankservice.services.TransactionService;
 import lombok.AllArgsConstructor;
@@ -27,7 +28,7 @@ public class TransactionController {
      * ukoliko nema sredstava vratice error message koji ce reci da nema sredstava na racunu.
      */
 
-    @PostMapping(value = "/enoughAmount")
+    @PostMapping(value = "/checkAmount")
     public ResponseEntity<String> doesPersonHaveEnoughAmount(@RequestBody CheckEnoughBalanceDto dto) {
         return transactionService.doesPersonHaveEnoughBalance(dto);
     }
@@ -42,11 +43,8 @@ public class TransactionController {
         return transactionService.startTransaction(dto);
     }
 
-    @GetMapping(value = "/confirmTransaction/{transactionId}")
-    public ResponseEntity<String> confirmTransaction(@PathVariable Long transactionId) {
-        return transactionService.confirmTransaction(transactionId);
-
+    @PostMapping(value = "/confirmTransaction")
+    public ResponseEntity<String> confirmTransaction(@RequestBody ConfirmTransactionDto confirmTransactionDto) {
+        return transactionService.confirmTransaction(confirmTransactionDto);
     }
-
-
 }

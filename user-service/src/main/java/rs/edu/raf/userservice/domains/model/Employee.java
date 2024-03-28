@@ -1,6 +1,7 @@
 package rs.edu.raf.userservice.domains.model;
 
 import lombok.*;
+import org.springframework.stereotype.Service;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -9,12 +10,12 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
-@ToString
 @Table(name = "employees", uniqueConstraints = {@UniqueConstraint(columnNames = {"email"})})
 public class Employee implements Serializable {
 

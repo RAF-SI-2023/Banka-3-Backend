@@ -3,10 +3,7 @@ package com.example.bankservice.services;
 
 import com.example.bankservice.client.EmailServiceClient;
 import com.example.bankservice.client.UserServiceClient;
-import com.example.bankservice.domains.dto.CheckEnoughBalanceDto;
-import com.example.bankservice.domains.dto.RebalanceAccountDto;
-import com.example.bankservice.domains.dto.TransactionActivationDto;
-import com.example.bankservice.domains.dto.TransactionDto;
+import com.example.bankservice.domains.dto.*;
 import com.example.bankservice.domains.mappers.TransactionMapper;
 import com.example.bankservice.domains.model.Transaction;
 import com.example.bankservice.domains.model.enums.TransactionState;
@@ -31,10 +28,9 @@ public class TransactionService {
 
     public ResponseEntity<String> doesPersonHaveEnoughBalance(CheckEnoughBalanceDto dto) {
         return userServiceClient.checkEnoughBalance(dto);
-
     }
 
-    //Ako ima novca,vracamo transacionId.Posle se taj id koristi sa proveru koda
+    //Ako ima novca,vracamo transacionId. Posle se taj id koristi sa proveru koda
     public ResponseEntity<Long> startTransaction(TransactionDto dto) {
 
         ResponseEntity<String> response =
@@ -62,21 +58,22 @@ public class TransactionService {
     //Kada korisnik potvrdi transakciju,email servis proverava da li je kod dobar,ako jeste prebacujemo transakciju u
     // ACCEPTED stanje
 
-    public ResponseEntity<String> confirmTransaction(Long transactionId) {
+    public ResponseEntity<String> confirmTransaction(ConfirmTransactionDto confirmTransactionDto) {
 
-        Optional<Transaction> optionalTransaction = transactionRepository.findById(transactionId);
+        Optional<Transaction> optionalTransaction =
+                transactionRepository.findById(confirmTransactionDto.getTransactionId());
         if (!optionalTransaction.isPresent())
-            return ResponseEntity.badRequest().body("Transaction with id " + transactionId + " does not exist");
+            return ResponseEntity.badRequest().body("Transaction with id " + confirmTransactionDto.getTransactionId() + " does not exist");
 
         Transaction transaction = optionalTransaction.get();
         if (transaction.getState() != TransactionState.PENDING)
-            return ResponseEntity.badRequest().body("Transaction with id " + transactionId + " is not in PENDING " +
-                    "state");
+            return ResponseEntity.badRequest().body("Transaction with id " + confirmTransactionDto.getTransactionId()
+                    + " is not in PENDING state");
 
         transaction.setState(TransactionState.ACCEPTED);//ako je accepted,cron job ce prepoznati da treba da skine
         // sredstva
         transactionRepository.save(transaction);
-        return ResponseEntity.ok("Transaction with id " + transactionId + " is confirmed");
+        return ResponseEntity.ok("Transaction with id " + confirmTransactionDto.getTransactionId() + " is confirmed");
     }
 
     /**
@@ -84,7 +81,7 @@ public class TransactionService {
      * da skloni sumu iz rezervisanih sredstava i da umanji stvarno stanje racuna.
      */
 
-    @Scheduled(cron = "0 */5 * * * *") // Postavljanje cron izraza da se metoda izvrsava svakih 5 minuta
+    @Scheduled(fixedRate = 30000) // Postavljanje cron izraza da se metoda izvrsava svakih 5 minuta
     public void processTransactions() {
 
         Optional<List<Transaction>> optionalTransactions = transactionRepository.findByState(TransactionState.ACCEPTED);
@@ -105,7 +102,9 @@ public class TransactionService {
 
         userServiceClient.unreserveMoney(new RebalanceAccountDto(transaction.getAccountFrom(),
                 transaction.getAmount(), transaction.getCurrencyMark()));
-        userServiceClient.addMoneyToAccount(new RebalanceAccountDto(transaction.getAccountFrom(),
+        userServiceClient.takeMoneyFromAccount(new RebalanceAccountDto(transaction.getAccountFrom(),
+                transaction.getAmount(), transaction.getCurrencyMark()));
+        userServiceClient.addMoneyToAccount(new RebalanceAccountDto(transaction.getAccountTo(),
                 transaction.getAmount(), transaction.getCurrencyMark()));
         transaction.setState(TransactionState.FINISHED);
         transactionRepository.save(transaction);

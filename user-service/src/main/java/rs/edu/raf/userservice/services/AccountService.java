@@ -196,7 +196,6 @@ public class AccountService {
     }
 
 
-    //TODO ubaciti u test
     public ResponseEntity<String> checkEnoughBalance(CheckEnoughBalanceDto dto) {
         Optional<Account> optionalAccount = accountRepository.findByAccountNumber(dto.getAccountNumber());
 

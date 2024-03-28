@@ -1,9 +1,6 @@
 package rs.edu.raf.userservice.domains.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -13,6 +10,7 @@ import java.io.Serializable;
 @Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
+@ToString
 @Entity
 public class Account implements Serializable {
 
