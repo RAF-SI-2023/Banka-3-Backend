@@ -238,11 +238,17 @@ public class BootstrapData implements CommandLineRunner {
                 .mark("RSD")
                 .name(CurrencyName.DINAR)
                 .build();
-        AccountType accountType = AccountType.builder()
+        AccountType accountType1 = AccountType.builder()
                 .accountType(AccountTypeName.ZA_MLADE)
                 .monthlyFee(0)
                 .build();
-        accountTypeRepository.save(accountType);
+
+        AccountType accountType2 = AccountType.builder()
+                .accountType(AccountTypeName.LICNI)
+                .monthlyFee(0)
+                .build();
+        accountTypeRepository.save(accountType1);
+        accountTypeRepository.save(accountType2);
 
         currencyRepository.save(currency);
 
@@ -257,7 +263,7 @@ public class BootstrapData implements CommandLineRunner {
         account1.setExpireDate(new Date().getTime() + 1000 * 3600);
         account1.setActive(true);
         account1.setCurrency(currency);
-        account1.setAccountType(accountType);
+        account1.setAccountType(accountType1);
 
         Account account2 = new Account();
         account2.setUser(user3);
@@ -270,7 +276,7 @@ public class BootstrapData implements CommandLineRunner {
         account2.setExpireDate(new Date().getTime() + 1000 * 3600);
         account2.setActive(true);
         account2.setCurrency(currency);
-        account2.setAccountType(accountType);
+        account2.setAccountType(accountType2);
 
         accountRepository.save(account1);
         accountRepository.save(account2);

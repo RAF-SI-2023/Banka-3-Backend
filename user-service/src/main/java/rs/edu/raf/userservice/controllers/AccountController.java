@@ -70,15 +70,14 @@ public class AccountController {
 
 
     //preauthorize sa employee
-    @PostMapping("/{userId}")
-    public AccountDto addUser(@PathVariable Long userId, @RequestBody AccountCreateDto accountCreateDto) {
-        return accountService.create(accountCreateDto, userId);
+    @PostMapping("/createAccount")
+    public AccountDto addAccount(@RequestBody AccountCreateDto accountCreateDto) {
+        return accountService.create(accountCreateDto);
     }
 
     @DeleteMapping("/{accountId}")
     public void deleteAccount(@PathVariable Long accountId) {
         accountService.deactivate(accountId);
     }
-
 
 }

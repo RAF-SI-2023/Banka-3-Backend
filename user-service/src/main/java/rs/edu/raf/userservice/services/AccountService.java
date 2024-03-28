@@ -120,7 +120,7 @@ public class AccountService {
     }
 
     //ostaje jos da iz jwt-a se doda employeeId
-    public AccountDto create(AccountCreateDto accountCreateDto, Long userId) {
+    public AccountDto create(AccountCreateDto accountCreateDto) {
         Account account = AccountMapper.INSTANCE.accountCreateDtoToAccount(accountCreateDto);
         account.setAccountNumber(randAccNumber());
         account.setUser(userRepository.findById(accountCreateDto.getUserId()).get());
@@ -128,6 +128,7 @@ public class AccountService {
         account.setCreationDate(System.currentTimeMillis());
         account.setExpireDate(System.currentTimeMillis() + 31556952000L);
         account.setActive(true);// 1 year
+        account.setReservedAmount(0.0);
         CurrencyName currencyName = CurrencyName.valueOf(accountCreateDto.getCurrency());
         account.setCurrency(currencyRepository.findByName(currencyName).orElseThrow()); //problematicno moze li da
         // bude long jebo me dan, isti problem ispod

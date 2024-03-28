@@ -27,5 +27,4 @@ public class AccountType implements Serializable {
     @NotNull(message = "This field cannot be NULL")
     private double monthlyFee;
 
-
 }

@@ -54,26 +54,4 @@ public class Account implements Serializable {
     @ManyToOne
     @JoinColumn(name = "accountTypeId")
     private AccountType accountType;
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
