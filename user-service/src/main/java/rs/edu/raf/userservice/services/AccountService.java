@@ -63,6 +63,15 @@ public class AccountService {
         Optional<Account> optionalAccount = accountRepository.findByAccountNumber(dto.getAccountNumber());
         if (!optionalAccount.isPresent()) return ResponseEntity.badRequest().build();
         Account account = optionalAccount.get();
+
+        if (!account.getCurrency().getMark().equalsIgnoreCase(dto.getCurrencyMark())) {
+            Double convertedAmount = convertCurrency(dto.getCurrencyMark(), account.getCurrency().getMark(),
+                    dto.getAmount());
+            account.setAvailableBalance(account.getAvailableBalance().add(new BigDecimal(convertedAmount)));
+            accountRepository.save(account);
+            return ResponseEntity.ok().build();
+        }
+
         account.setAvailableBalance(account.getAvailableBalance().add(new BigDecimal(dto.getAmount())));
         accountRepository.save(account);
         return ResponseEntity.ok().build();

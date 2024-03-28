@@ -233,9 +233,13 @@ public class BootstrapData implements CommandLineRunner {
 
         userRepository.saveAll(users);
 
-        Currency currency = Currency.builder()
+        Currency currency1 = Currency.builder()
                 .mark("RSD")
                 .name(CurrencyName.DINAR)
+                .build();
+        Currency currency2 = Currency.builder()
+                .mark("EUR")
+                .name(CurrencyName.EURO)
                 .build();
         AccountType accountType1 = AccountType.builder()
                 .accountType(AccountTypeName.ZA_MLADE)
@@ -249,7 +253,8 @@ public class BootstrapData implements CommandLineRunner {
         accountTypeRepository.save(accountType1);
         accountTypeRepository.save(accountType2);
 
-        currencyRepository.save(currency);
+        currencyRepository.save(currency1);
+        currencyRepository.save(currency2);
 
         Account account1 = new Account();
         account1.setUser(user1);
@@ -260,7 +265,7 @@ public class BootstrapData implements CommandLineRunner {
         account1.setCreationDate(new Date().getTime());
         account1.setExpireDate(new Date().getTime() + 1000 * 3600);
         account1.setActive(true);
-        account1.setCurrency(currency);
+        account1.setCurrency(currency1);
         account1.setAccountType(accountType1);
 
         Account account2 = new Account();
@@ -272,11 +277,24 @@ public class BootstrapData implements CommandLineRunner {
         account2.setCreationDate(new Date().getTime());
         account2.setExpireDate(new Date().getTime() + 1000 * 3600);
         account2.setActive(true);
-        account2.setCurrency(currency);
+        account2.setCurrency(currency1);
         account2.setAccountType(accountType2);
+
+        Account account3 = new Account();
+        account3.setUser(user3);
+        account3.setEmployee(employee3);
+        account3.setReservedAmount(new BigDecimal(20000.0));
+        account3.setAvailableBalance(new BigDecimal(100000.0));
+        account3.setAccountNumber("33333333333");
+        account3.setCreationDate(new Date().getTime());
+        account3.setExpireDate(new Date().getTime() + 1000 * 3600);
+        account3.setActive(true);
+        account3.setCurrency(currency2);
+        account3.setAccountType(accountType2);
 
         accountRepository.save(account1);
         accountRepository.save(account2);
+        accountRepository.save(account3);
 
         CreditRequest creditRequest = new CreditRequest();
         creditRequest.setUser(user1);
