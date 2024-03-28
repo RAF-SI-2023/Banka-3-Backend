@@ -12,8 +12,8 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@CrossOrigin
-@RequestMapping("api/v2/credit-transaction")
+@CrossOrigin("*")
+@RequestMapping("/api/v1/credit-transaction")
 public class CreditTransactionController {
 
     @Autowired
