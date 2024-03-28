@@ -20,14 +20,7 @@ public class CompanyService {
     }
 
     public CompanyDto create(CompanyCreateDto companyCreateDto) {
-//        Company company = CompanyMapper.INSTANCE.companyCreateDtoToCompany(companyCreateDto);
-        Company company = new Company();
-        company.setTitle(companyCreateDto.getTitle());
-        company.setNumber(companyCreateDto.getNumber());
-        company.setEmail(companyCreateDto.getEmail());
-        company.setPib(companyCreateDto.getPib());
-        company.setMaticniBroj(companyCreateDto.getMatBr());
-        company.setSifraDelatnosti(companyCreateDto.getSifraDelatnosti());
+        Company company = CompanyMapper.INSTANCE.companyCreateDtoToCompany(companyCreateDto);
 
         companyRepository.save(company);
         return CompanyMapper.INSTANCE.companyToCompanyDto(company);
