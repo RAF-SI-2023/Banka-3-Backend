@@ -9,9 +9,9 @@ import java.util.Optional;
 @Repository
 public interface TransactionActivationRepository extends JpaRepository<TransactionActivation, Long> {
 
-    Optional<TransactionActivation> findByTransactionIdAndActiveIsTrue(Long transactionId);
+    Optional<TransactionActivation> findByIdAndActiveIsTrue(Long transactionId);
 
-    Optional<TransactionActivation> findByTransactionId(Long transactionId);
+    Optional<TransactionActivation> findById(Long transactionId);
 
 
 
