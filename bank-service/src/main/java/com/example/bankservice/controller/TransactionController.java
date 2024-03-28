@@ -1,20 +1,18 @@
-package com.example.bankservice.controllers;
+package com.example.bankservice.controller;
 
 
 import com.example.bankservice.domains.dto.CheckEnoughBalanceDto;
-import com.example.bankservice.domains.dto.TransactionConfirmDto;
 import com.example.bankservice.domains.dto.TransactionDto;
 import com.example.bankservice.services.TransactionService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin
 @RestController
+@RequestMapping(value = "/api/v1/transaction")
 @AllArgsConstructor
-@CrossOrigin("*")
-@RequestMapping("/api/v1/transaction")
 public class TransactionController {
 
 
@@ -29,7 +27,7 @@ public class TransactionController {
      * ukoliko nema sredstava vratice error message koji ce reci da nema sredstava na racunu.
      */
 
-    @GetMapping(value ="/enoughAmount{accountNumber}")
+    @PostMapping(value ="/enoughAmount")
     public ResponseEntity<String>doesPersonHaveEnoughAmount(@RequestBody CheckEnoughBalanceDto dto){
         return transactionService.doesPersonHaveEnoughBalance(dto);
     }
@@ -44,7 +42,7 @@ public class TransactionController {
     public ResponseEntity<Long>startTransaction(@RequestBody TransactionDto dto){
         return transactionService.startTransaction(dto);
     }
-    @PostMapping(value ="/confirmTransaction{transactionId}")
+    @GetMapping(value ="/confirmTransaction/{transactionId}")
     public ResponseEntity<String>confirmTransaction(@PathVariable Long transactionId){
         return transactionService.confirmTransaction(transactionId);
 
