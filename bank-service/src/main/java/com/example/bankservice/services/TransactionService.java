@@ -43,8 +43,6 @@ public class TransactionService {
         Transaction transaction = TransactionMapper.INSTANCE.transactionDtoToTransaction(dto);
         transaction.setDate(System.currentTimeMillis());
         transaction.setState(TransactionState.PENDING);
-        userServiceClient.reserveMoney(new RebalanceAccountDto(dto.getAccountFrom(), dto.getAmount(),
-                dto.getCurrencyMark()));
         transaction = transactionRepository.save(transaction);
         //Sada treba poslati poruku email servisu sa emailom korisnika i id transakcije. Zatim za to generisati kod,i
         // ako se potrefi to je to
@@ -66,6 +64,7 @@ public class TransactionService {
             return ResponseEntity.badRequest().body("Transaction with id " + confirmTransactionDto.getTransactionId() + " does not exist");
 
         Transaction transaction = optionalTransaction.get();
+
         if (transaction.getState() != TransactionState.PENDING)
             return ResponseEntity.badRequest().body("Transaction with id " + confirmTransactionDto.getTransactionId()
                     + " is not in PENDING state");
@@ -73,6 +72,8 @@ public class TransactionService {
         transaction.setState(TransactionState.ACCEPTED);//ako je accepted,cron job ce prepoznati da treba da skine
         // sredstva
         transactionRepository.save(transaction);
+        userServiceClient.reserveMoney(new RebalanceAccountDto(transaction.getAccountFrom(), transaction.getAmount(),
+                transaction.getCurrencyMark()));
         return ResponseEntity.ok("Transaction with id " + confirmTransactionDto.getTransactionId() + " is confirmed");
     }
 
@@ -99,7 +100,6 @@ public class TransactionService {
      * se skida (iz rezervisanih sredstava)
      */
     public void finishTransaction(Transaction transaction) {
-
         userServiceClient.unreserveMoney(new RebalanceAccountDto(transaction.getAccountFrom(),
                 transaction.getAmount(), transaction.getCurrencyMark()));
         userServiceClient.takeMoneyFromAccount(new RebalanceAccountDto(transaction.getAccountFrom(),
@@ -108,9 +108,5 @@ public class TransactionService {
                 transaction.getAmount(), transaction.getCurrencyMark()));
         transaction.setState(TransactionState.FINISHED);
         transactionRepository.save(transaction);
-
-
     }
-
-
 }

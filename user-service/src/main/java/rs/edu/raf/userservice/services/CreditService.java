@@ -14,6 +14,7 @@ import rs.edu.raf.userservice.repositories.CreditRepository;
 import rs.edu.raf.userservice.repositories.UserRepository;
 import rs.edu.raf.userservice.utils.BankServiceClient;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -56,18 +57,21 @@ public class CreditService {
         Credit credit = CreditMapper.INSTANCE.createCreditDtoToCredit(createCreditDto);
         User user = userRepository.findById(createCreditDto.getUserId()).orElseThrow();
         credit.setUser(user);
-        credit.setFee(0.05);
+        credit.setFee(new BigDecimal(0.05));
         credit.setStartDate(System.currentTimeMillis());
         credit.setEndDate(calculateEndDate(credit.getStartDate(), credit.getPaymentPeriod()));
-        credit.setMonthlyFee((credit.getAmount() * (1 + credit.getFee())) / credit.getPaymentPeriod());
-        credit.setRemainingAmount(credit.getAmount() * (1 + credit.getFee()));
+        credit.setMonthlyFee((credit.getAmount().multiply(new BigDecimal(1).add(credit.getFee()))).divide(new BigDecimal(credit.getPaymentPeriod())));
+//        credit.setMonthlyFee((credit.getAmount() * (1 + credit.getFee())) / credit.getPaymentPeriod());
+        credit.setRemainingAmount(credit.getAmount().multiply(new BigDecimal(1).add(credit.getFee())));
+//        credit.setRemainingAmount(credit.getAmount() * (1 + credit.getFee()));
         credit.setAccountNumber(createCreditDto.getAccountNumber());
 
         creditRepository.save(credit);
 
         //Da li je potrebno prebaciti novac na racun preko transakcije ?
         Account account = accountRepository.findByAccountNumber(credit.getAccountNumber()).orElseThrow();
-        account.setBalance(account.getBalance() + credit.getAmount());
+        account.setAvailableBalance(account.getAvailableBalance().add(credit.getAmount()));
+//        account.setAvailableBalance(account.getAvailableBalance() + credit.getAmount());
         accountRepository.save(account);
 
         return CreditMapper.INSTANCE.creditToCreditDto(credit);
@@ -78,10 +82,12 @@ public class CreditService {
         List<Credit> credits = creditRepository.findAll();
         List<CreditTransactionDto> transactionCreditDtos = new ArrayList<>();
         for (Credit credit : credits) {
-            if (credit.getRemainingAmount() > 0) {
+            if (credit.getRemainingAmount().compareTo(new BigDecimal(0)) > 0) {
                 Account account = accountRepository.findByAccountNumber(credit.getAccountNumber()).orElseThrow();
-                account.setAvailableBalance(account.getAvailableBalance() - credit.getMonthlyFee());
-                credit.setRemainingAmount(credit.getRemainingAmount() - credit.getMonthlyFee());
+                account.setAvailableBalance(account.getAvailableBalance().subtract(credit.getMonthlyFee()));
+//                account.setAvailableBalance(account.getAvailableBalance() - credit.getMonthlyFee());
+                credit.setRemainingAmount(credit.getRemainingAmount().subtract(credit.getMonthlyFee()));
+//                credit.setRemainingAmount(credit.getRemainingAmount() - credit.getMonthlyFee());
 
                 accountRepository.save(account);
                 creditRepository.save(credit);

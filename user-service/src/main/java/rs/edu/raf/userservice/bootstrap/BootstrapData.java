@@ -8,6 +8,7 @@ import rs.edu.raf.userservice.domains.model.*;
 import rs.edu.raf.userservice.domains.model.enums.*;
 import rs.edu.raf.userservice.repositories.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -169,6 +170,7 @@ public class BootstrapData implements CommandLineRunner {
                 .isActive(true)
                 .gender("M")
                 .dateOfBirth(1710274123787L)
+                .codeActive(true)
                 .build();
 
         User user2 = User.builder()
@@ -181,6 +183,7 @@ public class BootstrapData implements CommandLineRunner {
                 .isActive(true)
                 .gender("M")
                 .dateOfBirth(1710274123787L)
+                .codeActive(true)
                 .build();
 
         User user3 = User.builder()
@@ -189,9 +192,11 @@ public class BootstrapData implements CommandLineRunner {
                 .email("sljubicic7120rn@raf.rs")
                 .jmbg("1111111111")
                 .phoneNumber("063555555")
-                .isActive(false)
+                .isActive(true)
                 .gender("M")
                 .dateOfBirth(1710274123787L)
+                .password(passwordEncoder.encode("strahinja1234"))
+                .codeActive(true)
                 .build();
 
         User user4 = User.builder()
@@ -200,9 +205,22 @@ public class BootstrapData implements CommandLineRunner {
                 .email("ostojanovic10021rn@raf.rs")
                 .jmbg("1111111111")
                 .phoneNumber("063555555")
-                .isActive(false)
+                .isActive(true)
                 .gender("M")
                 .dateOfBirth(1710274123787L)
+                .codeActive(false)
+                .build();
+
+        User user5 = User.builder()
+                .firstName("User")
+                .lastName("BezSifre")
+                .email("userBezSifre@gmail.com")
+                .jmbg("1111111111")
+                .phoneNumber("063555555")
+                .isActive(true)
+                .gender("M")
+                .dateOfBirth(1710274123787L)
+                .codeActive(false)
                 .build();
 
         List<User> users = new ArrayList<>();
@@ -210,6 +228,7 @@ public class BootstrapData implements CommandLineRunner {
         users.add(user2);
         users.add(user3);
         users.add(user4);
+        users.add(user5);
 
 
         userRepository.saveAll(users);
@@ -218,28 +237,46 @@ public class BootstrapData implements CommandLineRunner {
                 .mark("RSD")
                 .name(CurrencyName.DINAR)
                 .build();
-        AccountType accountType = AccountType.builder()
+        AccountType accountType1 = AccountType.builder()
                 .accountType(AccountTypeName.ZA_MLADE)
                 .monthlyFee(0)
                 .build();
-        accountTypeRepository.save(accountType);
+
+        AccountType accountType2 = AccountType.builder()
+                .accountType(AccountTypeName.LICNI)
+                .monthlyFee(0)
+                .build();
+        accountTypeRepository.save(accountType1);
+        accountTypeRepository.save(accountType2);
 
         currencyRepository.save(currency);
 
-        Account account = new Account();
-        account.setUser(user1);
-        account.setEmployee(employee3);
-        account.setBalance(100000.0);
-        account.setReservedAmount(20000.0);
-        account.setAvailableBalance(80000.0);
-        account.setAccountNumber("12849127014");
-        account.setCreationDate(new Date().getTime());
-        account.setExpireDate(new Date().getTime() + 1000 * 3600);
-        account.setActive(true);
-        account.setCurrency(currency);
-        account.setAccountType(accountType);
+        Account account1 = new Account();
+        account1.setUser(user1);
+        account1.setEmployee(employee3);
+        account1.setReservedAmount(new BigDecimal(20000.0));
+        account1.setAvailableBalance(new BigDecimal(100000.0));
+        account1.setAccountNumber("22222222222");
+        account1.setCreationDate(new Date().getTime());
+        account1.setExpireDate(new Date().getTime() + 1000 * 3600);
+        account1.setActive(true);
+        account1.setCurrency(currency);
+        account1.setAccountType(accountType1);
 
-        accountRepository.save(account);
+        Account account2 = new Account();
+        account2.setUser(user3);
+        account2.setEmployee(employee3);
+        account2.setReservedAmount(new BigDecimal(20000.0));
+        account2.setAvailableBalance(new BigDecimal(100000.0));
+        account2.setAccountNumber("11111111111");
+        account2.setCreationDate(new Date().getTime());
+        account2.setExpireDate(new Date().getTime() + 1000 * 3600);
+        account2.setActive(true);
+        account2.setCurrency(currency);
+        account2.setAccountType(accountType2);
+
+        accountRepository.save(account1);
+        accountRepository.save(account2);
 
         CreditRequest creditRequest = new CreditRequest();
         creditRequest.setUser(user1);

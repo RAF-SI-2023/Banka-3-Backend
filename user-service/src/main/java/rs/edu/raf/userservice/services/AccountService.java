@@ -16,6 +16,7 @@ import rs.edu.raf.userservice.repositories.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
@@ -62,18 +63,17 @@ public class AccountService {
         Optional<Account> optionalAccount = accountRepository.findByAccountNumber(dto.getAccountNumber());
         if (!optionalAccount.isPresent()) return ResponseEntity.badRequest().build();
         Account account = optionalAccount.get();
-        account.setBalance(account.getBalance() + dto.getAmount());
+        account.setAvailableBalance(account.getAvailableBalance().add(new BigDecimal(dto.getAmount())));
         accountRepository.save(account);
         return ResponseEntity.ok().build();
 
     }
 
-    //TODO dodati u test
     public ResponseEntity<String> takeMoneyFromAccount(RebalanceAccountDto dto) {
         Optional<Account> optionalAccount = accountRepository.findByAccountNumber(dto.getAccountNumber());
         if (!optionalAccount.isPresent()) return ResponseEntity.badRequest().build();
         Account account = optionalAccount.get();
-        account.setBalance(account.getBalance() - dto.getAmount());
+        account.setAvailableBalance(account.getAvailableBalance().subtract(new BigDecimal(dto.getAmount())));
         accountRepository.save(account);
         return ResponseEntity.ok().build();
 
@@ -94,16 +94,16 @@ public class AccountService {
         if (!account.getCurrency().getMark().equalsIgnoreCase(dto.getCurrencyMark())) {
             Double convertedAmount = convertCurrency(dto.getCurrencyMark(), account.getCurrency().getMark(),
                     dto.getAmount());
-            if (account.getBalance() < convertedAmount) return ResponseEntity.badRequest().build();
-            account.setBalance(account.getBalance() - convertedAmount);
-            account.setReservedAmount(account.getReservedAmount() + convertedAmount);
+            if (account.getAvailableBalance().subtract(account.getReservedAmount()).compareTo(new BigDecimal(convertedAmount)) < 0)
+                return ResponseEntity.badRequest().build();
+            account.setReservedAmount(account.getReservedAmount().add(new BigDecimal(convertedAmount)));
             accountRepository.save(account);
             return ResponseEntity.ok().build();
         }
 
-        if (account.getBalance() < dto.getAmount()) return ResponseEntity.badRequest().build();
-        account.setBalance(account.getBalance() - dto.getAmount());
-        account.setReservedAmount(account.getReservedAmount() + dto.getAmount());
+        if (account.getAvailableBalance().subtract(account.getReservedAmount()).compareTo(new BigDecimal(dto.getAmount())) < 0)
+            return ResponseEntity.badRequest().build();
+        account.setReservedAmount(account.getReservedAmount().add(new BigDecimal(dto.getAmount())));
         accountRepository.save(account);
         return ResponseEntity.ok().build();
     }
@@ -112,9 +112,9 @@ public class AccountService {
         Optional<Account> optionalAccount = accountRepository.findByAccountNumber(dto.getAccountNumber());
         if (!optionalAccount.isPresent()) return ResponseEntity.badRequest().build();
         Account account = optionalAccount.get();
-        if (account.getReservedAmount() < dto.getAmount()) return ResponseEntity.badRequest().build();
-        account.setBalance(account.getBalance() + dto.getAmount());
-        account.setReservedAmount(account.getReservedAmount() - dto.getAmount());
+        if (account.getReservedAmount().compareTo(new BigDecimal(dto.getAmount())) < 0)
+            return ResponseEntity.badRequest().build();
+        account.setReservedAmount(account.getReservedAmount().subtract(new BigDecimal(dto.getAmount())));
         accountRepository.save(account);
         return ResponseEntity.ok().build();
     }
@@ -128,11 +128,11 @@ public class AccountService {
         account.setCreationDate(System.currentTimeMillis());
         account.setExpireDate(System.currentTimeMillis() + 31556952000L);
         account.setActive(true);// 1 year
-        account.setReservedAmount(0.0);
+        account.setReservedAmount(new BigDecimal(0.0));
         CurrencyName currencyName = CurrencyName.valueOf(accountCreateDto.getCurrency());
         account.setCurrency(currencyRepository.findByName(currencyName).orElseThrow());
         AccountTypeName accountTypeName = AccountTypeName.valueOf(accountCreateDto.getAccountType());
-        account.setAvailableBalance(accountCreateDto.getBalance());
+        account.setAvailableBalance(new BigDecimal(accountCreateDto.getBalance()));
         account.setAccountType(accountTypeRepository.findByAccountType(accountTypeName).orElseThrow());
         account = accountRepository.save(account);
         return AccountMapper.INSTANCE.accountToAccountDto(account);
@@ -207,13 +207,13 @@ public class AccountService {
         if (!account.getCurrency().getMark().equalsIgnoreCase(dto.getCurrencyMark())) {
             Double convertedAmount = convertCurrency(dto.getCurrencyMark(), account.getCurrency().getMark(),
                     dto.getAmount());
-            if (account.getBalance() >= convertedAmount) {
+            if (account.getAvailableBalance().compareTo(new BigDecimal(convertedAmount)) >= 0) {
                 return ResponseEntity.ok().build();
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Not enough money on balance!");
             }
         } else {
-            if (account.getBalance() >= dto.getAmount()) {
+            if (account.getAvailableBalance().subtract(account.getReservedAmount()).compareTo(new BigDecimal(dto.getAmount())) >= 0) {
                 return ResponseEntity.ok().build();
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Not enough money on balance!");
