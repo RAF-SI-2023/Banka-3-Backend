@@ -23,7 +23,7 @@ public class UserDto implements AuthenticationDetails {
     private String phoneNumber;
     private String address;
     private String email;
-    private Boolean isActive;
+    private boolean isActive;
     private Role role;
 
     @Override
