@@ -14,7 +14,6 @@ import rs.edu.raf.userservice.domains.model.User;
 @RequiredArgsConstructor
 @ToString
 public class AccountDto {
-
     private Long accountId;
     private String accountNumber;
     private User user;

@@ -32,12 +32,12 @@ public class EmployeeService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final EmailServiceClient emailServiceClient;
 
-    public EmployeeService(EmployeeRepository employeeRepository, PasswordEncoder passwordEncoder, EmailServiceClient emailServiceClient) {
+    public EmployeeService(EmployeeRepository employeeRepository, PasswordEncoder passwordEncoder,
+                           EmailServiceClient emailServiceClient) {
         this.employeeRepository = employeeRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailServiceClient = emailServiceClient;
     }
-
 
     public EmployeeDto create(EmployeeCreateDto employeeCreateDto) {
 
@@ -103,9 +103,9 @@ public class EmployeeService implements UserDetailsService {
     public List<EmployeeDto> search(String firstName, String lastName, String email, String role) {
         RoleName roleNameEnum;
         try {
-            if(role.isEmpty()){
+            if (role.isEmpty()) {
                 roleNameEnum = null;
-            }else{
+            } else {
                 roleNameEnum = RoleName.valueOf(role.toUpperCase());
             }
         } catch (Exception e) {

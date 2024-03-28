@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import rs.edu.raf.userservice.domains.model.enums.CurrencyName;
 
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -26,12 +25,7 @@ public class Currency implements Serializable {
     @Enumerated(EnumType.STRING)
     private CurrencyName name;
 
-
     @NotNull(message = "This field cannot be NULL")
     @Size(min = 3, max = 3, message = "Currency mark must be exactly 3 characters long")
     private String mark;
-
-
-
-
 }

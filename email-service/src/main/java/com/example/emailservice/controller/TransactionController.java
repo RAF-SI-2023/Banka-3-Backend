@@ -1,8 +1,8 @@
 package com.example.emailservice.controller;
 
 
-import com.example.emailservice.dto.TransactionActivationDTO;
 import com.example.emailservice.dto.ConfirmTransactionDTO;
+import com.example.emailservice.dto.TransactionActivationDTO;
 import com.example.emailservice.service.impl.TransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,18 +22,16 @@ public class TransactionController {
 
     //Korisniku se salje email sa kodom za potvrdu transakcije
     @GetMapping("/begin")
-    public void beginTransaction(@RequestBody TransactionActivationDTO dto){
-         transactionService.beginTransaction(dto);
+    public void beginTransaction(@RequestBody TransactionActivationDTO dto) {
+        transactionService.beginTransaction(dto);
     }
 
 
     //Korisnik unosi kod za potvrdu transakcije, a ovaj endpoint proverava da li je kod validan.
     @GetMapping("/confirm")
-    public ResponseEntity<String> validateTransaction(@RequestBody ConfirmTransactionDTO dto){
+    public ResponseEntity<String> validateTransaction(@RequestBody ConfirmTransactionDTO dto) {
         return transactionService.confirmTransaction(dto);
     }
-
-
 
 
 }

@@ -6,9 +6,10 @@ import com.example.emailservice.model.PasswordReset;
 
 public interface UserService {
 
-    void  userActivation(String email);
+    void userActivation(String email);
 
     Boolean setUserPassword(SetUserPasswordCodeDTO setUserPasswordCodeDTO);
+
     PasswordReset generateResetCode(String email);
 
     String tryChangePassword(TryPasswordResetDTO tryPasswordResetDTO);

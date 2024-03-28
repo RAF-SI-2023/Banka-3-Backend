@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateCreditDto {
-
     private Long userId;
     private String name;
     private String accountNumber;

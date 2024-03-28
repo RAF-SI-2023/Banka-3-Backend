@@ -10,7 +10,6 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class AccountCreateDto {
-
     @NotBlank
     private Long employeeId;
     @NotBlank

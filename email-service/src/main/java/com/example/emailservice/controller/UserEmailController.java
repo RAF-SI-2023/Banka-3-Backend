@@ -23,15 +23,15 @@ public class UserEmailController {
     private EmailService emailService;
 
     @GetMapping("/userActivation")
-    public ResponseEntity<Void> userActivation(@RequestParam(name = "email") String email){
+    public ResponseEntity<Void> userActivation(@RequestParam(name = "email") String email) {
         userService.userActivation(email);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
     @PostMapping("/activateUser")
-    public ResponseEntity<?> setUserPassword(@RequestBody SetUserPasswordCodeDTO setUserPasswordCodeDTO){
+    public ResponseEntity<?> setUserPassword(@RequestBody SetUserPasswordCodeDTO setUserPasswordCodeDTO) {
         Boolean userActivated = userService.setUserPassword(setUserPasswordCodeDTO);
-        if(userActivated){
+        if (userActivated) {
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -39,9 +39,9 @@ public class UserEmailController {
     }
 
     @GetMapping("/resetPassword")
-    public String resetPassword(@RequestParam (name = "email") String email) {
+    public String resetPassword(@RequestParam(name = "email") String email) {
         PasswordReset passwordReset = userService.generateResetCode(email);
-        return  passwordReset.getEmail() + passwordReset.getIdentifier();
+        return passwordReset.getEmail() + passwordReset.getIdentifier();
     }
 
     @PostMapping("/tryPasswordReset")

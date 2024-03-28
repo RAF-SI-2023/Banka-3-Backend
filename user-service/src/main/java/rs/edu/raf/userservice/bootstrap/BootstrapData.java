@@ -103,7 +103,7 @@ public class BootstrapData implements CommandLineRunner {
                 .gender("F")
                 .dateOfBirth(1710274123787L)
                 .role(bankingOfficer)
-                .permissions(List.of(canSell,canWatch))
+                .permissions(List.of(canSell, canWatch))
                 .build();
 
         Employee employeeJ = Employee.builder()
@@ -118,7 +118,7 @@ public class BootstrapData implements CommandLineRunner {
                 .gender("F")
                 .dateOfBirth(1710274123787L)
                 .role(bankingOfficer)
-                .permissions(List.of(canSell,canWatch))
+                .permissions(List.of(canSell, canWatch))
                 .build();
 
         Employee employee3 = Employee.builder()
@@ -133,7 +133,7 @@ public class BootstrapData implements CommandLineRunner {
                 .gender("M")
                 .dateOfBirth(1710274123787L)
                 .role(creditOfficer)
-                .permissions(List.of(canTrade,canBuy))
+                .permissions(List.of(canTrade, canBuy))
                 .build();
 
         Employee employee4 = Employee.builder()
@@ -221,9 +221,9 @@ public class BootstrapData implements CommandLineRunner {
                 .name(CurrencyName.DINAR)
                 .build();
         AccountType accountType = AccountType.builder()
-                        .accountType(AccountTypeName.ZA_MLADE)
-                        .monthlyFee(0)
-                        .build();
+                .accountType(AccountTypeName.ZA_MLADE)
+                .monthlyFee(0)
+                .build();
         accountTypeRepository.save(accountType);
 
         currencyRepository.save(currency);

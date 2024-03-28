@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 @Data
@@ -57,8 +56,6 @@ public class Account implements Serializable {
     @ManyToOne
     @JoinColumn(name = "accountTypeId")
     private AccountType accountType;
-
-
 
 
 }

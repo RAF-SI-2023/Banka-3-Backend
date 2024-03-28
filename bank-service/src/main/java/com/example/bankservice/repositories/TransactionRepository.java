@@ -11,6 +11,8 @@ import java.util.Optional;
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     Optional<List<Transaction>> findByAccountFrom(Long accountFromId);
+
     Optional<List<Transaction>> findByAccountTo(Long accountToId);
+
     Optional<List<Transaction>> findByState(TransactionState state);
 }

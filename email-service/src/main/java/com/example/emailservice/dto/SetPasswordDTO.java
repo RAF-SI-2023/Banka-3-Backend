@@ -12,5 +12,4 @@ import java.io.Serializable;
 public class SetPasswordDTO implements Serializable {
     private String password;
     private String email;
-
 }

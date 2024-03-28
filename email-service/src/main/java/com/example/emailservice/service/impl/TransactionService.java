@@ -1,8 +1,8 @@
 package com.example.emailservice.service.impl;
 
 
-import com.example.emailservice.dto.TransactionActivationDTO;
 import com.example.emailservice.dto.ConfirmTransactionDTO;
+import com.example.emailservice.dto.TransactionActivationDTO;
 import com.example.emailservice.model.TransactionActivation;
 import com.example.emailservice.repository.TransactionActivationRepository;
 import com.example.emailservice.service.EmailService;
@@ -27,14 +27,16 @@ public class TransactionService {
     @Autowired
     private EmailService emailService;
 
-    public TransactionService(EmailService emailService,TransactionActivationRepository transactionActivationRepository) {
+    public TransactionService(EmailService emailService,
+                              TransactionActivationRepository transactionActivationRepository) {
         this.transactionActivationRepository = transactionActivationRepository;
-        this.emailService=emailService;
+        this.emailService = emailService;
     }
 
-    public void beginTransaction(TransactionActivationDTO dto){
+    public void beginTransaction(TransactionActivationDTO dto) {
         Integer code = new Random().nextInt(100000, 999999);
-        TransactionActivation transactionActivation = new TransactionActivation(null,dto.getEmail(),code,LocalDateTime.now(), true);
+        TransactionActivation transactionActivation = new TransactionActivation(null, dto.getEmail(), code,
+                LocalDateTime.now(), true);
         transactionActivationRepository.save(transactionActivation);
         emailService.sendSimpleMessage(dto.getEmail(), getSubject(), getText(code));
 
@@ -50,10 +52,12 @@ public class TransactionService {
         }).start();
 
     }
+
     //validate transaction,return ResponseEntity with message
-    public ResponseEntity<String> confirmTransaction(ConfirmTransactionDTO dto){
-        Optional<TransactionActivation> optional = transactionActivationRepository.findByIdAndActiveIsTrue(dto.getTransactionId());
-        if(optional.isPresent()) {
+    public ResponseEntity<String> confirmTransaction(ConfirmTransactionDTO dto) {
+        Optional<TransactionActivation> optional =
+                transactionActivationRepository.findByIdAndActiveIsTrue(dto.getTransactionId());
+        if (optional.isPresent()) {
             TransactionActivation transactionActivation = optional.get();
             if (transactionActivation.getCode() == (dto.getCode())) {
                 transactionActivation.setActive(false);
@@ -64,7 +68,7 @@ public class TransactionService {
             } else {
                 return ResponseEntity.badRequest().build();
             }
-        }else{
+        } else {
             return ResponseEntity.badRequest().build();
         }
     }
@@ -73,10 +77,10 @@ public class TransactionService {
     protected String getSubject() {
         return "Transaction activation";
     }
+
     protected String getText(Integer code) {
         return "Your activation code is:" + code;
     }
-
 
 
 }

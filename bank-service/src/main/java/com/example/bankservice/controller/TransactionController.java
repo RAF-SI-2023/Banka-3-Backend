@@ -27,8 +27,8 @@ public class TransactionController {
      * ukoliko nema sredstava vratice error message koji ce reci da nema sredstava na racunu.
      */
 
-    @PostMapping(value ="/enoughAmount")
-    public ResponseEntity<String>doesPersonHaveEnoughAmount(@RequestBody CheckEnoughBalanceDto dto){
+    @PostMapping(value = "/enoughAmount")
+    public ResponseEntity<String> doesPersonHaveEnoughAmount(@RequestBody CheckEnoughBalanceDto dto) {
         return transactionService.doesPersonHaveEnoughBalance(dto);
     }
 
@@ -36,22 +36,17 @@ public class TransactionController {
      * Ukoliko korisnik ima dovoljno sredstava na racunu, bank servis ce pokrenuti transakciju
      * Kontaktirace email servis za slanje mejla korisniku sa kodom za potvrdu transakcije
      * Ukoliko korisnik potvrdi transakciju,email servis gadja rutu /confirmTransaction
-     *
      */
-    @PostMapping(value ="/startTransaction")
-    public ResponseEntity<Long>startTransaction(@RequestBody TransactionDto dto){
+    @PostMapping(value = "/startTransaction")
+    public ResponseEntity<Long> startTransaction(@RequestBody TransactionDto dto) {
         return transactionService.startTransaction(dto);
     }
-    @GetMapping(value ="/confirmTransaction/{transactionId}")
-    public ResponseEntity<String>confirmTransaction(@PathVariable Long transactionId){
+
+    @GetMapping(value = "/confirmTransaction/{transactionId}")
+    public ResponseEntity<String> confirmTransaction(@PathVariable Long transactionId) {
         return transactionService.confirmTransaction(transactionId);
 
     }
-
-
-
-
-
 
 
 }

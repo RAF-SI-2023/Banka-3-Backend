@@ -30,7 +30,8 @@ public class CreditService {
 
     private BankServiceClient bankServiceClient;
 
-    public CreditService(CreditRepository creditRepository, UserRepository userRepository, AccountRepository accountRepository) {
+    public CreditService(CreditRepository creditRepository, UserRepository userRepository,
+                         AccountRepository accountRepository) {
         this.creditRepository = creditRepository;
         this.userRepository = userRepository;
         this.accountRepository = accountRepository;
@@ -76,8 +77,8 @@ public class CreditService {
     public void creditMonthlyPay() {
         List<Credit> credits = creditRepository.findAll();
         List<CreditTransactionDto> transactionCreditDtos = new ArrayList<>();
-        for(Credit credit: credits) {
-            if(credit.getRemainingAmount() > 0) {
+        for (Credit credit : credits) {
+            if (credit.getRemainingAmount() > 0) {
                 Account account = accountRepository.findByAccountNumber(credit.getAccountNumber()).orElseThrow();
                 account.setAvailableBalance(account.getAvailableBalance() - credit.getMonthlyFee());
                 credit.setRemainingAmount(credit.getRemainingAmount() - credit.getMonthlyFee());

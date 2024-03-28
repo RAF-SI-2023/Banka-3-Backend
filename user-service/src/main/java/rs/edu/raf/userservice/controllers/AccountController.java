@@ -1,6 +1,5 @@
 package rs.edu.raf.userservice.controllers;
 
-import feign.Response;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +11,6 @@ import rs.edu.raf.userservice.domains.dto.account.RebalanceAccountDto;
 import rs.edu.raf.userservice.services.AccountService;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
@@ -31,10 +29,12 @@ public class AccountController {
     public List<AccountDto> getByUser(Long userId) {
         return accountService.findByUser(userId);
     }
+
     @GetMapping("/getByAccountNumber/{accountNumber}")
     public AccountDto getByAccountNumber(String accountNumber) {
         return accountService.findByAccountNumber(accountNumber);
     }
+
     @GetMapping("/getEmailByAccountNumber/{accountNumber}")
     public String getEmailByAccountNumber(String accountNumber) {
         return accountService.getEmailByAccountNumber(accountNumber);
@@ -45,6 +45,7 @@ public class AccountController {
     public ResponseEntity<String> checkEnoughBalance(@RequestBody CheckEnoughBalanceDto checkEnoughBalanceDto) {
         return accountService.checkEnoughBalance(checkEnoughBalanceDto);
     }
+
     @GetMapping("/unreserveMoney")
     public ResponseEntity<String> unreserveMoney(@RequestBody RebalanceAccountDto dto) {
         return accountService.unreserveMoney(dto);
@@ -59,12 +60,11 @@ public class AccountController {
     public ResponseEntity<String> takeMoneyFromAccount(@RequestBody RebalanceAccountDto dto) {
         return accountService.takeMoneyFromAccount(dto);
     }
+
     @GetMapping("/reserveMoney")
     public ResponseEntity<String> reserveMoney(@RequestBody RebalanceAccountDto dto) {
         return accountService.reserveMoney(dto);
     }
-
-
 
 
     //preauthorize sa employee

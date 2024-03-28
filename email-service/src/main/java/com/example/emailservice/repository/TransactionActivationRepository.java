@@ -12,8 +12,4 @@ public interface TransactionActivationRepository extends JpaRepository<Transacti
     Optional<TransactionActivation> findByIdAndActiveIsTrue(Long transactionId);
 
     Optional<TransactionActivation> findById(Long transactionId);
-
-
-
-
 }

@@ -28,7 +28,4 @@ public class AccountType implements Serializable {
     private double monthlyFee;
 
 
-
-
-
 }

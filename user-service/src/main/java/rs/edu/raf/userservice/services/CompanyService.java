@@ -33,7 +33,7 @@ public class CompanyService {
         return CompanyMapper.INSTANCE.companyToCompanyDto(company);
     }
 
-    public List<CompanyDto> findAll(){
+    public List<CompanyDto> findAll() {
         return companyRepository.findAll().stream().map(CompanyMapper.INSTANCE::companyToCompanyDto)
                 .collect(Collectors.toList());
     }
