@@ -27,10 +27,6 @@ public class TransactionService {
     private final UserServiceClient userServiceClient;
     private final EmailServiceClient emailServiceClient;
 
-    public ResponseEntity<String> doesPersonHaveEnoughBalance(CheckEnoughBalanceDto dto) {
-        return userServiceClient.checkEnoughBalance(dto);
-    }
-
     //Ako ima novca,vracamo transacionId. Posle se taj id koristi sa proveru koda
     public ResponseEntity<Long> startTransaction(TransactionDto dto) {
 
@@ -112,8 +108,10 @@ public class TransactionService {
     }
 
     public List<TransactionDto> getAllTransactions(String accountId) {
-        Optional<List<Transaction>> optionalTransactionsFrom = transactionRepository.findAllTransactionsByAccountFrom(accountId);
-        Optional<List<Transaction>> optionalTransactionsTo = transactionRepository.findAllTransactionsByAccountTo(accountId);
+        Optional<List<Transaction>> optionalTransactionsFrom =
+                transactionRepository.findAllTransactionsByAccountFrom(accountId);
+        Optional<List<Transaction>> optionalTransactionsTo =
+                transactionRepository.findAllTransactionsByAccountTo(accountId);
         List<Transaction> optionalTransactions;
         if (!optionalTransactionsFrom.isPresent() && !optionalTransactionsTo.isPresent()) {
             return null;
