@@ -17,6 +17,7 @@ import rs.edu.raf.userservice.domains.model.enums.CurrencyName;
 import rs.edu.raf.userservice.repositories.*;
 import rs.edu.raf.userservice.services.AccountService;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -61,7 +62,7 @@ public class AccountServiceUnitTests {
 
         Account account = new Account();
         account.setAccountNumber("5053791123456789");
-        account.setBalance(200.0);
+        account.setAvailableBalance(BigDecimal.valueOf(200.0));
 
         when(accountRepository.findByAccountNumber(dto.getAccountNumber())).thenReturn(Optional.of(account));
 
@@ -91,7 +92,7 @@ public class AccountServiceUnitTests {
 
         Account account = new Account();
         account.setAccountNumber("5053791123456789");
-        account.setBalance(200.0);
+        account.setAvailableBalance(BigDecimal.valueOf(200.0));
 
         when(accountRepository.findByAccountNumber(dto.getAccountNumber())).thenReturn(Optional.of(account));
 
@@ -137,9 +138,8 @@ public class AccountServiceUnitTests {
         User user = createDummyUser("pera1234@gmail.com");
         account.setUser(user);
         account.setAccountNumber(accountNumber);
-        account.setBalance(200.0);
-        account.setReservedAmount(100.0);
-        account.setAvailableBalance(100.0);
+        account.setReservedAmount(BigDecimal.valueOf(100.0));
+        account.setAvailableBalance(BigDecimal.valueOf(100.0));
         account.setActive(true);
         account.setCreationDate(123456789L);
         account.setExpireDate(123456789L);
@@ -162,9 +162,8 @@ public class AccountServiceUnitTests {
 
         Account account = new Account();
         account.setAccountNumber("5053791123456789");
-        account.setBalance(200.0);
-        account.setReservedAmount(0.0);
-        account.setAvailableBalance(200.0);
+        account.setReservedAmount(BigDecimal.valueOf(0.0));
+        account.setAvailableBalance(BigDecimal.valueOf(200.0));
         Currency currency = new Currency();
         currency.setMark("RSD");
         account.setCurrency(currency);
@@ -185,9 +184,8 @@ public class AccountServiceUnitTests {
 
         Account account = new Account();
         account.setAccountNumber("5053791123456789");
-        account.setBalance(200.0);
-        account.setReservedAmount(100.0);
-        account.setAvailableBalance(100.0);
+        account.setReservedAmount(BigDecimal.valueOf(100.0));
+        account.setAvailableBalance(BigDecimal.valueOf(100.0));
         Currency currency = new Currency();
         currency.setMark("EUR");
         account.setCurrency(currency);
@@ -196,7 +194,7 @@ public class AccountServiceUnitTests {
 
         ResponseEntity<String> response = accountService.reserveMoney(dto);
 
-        assertEquals(ResponseEntity.ok().build(), response);
+        assertEquals(ResponseEntity.badRequest().build(), response);
     }
 
     @Test
@@ -208,9 +206,8 @@ public class AccountServiceUnitTests {
 
         Account account = new Account();
         account.setAccountNumber("5053791123456789");
-        account.setBalance(200.0);
-        account.setReservedAmount(100.0);
-        account.setAvailableBalance(100.0);
+        account.setReservedAmount(BigDecimal.valueOf(100.0));
+        account.setAvailableBalance(BigDecimal.valueOf(100.0));
         Currency currency = new Currency();
         currency.setMark("RSD");
         account.setCurrency(currency);
@@ -249,7 +246,7 @@ public class AccountServiceUnitTests {
 
         when(accountTypeRepository.findByAccountType(AccountTypeName.ZA_MLADE)).thenReturn(Optional.of(accountType) );
 
-        account.setBalance(accountCreateDto.getBalance());
+        account.setAvailableBalance(BigDecimal.valueOf(accountCreateDto.getBalance()));
         account.setCurrency(currency);
         account.setAccountType(accountType);
         account.setUser(user);
@@ -260,7 +257,7 @@ public class AccountServiceUnitTests {
 
         AccountDto account1 = accountService.create(accountCreateDto);
 
-        assertEquals(account1.getBalance(), account.getBalance());
+        assertEquals(account1.getAvailableBalance(), account.getAvailableBalance());
         assertEquals(account1.getCurrency(), account.getCurrency());
         assertEquals(account1.getUser(), account.getUser());
         assertEquals(account1.getEmployee(), account.getEmployee());
@@ -270,9 +267,8 @@ public class AccountServiceUnitTests {
     public void deactiveTest(){
         Account account = new Account();
         account.setAccountNumber("5053791123456789");
-        account.setBalance(200.0);
-        account.setReservedAmount(100.0);
-        account.setAvailableBalance(100.0);
+        account.setReservedAmount(BigDecimal.valueOf(100.0));
+        account.setAvailableBalance(BigDecimal.valueOf(100.0));
         account.setActive(true);
         account.setCreationDate(123456789L);
         account.setExpireDate(123456789L);
@@ -290,9 +286,8 @@ public class AccountServiceUnitTests {
     public void checkEnoughBalanceTest(){
         Account account = new Account();
         account.setAccountNumber("5053791123456789");
-        account.setBalance(200.0);
-        account.setReservedAmount(100.0);
-        account.setAvailableBalance(100.0);
+        account.setReservedAmount(BigDecimal.valueOf(100.0));
+        account.setAvailableBalance(BigDecimal.valueOf(400.0));
         account.setActive(true);
         account.setCreationDate(123456789L);
         account.setExpireDate(123456789L);
@@ -320,9 +315,8 @@ public class AccountServiceUnitTests {
     public void checkEnoughBalanceTest_NotEnought(){
         Account account = new Account();
         account.setAccountNumber("5053791123456789");
-        account.setBalance(200.0);
-        account.setReservedAmount(100.0);
-        account.setAvailableBalance(100.0);
+        account.setReservedAmount(BigDecimal.valueOf(100.0));
+        account.setAvailableBalance(BigDecimal.valueOf(100.0));
         account.setActive(true);
         account.setCreationDate(123456789L);
         account.setExpireDate(123456789L);
@@ -349,9 +343,8 @@ public class AccountServiceUnitTests {
     public void checkEnoughBalanceTest_NotEqualMark(){
         Account account = new Account();
         account.setAccountNumber("5053791123456789");
-        account.setBalance(200.0);
-        account.setReservedAmount(100.0);
-        account.setAvailableBalance(100.0);
+        account.setReservedAmount(BigDecimal.valueOf(100.0));
+        account.setAvailableBalance(BigDecimal.valueOf(100.0));
         account.setActive(true);
         account.setCreationDate(123456789L);
         account.setExpireDate(123456789L);
@@ -379,9 +372,8 @@ public class AccountServiceUnitTests {
     public void checkEnoughBalanceTest_NotEnought_NotEqualMark(){
         Account account = new Account();
         account.setAccountNumber("5053791123456789");
-        account.setBalance(200.0);
-        account.setReservedAmount(100.0);
-        account.setAvailableBalance(100.0);
+        account.setReservedAmount(BigDecimal.valueOf(100.0));
+        account.setAvailableBalance(BigDecimal.valueOf(100.0));
         account.setActive(true);
         account.setCreationDate(123456789L);
         account.setExpireDate(123456789L);
@@ -410,9 +402,8 @@ public class AccountServiceUnitTests {
         String accountNumber = "5053791123456789";
         Account account = new Account();
         account.setAccountNumber(accountNumber);
-        account.setBalance(200.0);
-        account.setReservedAmount(100.0);
-        account.setAvailableBalance(100.0);
+        account.setReservedAmount(BigDecimal.valueOf(100.0));
+        account.setAvailableBalance(BigDecimal.valueOf(100.0));
         account.setActive(true);
         account.setCreationDate(123456789L);
         account.setExpireDate(123456789L);
@@ -423,7 +414,7 @@ public class AccountServiceUnitTests {
 
         AccountDto accountDto = accountService.findByAccountNumber(accountNumber);
 
-        assertEquals(account.getBalance(), accountDto.getBalance());
+        assertEquals(account.getAvailableBalance(), accountDto.getAvailableBalance());
         assertEquals(account.getAvailableBalance(), accountDto.getAvailableBalance());
         assertEquals(account.isActive(), accountDto.isActive());
         assertEquals(account.getCreationDate(), accountDto.getCreationDate());
@@ -434,9 +425,8 @@ public class AccountServiceUnitTests {
     public void findAll(){
         Account account = new Account();
         account.setAccountNumber("5053791123456789");
-        account.setBalance(200.0);
-        account.setReservedAmount(100.0);
-        account.setAvailableBalance(100.0);
+        account.setReservedAmount(BigDecimal.valueOf(100.0));
+        account.setAvailableBalance(BigDecimal.valueOf(100.0));
         account.setActive(true);
         account.setCreationDate(123456789L);
         account.setExpireDate(123456789L);
@@ -451,7 +441,6 @@ public class AccountServiceUnitTests {
         ArrayList<AccountDto> accountDtos = (ArrayList<AccountDto>) accountService.findAll();
 
         assertEquals(accounts.size(), accountDtos.size());
-        assertEquals(accounts.get(0).getBalance(), accountDtos.get(0).getBalance());
         assertEquals(accounts.get(0).getAvailableBalance(), accountDtos.get(0).getAvailableBalance());
         assertEquals(accounts.get(0).isActive(), accountDtos.get(0).isActive());
         assertEquals(accounts.get(0).getCreationDate(), accountDtos.get(0).getCreationDate());
@@ -463,9 +452,8 @@ public class AccountServiceUnitTests {
         User user = createDummyUser("pera1234@gmail.com");
         Account account = new Account();
         account.setAccountNumber("5053791123456789");
-        account.setBalance(200.0);
-        account.setReservedAmount(100.0);
-        account.setAvailableBalance(100.0);
+        account.setReservedAmount(BigDecimal.valueOf(100.0));
+        account.setAvailableBalance(BigDecimal.valueOf(100.0));
         account.setActive(true);
         account.setCreationDate(123456789L);
         account.setExpireDate(123456789L);
@@ -482,7 +470,6 @@ public class AccountServiceUnitTests {
         ArrayList<AccountDto> accountDtos = (ArrayList<AccountDto>) accountService.findByUser(user.getUserId());
 
         assertEquals(accounts.size(), accountDtos.size());
-        assertEquals(accounts.get(0).getBalance(), accountDtos.get(0).getBalance());
         assertEquals(accounts.get(0).getAvailableBalance(), accountDtos.get(0).getAvailableBalance());
         assertEquals(accounts.get(0).isActive(), accountDtos.get(0).isActive());
         assertEquals(accounts.get(0).getCreationDate(), accountDtos.get(0).getCreationDate());
