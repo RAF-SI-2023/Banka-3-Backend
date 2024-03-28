@@ -258,7 +258,7 @@ public class AccountServiceUnitTests {
 
         when(accountRepository.save(any(Account.class))).thenReturn(account);
 
-        AccountDto account1 = accountService.create(accountCreateDto, 1l);
+        AccountDto account1 = accountService.create(accountCreateDto);
 
         assertEquals(account1.getBalance(), account.getBalance());
         assertEquals(account1.getCurrency(), account.getCurrency());
