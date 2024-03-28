@@ -9,6 +9,8 @@ import rs.edu.raf.userservice.domains.model.Currency;
 import rs.edu.raf.userservice.domains.model.Employee;
 import rs.edu.raf.userservice.domains.model.User;
 
+import java.math.BigDecimal;
+
 @Data
 @AllArgsConstructor
 @RequiredArgsConstructor
@@ -17,8 +19,8 @@ public class AccountDto {
     private Long accountId;
     private String accountNumber;
     private User user;
-    private Double balance;
-    private Double availableBalance;
+    private BigDecimal availableBalance;
+    private BigDecimal reservedBalance;
     private Long creationDate;
     private Long expireDate;
     private boolean active;
