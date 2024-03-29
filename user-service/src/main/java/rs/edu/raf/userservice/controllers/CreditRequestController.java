@@ -12,13 +12,11 @@ import rs.edu.raf.userservice.services.CreditRequestService;
 
 import java.util.List;
 
-
 @RestController
 @AllArgsConstructor
 @CrossOrigin()
 @RequestMapping("/api/v1/credit-request")
 public class CreditRequestController {
-
 
     private CreditRequestService creditRequestService;
 
@@ -52,6 +50,4 @@ public class CreditRequestController {
     public CreditRequestDto processCreditRequest(@RequestBody ProcessCreditRequestDto processCreditRequestDto) {
         return creditRequestService.processCreditRequest(processCreditRequestDto);
     }
-
-
 }

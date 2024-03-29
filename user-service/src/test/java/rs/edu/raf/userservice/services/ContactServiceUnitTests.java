@@ -1,4 +1,4 @@
-package rs.edu.raf.userservice;
+package rs.edu.raf.userservice.services;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

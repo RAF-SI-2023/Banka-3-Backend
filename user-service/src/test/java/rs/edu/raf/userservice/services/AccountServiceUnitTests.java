@@ -1,4 +1,4 @@
-package rs.edu.raf.userservice;
+package rs.edu.raf.userservice.services;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,18 +51,21 @@ public class AccountServiceUnitTests {
         MockitoAnnotations.initMocks(this);
     }
 
-
-
-
     @Test
     public void addMoneyToAccountShouldReturnOkWhenAccountExists() {
         RebalanceAccountDto dto = new RebalanceAccountDto();
+        dto.setCurrencyMark("RSD");
         dto.setAccountNumber("5053791123456789");
         dto.setAmount(100.0);
 
         Account account = new Account();
         account.setAccountNumber("5053791123456789");
         account.setAvailableBalance(BigDecimal.valueOf(200.0));
+        Currency currency = new Currency();
+        currency.setName(CurrencyName.DINAR);
+        currency.setMark("RSD");
+
+        account.setCurrency(currency);
 
         when(accountRepository.findByAccountNumber(dto.getAccountNumber())).thenReturn(Optional.of(account));
 
