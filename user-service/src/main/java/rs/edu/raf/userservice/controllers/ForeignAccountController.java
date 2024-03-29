@@ -34,7 +34,8 @@ public class ForeignAccountController {
     }
 
     @PostMapping("/{userId}")
-    public ForeignAccountDto addUser(@PathVariable Long userId, @RequestBody ForeignAccountCreateDto foreignAccountCreateDto) {
+    public ForeignAccountDto addUser(@PathVariable Long userId,
+                                     @RequestBody ForeignAccountCreateDto foreignAccountCreateDto) {
         return foreignAccountService.create(foreignAccountCreateDto, userId);
     }
 

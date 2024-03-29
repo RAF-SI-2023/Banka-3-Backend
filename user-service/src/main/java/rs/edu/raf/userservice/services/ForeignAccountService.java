@@ -25,7 +25,8 @@ public class ForeignAccountService {
 
     private final CurrencyRepository currencyRepository;
 
-    public ForeignAccountService(ForeignAccountRepository foreignAccountRepository, AccountTypeRepository accountTypeRepository,
+    public ForeignAccountService(ForeignAccountRepository foreignAccountRepository,
+                                 AccountTypeRepository accountTypeRepository,
                                  UserRepository userRepository, EmployeeRepository employeeRepository,
                                  CurrencyRepository currencyRepository) {
         this.foreignAccountRepository = foreignAccountRepository;
@@ -35,7 +36,7 @@ public class ForeignAccountService {
         this.currencyRepository = currencyRepository;
     }
 
-    private String randAccNumber(){ //generise broj racuna
+    private String randAccNumber() { //generise broj racuna
         String fixedPart = "5054791";
         StringBuilder builder = new StringBuilder(fixedPart);
         Random random = new Random();
@@ -46,7 +47,7 @@ public class ForeignAccountService {
         return builder.toString();
     }
 
-    public ForeignAccountDto create(ForeignAccountCreateDto facd, Long userId){
+    public ForeignAccountDto create(ForeignAccountCreateDto facd, Long userId) {
         ForeignAccount foreignAccount = new ForeignAccount();
         foreignAccount.setAccountNumber(randAccNumber());
         foreignAccount.setBalance(facd.getBalance());
@@ -63,22 +64,22 @@ public class ForeignAccountService {
         return ForeignAccountMapper.INSTANCE.foreignAccountToForeignAccountDto(foreignAccountRepository.save(foreignAccount));
     }
 
-    public void deactivate(Long id){
+    public void deactivate(Long id) {
         ForeignAccount foreignAccount = foreignAccountRepository.findById(id).orElseThrow();
         foreignAccount.setActive(false);
         foreignAccountRepository.save(foreignAccount);
     }
 
-    public ForeignAccountDto findByAccountNumber(String accountNumber){
+    public ForeignAccountDto findByAccountNumber(String accountNumber) {
         return ForeignAccountMapper.INSTANCE.foreignAccountToForeignAccountDto(foreignAccountRepository.findByAccountNumber(accountNumber).orElseThrow());
     }
 
-    public List<ForeignAccountDto> findByUser(Long userId){
+    public List<ForeignAccountDto> findByUser(Long userId) {
         List<ForeignAccount> accs = foreignAccountRepository.findByUser_UserId(userId).orElseThrow();
         return accs.stream().map(ForeignAccountMapper.INSTANCE::foreignAccountToForeignAccountDto).collect(Collectors.toList());
     }
 
-    public List<ForeignAccountDto> findAll(){
+    public List<ForeignAccountDto> findAll() {
         return foreignAccountRepository.findAll().stream().map(ForeignAccountMapper.INSTANCE::foreignAccountToForeignAccountDto).collect(Collectors.toList());
     }
 }

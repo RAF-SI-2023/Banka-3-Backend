@@ -7,6 +7,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
 /***
  *Salje se post zahtev na URL, doda se /setPassword na kraj, prima i salje json.
  *Kada se pozove metoda i posalje objekat, u pozadini se izvrsava http zahtev
@@ -29,7 +30,8 @@ public interface UserServiceClient {
 
 
     /**
-     * Meotda za komunikaciju sa user servisom, prosledjuje se mejl i nova sifra zaposlenog*/
+     * Meotda za komunikaciju sa user servisom, prosledjuje se mejl i nova sifra zaposlenog
+     */
     @PostMapping(value = "/employee/resetPassword",
             produces = "application/json"
             , consumes = "application/json"

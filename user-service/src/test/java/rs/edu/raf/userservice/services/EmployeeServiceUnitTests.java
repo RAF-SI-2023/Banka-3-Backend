@@ -1,4 +1,4 @@
-package rs.edu.raf.userservice;
+package rs.edu.raf.userservice.services;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -8,20 +8,19 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
-import rs.edu.raf.userservice.domains.dto.employee.EmployeeCreateDto;
-import rs.edu.raf.userservice.domains.dto.employee.EmployeeDto;
-import rs.edu.raf.userservice.domains.dto.employee.EmployeeUpdateDto;
-import rs.edu.raf.userservice.domains.dto.employee.SetPasswordDTO;
+import rs.edu.raf.userservice.domains.dto.employee.*;
 import rs.edu.raf.userservice.domains.dto.user.CreateUserDto;
 import rs.edu.raf.userservice.domains.dto.user.UpdateUserDto;
 import rs.edu.raf.userservice.domains.dto.user.UserDto;
 import rs.edu.raf.userservice.domains.exceptions.ForbiddenException;
 import rs.edu.raf.userservice.domains.exceptions.NotFoundException;
 import rs.edu.raf.userservice.domains.model.Employee;
+import rs.edu.raf.userservice.domains.model.Role;
 import rs.edu.raf.userservice.domains.model.User;
 import rs.edu.raf.userservice.domains.model.enums.RoleName;
 import rs.edu.raf.userservice.repositories.EmployeeRepository;
 import rs.edu.raf.userservice.services.EmployeeService;
+import rs.edu.raf.userservice.utils.EmailServiceClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,27 +38,29 @@ public class EmployeeServiceUnitTests {
     private EmployeeRepository employeeRepository;
 
     @Mock
+    private EmailServiceClient emailServiceClient;
+    @Mock
     private PasswordEncoder passwordEncoder;
     @InjectMocks
     private EmployeeService employeeService;
 
     @Test
     public void createEmployeeTest(){
-        EmployeeCreateDto employeeCreateDto = createDummyEmployeeCreateDto("employee123@gmail.com");
-        Employee employee = createDummyEmployee("employee123@gmail.com");
+        EmployeeCreateDto employeeCreateDto = createDummyEmployeeCreateDto("pera123@gmail.com");
+        Employee employee = createDummyEmployee("pera123@gmail.com");
         employee.setAddress(null);
         employee.setPassword(null);
         employee.setEmployeeId(null);
-        //given(employeeRepository.save(employee)).willReturn(employee);
         given(employeeRepository.save(any(Employee.class))).willReturn(employee);
 
-        EmployeeDto userDto = employeeService.create(employeeCreateDto);
+        EmployeeDto employeeDto = employeeService.create(employeeCreateDto);
 
-        assertEquals(userDto.getFirstName(), employee.getFirstName());
-        assertEquals(userDto.getLastName(), employee.getLastName());
-        assertEquals(userDto.getEmail(), employee.getEmail());
-        assertEquals(userDto.getJmbg(), employee.getJmbg());
+        assertEquals(employeeCreateDto.getFirstName(), employeeDto.getFirstName());
+        assertEquals(employeeCreateDto.getLastName(), employeeDto.getLastName());
+        assertEquals(employeeCreateDto.getEmail(), employeeDto.getEmail());
+        assertEquals(employeeCreateDto.getJmbg(), employeeDto.getJmbg());
     }
+
 
     @Test
     public void deleteEmployeeTest(){
@@ -191,14 +192,15 @@ public class EmployeeServiceUnitTests {
     }
     @Test
     public void loadUserByUsername() {
-        Employee employee = createDummyEmployee("employee@gmail.com");
+        Employee employee = createDummyEmployee("pera123@gmail.com");
+        Role role = new Role();
+        role.setRoleName(RoleName.ROLE_BANKING_OFFICER);
+        employee.setRole(role);
+        given(employeeRepository.findByEmail("pera123@gmail.com")).willReturn(Optional.of(employee));
 
-        given(employeeRepository.findByEmail("employee@gmail.com")).willReturn(Optional.of(employee));
-
-        UserDetails userDetails = employeeService.loadUserByUsername("employee@gmail.com");
-
-        assertEquals(userDetails.getUsername(), employee.getEmail());
-        assertEquals(userDetails.getPassword(), employee.getPassword());
+        UserDetails userDetails = employeeService.loadUserByUsername("pera123@gmail.com");
+        assertEquals(employee.getEmail(), userDetails.getUsername());
+        assertEquals(employee.getPassword(), userDetails.getPassword());
     }
 
     @Test
@@ -227,6 +229,21 @@ public class EmployeeServiceUnitTests {
         given(employeeRepository.findByEmail("email@gmail.com")).willReturn(Optional.empty());
         SetPasswordDTO setPasswordDTO = new SetPasswordDTO("pera1234", "email@gmail.com");
         assertThrows(ResponseStatusException.class, () -> employeeService.setPassword(setPasswordDTO));
+    }
+
+    @Test
+    public void resetPasswordTest() {
+        Employee employee = createDummyEmployee("pera123@gmail.com");
+        given(employeeRepository.findByEmail("pera123@gmail.com")).willReturn(Optional.of(employee));
+
+        ResetPasswordDTO resetPasswordDTO = new ResetPasswordDTO();
+        resetPasswordDTO.setEmail("pera123@gmail.com");
+        resetPasswordDTO.setNewPassword("pera1234");
+
+        when(passwordEncoder.encode("pera1234")).thenReturn("encodedPassword");
+
+        String result = employeeService.resetPassword(resetPasswordDTO);
+        assertEquals("Successfully reseted password for " + resetPasswordDTO.getEmail(), result);
     }
 
 

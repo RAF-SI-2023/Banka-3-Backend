@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 @Data
@@ -49,9 +48,6 @@ public class CompanyAccount implements Serializable {
 
     @NotNull(message = "This field cannot be NULL")
     private String accountNumber;
-
-
-
 
 
 }

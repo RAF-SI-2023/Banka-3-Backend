@@ -10,12 +10,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
-@ToString
 public class Role implements Serializable, GrantedAuthority {
 
     @Id

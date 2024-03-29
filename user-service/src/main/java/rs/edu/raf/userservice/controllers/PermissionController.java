@@ -20,7 +20,7 @@ public class PermissionController {
     }
 
     @GetMapping(value = "/findByPermissionName", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> findByRoleName(@RequestParam(value = "permissionName") String permissionName){
+    public ResponseEntity<?> findByRoleName(@RequestParam(value = "permissionName") String permissionName) {
         return ResponseEntity.ok(this.permissionService.getPermissionByName(permissionName));
     }
 }
