@@ -296,6 +296,7 @@ public class BootstrapData implements CommandLineRunner {
         accountRepository.save(account2);
         accountRepository.save(account3);
 
+
         CreditRequest creditRequest = new CreditRequest();
         creditRequest.setUser(user1);
         creditRequest.setName("name");
