@@ -11,10 +11,7 @@ import lombok.ToString;
 @RequiredArgsConstructor
 @ToString
 public class CheckEnoughBalanceDto {
-
     private String accountNumber;
     private Double amount;
     private String currencyMark;
-
-
 }

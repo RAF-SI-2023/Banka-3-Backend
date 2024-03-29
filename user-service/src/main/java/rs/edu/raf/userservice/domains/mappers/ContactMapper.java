@@ -7,6 +7,7 @@ import org.mapstruct.factory.Mappers;
 import rs.edu.raf.userservice.domains.dto.contact.ContactCreateDto;
 import rs.edu.raf.userservice.domains.dto.contact.ContactDto;
 import rs.edu.raf.userservice.domains.model.Contact;
+
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE,
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ContactMapper {

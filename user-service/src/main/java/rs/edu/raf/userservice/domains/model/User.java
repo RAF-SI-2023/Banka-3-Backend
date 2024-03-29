@@ -41,7 +41,7 @@ public class User implements Serializable {
     private Long dateOfBirth;
 
     @NotNull(message = "This field cannot be NULL")
-    @Size(max=1)
+    @Size(max = 1)
     private String gender;
 
     @NotNull(message = "This field cannot be NULL")
@@ -67,8 +67,6 @@ public class User implements Serializable {
 
     @OneToMany
     private List<Credit> credits = new ArrayList<>();
-
-
 
     @OneToMany
     private List<Contact> contacts = new ArrayList<>();

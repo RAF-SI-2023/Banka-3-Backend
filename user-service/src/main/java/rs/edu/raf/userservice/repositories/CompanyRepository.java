@@ -13,8 +13,11 @@ import java.util.Optional;
 public interface CompanyRepository extends JpaRepository<Company, Long> {
 
     Optional<Company> findByPib(int PIB);
+
     Optional<Company> findByMaticniBroj(int matBr);
+
     Optional<Company> findByEmail(String email);
+
     Optional<Company> findByNumber(String number);
 
     @Query("SELECT c FROM Company c WHERE " +

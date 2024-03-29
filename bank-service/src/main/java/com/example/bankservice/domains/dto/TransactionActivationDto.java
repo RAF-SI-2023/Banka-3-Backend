@@ -10,7 +10,6 @@ import lombok.ToString;
 @RequiredArgsConstructor
 @ToString
 public class TransactionActivationDto {
-
     private String email;
     private Long transactionId;
 }

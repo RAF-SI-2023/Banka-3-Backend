@@ -14,7 +14,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @ToString
 public class CompanyDto implements Serializable {
-
     private long companyId;
     private String title;
     private String number;

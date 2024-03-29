@@ -13,7 +13,7 @@ public interface CompanyMapper {
 
     CompanyDto companyToCompanyDto(Company company);
 
-//    Company companyCreateDtoToCompany(CompanyCreateDto companyCreateDto);
+    Company companyCreateDtoToCompany(CompanyCreateDto companyCreateDto);
 
     //void updateCompanyFromCompanyUpdateDto(@MappingTarget Company company, CompanyUpdateDto companyUpdateDto);
 }

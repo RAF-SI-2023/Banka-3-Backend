@@ -8,10 +8,9 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class CompanyAccountCreateDto {
-
-        private Long companyId;
-        private Double balance;
-        private String currency;
-        private String accountType;
-        private Long employeeId;
+    private Long companyId;
+    private Double balance;
+    private String currency;
+    private String accountType;
+    private Long employeeId;
 }

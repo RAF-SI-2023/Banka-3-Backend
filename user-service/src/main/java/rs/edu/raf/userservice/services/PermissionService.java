@@ -17,6 +17,8 @@ public class PermissionService {
         return permissionRepository.findAll();
     }
 
-    public Permission getPermissionByName(String permissionName){ return permissionRepository.findByPermissionName(permissionName);}
+    public Permission getPermissionByName(String permissionName) {
+        return permissionRepository.findByPermissionName(permissionName);
+    }
 
 }

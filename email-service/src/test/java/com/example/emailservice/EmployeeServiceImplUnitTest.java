@@ -1,6 +1,8 @@
 package com.example.emailservice;
 
 import com.example.emailservice.client.UserServiceClient;
+import com.example.emailservice.dto.ResetPasswordDTO;
+import com.example.emailservice.dto.TryPasswordResetDTO;
 import com.example.emailservice.model.EmployeeActivation;
 import com.example.emailservice.repository.EmployeeActivationRepository;
 import com.example.emailservice.service.EmailService;
@@ -92,5 +94,51 @@ public class EmployeeServiceImplUnitTest {
                 assertThrows(ResponseStatusException.class, () -> employeeServiceImpl.changePassword(identifier, password));
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
         assertEquals("Password change failed", exception.getReason());
+    }
+    @Test
+    public void testResetPassword_Success() {
+        // Priprema podataka za test
+        TryPasswordResetDTO tryPasswordResetDTO = new TryPasswordResetDTO();
+        EmployeeActivation employeeActivation = new EmployeeActivation();
+        ResetPasswordDTO resetPasswordDTO = new ResetPasswordDTO();
+        ResponseEntity<String> successResponse = new ResponseEntity<>("Success", HttpStatus.OK);
+
+        when(employeeActivationRepository.findEmployeeActivationByIdentifierAndActivationPossibleIsTrue(tryPasswordResetDTO.getIdentifier())).thenReturn(Optional.of(employeeActivation));
+        when(userServiceClient.resetPassword(resetPasswordDTO)).thenReturn(successResponse);
+
+        // Izvršavanje metode koju testiramo
+        String result = employeeServiceImpl.resetPassword(tryPasswordResetDTO);
+
+        // Provera rezultata
+        assertEquals("Password successfully changed", result);
+    }
+
+    @Test
+    public void testResetPassword_Failure() {
+        // Priprema podataka za test
+        TryPasswordResetDTO tryPasswordResetDTO = new TryPasswordResetDTO(/* Popunite polja za TryPasswordResetDTO */);
+        EmployeeActivation employeeActivation = new EmployeeActivation(/* Popunite polja za EmployeeActivation */);
+        ResetPasswordDTO resetPasswordDTO = new ResetPasswordDTO(/* Popunite polja za ResetPasswordDTO */);
+        ResponseEntity<String> errorResponse = new ResponseEntity<>("Error message", HttpStatus.BAD_REQUEST);
+
+        when(employeeActivationRepository.findEmployeeActivationByIdentifierAndActivationPossibleIsTrue(tryPasswordResetDTO.getIdentifier())).thenReturn(Optional.of(employeeActivation));
+        when(userServiceClient.resetPassword(resetPasswordDTO)).thenReturn(errorResponse);
+
+        assertThrows(ResponseStatusException.class,() -> employeeServiceImpl.resetPassword(tryPasswordResetDTO));
+    }
+
+    @Test
+    public void testTryResetPassword() throws InterruptedException {
+        // Priprema podataka za test
+        String email = "test@example.com";
+
+        employeeServiceImpl.tryResetPassword(email);
+
+        verify(employeeActivationRepository, times(1)).save(any(EmployeeActivation.class));
+
+        verify(emailService, times(1)).sendSimpleMessage(eq(email), anyString(), anyString());
+
+        Thread.sleep(1000); // Sačekajmo 1 sekundu kako bi nova nit mogla da se pokrene
+        verify(employeeActivationRepository, times(1)).save(any(EmployeeActivation.class));
     }
 }

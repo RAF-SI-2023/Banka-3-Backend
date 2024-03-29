@@ -7,11 +7,10 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "user_activation", indexes = @Index( columnList = "email, code, timeCreated, activationPossible"))
+@Table(name = "user_activation", indexes = @Index(columnList = "email, code, timeCreated, activationPossible"))
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,7 +24,7 @@ public class UserActivation {
     private String email;
 
     @NotNull(message = "This field cannot be NULL")
-    int code;
+    private int code;
 
     @NotNull
     private LocalDateTime timeCreated;

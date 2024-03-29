@@ -4,12 +4,13 @@ import org.springframework.stereotype.Service;
 import rs.edu.raf.userservice.domains.dto.companyaccount.CompanyAccountCreateDto;
 import rs.edu.raf.userservice.domains.dto.companyaccount.CompanyAccountDto;
 import rs.edu.raf.userservice.domains.mappers.CompanyAccountMapper;
-import rs.edu.raf.userservice.domains.model.Company;
 import rs.edu.raf.userservice.domains.model.CompanyAccount;
 import rs.edu.raf.userservice.domains.model.Currency;
-import rs.edu.raf.userservice.domains.model.Employee;
 import rs.edu.raf.userservice.domains.model.enums.CurrencyName;
-import rs.edu.raf.userservice.repositories.*;
+import rs.edu.raf.userservice.repositories.CompanyAccountRepository;
+import rs.edu.raf.userservice.repositories.CompanyRepository;
+import rs.edu.raf.userservice.repositories.CurrencyRepository;
+import rs.edu.raf.userservice.repositories.EmployeeRepository;
 
 import java.util.List;
 import java.util.Random;
@@ -34,11 +35,12 @@ public class CompanyAccountService {
     }
 
 
-    public CompanyAccountDto create(CompanyAccountCreateDto companyAccountCreateDto, Long companyId){
+    public CompanyAccountDto create(CompanyAccountCreateDto companyAccountCreateDto, Long companyId) {
         CurrencyName currencyName = CurrencyName.valueOf(companyAccountCreateDto.getCurrency());
         Currency c = currencyRepository.findByName(currencyName).orElseThrow();
 
-        CompanyAccount companyAccount = CompanyAccountMapper.INSTANCE.companyAccountCreateDtoToCompanyAccount(companyAccountCreateDto);
+        CompanyAccount companyAccount =
+                CompanyAccountMapper.INSTANCE.companyAccountCreateDtoToCompanyAccount(companyAccountCreateDto);
         companyAccount.setCompany(companyRepository.findById(companyId).orElse(null));
         companyAccount.setEmployee(employeeRepository.findById(companyAccountCreateDto.getEmployeeId()).orElse(null));
         companyAccount.setCurrency(c);
@@ -52,7 +54,7 @@ public class CompanyAccountService {
         return CompanyAccountMapper.INSTANCE.companyAccountToCompanyAccountDto(companyAccount);
     }
 
-    private String randAccNumber(Boolean rsd){ //generise broj racuna
+    private String randAccNumber(Boolean rsd) { //generise broj racuna
         String fixedPart = rsd ? "5053791" : "5054791";
         StringBuilder builder = new StringBuilder(fixedPart);
         Random random = new Random();
@@ -65,7 +67,7 @@ public class CompanyAccountService {
 
     public CompanyAccountDto deactivate(Long id) {
         CompanyAccount companyAccount = companyAccountRepository.findById(id).orElse(null);
-        if(companyAccount != null){
+        if (companyAccount != null) {
             companyAccount.setActive(false);
             companyAccountRepository.save(companyAccount);
             return CompanyAccountMapper.INSTANCE.companyAccountToCompanyAccountDto(companyAccount);

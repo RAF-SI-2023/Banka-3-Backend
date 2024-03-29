@@ -1,7 +1,6 @@
-package com.example.bankservice.controllers;
+package com.example.bankservice.controller;
 
 import com.example.bankservice.domains.dto.CreditTransactionDto;
-import com.example.bankservice.domains.model.CreditTransaction;
 import com.example.bankservice.services.CreditTransactionService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +9,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+
 @AllArgsConstructor
-@CrossOrigin
-@RequestMapping("api/v2/credit-transaction")
+@CrossOrigin("*")
+@RestController
+@RequestMapping("/api/v1/creditTransaction")
 public class CreditTransactionController {
 
     @Autowired

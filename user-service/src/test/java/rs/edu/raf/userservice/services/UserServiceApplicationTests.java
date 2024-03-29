@@ -1,21 +1,25 @@
-package rs.edu.raf.userservice;
+package rs.edu.raf.userservice.services;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
-import rs.edu.raf.userservice.domains.dto.user.CreateUserDto;
-import rs.edu.raf.userservice.domains.dto.user.UpdateUserDto;
-import rs.edu.raf.userservice.domains.dto.user.UserDto;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import rs.edu.raf.userservice.domains.dto.employee.ResetPasswordDTO;
+import rs.edu.raf.userservice.domains.dto.user.*;
 import rs.edu.raf.userservice.domains.exceptions.ForbiddenException;
 import rs.edu.raf.userservice.domains.exceptions.NotFoundException;
 import rs.edu.raf.userservice.domains.model.User;
 import rs.edu.raf.userservice.repositories.UserRepository;
 import rs.edu.raf.userservice.services.UserService;
+import rs.edu.raf.userservice.utils.EmailServiceClient;
 
 import javax.validation.ValidationException;
+import javax.validation.constraints.Email;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +27,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -31,9 +36,17 @@ class UserServiceApplicationTests {
     @Mock
     UserRepository userRepository;
 
+    @Mock
+    PasswordEncoder passwordEncoder;
+    @Mock
+    EmailServiceClient emailServiceClient;
     @InjectMocks
     UserService userService;
 
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
     @Test
     public void testLoadUserByUsername() {
         User user = createDummyUser("pera123@gmail.com");
@@ -96,6 +109,12 @@ class UserServiceApplicationTests {
         user.setPassword(null);
         user.setUserId(null);
         user.setCodeActive(null);
+        user.setActive(false);
+        user.setAccounts(null);
+        user.setForeignAccounts(null);
+        user.setCredits(null);
+        user.setContacts(null);
+        user.setCreditsRequests(null);
         given(userRepository.save(user)).willReturn(user);
 
         UserDto userDto = userService.addUser(createUserDto);
@@ -125,14 +144,15 @@ class UserServiceApplicationTests {
     public void deactivateUserTest() {
         User user = createDummyUser("pera123@gmail.com");
 
-        given(userRepository.findById(1L)).willReturn(Optional.of(user));
+        given(userRepository.findById(user.getUserId())).willReturn(Optional.of(user));
         given(userRepository.save(user)).willReturn(user);
-        UserDto userDto = userService.deactivateUser(1L);
+        UserDto userDto = userService.deactivateUser(user.getUserId());
 
         assertEquals(user.getEmail(), userDto.getEmail());
         assertEquals(user.getJmbg(), userDto.getJmbg());
-        assertFalse(userDto.getIsActive());
+        assertFalse(userDto.isActive());
     }
+
 
     @Test
     public void deactivateUserTest_Fail() {
@@ -241,6 +261,67 @@ class UserServiceApplicationTests {
         assertEquals(expected, actual);
     }
 
+    @Test
+    public void isUserActiveTest() {
+        User user = createDummyUser("pera1234@gmail.com");
+
+        given(userRepository.findByEmail("pera1234@gmail.com")).willReturn(Optional.of(user));
+
+        assertTrue(userService.isUserActive("pera1234@gmail.com").isActive());
+    }
+
+    @Test
+    public void isUserActiveTest_Fail() {
+        User inactiveUser = new User();
+        inactiveUser.setActive(false);
+        String email = "test@example.com";
+
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(inactiveUser));
+
+        IsUserActiveDTO result = userService.isUserActive(email);
+
+        assertEquals(false, result.isActive());
+        verify(this.emailServiceClient).sendUserActivationEmailToEmailService(email);
+
+    }
+
+    @Test
+    public void setPasswordTest() {
+        User user = createDummyUser("pera1234@gmail.com");
+
+        given(userRepository.findByEmail("pera1234@gmail.com")).willReturn(Optional.of(user));
+        given(userRepository.save(user)).willReturn(user);
+
+        SetPasswordDTO setPasswordDTO = new SetPasswordDTO();
+        setPasswordDTO.setEmail("pera1234@gmail.com");
+        setPasswordDTO.setPassword("pera1234");
+
+        String res = userService.setPassword(setPasswordDTO);
+
+        verify(userRepository).save(user);
+
+        assertEquals(res, "Successfully updated password for " + setPasswordDTO.getEmail());
+    }
+
+    @Test
+    public void resetPasswordTest() {
+        User user = createDummyUser("pera1234@gmail.com");
+
+        given(userRepository.findByEmail("pera1234@gmail.com")).willReturn(Optional.of(user));
+        given(userRepository.save(user)).willReturn(user);
+
+        ResetUserPasswordDTO resetPasswordDTO = new ResetUserPasswordDTO();
+        resetPasswordDTO.setEmail("pera1234@gmail.com");
+        resetPasswordDTO.setPassword("admin123");
+
+        String res = userService.resetPassword(resetPasswordDTO);
+
+        verify(userRepository).save(user);
+
+        assertEquals(res, "Successfully reseted password for " + resetPasswordDTO.getEmail());
+    }
+
+
     private CreateUserDto createDummyCreateUserDto(String email) {
         CreateUserDto user = new CreateUserDto();
         user.setFirstName("Pera");
@@ -296,7 +377,7 @@ class UserServiceApplicationTests {
         userDto.setPhoneNumber("+3123214254");
         userDto.setAddress("Mika Mikic 13");
         userDto.setEmail("pera123@gmail.com");
-        userDto.setIsActive(true);
+        userDto.setActive(true);
 
         return userDto;
     }

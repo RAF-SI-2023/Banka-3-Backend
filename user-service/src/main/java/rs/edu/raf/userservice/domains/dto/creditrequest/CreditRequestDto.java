@@ -10,7 +10,6 @@ import rs.edu.raf.userservice.domains.model.enums.CreditRequestStatus;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreditRequestDto {
-
     private User user;
     private String name;
     private String currencyMark;

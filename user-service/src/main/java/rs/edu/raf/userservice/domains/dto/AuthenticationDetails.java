@@ -7,7 +7,10 @@ import java.util.List;
 
 public interface AuthenticationDetails {
     String getEmail();
+
     Role getRole();
+
     Long getId();
+
     List<Permission> getPermissions();
 }

@@ -8,8 +8,6 @@ import org.mapstruct.factory.Mappers;
 @Mapper(unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE,
         nullValuePropertyMappingStrategy = org.mapstruct.NullValuePropertyMappingStrategy.IGNORE)
 public interface CreditTransactionMapper {
-
     CreditTransactionMapper INSTANCE = Mappers.getMapper(CreditTransactionMapper.class);
-
     CreditTransaction creditTransactionDtoToCreditTransaction(CreditTransactionDto creditTransactionDto);
 }

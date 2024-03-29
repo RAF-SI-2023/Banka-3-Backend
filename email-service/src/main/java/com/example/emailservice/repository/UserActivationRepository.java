@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface UserActivationRepository extends JpaRepository<UserActivation,Long>{
-
+public interface UserActivationRepository extends JpaRepository<UserActivation, Long> {
     Optional<UserActivation> findUserActivationByCodeAndActivationPossibleIsTrue(int code);
 }

@@ -1,19 +1,17 @@
 package rs.edu.raf.userservice.domains.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 @Data
 @Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
+@ToString
 @Entity
 public class Account implements Serializable {
 
@@ -29,13 +27,10 @@ public class Account implements Serializable {
     private User user;
 
     @NotNull(message = "This field cannot be NULL")
-    private Double balance;
+    private BigDecimal reservedAmount;
 
     @NotNull(message = "This field cannot be NULL")
-    private Double reservedAmount;
-
-    @NotNull(message = "This field cannot be NULL")
-    private Double availableBalance;
+    private BigDecimal availableBalance;
 
     @ManyToOne
     @JoinColumn(name = "employeeId")
@@ -57,28 +52,4 @@ public class Account implements Serializable {
     @ManyToOne
     @JoinColumn(name = "accountTypeId")
     private AccountType accountType;
-
-
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

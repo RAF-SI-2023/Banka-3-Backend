@@ -21,8 +21,9 @@ public class CreditTransactionService {
     }
 
     public void createCreditTransactions(List<CreditTransactionDto> transactionCreditDtos) {
-        List<CreditTransaction> transactions = transactionCreditDtos.stream().map(CreditTransactionMapper.INSTANCE::creditTransactionDtoToCreditTransaction)
-                        .collect(Collectors.toList());
+        List<CreditTransaction> transactions =
+                transactionCreditDtos.stream().map(CreditTransactionMapper.INSTANCE::creditTransactionDtoToCreditTransaction)
+                .collect(Collectors.toList());
         creditTransactionRepository.saveAll(transactions);
     }
 }

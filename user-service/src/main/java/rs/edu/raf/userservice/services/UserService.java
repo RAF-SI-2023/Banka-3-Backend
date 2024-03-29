@@ -29,13 +29,11 @@ public class UserService implements UserDetailsService, UserServiceInterface {
 
     private final Pattern emailPattern = Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$");
     private final Pattern jmbgPattern = Pattern.compile("[0-9]{13}");
+    private final PasswordEncoder passwordEncoder;
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private EmailServiceClient emailServiceClient;
-
-    private final PasswordEncoder passwordEncoder;
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
@@ -119,8 +117,9 @@ public class UserService implements UserDetailsService, UserServiceInterface {
         return users.stream().map(UserMapper.INSTANCE::userToUserDto).collect(Collectors.toList());
     }
 
-    public IsUserActiveDTO isUserActive(String email){
-        User user = userRepository.findByEmail(email).orElseThrow(()-> new NotFoundException("User with" + email + " not found"));
+    public IsUserActiveDTO isUserActive(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User with" + email +
+                " not found"));
 
         if (!user.isActive()) {
             emailServiceClient.sendUserActivationEmailToEmailService(email);
@@ -128,9 +127,9 @@ public class UserService implements UserDetailsService, UserServiceInterface {
         return UserMapper.INSTANCE.userToIsAUserActiveDTO(user);
     }
 
-    public String setPassword(SetPasswordDTO setPasswordDTO){
+    public String setPassword(SetPasswordDTO setPasswordDTO) {
         User user = userRepository.findByEmail(setPasswordDTO.getEmail())
-                                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
         user.setPassword(passwordEncoder.encode(setPasswordDTO.getPassword()));
         user.setActive(true);

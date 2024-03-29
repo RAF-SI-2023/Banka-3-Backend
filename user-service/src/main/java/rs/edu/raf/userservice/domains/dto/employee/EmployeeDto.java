@@ -9,7 +9,6 @@ import rs.edu.raf.userservice.domains.dto.AuthenticationDetails;
 import rs.edu.raf.userservice.domains.model.Permission;
 import rs.edu.raf.userservice.domains.model.Role;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -17,7 +16,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @ToString
 public class EmployeeDto implements AuthenticationDetails {
-
     private Long employeeId;
     private String firstName;
     private String lastName;
