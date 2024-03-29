@@ -2,7 +2,6 @@ package rs.edu.raf.userservice;
 
 
 import org.junit.Before;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,7 +10,6 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import rs.edu.raf.userservice.domains.dto.credit.CreateCreditDto;
 import rs.edu.raf.userservice.domains.dto.credit.CreditDto;
-import rs.edu.raf.userservice.domains.exceptions.ForbiddenException;
 import rs.edu.raf.userservice.domains.model.Account;
 import rs.edu.raf.userservice.domains.model.Credit;
 import rs.edu.raf.userservice.domains.model.User;
@@ -55,8 +53,10 @@ public class CreditServiceTest {
 
         // Priprema podataka za test
         List<Credit> credits = Arrays.asList(
-                new Credit(1l, user, "Name", "123456789", BigDecimal.valueOf(100.00), 50, BigDecimal.valueOf(0.05), 280599l, 13022011l, BigDecimal.valueOf(300.00), BigDecimal.valueOf(20000.00), "RSD"),
-                new Credit(2l, user1, "Name", "123456789", BigDecimal.valueOf(100.00), 50, BigDecimal.valueOf(0.05), 280599l, 13022011l, BigDecimal.valueOf(300.00), BigDecimal.valueOf(20000.00), "RSD")
+                new Credit(1l, user, "Name", "123456789", BigDecimal.valueOf(100.00), 50, BigDecimal.valueOf(0.05),
+                        280599l, 13022011l, BigDecimal.valueOf(300.00), BigDecimal.valueOf(20000.00), "RSD"),
+                new Credit(2l, user1, "Name", "123456789", BigDecimal.valueOf(100.00), 50, BigDecimal.valueOf(0.05),
+                        280599l, 13022011l, BigDecimal.valueOf(300.00), BigDecimal.valueOf(20000.00), "RSD")
         );
 
         // Podešavanje ponašanja mock CreditRepository-ja
@@ -80,6 +80,7 @@ public class CreditServiceTest {
             assertEquals(credits.get(i).getCurrencyMark(), result.get(i).getCurrencyMark());
         }
     }
+
     @Test
     public void testFindAllNoData() {
         // Priprema
@@ -102,8 +103,12 @@ public class CreditServiceTest {
         User user = new User();
         User user1 = new User();
 
-        Credit credit1 = new Credit(1l, user, "Name", "123456789", BigDecimal.valueOf(100.00), 50, BigDecimal.valueOf(0.05), 280599l, 13022011l, BigDecimal.valueOf(300.00), BigDecimal.valueOf(20000.00), "RSD");
-        Credit credit2 = new Credit(2l, user1, "Name", "123456789", BigDecimal.valueOf(100.00), 50, BigDecimal.valueOf(0.05), 280599l, 13022011l, BigDecimal.valueOf(300.00), BigDecimal.valueOf(20000.00), "RSD");
+        Credit credit1 = new Credit(1l, user, "Name", "123456789", BigDecimal.valueOf(100.00), 50,
+                BigDecimal.valueOf(0.05), 280599l, 13022011l, BigDecimal.valueOf(300.00),
+                BigDecimal.valueOf(20000.00), "RSD");
+        Credit credit2 = new Credit(2l, user1, "Name", "123456789", BigDecimal.valueOf(100.00), 50,
+                BigDecimal.valueOf(0.05), 280599l, 13022011l, BigDecimal.valueOf(300.00),
+                BigDecimal.valueOf(20000.00), "RSD");
         List<Credit> credits = Arrays.asList(credit1, credit2);
 
         when(creditRepository.findByUser_UserId(user.getUserId())).thenReturn(Optional.of(credits));
@@ -139,9 +144,12 @@ public class CreditServiceTest {
     public void testFindById() {
         User user = new User();
         Long id = 123L;
-        Credit credit1 = new Credit(1l, user, "Name", "123456789", BigDecimal.valueOf(100.00), 50, BigDecimal.valueOf(0.05), 280599l, 13022011l, BigDecimal.valueOf(300.00), BigDecimal.valueOf(20000.00), "RSD");
+        Credit credit1 = new Credit(1l, user, "Name", "123456789", BigDecimal.valueOf(100.00), 50,
+                BigDecimal.valueOf(0.05), 280599l, 13022011l, BigDecimal.valueOf(300.00),
+                BigDecimal.valueOf(20000.00), "RSD");
 
-        CreditDto expectedDto = new CreditDto(user, "Name", "123456789", 100.00, 50, 0.05, 280599l, 13022011l, 300.00, 20000.00, "RSD");
+        CreditDto expectedDto = new CreditDto(user, "Name", "123456789", 100.00, 50, 0.05, 280599l, 13022011l, 300.00
+                , 20000.00, "RSD");
 
         // Podešavanje ponašanja mock CreditRepository-ja
         when(creditRepository.findById(id)).thenReturn(Optional.of(credit1));
@@ -180,7 +188,9 @@ public class CreditServiceTest {
         user.setUserId(1L);
         Long userId = 1L;
         CreateCreditDto createCreditDto = new CreateCreditDto(userId, "Name", "123456789", "RSD", 100.00, 50);
-        Credit credit = new Credit(1l, user, "Name", "123456789", BigDecimal.valueOf(100.00), 50, BigDecimal.valueOf(0.05), 280599l, 13022011l, BigDecimal.valueOf(300.00), BigDecimal.valueOf(20000.00), "RSD");
+        Credit credit = new Credit(1l, user, "Name", "123456789", BigDecimal.valueOf(100.00), 50,
+                BigDecimal.valueOf(0.05), 280599l, 13022011l, BigDecimal.valueOf(300.00),
+                BigDecimal.valueOf(20000.00), "RSD");
         Account account = new Account();
         account.setAvailableBalance(BigDecimal.valueOf(10000.00));
 
@@ -206,10 +216,13 @@ public class CreditServiceTest {
         User user1 = new User();
 
 
-
         List<Credit> credits = new ArrayList<>();
-        Credit credit1 = new Credit(1l, user, "Name", "123456789", BigDecimal.valueOf(100.00), 50, BigDecimal.valueOf(0.05), 280599l, 13022011l, BigDecimal.valueOf(300.00), BigDecimal.valueOf(20000.00), "RSD");
-        Credit credit2 = new Credit(2l, user1, "Name", "123456789", BigDecimal.valueOf(100.00), 50, BigDecimal.valueOf(0.05), 280599l, 13022011l, BigDecimal.valueOf(300.00), BigDecimal.valueOf(20000.00), "RSD");
+        Credit credit1 = new Credit(1l, user, "Name", "123456789", BigDecimal.valueOf(100.00), 50,
+                BigDecimal.valueOf(0.05), 280599l, 13022011l, BigDecimal.valueOf(300.00),
+                BigDecimal.valueOf(20000.00), "RSD");
+        Credit credit2 = new Credit(2l, user1, "Name", "123456789", BigDecimal.valueOf(100.00), 50,
+                BigDecimal.valueOf(0.05), 280599l, 13022011l, BigDecimal.valueOf(300.00),
+                BigDecimal.valueOf(20000.00), "RSD");
         credits.add(credit1);
         credits.add(credit2);
 

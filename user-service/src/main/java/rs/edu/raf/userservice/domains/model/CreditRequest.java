@@ -35,7 +35,6 @@ public class CreditRequest implements Serializable {
     @NotNull(message = "This field cannot be NULL")
     private String applianceReason;
 
-    @NotNull(message = "This field cannot be NULL")
     private Double monthlyPaycheck;
 
     @NotNull(message = "This field cannot be NULL")
@@ -48,7 +47,6 @@ public class CreditRequest implements Serializable {
     private int paymentPeriod;
 
     @NotNull(message = "This field cannot be NULL")
-
     @Enumerated(EnumType.STRING)
     private CreditRequestStatus status;
 

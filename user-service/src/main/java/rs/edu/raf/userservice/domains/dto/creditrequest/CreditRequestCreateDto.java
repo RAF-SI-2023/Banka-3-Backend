@@ -13,7 +13,6 @@ public class CreditRequestCreateDto {
     private String accountNumber;
     private Double amount;
     private String applianceReason;
-    private Double monthlyPaycheck;
     private Boolean employed;
     private Long dateOfEmployment;
     private int paymentPeriod;
