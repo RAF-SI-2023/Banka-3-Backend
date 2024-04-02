@@ -12,8 +12,13 @@ import rs.edu.raf.userservice.domains.model.enums.CreditRequestStatus;
 public class CreditRequestDto {
     private User user;
     private String name;
+    private String accountNumber;
     private String currencyMark;
     private Double amount;
+    private String applianceReason;
+    private Double monthlyPaycheck;
+    private Boolean employed;
+    private Long dateOfEmployment;
     private int paymentPeriod;
     private CreditRequestStatus status;
 }
