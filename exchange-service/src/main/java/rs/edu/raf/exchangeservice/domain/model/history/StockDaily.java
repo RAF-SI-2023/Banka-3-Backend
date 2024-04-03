@@ -19,5 +19,4 @@ public class StockDaily implements Serializable {
     private Long date;
     private double price; //highest
     private String ticker;
-
 }

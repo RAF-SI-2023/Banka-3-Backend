@@ -2,6 +2,7 @@ package rs.edu.raf.exchangeservice.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import rs.edu.raf.exchangeservice.domain.model.Forex;
 import rs.edu.raf.exchangeservice.domain.model.Future;
 import rs.edu.raf.exchangeservice.repository.FutureRepository;
 
@@ -9,6 +10,7 @@ import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,7 +19,7 @@ public class FutureService {
     private final String pathToFile = "exchange-service/src/main/resources/data/future_data.csv";
 
     @PostConstruct
-    private void loadData(){
+    public void loadData(){
         try (BufferedReader br = new BufferedReader(new FileReader(pathToFile))) {
             String line;
             // Skip the header line
@@ -36,5 +38,9 @@ public class FutureService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public List<Future> findAll(){
+        return this.futureRepository.findAll();
     }
 }

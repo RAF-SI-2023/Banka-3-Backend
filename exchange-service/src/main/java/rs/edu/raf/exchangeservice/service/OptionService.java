@@ -9,6 +9,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import rs.edu.raf.exchangeservice.domain.model.Forex;
 import rs.edu.raf.exchangeservice.domain.model.Option;
 import rs.edu.raf.exchangeservice.domain.model.Ticker;
 import rs.edu.raf.exchangeservice.repository.OptionRepository;
@@ -23,7 +24,7 @@ public class OptionService {
     private final TickerRepository tickerRepository;
     private final String apiCall = "https://query1.finance.yahoo.com/v6/finance/options/";
 
-    protected void loadData() throws JsonProcessingException {
+    public void loadData() throws JsonProcessingException {
         List<Ticker> tickersList = tickerRepository.findAll();
 
         for (Ticker ticker : tickersList) {
@@ -79,5 +80,19 @@ public class OptionService {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    public List<Option> findCalls(String ticker){
+        return this.optionsRepository.findByStockListingAndOptionType(ticker, "Calls");
+    }
+
+    public List<Option> findPuts(String ticker){
+        return this.optionsRepository.findByStockListingAndOptionType(ticker, "Puts");
+    }
+
+    public List<Option> findAllRefreshed() throws JsonProcessingException {
+        this.optionsRepository.deleteAll();
+        loadData();
+        return this.optionsRepository.findAll();
     }
 }

@@ -6,4 +6,5 @@ import rs.edu.raf.exchangeservice.domain.model.Stock;
 
 public interface StockRepository extends JpaRepository<Stock, Long> {
     Stock findByStockId(Long id);
+    Stock findByTicker(String ticker);
 }

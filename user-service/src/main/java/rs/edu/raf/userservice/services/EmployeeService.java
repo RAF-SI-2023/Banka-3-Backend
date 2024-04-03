@@ -164,7 +164,11 @@ public class EmployeeService implements UserDetailsService {
         List<ExchangeEmployeeDTO> exchangeEmployeeDTOS = new ArrayList<>();
 
         for(Employee employee : employees.get()){
-            exchangeEmployeeDTOS.add(EmployeeMapper.INSTANCE.employeeToExchangeEmployeeDto(employee));
+            ExchangeEmployeeDTO exchangeEmployeeDTO = new ExchangeEmployeeDTO();
+            exchangeEmployeeDTO.setEmployeeId(employee.getEmployeeId());
+            exchangeEmployeeDTO.setEmail(employee.getEmail());
+            exchangeEmployeeDTO.setRole(String.valueOf(employee.getRole().getRoleName()));
+            exchangeEmployeeDTOS.add(exchangeEmployeeDTO);
         }
 
         return exchangeEmployeeDTOS;

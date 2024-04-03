@@ -15,6 +15,6 @@ import java.util.List;
 public class ExchangeEmployeeDTO {
     private Long employeeId;
     private String email;
-    private Role role;
+    private String role;
 
 }

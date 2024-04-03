@@ -1,11 +1,14 @@
 package rs.edu.raf.exchangeservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import rs.edu.raf.exchangeservice.domain.model.Option;
+import rs.edu.raf.exchangeservice.domain.model.Stock;
 import rs.edu.raf.exchangeservice.domain.model.Ticker;
 import rs.edu.raf.exchangeservice.domain.model.helper.GlobalQuote;
 import rs.edu.raf.exchangeservice.repository.StockRepository;
@@ -21,9 +24,8 @@ public class StockService {
     private final String api = "https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=";
     private final String apiKey = "&apikey=NMBJV9I1JXOWWEZ6";
 
-    protected void loadData() {
-//        List<Ticker> tickersList = tickerRepository.findAll(); //TODO:otkomentarisati kada se bude prezentovalo
-        List<Ticker> tickersList = List.of(tickerRepository.findByTicker("A")); //da ne bi trosili API pozive, radimo samo sa jednim Tickerom
+    public void loadData() {
+        List<Ticker> tickersList = tickerRepository.findAll();
 
         for (Ticker ticker : tickersList){
             RestTemplate restTemplate = new RestTemplate();
@@ -41,5 +43,15 @@ public class StockService {
 
             stockRepository.save(response.getBody().getStock());
         }
+    }
+
+    public List<Stock> findAll(){
+        return this.stockRepository.findAll();
+    }
+
+    public List<Stock> findAllRefreshed() throws JsonProcessingException {
+        this.stockRepository.deleteAll();
+        loadData();
+        return this.stockRepository.findAll();
     }
 }

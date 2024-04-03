@@ -1,4 +1,4 @@
-package rs.edu.raf.exchangeservice.domain.model.history;
+package rs.edu.raf.exchangeservice.domain.model.myListings;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,11 +14,10 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class StockIntraday implements Serializable {
+public class MyStock implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long stockIntradayId;
-    private Long date;
-    private double price; //highest
+    private Long myStockId;
     private String ticker;
+    private Integer amount;
 }

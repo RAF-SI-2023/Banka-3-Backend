@@ -15,6 +15,7 @@ import rs.edu.raf.exchangeservice.repository.ForexRepository;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -24,7 +25,7 @@ public class ForexService {
     private final String exchangeApiKey = "96aa86545baf8162d6ecbe21";
 
     @PostConstruct
-    private void loadData() throws JsonProcessingException {
+    public void loadData() throws JsonProcessingException {
         RestTemplate restTemplate = new RestTemplate();
         String url = "https://v6.exchangerate-api.com/v6/"+exchangeApiKey+"/latest/RSD";
         ResponseEntity<String> response = restTemplate.exchange(
@@ -58,5 +59,15 @@ public class ForexService {
         } catch (IOException e) {
             throw new RuntimeException("Error processing forex JSON", e);
         }
+    }
+
+    public List<Forex> findAll(){
+        return this.forexRepository.findAll();
+    }
+
+    public List<Forex> findAllRefreshed() throws JsonProcessingException {
+        this.forexRepository.deleteAll();
+        loadData();
+        return this.forexRepository.findAll();
     }
 }
