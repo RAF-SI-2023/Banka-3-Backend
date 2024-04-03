@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import rs.edu.raf.userservice.domains.model.Employee;
+import rs.edu.raf.userservice.domains.model.Role;
 import rs.edu.raf.userservice.domains.model.enums.RoleName;
 
 import java.util.List;
@@ -19,6 +20,9 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     Optional<Employee> findByUsername(String username);
 
     Optional<Employee> findByPhoneNumber(String phoneNumber);
+
+    @Query("SELECT e FROM Employee e WHERE e.role.roleName = 'ROLE_SUPERVISOR' OR e.role.roleName = 'ROLE_AGENT'")
+    Optional<List<Employee>> findSupervisorsAndAgents();
 
     @Query("SELECT e FROM Employee e WHERE " +
             "(:firstName IS NULL OR LOWER(e.firstName) LIKE LOWER(CONCAT('%', :firstName, '%'))) AND " +

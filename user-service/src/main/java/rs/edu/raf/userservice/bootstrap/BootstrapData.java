@@ -49,12 +49,20 @@ public class BootstrapData implements CommandLineRunner {
         Role creditOfficer = Role.builder()
                 .roleName(RoleName.ROLE_CREDIT_OFFICER).build();
 
+        Role exchangeAgent = Role.builder()
+                .roleName(RoleName.ROLE_AGENT).build();
+
+        Role exchangeSupervisor= Role.builder()
+                .roleName(RoleName.ROLE_SUPERVISOR).build();
+
         List<Role> roles = new ArrayList<>();
         roles.add(adminRole);
         roles.add(bankingOfficer);
         roles.add(clientAdvisor);
         roles.add(loanOfficer);
         roles.add(creditOfficer);
+        roles.add(exchangeAgent);
+        roles.add(exchangeSupervisor);
 
         roleRepository.saveAll(roles);
 
@@ -152,12 +160,44 @@ public class BootstrapData implements CommandLineRunner {
                 .permissions(List.of(canTrade, canBuy))
                 .build();
 
+        Employee employee5 = Employee.builder()
+                .firstName("Janko")
+                .lastName("Ristic")
+                .username("Janko")
+                .email("salter3@salter.com")
+                .jmbg("1111111111")
+                .phoneNumber("063555555")
+                .password(passwordEncoder.encode("admin1234"))
+                .isActive(true)
+                .gender("M")
+                .dateOfBirth(1710274123787L)
+                .role(exchangeSupervisor)
+                .permissions(List.of(canTrade, canBuy))
+                .build();
+
+        Employee employee6 = Employee.builder()
+                .firstName("Damir")
+                .lastName("Ceh")
+                .username("Ceh")
+                .email("dceh9121rn@raf.rs")
+                .jmbg("1111111111")
+                .phoneNumber("063555555")
+                .password(passwordEncoder.encode("Abc12345"))
+                .isActive(true)
+                .gender("M")
+                .dateOfBirth(1710274123787L)
+                .role(exchangeAgent)
+                .permissions(List.of(canTrade, canBuy))
+                .build();
+
         List<Employee> employees = new ArrayList<>();
         employees.add(employee1);
         employees.add(employee2);
         employees.add(employee3);
         employees.add(employeeJ);
         employees.add(employee4);
+        employees.add(employee5);
+        employees.add(employee6);
 
         employeeRepository.saveAll(employees);
 
@@ -329,6 +369,7 @@ public class BootstrapData implements CommandLineRunner {
 
         CompanyAccount bankaRsd = new CompanyAccount();
         bankaRsd.setCompany(banka);
+        bankaRsd.setAccountNumber("1010101010101010");
         bankaRsd.setBalance(10000000000000000.0);
         bankaRsd.setAvailableBalance(10000000000000000.0);
         bankaRsd.setEmployee(employee3);
@@ -339,6 +380,7 @@ public class BootstrapData implements CommandLineRunner {
 
         CompanyAccount bankaEur = new CompanyAccount();
         bankaEur.setCompany(banka);
+        bankaEur.setAccountNumber("2020202020202020");
         bankaEur.setBalance(10000000000000000.0);
         bankaEur.setAvailableBalance(10000000000000000.0);
         bankaEur.setEmployee(employee3);
@@ -349,6 +391,7 @@ public class BootstrapData implements CommandLineRunner {
 
         CompanyAccount bankaUsd = new CompanyAccount();
         bankaUsd.setCompany(banka);
+        bankaUsd.setAccountNumber("3030303030303030");
         bankaUsd.setBalance(10000000000000000.0);
         bankaUsd.setAvailableBalance(10000000000000000.0);
         bankaUsd.setEmployee(employee3);
@@ -359,6 +402,7 @@ public class BootstrapData implements CommandLineRunner {
 
         CompanyAccount bankaJpy = new CompanyAccount();
         bankaJpy.setCompany(banka);
+        bankaJpy.setAccountNumber("4040404040404040");
         bankaJpy.setBalance(10000000000000000.0);
         bankaJpy.setAvailableBalance(10000000000000000.0);
         bankaJpy.setEmployee(employee3);
@@ -369,6 +413,7 @@ public class BootstrapData implements CommandLineRunner {
 
         CompanyAccount bankaRub = new CompanyAccount();
         bankaRub.setCompany(banka);
+        bankaRub.setAccountNumber("5050505050505050");
         bankaRub.setBalance(10000000000000000.0);
         bankaRub.setAvailableBalance(10000000000000000.0);
         bankaRub.setEmployee(employee3);
@@ -379,6 +424,7 @@ public class BootstrapData implements CommandLineRunner {
 
         CompanyAccount bankaGbp = new CompanyAccount();
         bankaGbp.setCompany(banka);
+        bankaGbp.setAccountNumber("6060606060606060");
         bankaGbp.setBalance(10000000000000000.0);
         bankaGbp.setAvailableBalance(10000000000000000.0);
         bankaGbp.setEmployee(employee3);

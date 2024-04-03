@@ -15,6 +15,7 @@ import rs.edu.raf.userservice.domains.exceptions.NotFoundException;
 import rs.edu.raf.userservice.domains.mappers.EmployeeMapper;
 import rs.edu.raf.userservice.domains.model.Employee;
 import rs.edu.raf.userservice.domains.model.Permission;
+import rs.edu.raf.userservice.domains.model.Role;
 import rs.edu.raf.userservice.domains.model.enums.RoleName;
 import rs.edu.raf.userservice.repositories.EmployeeRepository;
 import rs.edu.raf.userservice.utils.EmailServiceClient;
@@ -156,6 +157,17 @@ public class EmployeeService implements UserDetailsService {
         employee.setPassword(passwordEncoder.encode(resetPasswordDTO.getNewPassword()));
         employeeRepository.save(employee);
         return "Successfully reseted password for " + resetPasswordDTO.getEmail();
+    }
+
+    public List<ExchangeEmployeeDTO> findSupervisorsAndAgents() {
+        Optional<List<Employee>> employees = employeeRepository.findSupervisorsAndAgents();
+        List<ExchangeEmployeeDTO> exchangeEmployeeDTOS = new ArrayList<>();
+
+        for(Employee employee : employees.get()){
+            exchangeEmployeeDTOS.add(EmployeeMapper.INSTANCE.employeeToExchangeEmployeeDto(employee));
+        }
+
+        return exchangeEmployeeDTOS;
     }
 
 }
