@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import rs.edu.raf.exchangeservice.domain.model.listing.Ticker;
 import rs.edu.raf.exchangeservice.domain.model.history.StockIntraday;
-import rs.edu.raf.exchangeservice.repository.listing.TickerRepository;
+import rs.edu.raf.exchangeservice.repository.listingRepository.TickerRepository;
 import rs.edu.raf.exchangeservice.repository.historyRepository.StockIntradayRepository;
 
 import java.time.LocalDateTime;

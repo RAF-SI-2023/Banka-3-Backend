@@ -12,8 +12,8 @@ import rs.edu.raf.exchangeservice.domain.mappers.StockMapper;
 import rs.edu.raf.exchangeservice.domain.model.listing.Stock;
 import rs.edu.raf.exchangeservice.domain.model.listing.Ticker;
 import rs.edu.raf.exchangeservice.domain.model.helper.GlobalQuote;
-import rs.edu.raf.exchangeservice.repository.listing.StockRepository;
-import rs.edu.raf.exchangeservice.repository.listing.TickerRepository;
+import rs.edu.raf.exchangeservice.repository.listingRepository.StockRepository;
+import rs.edu.raf.exchangeservice.repository.listingRepository.TickerRepository;
 
 import java.util.List;
 import java.util.Optional;

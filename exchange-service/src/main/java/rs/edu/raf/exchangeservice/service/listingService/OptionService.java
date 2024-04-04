@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import rs.edu.raf.exchangeservice.domain.model.listing.Option;
 import rs.edu.raf.exchangeservice.domain.model.listing.Ticker;
-import rs.edu.raf.exchangeservice.repository.listing.OptionRepository;
-import rs.edu.raf.exchangeservice.repository.listing.TickerRepository;
+import rs.edu.raf.exchangeservice.repository.listingRepository.OptionRepository;
+import rs.edu.raf.exchangeservice.repository.listingRepository.TickerRepository;
 
 import java.util.List;
 

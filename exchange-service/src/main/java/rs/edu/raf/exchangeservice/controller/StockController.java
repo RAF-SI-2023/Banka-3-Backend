@@ -11,7 +11,7 @@ import rs.edu.raf.exchangeservice.domain.dto.SellStockDto;
 import rs.edu.raf.exchangeservice.domain.dto.StockDto;
 import rs.edu.raf.exchangeservice.domain.model.listing.Stock;
 import rs.edu.raf.exchangeservice.service.listingService.StockService;
-import rs.edu.raf.exchangeservice.service.myListingsService.MyStockService;
+import rs.edu.raf.exchangeservice.service.myListingService.MyStockService;
 import rs.edu.raf.exchangeservice.service.orderService.StockOrderService;
 
 import java.util.List;
@@ -82,15 +82,13 @@ public class StockController {
     @PostMapping("/buyStock")
     @Operation(description = "ruta koja se gadja prilikom kupovine Stocks")
     public ResponseEntity buyStock(@RequestBody BuyStockDto buyStockDto){
-        stockOrderService.buyStock(buyStockDto);
-        return null;
+        return ResponseEntity.ok(stockOrderService.buyStock(buyStockDto));
     }
 
     @PostMapping("/sellStock")
     @Operation(description = "ruta koja se gadja prilikom prodaje Stocks")
     public ResponseEntity sellStock(@RequestBody SellStockDto sellStockDto){
         sellStockDto.toString();
-        System.out.println(this.myStockService.sellStock(sellStockDto));
-        return null;
+        return ResponseEntity.ok(this.myStockService.sellStock(sellStockDto));
     }
 }

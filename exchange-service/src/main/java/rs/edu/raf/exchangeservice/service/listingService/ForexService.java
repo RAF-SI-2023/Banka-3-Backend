@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import rs.edu.raf.exchangeservice.domain.model.listing.Forex;
-import rs.edu.raf.exchangeservice.repository.listing.ForexRepository;
+import rs.edu.raf.exchangeservice.repository.listingRepository.ForexRepository;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;

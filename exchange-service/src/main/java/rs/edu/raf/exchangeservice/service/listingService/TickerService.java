@@ -11,12 +11,12 @@ import rs.edu.raf.exchangeservice.domain.model.Exchange;
 import rs.edu.raf.exchangeservice.domain.model.helper.Result;
 import rs.edu.raf.exchangeservice.domain.model.listing.Ticker;
 import rs.edu.raf.exchangeservice.repository.ExchangeRepository;
-import rs.edu.raf.exchangeservice.repository.listing.TickerRepository;
+import rs.edu.raf.exchangeservice.repository.listingRepository.TickerRepository;
 import rs.edu.raf.exchangeservice.service.historyService.StockDailyService;
 import rs.edu.raf.exchangeservice.service.historyService.StockIntradayService;
 import rs.edu.raf.exchangeservice.service.historyService.StockMonthlyService;
 import rs.edu.raf.exchangeservice.service.historyService.StockWeeklyService;
-import rs.edu.raf.exchangeservice.service.myListingsService.MyStockService;
+import rs.edu.raf.exchangeservice.service.myListingService.MyStockService;
 
 import java.util.List;
 import java.util.Objects;
@@ -54,6 +54,7 @@ public class TickerService {
             ticker.setPrimaryExchange(exchange.getExchange());
             ticker.setCurrencyName(exchange.getCurrency());
             tickerRepository.save(ticker);
+            break;
         }
 
         stockService.loadData();

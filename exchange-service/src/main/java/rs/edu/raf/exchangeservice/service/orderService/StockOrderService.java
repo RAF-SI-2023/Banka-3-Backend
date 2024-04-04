@@ -7,9 +7,9 @@ import rs.edu.raf.exchangeservice.domain.dto.BuyStockDto;
 import rs.edu.raf.exchangeservice.domain.model.listing.Stock;
 import rs.edu.raf.exchangeservice.domain.model.order.StockOrder;
 import rs.edu.raf.exchangeservice.repository.ActuaryRepository;
-import rs.edu.raf.exchangeservice.repository.listing.StockRepository;
+import rs.edu.raf.exchangeservice.repository.listingRepository.StockRepository;
 import rs.edu.raf.exchangeservice.repository.orderRepository.StockOrderRepository;
-import rs.edu.raf.exchangeservice.service.myListingsService.MyStockService;
+import rs.edu.raf.exchangeservice.service.myListingService.MyStockService;
 
 import java.util.List;
 import java.util.Random;
@@ -57,13 +57,13 @@ public class StockOrderService {
 
     //od buyOrderDto pravimo StockOrder i
     //dodajemo order u listu
-    public void buyStock(BuyStockDto buyStockDto){
+    public String buyStock(BuyStockDto buyStockDto){
         StockOrder stockOrder = new StockOrder();
         stockOrder.setEmployeeId(buyStockDto.getEmployeeId());
         stockOrder.setTicker(buyStockDto.getTicker());
         stockOrder.setAmount(buyStockDto.getAmount());
 
-        if (this.actuaryRepository.findByEmployeeId(buyStockDto.getEmployeeId()).isOrderRequest()){
+        if (actuaryRepository.findByEmployeeId(buyStockDto.getEmployeeId()).isOrderRequest()){
             stockOrder.setStatus("WAITING");
         }else {
             stockOrder.setStatus("PROCESSING");
@@ -107,17 +107,19 @@ public class StockOrderService {
         }else {
             this.ordersToApprove.add(this.stockOrderRepository.save(stockOrder));
         }
+
+        return "UBACENO U ORDER";
     }
 
     //zovemo funkciju svakih 15 sekundi
     //proveravamo da li je lista prazna, ako jeste ona nista
     //ako ima nesto, uzimamo random StockOrder u listi
     //proveravamo uslove za cenu i limit i stop
-    //ako su dobri, kupujemo akciju i pravimo MyStock objekat i dodajemo u bazu
-    @Scheduled(fixedRate = 5000)
+    //ako su dobri, kupujemo akciju i azuriramo MyStock u DB
+    @Scheduled(fixedRate = 15000)
     public void executeTask() {
         if (ordersToBuy.isEmpty()){
-            System.out.println("Executing task every 15 seconds, but list is empty :-(");
+            System.out.println("Executing task every 15 seconds, but list to buy is empty :-(");
         }else {
             Random rand = new Random();
             int stockNumber = rand.nextInt(ordersToBuy.size());
@@ -131,7 +133,7 @@ public class StockOrderService {
             //provera ako je allOrNon true
             if (stockOrder.isAon()){
                 if (amountToBuy != stockOrder.getAmountLeft()){
-                    System.out.println("Couldn't buy all");
+                    System.out.println("Couldn't buy all " + stockOrder.getAmountLeft());
                     return;
                 }
             }

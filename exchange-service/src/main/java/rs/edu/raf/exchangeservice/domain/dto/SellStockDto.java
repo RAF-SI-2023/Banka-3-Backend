@@ -13,6 +13,10 @@ public class SellStockDto {
     private Long employeeId;
     private String ticker;
     private Integer amount;
+    private Double limitValue;
+    private Double stopValue;
+    private boolean aon;
+    private boolean margine;
 
     @Override
     public String toString() {
@@ -20,6 +24,10 @@ public class SellStockDto {
                 "employeeId=" + employeeId +
                 ", ticker='" + ticker + '\'' +
                 ", amount=" + amount +
+                ", limitValue=" + limitValue +
+                ", stopValue=" + stopValue +
+                ", aon=" + aon +
+                ", margine=" + margine +
                 '}';
     }
 }
