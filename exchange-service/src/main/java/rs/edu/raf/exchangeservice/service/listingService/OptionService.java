@@ -1,4 +1,4 @@
-package rs.edu.raf.exchangeservice.service;
+package rs.edu.raf.exchangeservice.service.listingService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -9,11 +9,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import rs.edu.raf.exchangeservice.domain.model.Forex;
-import rs.edu.raf.exchangeservice.domain.model.Option;
-import rs.edu.raf.exchangeservice.domain.model.Ticker;
-import rs.edu.raf.exchangeservice.repository.OptionRepository;
-import rs.edu.raf.exchangeservice.repository.TickerRepository;
+import rs.edu.raf.exchangeservice.domain.model.listing.Option;
+import rs.edu.raf.exchangeservice.domain.model.listing.Ticker;
+import rs.edu.raf.exchangeservice.repository.listing.OptionRepository;
+import rs.edu.raf.exchangeservice.repository.listing.TickerRepository;
 
 import java.util.List;
 

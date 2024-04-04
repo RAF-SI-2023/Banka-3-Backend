@@ -1,4 +1,4 @@
-package rs.edu.raf.exchangeservice.service;
+package rs.edu.raf.exchangeservice.service.listingService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import rs.edu.raf.exchangeservice.domain.model.helper.Result;
-import rs.edu.raf.exchangeservice.repository.TickerRepository;
+import rs.edu.raf.exchangeservice.repository.listing.TickerRepository;
 import rs.edu.raf.exchangeservice.service.historyService.StockDailyService;
 import rs.edu.raf.exchangeservice.service.historyService.StockIntradayService;
 import rs.edu.raf.exchangeservice.service.historyService.StockMonthlyService;
@@ -40,7 +40,7 @@ public class TickerService {
                 new ParameterizedTypeReference<Result>() {});
 
         tickerRepository.save((response.getBody()).getTickers().get(0));
-//        tickerRepository.saveAll((response.getBody()).getTickers()); //TODO: otkomentarisati
+//        tickerRepository.saveAll((response.getBody()).getTickers()); //TODO: otkomentarisati za produkciju
         stockService.loadData();
         optionService.loadData();
         stockDailyService.loadData();

@@ -1,5 +1,6 @@
 package rs.edu.raf.exchangeservice.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,22 +25,26 @@ public class HistoryController {
     private final StockWeeklyService stockWeeklyService;
     private final StockMonthlyService stockMonthlyService;
 
-    @GetMapping("/daily/{ticker}")
-    public ResponseEntity<List<StockDaily>> getAllDaily(@PathVariable String ticker){
-        return ResponseEntity.ok(stockDailyService.findByTicker(ticker));
-    }
-
     @GetMapping("/intraday/{ticker}")
+    @Operation(description = "vracamo sve vrednosti po satima")
     public ResponseEntity<List<StockIntraday>> getAllIntraday(@PathVariable String ticker){
         return ResponseEntity.ok(stockIntradayService.findByTicker(ticker));
     }
 
+    @GetMapping("/daily/{ticker}")
+    @Operation(description = "vracamo sve vrednosti po danima")
+    public ResponseEntity<List<StockDaily>> getAllDaily(@PathVariable String ticker){
+        return ResponseEntity.ok(stockDailyService.findByTicker(ticker));
+    }
+
     @GetMapping("/weekly/{ticker}")
+    @Operation(description = "vracamo sve vrednosti po nedeljama")
     public ResponseEntity<List<StockWeekly>> getAllWeekly(@PathVariable String ticker){
         return ResponseEntity.ok(stockWeeklyService.findByTicker(ticker));
     }
 
     @GetMapping("/monthly/{ticker}")
+    @Operation(description = "vracamo sve vrednosti po mesecima, do 5 godina unazad")
     public ResponseEntity<List<StockMonthly>> getAllMonthly(@PathVariable String ticker){
         return ResponseEntity.ok(stockMonthlyService.findByTicker(ticker));
     }

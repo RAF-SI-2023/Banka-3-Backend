@@ -9,10 +9,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import rs.edu.raf.exchangeservice.domain.model.Ticker;
-import rs.edu.raf.exchangeservice.domain.model.history.StockDaily;
+import rs.edu.raf.exchangeservice.domain.model.listing.Ticker;
 import rs.edu.raf.exchangeservice.domain.model.history.StockMonthly;
-import rs.edu.raf.exchangeservice.repository.TickerRepository;
+import rs.edu.raf.exchangeservice.repository.listing.TickerRepository;
 import rs.edu.raf.exchangeservice.repository.historyRepository.StockMonthlyRepository;
 
 import java.time.LocalDate;

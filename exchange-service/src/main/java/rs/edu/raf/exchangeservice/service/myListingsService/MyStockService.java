@@ -2,16 +2,14 @@ package rs.edu.raf.exchangeservice.service.myListingsService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import rs.edu.raf.exchangeservice.domain.dto.BuyStockDto;
 import rs.edu.raf.exchangeservice.domain.dto.SellStockDto;
-import rs.edu.raf.exchangeservice.domain.model.Actuary;
-import rs.edu.raf.exchangeservice.domain.model.Stock;
-import rs.edu.raf.exchangeservice.domain.model.Ticker;
-import rs.edu.raf.exchangeservice.domain.model.myListings.MyStock;
+import rs.edu.raf.exchangeservice.domain.model.listing.Stock;
+import rs.edu.raf.exchangeservice.domain.model.listing.Ticker;
+import rs.edu.raf.exchangeservice.domain.model.myListing.MyStock;
 import rs.edu.raf.exchangeservice.repository.ActuaryRepository;
-import rs.edu.raf.exchangeservice.repository.StockRepository;
-import rs.edu.raf.exchangeservice.repository.TickerRepository;
-import rs.edu.raf.exchangeservice.repository.myListingsRepository.MyStockRepository;
+import rs.edu.raf.exchangeservice.repository.listing.StockRepository;
+import rs.edu.raf.exchangeservice.repository.listing.TickerRepository;
+import rs.edu.raf.exchangeservice.repository.myListingRepository.MyStockRepository;
 
 import java.util.List;
 
@@ -21,7 +19,6 @@ public class MyStockService {
     private final MyStockRepository myStockRepository;
     private final TickerRepository tickerRepository;
     private final StockRepository stockRepository;
-    private final ActuaryRepository actuaryRepository;
 
     public void loadData() {
         List<Ticker> tickersList = tickerRepository.findAll();
@@ -34,60 +31,22 @@ public class MyStockService {
         }
     }
 
-    private boolean checkActuary(Actuary actuary, Double value){
-        if(actuary.getRole().contains("SUPERVISOR")){
-            return true;
-        }
-        if (actuary.getLimitUsed() + value > actuary.getLimitValue()){
-            return false; //TODO: ide na listu cekanja
-        }else {
-            if (actuary.isOrderRequest()){
-                //TODO: ide na listu cekanja
-            }else {
-                actuary.setLimitUsed(actuary.getLimitUsed() + value);
-                this.actuaryRepository.save(actuary);
-                return true;
-            }
-        }
-        return false;
+    //na osnovu tickera pronalazi MyStock objekat u bazi
+    //i povecava mu kolicinu za prosledjeni amount
+    public void addAmountToMyStock(String ticker, Integer amount){
+        MyStock myStock = myStockRepository.findByTicker(ticker);
+        myStock.setAmount(myStock.getAmount() + amount);
+        this.myStockRepository.save(myStock);
     }
 
-    public String buyStock(BuyStockDto buyStockDto){
-        Stock stock = this.stockRepository.findByTicker(buyStockDto.getTicker());
-        Double value = stock.getAsk() * buyStockDto.getAmount();
-        Actuary actuary = this.actuaryRepository.findByEmployeeId(buyStockDto.getEmployeeId()); //aktuar kog treba proveriti
-
-        if (!checkActuary(actuary,value)){
-            return "NEUSPESNO";
-        }
-        //klasican Market Order
-        if (buyStockDto.getStopValue() == 0.0 && buyStockDto.getLimitValue() == 0.0){
-            MyStock myStock = myStockRepository.findByTicker(buyStockDto.getTicker());
-            myStock.setAmount(myStock.getAmount() + buyStockDto.getAmount());
-            this.myStockRepository.save(myStock);
-            //TODO: transakcija ka transactionService
-        }
-
-        //stop order
-        if(buyStockDto.getStopValue() != 0.0 && buyStockDto.getLimitValue() == 0.0){
-
-        }
-
-        //limit order
-        if(buyStockDto.getStopValue() == 0.0 && buyStockDto.getLimitValue() != 0.0){
-
-        }
-
-        //stop-limit order
-        if(buyStockDto.getStopValue() != 0.0 && buyStockDto.getLimitValue() != 0.0){
-
-        }
-
-        return "USEPSNO " + value;
+    //vracamo sve deonice koje su u vlasnistvu banke
+    public List<MyStock> getAll(){
+        return this.myStockRepository.findAll();
     }
 
+    //funkcija kada prodajemo Stock
     public String sellStock(SellStockDto sellStockDto){
-        Stock stock = stockRepository.findByTicker(sellStockDto.getTicker());
+        Stock stock = stockRepository.findByTicker(sellStockDto.getTicker()).get();
         MyStock myStock = myStockRepository.findByTicker(sellStockDto.getTicker());
         if (myStock.getAmount() < sellStockDto.getAmount()){
             return "NEUSPESNO";

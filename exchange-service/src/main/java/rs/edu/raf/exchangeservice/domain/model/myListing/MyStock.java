@@ -1,4 +1,4 @@
-package rs.edu.raf.exchangeservice.domain.model;
+package rs.edu.raf.exchangeservice.domain.model.myListing;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,13 +14,10 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Future implements Serializable {
+public class MyStock implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long futureId;
-    private String contractName;
-    private int contractSize;
-    private String contractUnit;
-    private int maintenanceMargin;
-    private String type;
+    private Long myStockId;
+    private String ticker;
+    private Integer amount;
 }

@@ -1,13 +1,11 @@
 package rs.edu.raf.exchangeservice.controller;
 
 import feign.Param;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import rs.edu.raf.exchangeservice.domain.model.Actuary;
 import rs.edu.raf.exchangeservice.service.ActuaryService;
-
-import java.util.List;
 
 @RestController
 @CrossOrigin
@@ -17,34 +15,33 @@ public class ActuaryController {
     private final ActuaryService actuaryService;
 
     @GetMapping("/getAll")
-    public ResponseEntity<List<Actuary>> getAllEmployees(){
+    @Operation(description = "dohvatamo sve zaposlene sa ROLE_AGENT")
+    public ResponseEntity<?> getAllEmployees(){
         return ResponseEntity.ok(actuaryService.findAllAgents());
     }
 
-    //kada hocemo da zaposlenom restartujemo Limit, posaljemo njegov Id koji je u ovoj bazi
     @PostMapping("/restartLimitUsed/{id}")
-    public ResponseEntity<Actuary> restartLimitUsed(@PathVariable Long id){
+    @Operation(description = "kada hocemo da zaposlenom restartujemo Limit, posaljemo njegov actuaryId")
+    public ResponseEntity<?> restartLimitUsed(@PathVariable Long id){
         return ResponseEntity.ok(actuaryService.restartLimitUsed(id));
     }
 
-    //postavljanje novog limita Agentu, saljemo id koji je u ovoj bazi
-    //i novi limit kao parametar
     @PostMapping("/setLimit/{id}")
-    public ResponseEntity<Actuary> setLimit(@PathVariable Long id, @Param("limit") Double limit){
+    @Operation(description = "setovanje novog limita zaposlenom, salje se actuaryId, a novi limit je parametar")
+    public ResponseEntity<?> setLimit(@PathVariable Long id, @Param("limit") Double limit){
         return ResponseEntity.ok(actuaryService.setLimit(id, limit));
     }
 
-    //postavljamo order request na suprotnu vrednost
     @PostMapping("/setOrderRequest/{id}")
-    public ResponseEntity<Actuary> setOrderRequest(@PathVariable Long id, @Param("orderRequest") String orderRequest){
+    @Operation(description = "postavljamo order request na zeljenu vrednost")
+    public ResponseEntity<?> setOrderRequest(@PathVariable Long id, @Param("orderRequest") String orderRequest){
         if (orderRequest.equalsIgnoreCase("true")){
             return ResponseEntity.ok(actuaryService.setOrderRequest(id, true));
         }
         if (orderRequest.equalsIgnoreCase("false")){
             return ResponseEntity.ok(actuaryService.setOrderRequest(id, false));
         }
-        //TODO: pogledati ovo
-        return (ResponseEntity<Actuary>) ResponseEntity.badRequest();
+        return ResponseEntity.badRequest().body("nije dobar boolean");
     }
 
 }
