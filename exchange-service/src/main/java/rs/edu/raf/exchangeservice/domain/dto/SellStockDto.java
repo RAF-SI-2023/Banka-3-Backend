@@ -9,17 +9,17 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ActuaryDto {
+public class SellStockDto {
     private Long employeeId;
-    private String email;
-    private String role;
+    private String ticker;
+    private Integer amount;
 
     @Override
     public String toString() {
-        return "ActuaryDto{" +
+        return "SellStockDto{" +
                 "employeeId=" + employeeId +
-                ", email='" + email + '\'' +
-                ", role='" + role + '\'' +
+                ", ticker='" + ticker + '\'' +
+                ", amount=" + amount +
                 '}';
     }
 }

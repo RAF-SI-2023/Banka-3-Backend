@@ -3,6 +3,7 @@ package rs.edu.raf.exchangeservice.service.myListingsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import rs.edu.raf.exchangeservice.domain.dto.BuyStockDto;
+import rs.edu.raf.exchangeservice.domain.dto.SellStockDto;
 import rs.edu.raf.exchangeservice.domain.model.Actuary;
 import rs.edu.raf.exchangeservice.domain.model.Stock;
 import rs.edu.raf.exchangeservice.domain.model.Ticker;
@@ -29,7 +30,6 @@ public class MyStockService {
             MyStock myStock = new MyStock();
             myStock.setTicker(ticker.getTicker());
             myStock.setAmount(0);
-
             myStockRepository.save(myStock);
         }
     }
@@ -39,7 +39,7 @@ public class MyStockService {
             return true;
         }
         if (actuary.getLimitUsed() + value > actuary.getLimitValue()){
-            return false;
+            return false; //TODO: ide na listu cekanja
         }else {
             if (actuary.isOrderRequest()){
                 //TODO: ide na listu cekanja
@@ -61,7 +61,7 @@ public class MyStockService {
             return "NEUSPESNO";
         }
         //klasican Market Order
-        if (buyStockDto.getStopValue() == 0 && buyStockDto.getLimitValue() == 0){
+        if (buyStockDto.getStopValue() == 0.0 && buyStockDto.getLimitValue() == 0.0){
             MyStock myStock = myStockRepository.findByTicker(buyStockDto.getTicker());
             myStock.setAmount(myStock.getAmount() + buyStockDto.getAmount());
             this.myStockRepository.save(myStock);
@@ -69,20 +69,33 @@ public class MyStockService {
         }
 
         //stop order
-        if(buyStockDto.getStopValue() != 0 && buyStockDto.getLimitValue() == 0){
+        if(buyStockDto.getStopValue() != 0.0 && buyStockDto.getLimitValue() == 0.0){
 
         }
 
         //limit order
-        if(buyStockDto.getStopValue() == 0 && buyStockDto.getLimitValue() != 0){
+        if(buyStockDto.getStopValue() == 0.0 && buyStockDto.getLimitValue() != 0.0){
 
         }
 
         //stop-limit order
-        if(buyStockDto.getStopValue() != 0 && buyStockDto.getLimitValue() != 0){
+        if(buyStockDto.getStopValue() != 0.0 && buyStockDto.getLimitValue() != 0.0){
 
         }
 
-        return "USEPSNO";
+        return "USEPSNO " + value;
+    }
+
+    public String sellStock(SellStockDto sellStockDto){
+        Stock stock = stockRepository.findByTicker(sellStockDto.getTicker());
+        MyStock myStock = myStockRepository.findByTicker(sellStockDto.getTicker());
+        if (myStock.getAmount() < sellStockDto.getAmount()){
+            return "NEUSPESNO";
+        }
+
+        Double value = stock.getBid() * sellStockDto.getAmount(); //TODO: ovo saljemo transaction servicu
+        myStock.setAmount(myStock.getAmount() - sellStockDto.getAmount());
+        myStockRepository.save(myStock);
+        return "USPESNO " + value;
     }
 }

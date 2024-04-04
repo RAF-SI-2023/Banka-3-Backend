@@ -18,7 +18,6 @@ public class ActuaryController {
 
     @GetMapping("/getAll")
     public ResponseEntity<List<Actuary>> getAllEmployees(){
-//        actuaryService.loadActuary();
         return ResponseEntity.ok(actuaryService.findAllAgents());
     }
 
