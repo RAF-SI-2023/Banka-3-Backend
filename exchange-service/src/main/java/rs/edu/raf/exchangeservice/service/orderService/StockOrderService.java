@@ -114,7 +114,7 @@ public class StockOrderService {
     //ako ima nesto, uzimamo random StockOrder u listi
     //proveravamo uslove za cenu i limit i stop
     //ako su dobri, kupujemo akciju i pravimo MyStock objekat i dodajemo u bazu
-    @Scheduled(fixedRate = 15000)
+    @Scheduled(fixedRate = 5000)
     public void executeTask() {
         if (ordersToBuy.isEmpty()){
             System.out.println("Executing task every 15 seconds, but list is empty :-(");
@@ -122,24 +122,72 @@ public class StockOrderService {
             Random rand = new Random();
             int stockNumber = rand.nextInt(ordersToBuy.size());
             StockOrder stockOrder = ordersToBuy.get(stockNumber);   //StockOrder koji obradjujemo
+
             Stock stock = this.stockRepository.findByTicker(stockOrder.getTicker()).get();  //uzimao stock iz baze koji kupujemo
+            Double currentPrice = stock.getAsk();   //trenutna cena po kojoj kupujemo
 
-            Double currentPrice = stock.getBid();   //trenutna cena po kojoj kupujemo
             int amountToBuy = rand.nextInt(stockOrder.getAmountLeft()) + 1;
-            System.out.println("Kupljeno: " + amountToBuy + " STOCK, po ceni: " + currentPrice*amountToBuy);    //TODO: poslati currentPrice*amountToBuy ka Transaction-service
 
-            this.myStockService.addAmountToMyStock(stockOrder.getTicker(), amountToBuy);    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
-
-            stockOrder.setAmountLeft(stockOrder.getAmountLeft() - amountToBuy);
-            if (stockOrder.getAmountLeft() <= 0){
-                stockOrder.setStatus("FINISHED");
-                ordersToBuy.remove(stockNumber);    //uklanjamo ga iz liste jer je zavrsio
-            }else {
-                ordersToBuy.remove(stockNumber);
-                ordersToBuy.add(stockNumber,stockOrder);    //update Objekta u listi
+            //provera ako je allOrNon true
+            if (stockOrder.isAon()){
+                if (amountToBuy != stockOrder.getAmountLeft()){
+                    System.out.println("Couldn't buy all");
+                    return;
+                }
             }
 
-            this.stockOrderRepository.save(stockOrder); //cuvamo promenjene vrednosti
+            if (stockOrder.getType().equalsIgnoreCase("MARKET")){
+                printer(amountToBuy,currentPrice);    //TODO: poslati currentPrice*amountToBuy ka Transaction-service
+                myStockService.addAmountToMyStock(stockOrder.getTicker(), amountToBuy);    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
+                stockOrder.setAmountLeft(stockOrder.getAmountLeft() - amountToBuy);
+                if (stockOrder.getAmountLeft() <= 0){
+                    stockOrder.setStatus("FINISHED");
+                    ordersToBuy.remove(stockNumber);    //uklanjamo ga iz liste jer je zavrsio
+                }else {
+                    ordersToBuy.remove(stockNumber);
+                    ordersToBuy.add(stockNumber,stockOrder);    //update Objekta u listi
+                }
+            }
+
+            if (stockOrder.getType().equalsIgnoreCase("LIMIT")){
+                if (currentPrice < stockOrder.getLimitValue()){
+                    printer(amountToBuy,currentPrice); //TODO: poslati currentPrice*amountToBuy ka Transaction-service
+                    myStockService.addAmountToMyStock(stockOrder.getTicker(), amountToBuy);    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
+                    stockOrder.setAmountLeft(stockOrder.getAmountLeft() - amountToBuy);
+                    if (stockOrder.getAmountLeft() <= 0){
+                        stockOrder.setStatus("FINISHED");
+                        ordersToBuy.remove(stockNumber);    //uklanjamo ga iz liste jer je zavrsio
+                    }else {
+                        ordersToBuy.remove(stockNumber);
+                        ordersToBuy.add(stockNumber,stockOrder);    //update Objekta u listi
+                    }
+                }else {
+                    stockOrder.setStatus("FAILED");
+                    ordersToBuy.remove(stockNumber);
+                }
+            }
+
+            if (stockOrder.getType().equalsIgnoreCase("STOP")){
+                if (currentPrice > stockOrder.getStopValue()){
+                    stockOrder.setType("MARKET");
+                } else {
+                    System.out.println("Stop value hasn't been approved ");
+                }
+            }
+
+            if (stockOrder.getType().equalsIgnoreCase("STOP-LIMIT")){
+                if (currentPrice > stockOrder.getStopValue()){
+                    stockOrder.setType("LIMIT");
+                } else {
+                    System.out.println("Stop value hasn't been approved ");
+                }
+            }
+
+            this.stockOrderRepository.save(stockOrder); //cuvamo promenjene vrednosti u bazi
         }
+    }
+
+    private void printer(int amountToBuy, double currentPrice){
+        System.out.println("Kupljeno: " + amountToBuy + " STOCK, po ceni: " + currentPrice*amountToBuy);
     }
 }
