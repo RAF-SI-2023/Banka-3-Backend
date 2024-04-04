@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rs.edu.raf.exchangeservice.domain.dto.BuyStockDto;
 import rs.edu.raf.exchangeservice.domain.dto.SellStockDto;
+import rs.edu.raf.exchangeservice.domain.dto.StockDto;
 import rs.edu.raf.exchangeservice.domain.model.Stock;
 import rs.edu.raf.exchangeservice.service.StockService;
 import rs.edu.raf.exchangeservice.service.myListingsService.MyStockService;
@@ -21,13 +22,18 @@ public class StockController {
     private final MyStockService myStockService;
 
     @GetMapping
-    public ResponseEntity<List<Stock>> getAll(){
+    public ResponseEntity<List<StockDto>> getAll(){
         return ResponseEntity.ok(stockService.findAll());
     }
 
     @GetMapping("/refresh")
     public ResponseEntity<List<Stock>> getAllRefreshed() throws JsonProcessingException {
         return ResponseEntity.ok(this.stockService.findAllRefreshed());
+    }
+
+    @GetMapping("/{ticker}")
+    public ResponseEntity<StockDto> getByTicker(@PathVariable String ticker){
+        return ResponseEntity.ok(this.stockService.findByTicker(ticker));
     }
 
     @PostMapping("/buyStock")
