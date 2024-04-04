@@ -64,6 +64,24 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <excludes>
+                        <exclude>**/dto/**</exclude>
+                        <exclude>**/exception/**</exclude>
+                        <exclude>**/model/**</exclude>
+                        <exclude>**/repository/**</exclude>
+                        <exclude>**/utils/**</exclude>
+                        <exclude>**/filters/**</exclude>
+                        <exclude>**/mappers/**</exclude>
+                        <exclude>**/bootstrap/**</exclude>
+                        <exclude>**/configuration/**</exclude>
+                        <exclude>**/exceptions/**</exclude>
+                        <exclude>**/UserServiceApplication.class</exclude>
+                        <exclude>**/EmailServiceApplication.class</exclude>
+                        <exclude>**/ExchangeServiceApplication.class</exclude>
+                        <exclude>**/BankServiceApplication.class</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
         </plugins>
     </build>
