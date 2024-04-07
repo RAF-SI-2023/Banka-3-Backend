@@ -114,4 +114,9 @@ public class EmployeeController {
         return ResponseEntity.ok(this.employeeService.search(firstName, lastName, email, role));
     }
 
+    @GetMapping(value="/getExchangeEmployees", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getExchangeEmployees() {
+        return ResponseEntity.ok(employeeService.findSupervisorsAndAgents());
+    }
+
 }

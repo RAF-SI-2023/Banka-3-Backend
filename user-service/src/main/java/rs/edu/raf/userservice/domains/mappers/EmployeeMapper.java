@@ -8,6 +8,7 @@ import org.mapstruct.factory.Mappers;
 import rs.edu.raf.userservice.domains.dto.employee.EmployeeCreateDto;
 import rs.edu.raf.userservice.domains.dto.employee.EmployeeDto;
 import rs.edu.raf.userservice.domains.dto.employee.EmployeeUpdateDto;
+import rs.edu.raf.userservice.domains.dto.employee.ExchangeEmployeeDTO;
 import rs.edu.raf.userservice.domains.model.Employee;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE,

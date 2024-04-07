@@ -22,8 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -132,66 +131,41 @@ class TransactionServiceTest {
         verify(transactionRepository, never()).save(any());
         verify(userServiceClient, never()).reserveMoney(any());
     }
+    @Test
+    public void testGetAllTransactions_WithValidData() {
+        // Priprema testnih podataka
+        String accountId = "123456";
+        List<Transaction> transactionsFrom = new ArrayList<>();
+        List<Transaction> transactionsTo = new ArrayList<>();
+        transactionsFrom.add(new Transaction());
+        transactionsTo.add(new Transaction());
 
-//    @Test
-//    public void testProcessTransactions() {
-//        // Priprema podataka za test
-//        List<Transaction> transactions = new ArrayList<>();
-//        Transaction transaction1 = new Transaction();
-//        Transaction transaction2 = new Transaction();
-//        transactions.add(transaction1);
-//        transactions.add(transaction2);
-//        when(transactionRepository.findByState(TransactionState.ACCEPTED)).thenReturn(Optional.of(transactions));
-//
-//        // Izvršavanje metode koju testiramo
-//        transactionService.processTransactions();
-//
-//        // Provera da li su transakcije obrađene
-//        verify(transactionRepository, times(1)).findByState(TransactionState.ACCEPTED);
-//
-//        for (Transaction transaction : transactions) {
-//            // Provera da li je stanje transakcije promenjeno u ACCEPTED
-//            assertEquals(TransactionState.ACCEPTED, transaction.getState());
-//            // Provera da li je pozvana finishTransaction metoda za svaku transakciju
-//            verify(transactionService, times(1)).finishTransaction(transaction);
-//        }
-//
-//        // Provera da li je pozvana save metoda nad transactionRepository-jem tačno jednom
-//        verify(transactionRepository, times(1)).saveAll(transactions);
-//    }
-//    @Test
-//    public void testGetAllTransactions_NoTransactions() {
-//        // Priprema podataka za test
-//        String accountId = "123";
-//
-//        // Podešavanje ponašanja mock TransactionRepository-ja
-//        when(transactionRepository.findAllTransactionsByAccountFrom(accountId)).thenReturn(Optional.empty());
-//        when(transactionRepository.findAllTransactionsByAccountTo(accountId)).thenReturn(Optional.empty());
-//
-//        // Izvršavanje metode koju testiramo
-//        List<TransactionDto> result = transactionService.getAllTransactions(accountId);
-//
-//        // Provera rezultata
-//        assertEquals(0, result.size());
-//    }
+        // Podešavanje ponašanja mock-a
+        when(transactionRepository.findAllTransactionsByAccountFrom(accountId)).thenReturn(Optional.of(transactionsFrom));
+        when(transactionRepository.findAllTransactionsByAccountTo(accountId)).thenReturn(Optional.of(transactionsTo));
 
-//    @Test
-//    public void testGetAllTransactions_TransactionsFromAccount() {
-//        // Priprema podataka za test
-//        String accountId = "123";
-//        List<Transaction> transactions = new ArrayList<>();
-//        transactions.add(new Transaction());
-//
-//        // Podešavanje ponašanja mock TransactionRepository-ja
-//        when(transactionRepository.findAllTransactionsByAccountFrom(accountId)).thenReturn(Optional.of(transactions));
-//        when(transactionRepository.findAllTransactionsByAccountTo(accountId)).thenReturn(Optional.empty());
-//
-//        // Izvršavanje metode koju testiramo
-//        List<TransactionDto> result = transactionService.getAllTransactions(accountId);
-//
-//        // Provera rezultata
-//        assertEquals(transactions.size(), result.size());
-//        // Dodajte dodatne provere prema potrebi
-//    }
+        // Izvršavanje metode koju testiramo
+        List<TransactionDto> result = transactionService.getAllTransactions(accountId);
+
+        // Provera rezultata
+        assertNotNull(result);
+        assertEquals(2, result.size()); // Provera da li su svi podaci uspešno dobijeni
+    }
+
+    @Test
+    public void testGetAllTransactions_WithNoData() {
+        // Priprema testnih podataka
+        String accountId = "123456";
+
+        // Podešavanje ponašanja mock-a
+        when(transactionRepository.findAllTransactionsByAccountFrom(accountId)).thenReturn(Optional.empty());
+        when(transactionRepository.findAllTransactionsByAccountTo(accountId)).thenReturn(Optional.empty());
+
+        // Izvršavanje metode koju testiramo
+        List<TransactionDto> result = transactionService.getAllTransactions(accountId);
+
+        // Provera rezultata
+        assertEquals(null, result); // Provera da li je vraćena null vrednost kada nema podataka
+    }
 
 }

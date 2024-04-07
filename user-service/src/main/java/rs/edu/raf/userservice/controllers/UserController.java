@@ -15,6 +15,7 @@ import rs.edu.raf.userservice.domains.dto.user.*;
 import rs.edu.raf.userservice.services.UserService;
 import rs.edu.raf.userservice.utils.JwtUtil;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
