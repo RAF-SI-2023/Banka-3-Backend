@@ -1,6 +1,7 @@
 package rs.edu.raf.exchangeservice.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import rs.edu.raf.exchangeservice.client.UserServiceClient;
 import rs.edu.raf.exchangeservice.domain.dto.ActuaryDto;
@@ -58,5 +59,12 @@ public class ActuaryService {
         Actuary actuary = this.actuaryRepository.findById(id).get();
         actuary.setOrderRequest(orderRequest);
         return this.actuaryRepository.save(actuary);
+    }
+
+    //scheduler za restartovanje limitUsed zaposlenog
+    @Scheduled(cron = "0 59 23 * * *") // Execute at 23:59 every day
+    public void myScheduledFunction() {
+        actuaryRepository.updateLimitToZeroForAllEmployees();
+        System.out.println("Executing function for limitUsed restart");
     }
 }

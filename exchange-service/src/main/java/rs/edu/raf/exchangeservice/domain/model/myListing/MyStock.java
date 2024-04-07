@@ -1,13 +1,10 @@
-package rs.edu.raf.exchangeservice.domain.model.myListings;
+package rs.edu.raf.exchangeservice.domain.model.myListing;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
@@ -20,4 +17,6 @@ public class MyStock implements Serializable {
     private Long myStockId;
     private String ticker;
     private Integer amount;
+    @Version
+    private Integer version;
 }

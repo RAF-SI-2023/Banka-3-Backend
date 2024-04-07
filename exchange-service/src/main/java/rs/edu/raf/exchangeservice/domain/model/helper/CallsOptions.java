@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import rs.edu.raf.exchangeservice.domain.model.Option;
+import rs.edu.raf.exchangeservice.domain.model.listing.Option;
 
 import java.util.List;
 

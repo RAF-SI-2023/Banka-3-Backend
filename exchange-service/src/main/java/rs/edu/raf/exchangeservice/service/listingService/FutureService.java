@@ -1,10 +1,9 @@
-package rs.edu.raf.exchangeservice.service;
+package rs.edu.raf.exchangeservice.service.listingService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import rs.edu.raf.exchangeservice.domain.model.Forex;
-import rs.edu.raf.exchangeservice.domain.model.Future;
-import rs.edu.raf.exchangeservice.repository.FutureRepository;
+import rs.edu.raf.exchangeservice.domain.model.listing.Future;
+import rs.edu.raf.exchangeservice.repository.listingRepository.FutureRepository;
 
 import javax.annotation.PostConstruct;
 import java.io.BufferedReader;

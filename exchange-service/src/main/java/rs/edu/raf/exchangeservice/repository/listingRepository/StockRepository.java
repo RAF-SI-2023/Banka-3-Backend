@@ -1,7 +1,7 @@
-package rs.edu.raf.exchangeservice.repository;
+package rs.edu.raf.exchangeservice.repository.listingRepository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import rs.edu.raf.exchangeservice.domain.model.Stock;
+import rs.edu.raf.exchangeservice.domain.model.listing.Stock;
 
 import java.util.Optional;
 

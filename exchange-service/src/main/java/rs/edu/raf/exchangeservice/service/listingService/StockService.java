@@ -1,4 +1,4 @@
-package rs.edu.raf.exchangeservice.service;
+package rs.edu.raf.exchangeservice.service.listingService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
@@ -9,12 +9,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import rs.edu.raf.exchangeservice.domain.dto.StockDto;
 import rs.edu.raf.exchangeservice.domain.mappers.StockMapper;
-import rs.edu.raf.exchangeservice.domain.model.Option;
-import rs.edu.raf.exchangeservice.domain.model.Stock;
-import rs.edu.raf.exchangeservice.domain.model.Ticker;
+import rs.edu.raf.exchangeservice.domain.model.listing.Stock;
+import rs.edu.raf.exchangeservice.domain.model.listing.Ticker;
 import rs.edu.raf.exchangeservice.domain.model.helper.GlobalQuote;
-import rs.edu.raf.exchangeservice.repository.StockRepository;
-import rs.edu.raf.exchangeservice.repository.TickerRepository;
+import rs.edu.raf.exchangeservice.repository.listingRepository.StockRepository;
+import rs.edu.raf.exchangeservice.repository.listingRepository.TickerRepository;
 
 import java.util.List;
 import java.util.Optional;

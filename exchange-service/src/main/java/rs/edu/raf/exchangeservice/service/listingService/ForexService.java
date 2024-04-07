@@ -1,4 +1,4 @@
-package rs.edu.raf.exchangeservice.service;
+package rs.edu.raf.exchangeservice.service.listingService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -10,8 +10,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import rs.edu.raf.exchangeservice.domain.model.Forex;
-import rs.edu.raf.exchangeservice.repository.ForexRepository;
+import rs.edu.raf.exchangeservice.domain.model.listing.Forex;
+import rs.edu.raf.exchangeservice.repository.listingRepository.ForexRepository;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;

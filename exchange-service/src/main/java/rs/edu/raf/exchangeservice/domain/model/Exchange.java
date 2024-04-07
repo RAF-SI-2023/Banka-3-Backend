@@ -14,13 +14,16 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Future implements Serializable {
+public class Exchange implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long futureId;
-    private String contractName;
-    private int contractSize;
-    private String contractUnit;
-    private int maintenanceMargin;
-    private String type;
+    private Long exchangeId;
+    private String exchangeName;    //puno ime berze
+    private String exchangeAcronym; //neki akronim, nzm sta je
+    private String exchange;    //skracenica berze koja ga povezuje sa Stock
+    private String country;
+    private String currency;
+    private String timeZone;
+    private Long openTime;
+    private Long closeTime;
 }

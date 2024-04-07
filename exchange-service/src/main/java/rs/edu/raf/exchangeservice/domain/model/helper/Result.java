@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import rs.edu.raf.exchangeservice.domain.model.Ticker;
+import rs.edu.raf.exchangeservice.domain.model.listing.Ticker;
 
 import java.util.List;
 

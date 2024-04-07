@@ -1,4 +1,4 @@
-package rs.edu.raf.exchangeservice.service;
+package rs.edu.raf.exchangeservice.service.listingService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
@@ -7,15 +7,20 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import rs.edu.raf.exchangeservice.domain.model.Exchange;
 import rs.edu.raf.exchangeservice.domain.model.helper.Result;
-import rs.edu.raf.exchangeservice.repository.TickerRepository;
+import rs.edu.raf.exchangeservice.domain.model.listing.Ticker;
+import rs.edu.raf.exchangeservice.repository.ExchangeRepository;
+import rs.edu.raf.exchangeservice.repository.listingRepository.TickerRepository;
 import rs.edu.raf.exchangeservice.service.historyService.StockDailyService;
 import rs.edu.raf.exchangeservice.service.historyService.StockIntradayService;
 import rs.edu.raf.exchangeservice.service.historyService.StockMonthlyService;
 import rs.edu.raf.exchangeservice.service.historyService.StockWeeklyService;
-import rs.edu.raf.exchangeservice.service.myListingsService.MyStockService;
+import rs.edu.raf.exchangeservice.service.myListingService.MyStockService;
 
-import javax.annotation.PostConstruct;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -28,9 +33,9 @@ public class TickerService {
     private final StockMonthlyService stockMonthlyService;
     private final StockWeeklyService stockWeeklyService;
     private final MyStockService myStockService;
+    private final ExchangeRepository exchangeRepository;
     private final String TickerURL = "https://api.polygon.io/v3/reference/tickers?active=true&apiKey=RTKplv_CDK1Lh7kx0yPTPEsaqUy14wiT";
 
-    @PostConstruct
     public void loadData() throws JsonProcessingException {
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<Result> response = restTemplate.exchange(
@@ -39,14 +44,25 @@ public class TickerService {
                 null,
                 new ParameterizedTypeReference<Result>() {});
 
-        tickerRepository.save((response.getBody()).getTickers().get(0));
-//        tickerRepository.saveAll((response.getBody()).getTickers()); //TODO: otkomentarisati
+        List<Ticker> tickers = Objects.requireNonNull(response.getBody()).getTickers();
+        List<Exchange> exchanges = exchangeRepository.findAll();
+
+        for (Ticker ticker : tickers){
+            Random random = new Random();
+            int randomIndex = random.nextInt(exchanges.size());
+            Exchange exchange = exchanges.get(randomIndex);
+            ticker.setPrimaryExchange(exchange.getExchange());
+            ticker.setCurrencyName(exchange.getCurrency());
+            tickerRepository.save(ticker);
+            break;
+        }
+
         stockService.loadData();
         optionService.loadData();
-        stockDailyService.loadData();
         stockIntradayService.loadData();
-        stockMonthlyService.loadData();
+        stockDailyService.loadData();
         stockWeeklyService.loadData();
+        stockMonthlyService.loadData();
         myStockService.loadData();
     }
 }
