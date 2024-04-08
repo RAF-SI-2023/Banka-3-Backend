@@ -17,10 +17,9 @@ public class CardController {
 
     private final CardService cardService;
 
-    //dodati login
 
     @GetMapping("/getAll/{userId}")
-    public ResponseEntity<List<CardDto>> getAllByUserId(@PathVariable Long userId) {
+    public ResponseEntity<List<CardDto>> getAll(@PathVariable Long userId) {
         return cardService.findAllByUserId(userId);
     }
     @PutMapping("/deactivate/{cardId}")
@@ -35,14 +34,6 @@ public class CardController {
     public ResponseEntity<String> createCard(@RequestBody CreateCardDto createCardDto) {
         return cardService.createCard(createCardDto);
     }
-
-
-
-
-
-
-
-
 
 
 }

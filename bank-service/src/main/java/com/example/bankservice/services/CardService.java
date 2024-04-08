@@ -58,7 +58,7 @@ public class CardService {
                 .userId(createCardDto.getUserId())
                 .cardNumber(getRandomCardNumber())
                 .accountNumber(createCardDto.getAccountNumber())
-                .cardName("Test card")
+                .cardName("DEBIT") //promeniti, ne znam sta treba da stoji :(
                 .creationDate(System.currentTimeMillis())
                 .expireDate(System.currentTimeMillis() + 1000000000)
                 .cvv(getRandomCvvNumber())
