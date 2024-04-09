@@ -1,9 +1,13 @@
 package rs.edu.raf.userservice.services;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import rs.edu.raf.userservice.domains.dto.account.CheckEnoughBalanceDto;
 import rs.edu.raf.userservice.domains.dto.companyaccount.CompanyAccountCreateDto;
 import rs.edu.raf.userservice.domains.dto.companyaccount.CompanyAccountDto;
 import rs.edu.raf.userservice.domains.mappers.CompanyAccountMapper;
+import rs.edu.raf.userservice.domains.model.Account;
 import rs.edu.raf.userservice.domains.model.CompanyAccount;
 import rs.edu.raf.userservice.domains.model.Currency;
 import rs.edu.raf.userservice.domains.model.enums.CurrencyName;
@@ -12,7 +16,9 @@ import rs.edu.raf.userservice.repositories.CompanyRepository;
 import rs.edu.raf.userservice.repositories.CurrencyRepository;
 import rs.edu.raf.userservice.repositories.EmployeeRepository;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -90,5 +96,19 @@ public class CompanyAccountService {
     public CompanyAccountDto findByAccountNumber(String accountNumber) {
         CompanyAccount companyAccount = companyAccountRepository.findByAccountNumber(accountNumber);
         return CompanyAccountMapper.INSTANCE.companyAccountToCompanyAccountDto(companyAccount);
+    }
+
+    public ResponseEntity<String> checkCompanyEnoughBalance(CheckEnoughBalanceDto dto) {
+
+        CompanyAccount companyAccount = companyAccountRepository.findByAccountNumber(dto.getAccountNumber());
+        if(companyAccount == null)
+            return ResponseEntity.badRequest().build();
+
+        if (companyAccount.getAvailableBalance().subtract(companyAccount.getReservedAmount()).compareTo(new BigDecimal(dto.getAmount())) >= 0) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Not enough money on balance!");
+        }
+
     }
 }

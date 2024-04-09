@@ -20,4 +20,5 @@ public class StockDto {
     private double bid;
     private double change;
     private double volume;
+    private String currencyMark;
 }

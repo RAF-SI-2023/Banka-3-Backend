@@ -34,4 +34,7 @@ public interface UserServiceClient {
 
     @GetMapping("/account/getEmailByAccountNumber/{accountNumber}")
     String getEmailByAccountNumber(@PathVariable String accountNumber);
+
+    @PostMapping("/companyAccount/checkEnoughBalance")
+    ResponseEntity<String> checkCompanyEnoughBalance(@RequestBody CheckEnoughBalanceDto dto);
 }

@@ -6,10 +6,7 @@ import lombok.NoArgsConstructor;
 import rs.edu.raf.exchangeservice.domain.model.enums.StockOrderStatus;
 import rs.edu.raf.exchangeservice.domain.model.enums.StockOrderType;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
@@ -30,4 +27,5 @@ public class StockOrder implements Serializable {
     private int amountLeft;     //koliko je ostalo da se kupi
     private boolean aon;
     private boolean margin;
+    private String currencyMark;
 }

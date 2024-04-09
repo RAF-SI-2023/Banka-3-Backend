@@ -22,4 +22,5 @@ public class StockOrderDto {
     private int amountLeft;     //koliko je ostalo da se kupi
     private boolean aon;
     private boolean margin;
+    private String currencyMark;
 }

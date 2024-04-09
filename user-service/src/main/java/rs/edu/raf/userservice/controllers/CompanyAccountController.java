@@ -2,7 +2,9 @@ package rs.edu.raf.userservice.controllers;
 
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import rs.edu.raf.userservice.domains.dto.account.CheckEnoughBalanceDto;
 import rs.edu.raf.userservice.domains.dto.companyaccount.CompanyAccountCreateDto;
 import rs.edu.raf.userservice.domains.dto.companyaccount.CompanyAccountDto;
 import rs.edu.raf.userservice.services.CompanyAccountService;
@@ -42,5 +44,10 @@ public class CompanyAccountController {
     @DeleteMapping("/{companyAccountId}")
     public void deleteCompanyAccount(@PathVariable Long companyAccountId) {
         companyAccountService.deactivate(companyAccountId);
+    }
+
+    @PostMapping("/checkEnoughBalance")
+    ResponseEntity<String> checkCompanyEnoughBalance(@RequestBody CheckEnoughBalanceDto dto) {
+        return companyAccountService.checkCompanyEnoughBalance(dto);
     }
 }

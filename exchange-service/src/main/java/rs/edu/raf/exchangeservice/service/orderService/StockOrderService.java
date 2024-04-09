@@ -3,8 +3,10 @@ package rs.edu.raf.exchangeservice.service.orderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import rs.edu.raf.exchangeservice.client.BankServiceClient;
 import rs.edu.raf.exchangeservice.domain.dto.BuyStockDto;
 import rs.edu.raf.exchangeservice.domain.dto.StockOrderDto;
+import rs.edu.raf.exchangeservice.domain.dto.StockTransactionDto;
 import rs.edu.raf.exchangeservice.domain.mappers.StockMapper;
 import rs.edu.raf.exchangeservice.domain.model.enums.StockOrderStatus;
 import rs.edu.raf.exchangeservice.domain.model.enums.StockOrderType;
@@ -27,6 +29,7 @@ public class StockOrderService {
     private final StockRepository stockRepository;
     private final ActuaryRepository actuaryRepository;
     private final MyStockService myStockService;
+    private final BankServiceClient bankServiceClient;
 
     public CopyOnWriteArrayList<StockOrder> ordersToBuy = new CopyOnWriteArrayList<>();
     public CopyOnWriteArrayList<StockOrder> ordersToApprove = new CopyOnWriteArrayList<>();
@@ -121,6 +124,7 @@ public class StockOrderService {
     //ako su dobri, kupujemo akciju i azuriramo MyStock u DB
     @Scheduled(fixedRate = 15000)
     public void executeTask() {
+
         if (ordersToBuy.isEmpty()) {
             System.out.println("Executing task every 15 seconds, but list to buy is empty :-(");
         } else {
@@ -141,7 +145,7 @@ public class StockOrderService {
 
             int amountToBuy = rand.nextInt(stockOrder.getAmountLeft()) + 1;
 
-            //TODO provera ako je allOrNon true
+            //provera ako je allOrNon true
             if (stockOrder.isAon()) {
                 if (amountToBuy != stockOrder.getAmountLeft()) {
                     System.out.println("Couldn't buy all " + stockOrder.getAmountLeft());
@@ -149,8 +153,20 @@ public class StockOrderService {
                 }
             }
 
+            //kreirati stockTransactionDto koji sadrzi sracunatu kolicinu novca u zavisnosti od tipa stock-a,
+            //broj racuna banke, broj racuna berze.
+
+            //TODO naci broj racuna banke i berze preko valute
+
+            StockTransactionDto stockTransactionDto = new StockTransactionDto();
+            stockTransactionDto.setAccountFrom("RACUN BANKE");
+            stockTransactionDto.setAccountTo("RACUN BERZE");
+
             if (stockOrder.getType().equals(StockOrderType.MARKET)) {
-                printer(amountToBuy,currentPrice);    //TODO: poslati currentPrice*amountToBuy ka Transaction-service
+                //TODO: poslati currentPrice*amountToBuy ka Transaction-service
+                stockTransactionDto.setAmount(currentPrice * amountToBuy);
+                bankServiceClient.startStockTransaction(stockTransactionDto);
+
                 myStockService.addAmountToMyStock(stockOrder.getTicker(), amountToBuy);    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
                 stockOrder.setAmountLeft(stockOrder.getAmountLeft() - amountToBuy);
                 if (stockOrder.getAmountLeft() <= 0){
