@@ -13,7 +13,6 @@ import rs.edu.raf.userservice.domains.model.Employee;
 @RequiredArgsConstructor
 @ToString
 public class CompanyAccountDto {
-
     private Long companyAccountId;
     private Company company;
     private Employee employee;

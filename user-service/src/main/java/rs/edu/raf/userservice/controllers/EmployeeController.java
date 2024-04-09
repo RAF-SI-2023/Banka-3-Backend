@@ -13,11 +13,10 @@ import org.springframework.web.bind.annotation.*;
 import rs.edu.raf.userservice.domains.dto.employee.*;
 import rs.edu.raf.userservice.domains.dto.login.LoginRequest;
 import rs.edu.raf.userservice.domains.dto.login.LoginResponse;
-import rs.edu.raf.userservice.domains.model.Employee;
 import rs.edu.raf.userservice.services.EmployeeService;
 import rs.edu.raf.userservice.utils.JwtUtil;
+
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
@@ -81,12 +80,12 @@ public class EmployeeController {
     }
 
     @PostMapping(value = "/setPassword")
-    public ResponseEntity<String> changePassword(@RequestBody SetPasswordDTO passwordDTO){
+    public ResponseEntity<String> changePassword(@RequestBody SetPasswordDTO passwordDTO) {
         return ResponseEntity.ok(employeeService.setPassword(passwordDTO));
     }
 
     @PostMapping(value = "/resetPassword")
-    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordDTO resetPasswordDTO){
+    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordDTO resetPasswordDTO) {
         return ResponseEntity.ok(employeeService.resetPassword(resetPasswordDTO));
     }
 
@@ -113,6 +112,11 @@ public class EmployeeController {
                                              @RequestParam(value = "email", required = false) String email,
                                              @RequestParam(value = "role", required = false) String role) {
         return ResponseEntity.ok(this.employeeService.search(firstName, lastName, email, role));
+    }
+
+    @GetMapping(value="/getExchangeEmployees", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getExchangeEmployees() {
+        return ResponseEntity.ok(employeeService.findSupervisorsAndAgents());
     }
 
 }

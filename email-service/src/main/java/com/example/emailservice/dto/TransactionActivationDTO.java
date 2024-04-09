@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TransactionActivationDTO {
-
     private String email;
     private String transactionId;
 }

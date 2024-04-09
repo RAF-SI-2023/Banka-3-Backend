@@ -20,6 +20,7 @@ public class CreditController {
 
     /**
      * Dohvatanje svih kredita za korisnika ciji userId je prosledjen
+     *
      * @param userId
      * @return List<CreditDto>
      */
@@ -31,6 +32,7 @@ public class CreditController {
     /**
      * Dohvatanje svih kredita iz baze. Endpoint predvidjen samo za zaposlenih sa
      * rolom CREDIT_OFFICER
+     *
      * @return List<CreditDto>
      */
     @PreAuthorize("hasRole('ROLE_CREDIT_OFFICER')")
@@ -43,6 +45,7 @@ public class CreditController {
      * Kreiranje kredita nakon odobravnja kredita (PUT "/credit-request" endpoint). Nakon kreiranja
      * kredita, na racun korisnika se uplacuje iznos kredita, a kredit se otplacuje na mesecnom nivou
      * (koristeci schedule metodu unutar credit service-a).
+     *
      * @param createCreditDto
      * @return CreditDto
      */

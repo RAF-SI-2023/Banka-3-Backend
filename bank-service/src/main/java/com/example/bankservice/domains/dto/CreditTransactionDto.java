@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreditTransactionDto {
-
     private String accountFrom;
     private Long creditId;
     private Double amount;

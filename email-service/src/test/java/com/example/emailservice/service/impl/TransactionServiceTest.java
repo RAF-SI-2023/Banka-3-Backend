@@ -54,7 +54,7 @@ public class TransactionServiceTest {
 
         TransactionActivation transactionActivation = new TransactionActivation(1L, "test@example.com", 123456, LocalDateTime.now(), true);
 
-        when(transactionActivationRepository.findByTransactionIdAndActiveIsTrue(dto.getTransactionId())).thenReturn(Optional.of(transactionActivation));
+        when(transactionActivationRepository.findByIdAndActiveIsTrue(dto.getTransactionId())).thenReturn(Optional.of(transactionActivation));
 
         ResponseEntity<String> response = transactionService.confirmTransaction(dto);
 
@@ -67,7 +67,7 @@ public class TransactionServiceTest {
         dto.setTransactionId(1L);
         dto.setCode(123456);
 
-        when(transactionActivationRepository.findByTransactionIdAndActiveIsTrue(dto.getTransactionId())).thenReturn(Optional.empty());
+        when(transactionActivationRepository.findByIdAndActiveIsTrue(dto.getTransactionId())).thenReturn(Optional.empty());
 
         ResponseEntity<String> response = transactionService.confirmTransaction(dto);
 

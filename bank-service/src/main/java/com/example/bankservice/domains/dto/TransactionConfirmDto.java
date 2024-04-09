@@ -12,6 +12,4 @@ import lombok.ToString;
 public class TransactionConfirmDto {
     private Long transactionId;
     private int code;
-
-
 }

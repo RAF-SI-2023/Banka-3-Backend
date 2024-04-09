@@ -28,7 +28,7 @@ public class EmployeeUpdateDto {
     @NotNull
     private Long dateOfBirth;
     @NotBlank
-    @Size(max=1)
+    @Size(max = 1)
     private String gender;
     @NotBlank
     private String jmbg;

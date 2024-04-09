@@ -11,5 +11,4 @@ import lombok.NoArgsConstructor;
 public class ConfirmTransactionDTO {
     private Long transactionId;
     private int code;
-
 }

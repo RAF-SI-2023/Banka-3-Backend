@@ -14,7 +14,8 @@ import java.util.List;
 @AllArgsConstructor
 @CrossOrigin()
 @RequestMapping("/api/v1/contact")
-public class ContactController {
+public class
+ContactController {
 
     private ContactService contactService;
 

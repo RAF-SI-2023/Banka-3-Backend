@@ -36,7 +36,8 @@ public class CreditRequestService {
     }
 
     public CreditRequestDto createCreditRequest(CreditRequestCreateDto creditRequestCreateDto) {
-        CreditRequest creditRequest = CreditRequestMapper.INSTANCE.creditRequestCreateDtoToCreditRequest(creditRequestCreateDto);
+        CreditRequest creditRequest =
+                CreditRequestMapper.INSTANCE.creditRequestCreateDtoToCreditRequest(creditRequestCreateDto);
         User user = userRepository.findById(creditRequestCreateDto.getUserId()).orElseThrow();
         creditRequest.setUser(user);
         creditRequest.setStatus(CreditRequestStatus.PROCESSING);
@@ -47,9 +48,10 @@ public class CreditRequestService {
     }
 
     public CreditRequestDto processCreditRequest(ProcessCreditRequestDto processCreditRequestDto) {
-        CreditRequest creditRequest = creditRequestRepository.findById(processCreditRequestDto.getCreditRequestId()).orElseThrow();
-        if(creditRequest.getStatus().equals(CreditRequestStatus.PROCESSING)) {
-            if(processCreditRequestDto.getAccepted())
+        CreditRequest creditRequest =
+                creditRequestRepository.findById(processCreditRequestDto.getCreditRequestId()).orElseThrow();
+        if (creditRequest.getStatus().equals(CreditRequestStatus.PROCESSING)) {
+            if (processCreditRequestDto.getAccepted())
                 creditRequest.setStatus(CreditRequestStatus.ACCEPTED);
             else
                 creditRequest.setStatus(CreditRequestStatus.DECLINED);

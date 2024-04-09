@@ -34,7 +34,8 @@ public class CompanyAccountController {
     }
 
     @PostMapping("/{companyId}")
-    public CompanyAccountDto addCompanyAccount(@PathVariable Long companyId, @RequestBody CompanyAccountCreateDto companyAccountDto) {
+    public CompanyAccountDto addCompanyAccount(@PathVariable Long companyId,
+                                               @RequestBody CompanyAccountCreateDto companyAccountDto) {
         return companyAccountService.create(companyAccountDto, companyId);
     }
 

@@ -15,6 +15,7 @@ import rs.edu.raf.userservice.domains.exceptions.NotFoundException;
 import rs.edu.raf.userservice.domains.mappers.EmployeeMapper;
 import rs.edu.raf.userservice.domains.model.Employee;
 import rs.edu.raf.userservice.domains.model.Permission;
+import rs.edu.raf.userservice.domains.model.Role;
 import rs.edu.raf.userservice.domains.model.enums.RoleName;
 import rs.edu.raf.userservice.repositories.EmployeeRepository;
 import rs.edu.raf.userservice.utils.EmailServiceClient;
@@ -32,12 +33,12 @@ public class EmployeeService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final EmailServiceClient emailServiceClient;
 
-    public EmployeeService(EmployeeRepository employeeRepository, PasswordEncoder passwordEncoder, EmailServiceClient emailServiceClient) {
+    public EmployeeService(EmployeeRepository employeeRepository, PasswordEncoder passwordEncoder,
+                           EmailServiceClient emailServiceClient) {
         this.employeeRepository = employeeRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailServiceClient = emailServiceClient;
     }
-
 
     public EmployeeDto create(EmployeeCreateDto employeeCreateDto) {
 
@@ -103,9 +104,9 @@ public class EmployeeService implements UserDetailsService {
     public List<EmployeeDto> search(String firstName, String lastName, String email, String role) {
         RoleName roleNameEnum;
         try {
-            if(role.isEmpty()){
+            if (role.isEmpty()) {
                 roleNameEnum = null;
-            }else{
+            } else {
                 roleNameEnum = RoleName.valueOf(role.toUpperCase());
             }
         } catch (Exception e) {
@@ -156,6 +157,21 @@ public class EmployeeService implements UserDetailsService {
         employee.setPassword(passwordEncoder.encode(resetPasswordDTO.getNewPassword()));
         employeeRepository.save(employee);
         return "Successfully reseted password for " + resetPasswordDTO.getEmail();
+    }
+
+    public List<ExchangeEmployeeDTO> findSupervisorsAndAgents() {
+        Optional<List<Employee>> employees = employeeRepository.findSupervisorsAndAgents();
+        List<ExchangeEmployeeDTO> exchangeEmployeeDTOS = new ArrayList<>();
+
+        for(Employee employee : employees.get()){
+            ExchangeEmployeeDTO exchangeEmployeeDTO = new ExchangeEmployeeDTO();
+            exchangeEmployeeDTO.setEmployeeId(employee.getEmployeeId());
+            exchangeEmployeeDTO.setEmail(employee.getEmail());
+            exchangeEmployeeDTO.setRole(String.valueOf(employee.getRole().getRoleName()));
+            exchangeEmployeeDTOS.add(exchangeEmployeeDTO);
+        }
+
+        return exchangeEmployeeDTOS;
     }
 
 }

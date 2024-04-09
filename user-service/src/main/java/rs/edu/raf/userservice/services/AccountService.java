@@ -1,6 +1,6 @@
 package rs.edu.raf.userservice.services;
 
-import feign.Response;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -8,48 +8,41 @@ import rs.edu.raf.userservice.domains.dto.account.AccountCreateDto;
 import rs.edu.raf.userservice.domains.dto.account.AccountDto;
 import rs.edu.raf.userservice.domains.dto.account.CheckEnoughBalanceDto;
 import rs.edu.raf.userservice.domains.dto.account.RebalanceAccountDto;
+import rs.edu.raf.userservice.domains.dto.card.CreateCardDto;
 import rs.edu.raf.userservice.domains.mappers.AccountMapper;
 import rs.edu.raf.userservice.domains.model.Account;
-import rs.edu.raf.userservice.domains.model.AccountType;
-import rs.edu.raf.userservice.domains.model.Currency;
 import rs.edu.raf.userservice.domains.model.enums.AccountTypeName;
 import rs.edu.raf.userservice.domains.model.enums.CurrencyName;
 import rs.edu.raf.userservice.repositories.*;
+import rs.edu.raf.userservice.utils.BankServiceClient;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
-
+@AllArgsConstructor
 @Service
 public class AccountService {
 
+    private static final String API_KEY = "96aa86545baf8162d6ecbe21";
+    private static final String API_URL = "https://v6.exchangerate-api.com/v6/" + API_KEY + "/pair/";
     private final AccountRepository accountRepository;
-
     private final AccountTypeRepository accountTypeRepository;
-
     private final CurrencyRepository currencyRepository;
-
     private final UserRepository userRepository;
-
     private final EmployeeRepository employeeRepository;
+    private final BankServiceClient bankServiceClient;
 
-    public AccountService(AccountRepository accountRepository,
-                          EmployeeRepository employeeRepository,
-                          UserRepository userRepository, AccountTypeRepository accountTypeRepository, CurrencyRepository currencyRepository) {
-        this.currencyRepository = currencyRepository;
-        this.userRepository = userRepository;
-        this.accountRepository = accountRepository;
-        this.accountTypeRepository = accountTypeRepository;
-        this.employeeRepository = employeeRepository;
-    }
+    //TODO dodati u test
 
-    private String randAccNumber(){ //generise broj racuna
+
+    private String randAccNumber() { //generise broj racuna
         String fixedPart = "5053791";
         StringBuilder builder = new StringBuilder(fixedPart);
         Random random = new Random();
@@ -60,69 +53,77 @@ public class AccountService {
         return builder.toString();
     }
 
-    //TODO dodati u test
+    public ResponseEntity<String> addMoneyToAccount(RebalanceAccountDto dto) {
+        Optional<Account> optionalAccount = accountRepository.findByAccountNumber(dto.getAccountNumber());
+        if (!optionalAccount.isPresent()) return ResponseEntity.badRequest().build();
+        Account account = optionalAccount.get();
 
-    public ResponseEntity<String>addMoneyToAccount(RebalanceAccountDto dto){
-        Optional<Account> optionalAccount=accountRepository.findByAccountNumber(dto.getAccountNumber());
-        if(!optionalAccount.isPresent()) return ResponseEntity.badRequest().build();
-        Account account=optionalAccount.get();
-        account.setBalance(account.getBalance()+dto.getAmount());
-        accountRepository.save(account);
-        return ResponseEntity.ok().build();
-
-    }
-
-    //TODO dodati u test
-    public ResponseEntity<String>takeMoneyFromAccount(RebalanceAccountDto dto){
-        Optional<Account> optionalAccount=accountRepository.findByAccountNumber(dto.getAccountNumber());
-        if(!optionalAccount.isPresent()) return ResponseEntity.badRequest().build();
-        Account account=optionalAccount.get();
-        account.setBalance(account.getBalance()-dto.getAmount());
-        accountRepository.save(account);
-        return ResponseEntity.ok().build();
-
-    }
-    public String getEmailByAccountNumber(String accountNumber) {
-        Account account = accountRepository.findByAccountNumber(accountNumber).orElseThrow();
-        return account.getUser().getEmail();
-    }
-    public ResponseEntity<String>reserveMoney(RebalanceAccountDto dto){
-
-
-        Optional<Account> optionalAccount=accountRepository.findByAccountNumber(dto.getAccountNumber());
-        if(!optionalAccount.isPresent()) return ResponseEntity.badRequest().build();
-        Account account=optionalAccount.get();
-
-        if(!account.getCurrency().getMark().equalsIgnoreCase(dto.getCurrencyMark())){
-            Double convertedAmount = convertCurrency(dto.getCurrencyMark(), account.getCurrency().getMark(), dto.getAmount());
-            if(account.getBalance()<convertedAmount) return ResponseEntity.badRequest().build();
-            account.setBalance(account.getBalance()-convertedAmount);
-            account.setReservedAmount(account.getReservedAmount()+convertedAmount);
+        if (!account.getCurrency().getMark().equalsIgnoreCase(dto.getCurrencyMark())) {
+            Double convertedAmount = convertCurrency(dto.getCurrencyMark(), account.getCurrency().getMark(),
+                    dto.getAmount());
+            account.setAvailableBalance(account.getAvailableBalance().add(new BigDecimal(convertedAmount)));
             accountRepository.save(account);
             return ResponseEntity.ok().build();
         }
 
-        if(account.getBalance()<dto.getAmount()) return ResponseEntity.badRequest().build();
-        account.setBalance(account.getBalance()-dto.getAmount());
-        account.setReservedAmount(account.getReservedAmount()+dto.getAmount());
+        account.setAvailableBalance(account.getAvailableBalance().add(new BigDecimal(dto.getAmount())));
+        accountRepository.save(account);
+        return ResponseEntity.ok().build();
+
+    }
+
+    public ResponseEntity<String> takeMoneyFromAccount(RebalanceAccountDto dto) {
+        Optional<Account> optionalAccount = accountRepository.findByAccountNumber(dto.getAccountNumber());
+        if (!optionalAccount.isPresent()) return ResponseEntity.badRequest().build();
+        Account account = optionalAccount.get();
+        account.setAvailableBalance(account.getAvailableBalance().subtract(new BigDecimal(dto.getAmount())));
+        accountRepository.save(account);
+        return ResponseEntity.ok().build();
+
+    }
+
+    public String getEmailByAccountNumber(String accountNumber) {
+        Account account = accountRepository.findByAccountNumber(accountNumber).orElseThrow();
+        return account.getUser().getEmail();
+    }
+
+    public ResponseEntity<String> reserveMoney(RebalanceAccountDto dto) {
+
+
+        Optional<Account> optionalAccount = accountRepository.findByAccountNumber(dto.getAccountNumber());
+        if (!optionalAccount.isPresent()) return ResponseEntity.badRequest().build();
+        Account account = optionalAccount.get();
+
+        if (!account.getCurrency().getMark().equalsIgnoreCase(dto.getCurrencyMark())) {
+            Double convertedAmount = convertCurrency(dto.getCurrencyMark(), account.getCurrency().getMark(),
+                    dto.getAmount());
+            if (account.getAvailableBalance().subtract(account.getReservedAmount()).compareTo(new BigDecimal(convertedAmount)) < 0)
+                return ResponseEntity.badRequest().build();
+            account.setReservedAmount(account.getReservedAmount().add(new BigDecimal(convertedAmount)));
+            accountRepository.save(account);
+            return ResponseEntity.ok().build();
+        }
+
+        if (account.getAvailableBalance().subtract(account.getReservedAmount()).compareTo(new BigDecimal(dto.getAmount())) < 0)
+            return ResponseEntity.badRequest().build();
+        account.setReservedAmount(account.getReservedAmount().add(new BigDecimal(dto.getAmount())));
         accountRepository.save(account);
         return ResponseEntity.ok().build();
     }
 
-    public ResponseEntity<String>unreserveMoney(RebalanceAccountDto dto){
-        Optional<Account> optionalAccount=accountRepository.findByAccountNumber(dto.getAccountNumber());
-        if(!optionalAccount.isPresent()) return ResponseEntity.badRequest().build();
-        Account account=optionalAccount.get();
-        if(account.getReservedAmount()<dto.getAmount()) return ResponseEntity.badRequest().build();
-        account.setBalance(account.getBalance()+dto.getAmount());
-        account.setReservedAmount(account.getReservedAmount()-dto.getAmount());
+    public ResponseEntity<String> unreserveMoney(RebalanceAccountDto dto) {
+        Optional<Account> optionalAccount = accountRepository.findByAccountNumber(dto.getAccountNumber());
+        if (!optionalAccount.isPresent()) return ResponseEntity.badRequest().build();
+        Account account = optionalAccount.get();
+        if (account.getReservedAmount().compareTo(new BigDecimal(dto.getAmount())) < 0)
+            return ResponseEntity.badRequest().build();
+        account.setReservedAmount(account.getReservedAmount().subtract(new BigDecimal(dto.getAmount())));
         accountRepository.save(account);
         return ResponseEntity.ok().build();
     }
-
 
     //ostaje jos da iz jwt-a se doda employeeId
-    public AccountDto create(AccountCreateDto accountCreateDto, Long userId) {
+    public AccountDto create(AccountCreateDto accountCreateDto) {
         Account account = AccountMapper.INSTANCE.accountCreateDtoToAccount(accountCreateDto);
         account.setAccountNumber(randAccNumber());
         account.setUser(userRepository.findById(accountCreateDto.getUserId()).get());
@@ -130,14 +131,25 @@ public class AccountService {
         account.setCreationDate(System.currentTimeMillis());
         account.setExpireDate(System.currentTimeMillis() + 31556952000L);
         account.setActive(true);// 1 year
+        account.setReservedAmount(new BigDecimal(0.0));
         CurrencyName currencyName = CurrencyName.valueOf(accountCreateDto.getCurrency());
-        account.setCurrency(currencyRepository.findByName(currencyName).orElseThrow()); //problematicno moze li da bude long jebo me dan, isti problem ispod
+        account.setCurrency(currencyRepository.findByName(currencyName).orElseThrow());
         AccountTypeName accountTypeName = AccountTypeName.valueOf(accountCreateDto.getAccountType());
-        account.setAvailableBalance(accountCreateDto.getBalance());
+        account.setAvailableBalance(new BigDecimal(accountCreateDto.getBalance()));
         account.setAccountType(accountTypeRepository.findByAccountType(accountTypeName).orElseThrow());
         account = accountRepository.save(account);
+
+
+        //Kreira se kartica
+        CreateCardDto createCardDto = new CreateCardDto();
+        createCardDto.setAccountNumber(account.getAccountNumber());
+        createCardDto.setUserId(accountCreateDto.getUserId());
+        bankServiceClient.createCard(createCardDto);
+
+
         return AccountMapper.INSTANCE.accountToAccountDto(account);
     }
+
 
     public void deactivate(Long accountId) {
         Account account = accountRepository.findById(accountId).orElseThrow();
@@ -145,16 +157,10 @@ public class AccountService {
         accountRepository.save(account);
     }
 
-
-
-    private static final String API_KEY = "96aa86545baf8162d6ecbe21";
-    private static final String API_URL = "https://v6.exchangerate-api.com/v6/" + API_KEY + "/pair/";
-
-
     //EUR,USD
     private Double convertCurrency(String fromCurrency, String toCurrency, Double amount) {
-        fromCurrency=fromCurrency.toUpperCase();
-        toCurrency=toCurrency.toUpperCase();
+        fromCurrency = fromCurrency.toUpperCase();
+        toCurrency = toCurrency.toUpperCase();
         try {
 
             String urlStr = API_URL + fromCurrency + "/" + toCurrency + "/" + amount;
@@ -203,27 +209,26 @@ public class AccountService {
     }
 
 
+    public ResponseEntity<String> checkEnoughBalance(CheckEnoughBalanceDto dto) {
+        Optional<Account> optionalAccount = accountRepository.findByAccountNumber(dto.getAccountNumber());
 
-    //TODO ubaciti u test
-    public ResponseEntity<String>checkEnoughBalance(CheckEnoughBalanceDto dto){
-        Optional<Account> optionalAccount=accountRepository.findByAccountNumber(dto.getAccountNumber());
+        if (!optionalAccount.isPresent()) return ResponseEntity.badRequest().build();
 
-        if(!optionalAccount.isPresent()) return ResponseEntity.badRequest().build();
-
-        Account account=optionalAccount.get();
+        Account account = optionalAccount.get();
 
         //use conversion
-        if(!account.getCurrency().getMark().equalsIgnoreCase(dto.getCurrencyMark())){
-            Double convertedAmount = convertCurrency(dto.getCurrencyMark(), account.getCurrency().getMark(), dto.getAmount());
-            if(account.getBalance()>=convertedAmount){
+        if (!account.getCurrency().getMark().equalsIgnoreCase(dto.getCurrencyMark())) {
+            Double convertedAmount = convertCurrency(dto.getCurrencyMark(), account.getCurrency().getMark(),
+                    dto.getAmount());
+            if (account.getAvailableBalance().compareTo(new BigDecimal(convertedAmount)) >= 0) {
                 return ResponseEntity.ok().build();
-            }else{
+            } else {
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Not enough money on balance!");
             }
-        }else{
-            if(account.getBalance()>=dto.getAmount()){
+        } else {
+            if (account.getAvailableBalance().subtract(account.getReservedAmount()).compareTo(new BigDecimal(dto.getAmount())) >= 0) {
                 return ResponseEntity.ok().build();
-            }else{
+            } else {
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Not enough money on balance!");
             }
         }

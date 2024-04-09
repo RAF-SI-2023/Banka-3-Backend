@@ -9,12 +9,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
-import rs.edu.raf.userservice.domains.dto.user.*;
 import rs.edu.raf.userservice.domains.dto.login.LoginRequest;
 import rs.edu.raf.userservice.domains.dto.login.LoginResponse;
+import rs.edu.raf.userservice.domains.dto.user.*;
 import rs.edu.raf.userservice.services.UserService;
 import rs.edu.raf.userservice.utils.JwtUtil;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -34,7 +35,8 @@ public class UserController {
     @PostMapping("/auth/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
+                    loginRequest.getPassword()));
         } catch (Exception e) {
             return ResponseEntity.status(401).build();
         }
@@ -92,13 +94,13 @@ public class UserController {
         return ResponseEntity.ok(this.userService.search(firstName, lastName, email));
     }
 
-    @GetMapping(value ="/isUserActive/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public IsUserActiveDTO isUserActive(@PathVariable String email){
+    @GetMapping(value = "/isUserActive/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public IsUserActiveDTO isUserActive(@PathVariable String email) {
         return this.userService.isUserActive(email);
     }
 
     @PostMapping(value = "/setPassword")
-    public ResponseEntity<?> setPassword(@RequestBody SetPasswordDTO setPasswordDTO){
+    public ResponseEntity<?> setPassword(@RequestBody SetPasswordDTO setPasswordDTO) {
         return ResponseEntity.ok(userService.setPassword(setPasswordDTO));
     }
 

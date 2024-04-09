@@ -3,11 +3,6 @@ package rs.edu.raf.userservice.domains.model;
 import lombok.*;
 import rs.edu.raf.userservice.domains.model.enums.CreditRequestStatus;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -40,7 +35,6 @@ public class CreditRequest implements Serializable {
     @NotNull(message = "This field cannot be NULL")
     private String applianceReason;
 
-    @NotNull(message = "This field cannot be NULL")
     private Double monthlyPaycheck;
 
     @NotNull(message = "This field cannot be NULL")
@@ -53,7 +47,6 @@ public class CreditRequest implements Serializable {
     private int paymentPeriod;
 
     @NotNull(message = "This field cannot be NULL")
-
     @Enumerated(EnumType.STRING)
     private CreditRequestStatus status;
 

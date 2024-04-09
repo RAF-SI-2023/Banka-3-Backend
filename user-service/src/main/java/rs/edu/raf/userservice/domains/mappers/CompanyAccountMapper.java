@@ -12,6 +12,7 @@ public interface CompanyAccountMapper {
     CompanyAccountMapper INSTANCE = Mappers.getMapper(CompanyAccountMapper.class);
 
     CompanyAccountDto companyAccountToCompanyAccountDto(rs.edu.raf.userservice.domains.model.CompanyAccount companyAccount);
+
     @Mapping(target = "currency", ignore = true)
     CompanyAccount companyAccountCreateDtoToCompanyAccount(rs.edu.raf.userservice.domains.dto.companyaccount.CompanyAccountCreateDto companyAccountCreateDto);
 }

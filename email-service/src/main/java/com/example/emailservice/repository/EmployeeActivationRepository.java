@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+
 /***
  *Pretraga u bazi po identifier-u i ako je activation possible
  *

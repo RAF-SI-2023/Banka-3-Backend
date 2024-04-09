@@ -1,7 +1,6 @@
 package rs.edu.raf.userservice.domains.model;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -48,8 +47,6 @@ public class Company implements Serializable {
 
     @OneToMany(mappedBy = "companyAccountId")
     private List<CompanyAccount> companyAccounts = new ArrayList<>();
-
-
 
 
 }

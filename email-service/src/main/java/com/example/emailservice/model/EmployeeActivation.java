@@ -12,7 +12,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "employee_activation", indexes = @Index(name = "identifierIx", columnList = "identifier, activation_possible"))
+@Table(name = "employee_activation", indexes = @Index(name = "identifierIx", columnList = "identifier, " +
+        "activation_possible"))
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
