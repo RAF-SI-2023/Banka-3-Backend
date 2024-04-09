@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import rs.edu.raf.exchangeservice.domain.dto.BuyStockDto;
 import rs.edu.raf.exchangeservice.domain.dto.SellStockDto;
 import rs.edu.raf.exchangeservice.domain.dto.StockDto;
+import rs.edu.raf.exchangeservice.domain.dto.StockOrderDto;
 import rs.edu.raf.exchangeservice.domain.model.listing.Stock;
 import rs.edu.raf.exchangeservice.service.listingService.StockService;
 import rs.edu.raf.exchangeservice.service.myListingService.MyStockService;
@@ -81,7 +82,7 @@ public class StockController {
 
     @PostMapping("/buyStock")
     @Operation(description = "ruta koja se gadja prilikom kupovine Stocks")
-    public ResponseEntity buyStock(@RequestBody BuyStockDto buyStockDto){
+    public ResponseEntity<StockOrderDto> buyStock(@RequestBody BuyStockDto buyStockDto){
         return ResponseEntity.ok(stockOrderService.buyStock(buyStockDto));
     }
 
