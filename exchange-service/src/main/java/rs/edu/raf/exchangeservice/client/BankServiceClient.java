@@ -9,6 +9,6 @@ import rs.edu.raf.exchangeservice.domain.dto.StockTransactionDto;
 @FeignClient(name = "bankServiceClient", url = "${bankServiceLocation}")
 public interface BankServiceClient {
 
-    @PostMapping(value = "/stockTransaction/startStockTransaction")
+    @PostMapping(value = "/stockTransaction/start")
     ResponseEntity<?> startStockTransaction (@RequestBody StockTransactionDto stockTransactionDto);
 }

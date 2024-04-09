@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rs.edu.raf.userservice.domains.dto.account.CheckEnoughBalanceDto;
+import rs.edu.raf.userservice.domains.dto.account.RebalanceAccountDto;
 import rs.edu.raf.userservice.domains.dto.companyaccount.CompanyAccountCreateDto;
 import rs.edu.raf.userservice.domains.dto.companyaccount.CompanyAccountDto;
 import rs.edu.raf.userservice.services.CompanyAccountService;
@@ -46,8 +47,31 @@ public class CompanyAccountController {
         companyAccountService.deactivate(companyAccountId);
     }
 
-    @PostMapping("/checkEnoughBalance")
-    ResponseEntity<String> checkCompanyEnoughBalance(@RequestBody CheckEnoughBalanceDto dto) {
-        return companyAccountService.checkCompanyEnoughBalance(dto);
+    @PostMapping("/checkCompanyBalance")
+    public ResponseEntity<String> checkCompanyBalance(@RequestBody CheckEnoughBalanceDto dto) {
+        return companyAccountService.checkCompanyBalance(dto);
     }
+
+    @PostMapping("/reserveCompanyMoney")
+    public ResponseEntity<String> reserveCompanyMoney(@RequestBody RebalanceAccountDto dto) {
+        return companyAccountService.reserveCompanyMoney(dto);
+    }
+
+    @PostMapping("/unreserveCompanyMoney")
+    public ResponseEntity<String> unreserveCompanyMoney(@RequestBody RebalanceAccountDto dto) {
+        return companyAccountService.unreserveCompanyMoney(dto);
+    }
+
+    @PostMapping("/addMoneyToCompanyAccount")
+    public ResponseEntity<String> addMoneyToCompanyAccount(@RequestBody RebalanceAccountDto dto) {
+        return companyAccountService.addMoneyToCompanyAccount(dto);
+    }
+
+    @PostMapping("/takeMoneyFromCompanyAccount")
+    public ResponseEntity<String> takeMoneyFromCompanyAccount(@RequestBody RebalanceAccountDto dto) {
+        return companyAccountService.takeMoneyFromCompanyAccount(dto);
+    }
+
+
+
 }

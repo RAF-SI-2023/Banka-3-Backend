@@ -155,24 +155,22 @@ public class StockOrderService {
 
             //kreirati stockTransactionDto koji sadrzi sracunatu kolicinu novca u zavisnosti od tipa stock-a,
             //broj racuna banke, broj racuna berze.
+            StockTransactionDto stockTransactionDto = new StockTransactionDto();
 
             //TODO naci broj racuna banke i berze preko valute
-
-            StockTransactionDto stockTransactionDto = new StockTransactionDto();
             stockTransactionDto.setAccountFrom("RACUN BANKE");
             stockTransactionDto.setAccountTo("RACUN BERZE");
 
             if (stockOrder.getType().equals(StockOrderType.MARKET)) {
-                //TODO: poslati currentPrice*amountToBuy ka Transaction-service
                 stockTransactionDto.setAmount(currentPrice * amountToBuy);
                 bankServiceClient.startStockTransaction(stockTransactionDto);
 
                 myStockService.addAmountToMyStock(stockOrder.getTicker(), amountToBuy);    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
                 stockOrder.setAmountLeft(stockOrder.getAmountLeft() - amountToBuy);
-                if (stockOrder.getAmountLeft() <= 0){
+                if (stockOrder.getAmountLeft() <= 0) {
                     stockOrder.setStatus(StockOrderStatus.FINISHED);
                     ordersToBuy.remove(stockNumber);    //uklanjamo ga iz liste jer je zavrsio
-                }else {
+                } else {
                     ordersToBuy.remove(stockNumber);
                     ordersToBuy.add(stockNumber,stockOrder);    //update Objekta u listi
                 }
@@ -180,17 +178,18 @@ public class StockOrderService {
 
             if (stockOrder.getType().equals(StockOrderType.LIMIT)){
                 if (currentPrice < stockOrder.getLimitValue()){
-                    printer(amountToBuy,currentPrice); //TODO: poslati currentPrice*amountToBuy ka Transaction-service
+                    stockTransactionDto.setAmount(currentPrice * amountToBuy);
+                    bankServiceClient.startStockTransaction(stockTransactionDto);
                     myStockService.addAmountToMyStock(stockOrder.getTicker(), amountToBuy);    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
                     stockOrder.setAmountLeft(stockOrder.getAmountLeft() - amountToBuy);
-                    if (stockOrder.getAmountLeft() <= 0){
+                    if (stockOrder.getAmountLeft() <= 0) {
                         stockOrder.setStatus(StockOrderStatus.FINISHED);
                         ordersToBuy.remove(stockNumber);    //uklanjamo ga iz liste jer je zavrsio
                     }else {
                         ordersToBuy.remove(stockNumber);
                         ordersToBuy.add(stockNumber,stockOrder);    //update Objekta u listi
                     }
-                }else {
+                } else {
                     stockOrder.setStatus(StockOrderStatus.FAILED);
                     ordersToBuy.remove(stockNumber);
                 }

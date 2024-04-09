@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import rs.edu.raf.userservice.domains.dto.account.CheckEnoughBalanceDto;
+import rs.edu.raf.userservice.domains.dto.account.RebalanceAccountDto;
 import rs.edu.raf.userservice.domains.dto.companyaccount.CompanyAccountCreateDto;
 import rs.edu.raf.userservice.domains.dto.companyaccount.CompanyAccountDto;
 import rs.edu.raf.userservice.domains.mappers.CompanyAccountMapper;
@@ -98,17 +99,67 @@ public class CompanyAccountService {
         return CompanyAccountMapper.INSTANCE.companyAccountToCompanyAccountDto(companyAccount);
     }
 
-    public ResponseEntity<String> checkCompanyEnoughBalance(CheckEnoughBalanceDto dto) {
+    public ResponseEntity<String> checkCompanyBalance(CheckEnoughBalanceDto dto) {
 
         CompanyAccount companyAccount = companyAccountRepository.findByAccountNumber(dto.getAccountNumber());
         if(companyAccount == null)
             return ResponseEntity.badRequest().build();
 
-        if (companyAccount.getAvailableBalance().subtract(companyAccount.getReservedAmount()).compareTo(new BigDecimal(dto.getAmount())) >= 0) {
+        if (companyAccount.getAvailableBalance().subtract(companyAccount.getReservedAmount()).compareTo(BigDecimal.valueOf(dto.getAmount())) >= 0) {
             return ResponseEntity.ok().build();
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Not enough money on balance!");
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Insufficient funds!");
         }
 
     }
+
+    public ResponseEntity<String> reserveCompanyMoney(RebalanceAccountDto dto) {
+
+        CompanyAccount companyAccount = companyAccountRepository.findByAccountNumber(dto.getAccountNumber());
+        if(companyAccount == null)
+            return ResponseEntity.badRequest().build();
+
+        if (companyAccount.getAvailableBalance().subtract(companyAccount.getReservedAmount()).compareTo(BigDecimal.valueOf(dto.getAmount())) < 0)
+            return ResponseEntity.badRequest().build();
+
+        companyAccount.setReservedAmount(companyAccount.getReservedAmount().add(BigDecimal.valueOf(dto.getAmount())));
+        companyAccountRepository.save(companyAccount);
+        return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity<String> unreserveCompanyMoney(RebalanceAccountDto dto) {
+
+        CompanyAccount companyAccount = companyAccountRepository.findByAccountNumber(dto.getAccountNumber());
+        if (companyAccount == null)
+            return ResponseEntity.badRequest().build();
+
+        if (companyAccount.getReservedAmount().compareTo(BigDecimal.valueOf(dto.getAmount())) < 0)
+            return ResponseEntity.badRequest().build();
+        companyAccount.setReservedAmount(companyAccount.getReservedAmount().subtract(BigDecimal.valueOf(dto.getAmount())));
+        companyAccountRepository.save(companyAccount);
+        return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity<String> addMoneyToCompanyAccount(RebalanceAccountDto dto) {
+
+        CompanyAccount companyAccount = companyAccountRepository.findByAccountNumber(dto.getAccountNumber());
+        if (companyAccount == null)
+            return ResponseEntity.badRequest().build();
+
+        companyAccount.setAvailableBalance(companyAccount.getAvailableBalance().add(BigDecimal.valueOf(dto.getAmount())));
+        companyAccountRepository.save(companyAccount);
+        return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity<String> takeMoneyFromCompanyAccount(RebalanceAccountDto dto) {
+
+        CompanyAccount companyAccount = companyAccountRepository.findByAccountNumber(dto.getAccountNumber());
+        if (companyAccount == null)
+            return ResponseEntity.badRequest().build();
+
+        companyAccount.setAvailableBalance(companyAccount.getAvailableBalance().subtract(BigDecimal.valueOf(dto.getAmount())));
+        companyAccountRepository.save(companyAccount);
+        return ResponseEntity.ok().build();
+    }
+
 }

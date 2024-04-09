@@ -14,7 +14,7 @@ public class StockTransactionController {
 
     private StockTransactionService stockTransactionService;
 
-    @PostMapping(value = "/stockTransaction/startStockTransaction")
+    @PostMapping(value = "/start")
     ResponseEntity<?> startStockTransaction (@RequestBody StockTransactionDto stockTransactionDto) {
         return stockTransactionService.startStockTransaction(stockTransactionDto);
     }

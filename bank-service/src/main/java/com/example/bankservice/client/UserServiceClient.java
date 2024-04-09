@@ -35,6 +35,18 @@ public interface UserServiceClient {
     @GetMapping("/account/getEmailByAccountNumber/{accountNumber}")
     String getEmailByAccountNumber(@PathVariable String accountNumber);
 
-    @PostMapping("/companyAccount/checkEnoughBalance")
-    ResponseEntity<String> checkCompanyEnoughBalance(@RequestBody CheckEnoughBalanceDto dto);
+    @PostMapping("/companyAccount/checkCompanyBalance")
+    ResponseEntity<String> checkCompanyBalance(@RequestBody CheckEnoughBalanceDto dto);
+
+    @PostMapping("/companyAccount/reserveCompanyMoney")
+    ResponseEntity<String> reserveCompanyMoney(@RequestBody RebalanceAccountDto dto);
+
+    @PostMapping("/companyAccount/unreserveCompanyMoney")
+    ResponseEntity<String> unreserveCompanyMoney(@RequestBody RebalanceAccountDto rebalanceAccountDto);
+
+    @PostMapping("/companyAccount/takeMoneyFromCompanyAccount")
+    ResponseEntity<String> takeMoneyFromCompanyAccount(@RequestBody RebalanceAccountDto dto);
+
+    @PostMapping("/companyAccount/addMoneyToCompanyAccount")
+    ResponseEntity<String> addMoneyToCompanyAccount(@RequestBody RebalanceAccountDto dto);
 }
