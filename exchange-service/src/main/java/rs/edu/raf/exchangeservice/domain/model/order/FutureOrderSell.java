@@ -14,15 +14,15 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class FutureOrder implements Serializable {
+public class FutureOrderSell implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long futureOrderId;
+    private Long futureOrderSellId;
     private Long employeeId;
     private String contractName;
-    private String status;  //PROCESSING, WAITING, FAILED, FINISHED
-    private int amount;
-    private int amountLeft;
+    private String status;  //PROCESSING, FAILED, FINISHED
+    private int amount;     //ukupna kolicina
+    private int amountLeft;     //koliko je ostalo da se kupi
     private boolean aon;
     private boolean margine;
 }
