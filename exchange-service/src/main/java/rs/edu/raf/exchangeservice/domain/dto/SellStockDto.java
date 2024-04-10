@@ -16,7 +16,7 @@ public class SellStockDto {
     private Double limitValue;
     private Double stopValue;
     private boolean aon;
-    private boolean margine;
+    private boolean margin;
 
     @Override
     public String toString() {
@@ -27,7 +27,7 @@ public class SellStockDto {
                 ", limitValue=" + limitValue +
                 ", stopValue=" + stopValue +
                 ", aon=" + aon +
-                ", margine=" + margine +
+                ", margine=" + margin +
                 '}';
     }
 }
