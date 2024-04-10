@@ -15,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FutureService {
     private final FutureRepository futureRepository;
-    private final String pathToFile = "exchange-service/src/main/resources/data/future_data.csv";
+    private final String pathToFile = "src/main/resources/data/future_data.csv";
 
     @PostConstruct
     public void loadData(){

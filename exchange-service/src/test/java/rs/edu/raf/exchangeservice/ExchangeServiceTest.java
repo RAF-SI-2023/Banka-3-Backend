@@ -65,7 +65,7 @@ public class ExchangeServiceTest {
     }
 
     @Test
-public void testLoadData() throws IOException {
+    public void testLoadData() throws IOException {
 
     exchangeService.loadData();
 

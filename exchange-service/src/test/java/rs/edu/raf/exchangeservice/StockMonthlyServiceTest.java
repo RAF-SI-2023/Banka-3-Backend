@@ -1,4 +1,4 @@
-package rs.edu.raf.exchangeservice.historyServiceTests;
+package rs.edu.raf.exchangeservice;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -65,7 +65,7 @@ public class StockMonthlyServiceTest {
         when(stockMonthlyRepository.save(any(StockMonthly.class))).thenReturn(new StockMonthly());
 
         // Act
-        stockMonthlyService.saveData(jsonNode, "TEST");
+        stockMonthlyService.saveData(jsonNode, "A");
 
         // Assert
         verify(stockMonthlyRepository, times(1)).save(any(StockMonthly.class));
