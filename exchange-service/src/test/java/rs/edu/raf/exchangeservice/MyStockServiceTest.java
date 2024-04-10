@@ -5,7 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import rs.edu.raf.exchangeservice.domain.dto.SellStockDto;
+import rs.edu.raf.exchangeservice.domain.dto.StockTransactionDto;
+import rs.edu.raf.exchangeservice.domain.model.enums.StockOrderType;
 import rs.edu.raf.exchangeservice.domain.model.listing.Stock;
 import rs.edu.raf.exchangeservice.domain.model.listing.Ticker;
 import rs.edu.raf.exchangeservice.domain.model.myListing.MyStock;
@@ -15,6 +19,8 @@ import rs.edu.raf.exchangeservice.repository.listingRepository.TickerRepository;
 import rs.edu.raf.exchangeservice.repository.myListingRepository.MyStockRepository;
 import rs.edu.raf.exchangeservice.repository.orderRepository.StockOrderSellRepository;
 import rs.edu.raf.exchangeservice.service.myListingService.MyStockService;
+import rs.edu.raf.exchangeservice.client.BankServiceClient;
+
 
 import java.util.Arrays;
 import java.util.List;
@@ -36,7 +42,8 @@ public class MyStockServiceTest {
     @Mock
     private StockRepository stockRepository;
 
-
+    @Mock
+    private BankServiceClient bankServiceClient;
 
     @InjectMocks
     private MyStockService myStockService;
@@ -109,7 +116,7 @@ public class MyStockServiceTest {
         sellStockDto.setStopValue(0.0);
         sellStockDto.setLimitValue(0.0);
         sellStockDto.setAon(false);
-        sellStockDto.setMargine(false);
+        sellStockDto.setMargin(false);
         MyStock myStock = new MyStock();
         myStock.setTicker("AAPL");
         myStock.setAmount(20);
@@ -133,7 +140,7 @@ public class MyStockServiceTest {
         sellStockDto.setStopValue(0.0);
         sellStockDto.setLimitValue(0.0);
         sellStockDto.setAon(false);
-        sellStockDto.setMargine(false);
+        sellStockDto.setMargin(false);
         MyStock myStock = new MyStock();
         myStock.setTicker("AAPL");
         myStock.setAmount(20);
@@ -166,7 +173,7 @@ public class MyStockServiceTest {
 
         // Assert
         verify(myStockRepository, times(1)).findByTicker(sellStockDto.getTicker());
-        verify(stockOrderSellRepository, times(1)).save(argThat(order -> order.getType().equals("STOP")));
+        verify(stockOrderSellRepository, times(1)).save(argThat(order -> order.getType().equals(StockOrderType.STOP)));
     }
 
     @Test
@@ -187,7 +194,7 @@ public class MyStockServiceTest {
 
         // Assert
         verify(myStockRepository, times(1)).findByTicker(sellStockDto.getTicker());
-        verify(stockOrderSellRepository, times(1)).save(argThat(order -> order.getType().equals("LIMIT")));
+        verify(stockOrderSellRepository, times(1)).save(argThat(order -> order.getType().equals(StockOrderType.LIMIT)));
     }
 
     @Test
@@ -208,7 +215,7 @@ public class MyStockServiceTest {
 
         // Assert
         verify(myStockRepository, times(1)).findByTicker(sellStockDto.getTicker());
-        verify(stockOrderSellRepository, times(1)).save(argThat(order -> order.getType().equals("STOP-LIMIT")));
+        verify(stockOrderSellRepository, times(1)).save(argThat(order -> order.getType().equals(StockOrderType.STOP_LIMIT)));
     }
 
     @Test
@@ -220,7 +227,7 @@ public class MyStockServiceTest {
         stockOrderSell.setAmountLeft(10);
         stockOrderSell.setStopValue(0.0);
         stockOrderSell.setLimitValue(0.0);
-        stockOrderSell.setType("MARKET");
+        stockOrderSell.setType(StockOrderType.MARKET);
         stockOrderSell.setAon(false);
         stockOrderSell.setMargin(false);
         myStockService.ordersToSell.add(stockOrderSell);
@@ -237,6 +244,7 @@ public class MyStockServiceTest {
         myStock.setTicker("AAPL");
         myStock.setAmount(20);
         when(myStockRepository.findByTicker(stockOrderSell.getTicker())).thenReturn(myStock);
+        when(bankServiceClient.startStockTransaction(any(StockTransactionDto.class))).thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
         // Act
         myStockService.executeTask();
@@ -255,7 +263,7 @@ public class MyStockServiceTest {
         stockOrderSell.setAmount(10);
         stockOrderSell.setAmountLeft(10);
         stockOrderSell.setLimitValue(90.0); // Set a limit value less than the current price
-        stockOrderSell.setType("LIMIT");
+        stockOrderSell.setType(StockOrderType.LIMIT);
         myStockService.ordersToSell.add(stockOrderSell);
 
         Stock stock = new Stock();
@@ -267,6 +275,7 @@ public class MyStockServiceTest {
         myStock.setTicker("AAPL");
         myStock.setAmount(20);
         when(myStockRepository.findByTicker(stockOrderSell.getTicker())).thenReturn(myStock);
+        when(bankServiceClient.startStockTransaction(any(StockTransactionDto.class))).thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
         // Act
         myStockService.executeTask();
@@ -285,7 +294,7 @@ public class MyStockServiceTest {
         stockOrderSell.setAmount(10);
         stockOrderSell.setAmountLeft(10);
         stockOrderSell.setStopValue(110.0); // Set a stop value greater than the current price
-        stockOrderSell.setType("STOP");
+        stockOrderSell.setType(StockOrderType.STOP);
         myStockService.ordersToSell.add(stockOrderSell);
 
         Stock stock = new Stock();
@@ -304,7 +313,7 @@ public class MyStockServiceTest {
         // Assert
         verify(stockRepository, times(1)).findByTicker(stockOrderSell.getTicker());
         verify(stockOrderSellRepository, times(1)).save(any(StockOrderSell.class));
-        assertEquals("MARKET", stockOrderSell.getType());
+        assertEquals(StockOrderType.MARKET, stockOrderSell.getType());
     }
 
     @Test
@@ -315,7 +324,7 @@ public class MyStockServiceTest {
         stockOrderSell.setAmount(10);
         stockOrderSell.setAmountLeft(10);
         stockOrderSell.setStopValue(110.0); // Set a stop value greater than the current price
-        stockOrderSell.setType("STOP-LIMIT");
+        stockOrderSell.setType(StockOrderType.STOP_LIMIT);
         myStockService.ordersToSell.add(stockOrderSell);
 
         Stock stock = new Stock();
@@ -334,6 +343,6 @@ public class MyStockServiceTest {
         // Assert
         verify(stockRepository, times(1)).findByTicker(stockOrderSell.getTicker());
         verify(stockOrderSellRepository, times(1)).save(any(StockOrderSell.class));
-        assertEquals("LIMIT", stockOrderSell.getType());
+        assertEquals(StockOrderType.LIMIT, stockOrderSell.getType());
     }
 }
