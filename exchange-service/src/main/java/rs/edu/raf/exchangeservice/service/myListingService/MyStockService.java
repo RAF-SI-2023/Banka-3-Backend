@@ -42,7 +42,7 @@ public class MyStockService {
     //na osnovu tickera pronalazi MyStock objekat u bazi
     //i povecava mu kolicinu za prosledjeni amount
     @Transactional
-    public void addAmountToMyStock(String ticker, Integer amount){
+    public void addAmountToMyStock(String ticker, Integer amount) {
         MyStock myStock = myStockRepository.findByTicker(ticker);
         myStock.setAmount(myStock.getAmount() + amount);
         this.myStockRepository.save(myStock);
@@ -64,7 +64,7 @@ public class MyStockService {
         stockOrderSell.setAmount(sellStockDto.getAmount());
         stockOrderSell.setAmountLeft(sellStockDto.getAmount());
         stockOrderSell.setAon(sellStockDto.isAon());
-        stockOrderSell.setMargine(sellStockDto.isMargine());
+        stockOrderSell.setMargin(sellStockDto.isMargine());
 
         //market order
         if (sellStockDto.getStopValue() == 0.0 && sellStockDto.getLimitValue() == 0.0){

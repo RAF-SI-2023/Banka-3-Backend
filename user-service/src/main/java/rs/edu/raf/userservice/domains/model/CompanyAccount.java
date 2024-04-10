@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 @Data
 @Builder
@@ -24,10 +25,13 @@ public class CompanyAccount implements Serializable {
     private Company company;
 
     @NotNull(message = "This field cannot be NULL")
-    private Double balance;
+    private BigDecimal balance;
 
     @NotNull(message = "This field cannot be NULL")
-    private Double availableBalance;
+    private BigDecimal availableBalance;
+
+    @NotNull(message = "This field cannot be NULL")
+    private BigDecimal reservedAmount;
 
     @ManyToOne()
     @JoinColumn(name = "employeeId")

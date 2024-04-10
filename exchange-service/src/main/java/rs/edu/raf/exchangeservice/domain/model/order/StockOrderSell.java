@@ -27,5 +27,5 @@ public class StockOrderSell implements Serializable {
     private int amount;     //ukupna kolicina
     private int amountLeft;     //koliko je ostalo da se kupi
     private boolean aon;
-    private boolean margine;
+    private boolean margin;
 }

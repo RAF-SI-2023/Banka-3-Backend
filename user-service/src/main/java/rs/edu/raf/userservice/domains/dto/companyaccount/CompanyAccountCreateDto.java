@@ -4,12 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class CompanyAccountCreateDto {
     private Long companyId;
-    private Double balance;
+    private BigDecimal balance;
     private String currency;
     private String accountType;
     private Long employeeId;
