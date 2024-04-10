@@ -55,9 +55,10 @@ public class TickerServiceTest {
         exchange2.setExchange("NASDAQ");
         exchange2.setCurrency("USD");
         given(exchangeRepository.findAll()).willReturn(List.of(exchange1, exchange2,exchange3,exchange4));
-
         // Act
         tickerService.loadData();
+
+        //does not pass the test
 
         // Assert
         verify(exchangeRepository, times(1)).findAll();
