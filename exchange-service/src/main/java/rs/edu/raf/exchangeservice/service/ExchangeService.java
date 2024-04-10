@@ -20,7 +20,7 @@ import java.util.List;
 public class ExchangeService {
     private final ExchangeRepository exchangeRepository;
     private final TickerService tickerService;
-    private final String pathToFile = "exchange-service/src/main/resources/data/exchange_data.csv";
+    private final String pathToFile = "src/main/resources/data/exchange_data.csv";
 
     public List<Exchange> findAll(){
         return this.exchangeRepository.findAll();
@@ -32,7 +32,7 @@ public class ExchangeService {
     }
 
     @PostConstruct
-    private void loadData(){
+    public void loadData(){
         try (BufferedReader br = new BufferedReader(new FileReader(pathToFile))) {
             String line;
             // Skip the header line
