@@ -1,7 +1,6 @@
 package com.example.bankservice.repositories;
 
 import com.example.bankservice.domains.model.Card;
-import com.example.bankservice.domains.model.CreditTransaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,7 +14,7 @@ public interface CardRepository extends JpaRepository<Card, Long> {
 
     Optional<Card> findByCardNumber(String cardNumber);
 
-    Optional<Card> findByCVC(String cvc);
+    Optional<Card> findByCvv(String cvv);
 
 
 

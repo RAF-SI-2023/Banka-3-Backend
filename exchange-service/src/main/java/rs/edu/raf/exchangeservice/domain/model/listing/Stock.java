@@ -44,4 +44,7 @@ public class Stock implements Serializable {
     @JsonProperty("06. volume")
     @Column(name="volume")
     private double volume;
+
+    @Column(name = "currencyMark")
+    private String currencyMark;
 }
