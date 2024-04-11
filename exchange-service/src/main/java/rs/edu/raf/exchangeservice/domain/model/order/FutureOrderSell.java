@@ -18,11 +18,7 @@ public class FutureOrderSell implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long futureOrderSellId;
+    private Long futureId;
     private Long employeeId;
-    private String contractName;
-    private String status;  //PROCESSING, FAILED, FINISHED
-    private int amount;     //ukupna kolicina
-    private int amountLeft;     //koliko je ostalo da se kupi
-    private boolean aon;
-    private boolean margine;
+    private double price;
 }

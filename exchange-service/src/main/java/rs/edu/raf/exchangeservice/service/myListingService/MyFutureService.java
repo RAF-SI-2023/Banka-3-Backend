@@ -1,19 +1,18 @@
 package rs.edu.raf.exchangeservice.service.myListingService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import rs.edu.raf.exchangeservice.domain.dto.SellFutureDto;
-import rs.edu.raf.exchangeservice.domain.dto.SellStockDto;
+import rs.edu.raf.exchangeservice.domain.dto.StockTransactionDto;
 import rs.edu.raf.exchangeservice.domain.model.myListing.MyFuture;
-import rs.edu.raf.exchangeservice.domain.model.myListing.MyStock;
 import rs.edu.raf.exchangeservice.domain.model.order.FutureOrderSell;
-import rs.edu.raf.exchangeservice.domain.model.order.StockOrderSell;
+import rs.edu.raf.exchangeservice.repository.listingRepository.FutureRepository;
 import rs.edu.raf.exchangeservice.repository.myListingRepository.MyFutureRepository;
 import rs.edu.raf.exchangeservice.repository.orderRepository.FutureOrderSellRepository;
-import rs.edu.raf.exchangeservice.repository.orderRepository.StockOrderSellRepository;
 
-import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
@@ -22,6 +21,7 @@ public class MyFutureService {
 
     private final MyFutureRepository myFutureRepository;
     private final FutureOrderSellRepository futureOrderSellRepository;
+    private final FutureRepository futureRepository;
 
     public CopyOnWriteArrayList<FutureOrderSell> ordersToSell = new CopyOnWriteArrayList<>();
 
@@ -29,33 +29,33 @@ public class MyFutureService {
         return this.myFutureRepository.findAll();
     }
 
-    @Transactional
-    public void addAmountToMyFuture(String contractName, Integer amount){
-        MyFuture myFuture = myFutureRepository.findByContractName(contractName);
-        myFuture.setAmount(myFuture.getAmount() + amount);
-        this.myFutureRepository.save(myFuture);
-    }
-
     public String sellFuture(SellFutureDto sellFutureDto){
-        MyFuture myFuture = myFutureRepository.findByContractName(sellFutureDto.getContractName());
-
         FutureOrderSell futureOrderSell = new FutureOrderSell();
+        futureOrderSell.setFutureId(sellFutureDto.getFutureId());
         futureOrderSell.setEmployeeId(sellFutureDto.getEmployeeId());
-        futureOrderSell.setContractName(sellFutureDto.getContractName());
-        futureOrderSell.setAmount(sellFutureDto.getAmount());
-        futureOrderSell.setAmountLeft(sellFutureDto.getAmount());
-        futureOrderSell.setAon(sellFutureDto.isAon());
-        futureOrderSell.setMargine(sellFutureDto.isMargine());
+        futureOrderSell.setPrice(sellFutureDto.getPrice());
 
-        if (futureOrderSell.getAmount() > myFuture.getAmount()){
-            futureOrderSell.setStatus("FAILED");
-            futureOrderSellRepository.save(futureOrderSell);
-            return "nije dobar amount";
-        }
-
-        futureOrderSell.setStatus("PROCESSING");
         this.ordersToSell.add(futureOrderSellRepository.save(futureOrderSell));
         return "UBACENO U ORDER";
+    }
+
+    @Scheduled(fixedRate = 45000)
+    public void executeTask() {
+        if (ordersToSell.isEmpty()){
+            System.out.println("Executing task every 45 seconds, but list to sell is empty :-(");
+        }else {
+            Random rand = new Random();
+            int futureNumber = rand.nextInt(ordersToSell.size());
+            FutureOrderSell futureOrderSell = ordersToSell.get(futureNumber);   //FutureOrder koji obradjujemo
+
+            //kreirati stockTransactionDto koji sadrzi sracunatu kolicinu novca u zavisnosti od tipa stock-a,
+            //broj racuna banke, broj racuna berze.
+            StockTransactionDto stockTransactionDto = new StockTransactionDto();
+
+            //TODO naci broj racuna banke i berze preko valute
+
+            this.futureOrderSellRepository.save(futureOrderSell); //cuvamo promenjene vrednosti u bazi
+        }
     }
 
 }

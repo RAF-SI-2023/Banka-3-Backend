@@ -64,10 +64,10 @@ public class FutureController {
     @Operation(description = "salje se id FutureOrdera i boolean da li je odobren ili ne")
     private ResponseEntity<?> approveFutureOrder(@PathVariable Long id, @Param("approved") String approved){
         if (approved.equalsIgnoreCase("true")){
-            return ResponseEntity.ok(futureOrderService.approveFutureOrder(id, true));
+            return ResponseEntity.ok(futureOrderService.approveFutureOrder(id));
         }
         if (approved.equalsIgnoreCase("false")){
-            return ResponseEntity.ok(futureOrderService.approveFutureOrder(id, false));
+            return ResponseEntity.ok(futureOrderService.approveFutureOrder(id));
         }
         return ResponseEntity.badRequest().body("nije dobar boolean");
     }

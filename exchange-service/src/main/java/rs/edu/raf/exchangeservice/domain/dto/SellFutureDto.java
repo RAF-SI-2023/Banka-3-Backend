@@ -11,20 +11,16 @@ import lombok.Setter;
 @NoArgsConstructor
 public class SellFutureDto {
 
+    private Long futureId;
     private Long employeeId;
-    private String contractName;
-    private Integer amount;
-    private boolean aon;
-    private boolean margine;
+    private double price;
 
     @Override
     public String toString() {
         return "SellStockDto{" +
+                "futureId=" + futureId +
                 "employeeId=" + employeeId +
-                ", contractName='" + contractName + '\'' +
-                ", amount=" + amount +
-                ", aon=" + aon +
-                ", margine=" + margine +
+                ", price='" + price +
                 '}';
     }
 }

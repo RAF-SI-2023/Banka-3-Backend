@@ -18,11 +18,7 @@ public class FutureOrder implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long futureOrderId;
+    private Long futureId;
     private Long employeeId;
-    private String contractName;
-    private String status;  //PROCESSING, WAITING, FAILED, FINISHED
-    private int amount;
-    private int amountLeft;
-    private boolean aon;
-    private boolean margine;
+    private Double price;
 }

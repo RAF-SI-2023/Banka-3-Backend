@@ -11,20 +11,16 @@ import lombok.Setter;
 @NoArgsConstructor
 public class BuyFutureDto {
 
-    private Long employeeId;    //mora da stigne
-    private String contractName;  //mora da stigne
-    private Integer amount; //mora da stigne
-    private boolean aon;
-    private boolean margine;
+    private Long futureId;    //mora da stigne
+    private Long employeeId; //mora da stigne
+    private double price;  //mora da stigne
 
     @Override
     public String toString() {
         return "BuyStockDto{" +
+                "futureId=" + futureId +
                 "employeeId=" + employeeId +
-                ", contractName='" + contractName + '\'' +
-                ", amount=" + amount +
-                ", aon=" + aon +
-                ", margine=" + margine +
+                ", price=" + price +
                 '}';
     }
 }
