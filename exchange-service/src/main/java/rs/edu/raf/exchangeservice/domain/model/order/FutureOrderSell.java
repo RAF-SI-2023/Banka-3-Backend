@@ -14,11 +14,11 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class FutureOrder implements Serializable {
+public class FutureOrderSell implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long futureOrderId;
+    private Long futureOrderSellId;
     private Long futureId;
     private Long employeeId;
-    private Double price;
+    private double price;
 }

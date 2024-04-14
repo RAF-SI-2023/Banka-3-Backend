@@ -2,7 +2,12 @@ package rs.edu.raf.exchangeservice.service.listingService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import rs.edu.raf.exchangeservice.domain.dto.FutureDto;
+import rs.edu.raf.exchangeservice.domain.dto.StockDto;
+import rs.edu.raf.exchangeservice.domain.mappers.FutureMapper;
+import rs.edu.raf.exchangeservice.domain.mappers.StockMapper;
 import rs.edu.raf.exchangeservice.domain.model.listing.Future;
+import rs.edu.raf.exchangeservice.domain.model.listing.Stock;
 import rs.edu.raf.exchangeservice.repository.listingRepository.FutureRepository;
 
 import javax.annotation.PostConstruct;
@@ -10,6 +15,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -41,5 +47,10 @@ public class FutureService {
 
     public List<Future> findAll(){
         return this.futureRepository.findAll();
+    }
+
+    public FutureDto findByContractName(String contractName){
+        Optional<Future> future = futureRepository.findByContractName(contractName);
+        return future.map(FutureMapper.INSTANCE::futureToFutureDto).orElse(null);
     }
 }
