@@ -1,4 +1,4 @@
-package com.example.bankservice.domains.dto;
+package rs.edu.raf.userservice.domains.dto.card;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,8 +9,6 @@ import lombok.ToString;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @ToString
-public class CardDto {
-    private String cardNumber;
-    private Long expireDate;
-    private String cvc;
+public class CardResponseDto {
+    private String accountNumber;
 }

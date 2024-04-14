@@ -1,14 +1,18 @@
-package com.example.bankservice.services;
+package rs.edu.raf.userservice.services;
 
-import com.example.bankservice.domains.dto.CardDto;
-import com.example.bankservice.domains.dto.CreateCardDto;
-import com.example.bankservice.domains.mappers.CardMapper;
-import com.example.bankservice.domains.model.Card;
-import com.example.bankservice.repositories.CardRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import rs.edu.raf.userservice.domains.dto.card.CardDto;
+import rs.edu.raf.userservice.domains.dto.card.CardResponseDto;
+import rs.edu.raf.userservice.domains.dto.card.CreateCardDto;
+import rs.edu.raf.userservice.domains.mappers.CardMapper;
+import rs.edu.raf.userservice.domains.model.Account;
+import rs.edu.raf.userservice.domains.model.Card;
+import rs.edu.raf.userservice.repositories.AccountRepository;
+import rs.edu.raf.userservice.repositories.CardRepository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -19,6 +23,7 @@ import java.util.stream.Collectors;
 public class CardService {
 
     private final CardRepository cardRepository;
+    private final AccountRepository accountRepository;
 
     public ResponseEntity<List<CardDto>> findAllByUserId(Long userId) {
         Optional<List<Card>> optionalCards = cardRepository.findAllByUserId(userId);
@@ -82,6 +87,40 @@ public class CardService {
         long rightLimit = 999L; // 3 digits
         long generatedCvvNumber = leftLimit + (long) (random.nextDouble() * (rightLimit - leftLimit));
         return Long.toString(generatedCvvNumber);
+    }
+
+    public ResponseEntity<CardResponseDto> cardLogin(Long userId, String accNumber, String cvv){
+        Optional<Card> optionalCard = cardRepository.findByAccountNumber(accNumber);
+        if(optionalCard.isPresent()){
+            CardResponseDto dto = new CardResponseDto(accNumber);
+            return ResponseEntity.ok(dto);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    public ResponseEntity<String> deposit(String accountNumber, Long amount){
+
+        Optional<Account> optionalAccount = accountRepository.findByAccountNumber(accountNumber);
+        if (!optionalAccount.isPresent()) return ResponseEntity.badRequest().build();
+        Account account = optionalAccount.get();
+
+
+        account.setAvailableBalance(account.getAvailableBalance().add(new BigDecimal(amount)));
+        accountRepository.save(account);
+        return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity<String> withdraw(String accountNumber, Long amount){
+        Optional<Account> optionalAccount = accountRepository.findByAccountNumber(accountNumber);
+
+        if (!optionalAccount.isPresent()) return ResponseEntity.badRequest().build();
+        Account account = optionalAccount.get();
+
+        if(account.getAvailableBalance().compareTo(new BigDecimal(amount)) < 0) return ResponseEntity.badRequest().build();
+        account.setAvailableBalance(account.getAvailableBalance().subtract(new BigDecimal(amount)));
+        accountRepository.save(account);
+
+        return ResponseEntity.ok().build();
     }
 
 
