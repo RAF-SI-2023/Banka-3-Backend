@@ -16,6 +16,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
+@Table(schema = "user_service_schema")
 public class Currency implements Serializable {
 
     @Id

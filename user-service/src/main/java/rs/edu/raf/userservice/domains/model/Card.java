@@ -15,6 +15,7 @@ import java.io.Serializable;
 @ToString
 @Getter
 @Setter
+@Table(schema = "user_service_schema")
 public class Card implements Serializable {
 
     @Id

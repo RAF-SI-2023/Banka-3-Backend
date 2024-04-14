@@ -16,6 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
+@Table(schema = "user_service_schema")
 public class Role implements Serializable, GrantedAuthority {
 
     @Id

@@ -17,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Entity
 @ToString
+@Table(schema = "user_service_schema")
 public class Company implements Serializable {
 
     @Id
