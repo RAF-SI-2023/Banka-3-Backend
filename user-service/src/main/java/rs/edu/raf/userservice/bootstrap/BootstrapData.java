@@ -491,8 +491,9 @@ public class BootstrapData implements CommandLineRunner {
         CompanyAccount stockRsd = new CompanyAccount();
         stockRsd.setCompany(stock);
         stockRsd.setAccountNumber("1111111111111111");
-        stockRsd.setBalance(10000000000000000.0);
-        stockRsd.setAvailableBalance(10000000000000000.0);
+        stockRsd.setBalance(BigDecimal.valueOf(10000000000000000.0));
+        stockRsd.setAvailableBalance(BigDecimal.valueOf(10000000000000000.0));
+        stockRsd.setReservedAmount(BigDecimal.ZERO);
         stockRsd.setEmployee(employee7);
         stockRsd.setCreationDate(new Date().getTime());
         stockRsd.setExpireDate(new Date().getTime() + 1000 * 3600);
@@ -502,8 +503,9 @@ public class BootstrapData implements CommandLineRunner {
         CompanyAccount stockEur = new CompanyAccount();
         stockEur.setCompany(stock);
         stockEur.setAccountNumber("2222222222222222");
-        stockEur.setBalance(10000000000000000.0);
-        stockEur.setAvailableBalance(10000000000000000.0);
+        stockEur.setBalance(BigDecimal.valueOf(10000000000000000.0));
+        stockEur.setAvailableBalance(BigDecimal.valueOf(10000000000000000.0));
+        stockEur.setReservedAmount(BigDecimal.ZERO);
         stockEur.setEmployee(employee7);
         stockEur.setCreationDate(new Date().getTime());
         stockEur.setExpireDate(new Date().getTime() + 1000 * 3600);
@@ -513,8 +515,9 @@ public class BootstrapData implements CommandLineRunner {
         CompanyAccount stockUsd = new CompanyAccount();
         stockUsd.setCompany(stock);
         stockUsd.setAccountNumber("3333333333333333");
-        stockUsd.setBalance(10000000000000000.0);
-        stockUsd.setAvailableBalance(10000000000000000.0);
+        stockUsd.setBalance(BigDecimal.valueOf(10000000000000000.0));
+        stockUsd.setAvailableBalance(BigDecimal.valueOf(10000000000000000.0));
+        stockUsd.setReservedAmount(BigDecimal.ZERO);
         stockUsd.setEmployee(employee7);
         stockUsd.setCreationDate(new Date().getTime());
         stockUsd.setExpireDate(new Date().getTime() + 1000 * 3600);
@@ -524,8 +527,9 @@ public class BootstrapData implements CommandLineRunner {
         CompanyAccount stockGbp = new CompanyAccount();
         stockGbp.setCompany(stock);
         stockGbp.setAccountNumber("6666666666666666");
-        stockGbp.setBalance(10000000000000000.0);
-        stockGbp.setAvailableBalance(10000000000000000.0);
+        stockGbp.setBalance(BigDecimal.valueOf(10000000000000000.0));
+        stockGbp.setAvailableBalance(BigDecimal.valueOf(10000000000000000.0));
+        stockGbp.setReservedAmount(BigDecimal.ZERO);
         stockGbp.setEmployee(employee7);
         stockGbp.setCreationDate(new Date().getTime());
         stockGbp.setExpireDate(new Date().getTime() + 1000 * 3600);

@@ -2,12 +2,10 @@ package com.example.bankservice.controllers;
 
 
 import com.example.bankservice.domains.dto.CheckEnoughBalanceDto;
-import com.example.bankservice.domains.dto.TransactionConfirmDto;
 import com.example.bankservice.domains.dto.TransactionDto;
 import com.example.bankservice.services.TransactionService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 @CrossOrigin
 @RequestMapping("api/v2/transaction")
-public class TransactionController {
+public class TransactionControllers {
 
 
     @Autowired
@@ -31,7 +29,8 @@ public class TransactionController {
 
     @GetMapping(value ="/enoughAmount{accountNumber}")
     public ResponseEntity<String>doesPersonHaveEnoughAmount(@RequestBody CheckEnoughBalanceDto dto){
-        return transactionService.doesPersonHaveEnoughBalance(dto);
+//        return transactionService.doesPersonHaveEnoughBalance(dto);
+        return null;
     }
 
     /**
@@ -46,8 +45,8 @@ public class TransactionController {
     }
     @PostMapping(value ="/confirmTransaction{transactionId}")
     public ResponseEntity<String>confirmTransaction(@PathVariable Long transactionId){
-        return transactionService.confirmTransaction(transactionId);
-
+//        return transactionService.confirmTransaction(transactionId);
+        return null;
     }
 
 

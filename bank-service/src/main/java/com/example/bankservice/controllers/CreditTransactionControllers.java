@@ -1,7 +1,6 @@
 package com.example.bankservice.controllers;
 
 import com.example.bankservice.domains.dto.CreditTransactionDto;
-import com.example.bankservice.domains.model.CreditTransaction;
 import com.example.bankservice.services.CreditTransactionService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @CrossOrigin
 @RequestMapping("api/v2/credit-transaction")
-public class CreditTransactionController {
+public class CreditTransactionControllers {
 
     @Autowired
     private CreditTransactionService creditTransactionService;
