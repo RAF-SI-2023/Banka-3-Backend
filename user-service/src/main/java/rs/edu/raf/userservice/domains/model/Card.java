@@ -1,4 +1,4 @@
-package com.example.bankservice.domains.model;
+package rs.edu.raf.userservice.domains.model;
 
 import lombok.*;
 

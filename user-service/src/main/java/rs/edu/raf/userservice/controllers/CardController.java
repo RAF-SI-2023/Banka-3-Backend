@@ -1,11 +1,12 @@
-package com.example.bankservice.controller;
+package rs.edu.raf.userservice.controllers;
 
-import com.example.bankservice.domains.dto.CardDto;
-import com.example.bankservice.domains.dto.CreateCardDto;
-import com.example.bankservice.services.CardService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import rs.edu.raf.userservice.domains.dto.card.CardDto;
+import rs.edu.raf.userservice.domains.dto.card.CardResponseDto;
+import rs.edu.raf.userservice.domains.dto.card.CreateCardDto;
+import rs.edu.raf.userservice.services.CardService;
 
 import java.util.List;
 
@@ -33,6 +34,20 @@ public class CardController {
     @PostMapping("/create")
     public ResponseEntity<String> createCard(@RequestBody CreateCardDto createCardDto) {
         return cardService.createCard(createCardDto);
+    }
+
+    @PostMapping("/withdraw")
+    public ResponseEntity<String> withdraw(@RequestBody String accountNumber, Long amount) {
+        return cardService.withdraw(accountNumber, amount);
+    }
+    @PostMapping("/cardLogin")
+    public ResponseEntity<CardResponseDto> cardLogin(@RequestBody Long userId, String accNumber, String cvv){
+        return cardService.cardLogin(userId, accNumber, cvv);
+    }
+
+    @PostMapping("/deposit")
+    public ResponseEntity<String> deposit(@RequestBody String accountNumber, Long amount) {
+        return cardService.deposit(accountNumber, amount);
     }
 
 
