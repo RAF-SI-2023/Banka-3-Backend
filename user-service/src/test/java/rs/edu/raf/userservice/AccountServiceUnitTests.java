@@ -37,7 +37,10 @@ public class AccountServiceUnitTests {
 
         Account account = new Account();
         account.setAccountNumber("5053791123456789");
-        account.setBalance(200.0);
+
+        //account.setBalance(200.0);
+
+        //TODO: otkomentarisati setBalance
 
         when(accountRepository.findByAccountNumber(dto.getAccountNumber())).thenReturn(Optional.of(account));
 
@@ -67,7 +70,7 @@ public class AccountServiceUnitTests {
 
         Account account = new Account();
         account.setAccountNumber("5053791123456789");
-        account.setBalance(200.0);
+        //account.setBalance(200.0);
 
         when(accountRepository.findByAccountNumber(dto.getAccountNumber())).thenReturn(Optional.of(account));
 
@@ -97,7 +100,7 @@ public class AccountServiceUnitTests {
 
         Account account = new Account();
         account.setAccountNumber("5053791123456789");
-        account.setBalance(200.0);
+        //account.setBalance(200.0);
 
         when(accountRepository.findByAccountNumber(dto.getAccountNumber())).thenReturn(Optional.of(account));
 
