@@ -1,4 +1,5 @@
-package rs.edu.raf.userservice.integration.cardController;
+package rs.edu.raf.userservice.integration.companyAccountController;
+
 
 import org.junit.platform.suite.api.ConfigurationParameter;
 import org.junit.platform.suite.api.IncludeEngines;
@@ -9,7 +10,7 @@ import static io.cucumber.core.options.Constants.GLUE_PROPERTY_NAME;
 
 @Suite
 @IncludeEngines("cucumber")
-@SelectClasspathResource("features/integration/cardController")
-@ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "rs.edu.raf.userservice.integration.cardController")
-public class CardControllerTests {
+@SelectClasspathResource("features/integration/companyAccountController")
+@ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "rs.edu.raf.userservice.integration.companyAccountController")
+public class CompanyAccountControllerTests {
 }

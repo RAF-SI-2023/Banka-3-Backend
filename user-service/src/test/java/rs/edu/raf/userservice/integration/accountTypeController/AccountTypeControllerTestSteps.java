@@ -54,6 +54,7 @@ public class AccountTypeControllerTestSteps extends AccountTypeControllerConfig{
             String loginResponse = result.getResponse().getContentAsString();
             LoginResponseForm loginResponseForm = objectMapper.readValue(loginResponse, LoginResponseForm.class);
             accountTypeControllerTestsState.setJwtToken(loginResponseForm.getJwt());
+            System.out.println("JWT: " + loginResponseForm.getJwt());
         } catch (Exception e) {
             fail(e.getMessage());
         }

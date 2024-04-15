@@ -1,9 +1,10 @@
-package rs.edu.raf.userservice.integration.cardController;
+package rs.edu.raf.userservice.integration.companyAccountController;
 
+import io.cucumber.spring.CucumberContextConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class CardControllerTestsConfig {
+public class CompanyAccountControllerTestsConfig {
 }
