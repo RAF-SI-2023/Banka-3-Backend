@@ -30,6 +30,7 @@ public class BootstrapData implements CommandLineRunner {
     private final RoleRepository roleRepository;
     private final AccountRepository accountRepository;
     private final CreditRequestRepository creditRequestRepository;
+    private final CardRepository cardRepository;
 
     @Override
     public void run(String... args) {
@@ -415,7 +416,7 @@ public class BootstrapData implements CommandLineRunner {
         accountRepository.save(account3);
         accountRepository.save(account4);
         accountRepository.save(account5);
-        accountRepository.save(account5);
+        accountRepository.save(account6);
 
         Company banka = new Company();
         banka.setTitle("banka 3");
@@ -556,5 +557,17 @@ public class BootstrapData implements CommandLineRunner {
         creditRequest.setCurrencyMark("rsd");
 
         creditRequestRepository.save(creditRequest);
+
+        Card card1 = new Card();
+        card1.setAccountNumber(account5.getAccountNumber());
+        card1.setCardName("Visa");
+        card1.setCardNumber("12345678");
+        card1.setCreationDate(new Date().getTime());
+        card1.setCvv("123");
+        card1.setExpireDate(new Date(2026,12,30).getTime());
+        card1.setStatus(true);
+
+        cardRepository.save(card1);
+
     }
 }
