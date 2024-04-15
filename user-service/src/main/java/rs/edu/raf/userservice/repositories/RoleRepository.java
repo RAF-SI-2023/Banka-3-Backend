@@ -8,4 +8,6 @@ import rs.edu.raf.userservice.domains.model.Role;
 public interface RoleRepository extends JpaRepository<Role, Long> {
 
     Role findByRoleName(String roleName);
+
+    Role findRoleByRoleId(Long roleId);
 }
