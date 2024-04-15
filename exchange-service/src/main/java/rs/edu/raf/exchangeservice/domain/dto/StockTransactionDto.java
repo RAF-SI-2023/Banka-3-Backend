@@ -13,4 +13,5 @@ public class StockTransactionDto {
     private String accountFrom;
     private String accountTo;
     private Double amount;
+    private String currencyMark;
 }
