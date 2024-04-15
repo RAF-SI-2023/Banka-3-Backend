@@ -63,9 +63,6 @@ public class User implements Serializable {
     private List<Account> accounts = new ArrayList<>();
 
     @OneToMany
-    private List<ForeignAccount> foreignAccounts = new ArrayList<>();
-
-    @OneToMany
     private List<Credit> credits = new ArrayList<>();
 
     @OneToMany

@@ -11,10 +11,10 @@ import java.util.Optional;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
-    @Query("SELECT t FROM Transaction t WHERE t.accountFrom = :accountFrom")
+    @Query("SELECT t FROM Transaction t WHERE t.accountFrom = :accountFrom AND t.state = 'FINISHED'")
     Optional<List<Transaction>> findAllTransactionsByAccountFrom(String accountFrom);
 
-    @Query("SELECT t FROM Transaction t WHERE t.accountTo = :accountTo")
+    @Query("SELECT t FROM Transaction t WHERE t.accountTo = :accountTo AND t.state = 'FINISHED'")
     Optional<List<Transaction>> findAllTransactionsByAccountTo(String accountTo);
 
     Optional<List<Transaction>> findByState(TransactionState state);
