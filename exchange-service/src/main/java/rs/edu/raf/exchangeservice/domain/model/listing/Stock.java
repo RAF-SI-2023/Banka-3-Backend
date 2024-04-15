@@ -12,6 +12,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(schema = "exchange_service_schema")
 public class Stock implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

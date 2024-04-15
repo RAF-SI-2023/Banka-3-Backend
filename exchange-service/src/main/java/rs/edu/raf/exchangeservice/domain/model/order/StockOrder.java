@@ -13,6 +13,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(schema = "exchange_service_schema")
 public class StockOrder implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

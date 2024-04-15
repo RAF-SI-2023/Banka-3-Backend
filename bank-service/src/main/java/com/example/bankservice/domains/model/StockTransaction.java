@@ -13,6 +13,7 @@ import javax.validation.constraints.Size;
 @RequiredArgsConstructor
 @Entity
 @ToString
+@Table(schema = "bank_service_schema")
 public class StockTransaction {
 
     @Id

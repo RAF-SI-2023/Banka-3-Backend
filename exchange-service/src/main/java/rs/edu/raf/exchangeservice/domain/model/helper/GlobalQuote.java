@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import rs.edu.raf.exchangeservice.domain.model.listing.Stock;
 
+import javax.persistence.Table;
+
 
 @Getter
 @Setter
