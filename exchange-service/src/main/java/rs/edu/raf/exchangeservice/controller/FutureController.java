@@ -85,5 +85,4 @@ public class FutureController {
         return ResponseEntity.ok(this.myFutureService.sellFuture(sellFutureDto));
     }
 
-
 }
