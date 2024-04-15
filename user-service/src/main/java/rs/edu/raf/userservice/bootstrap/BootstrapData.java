@@ -389,8 +389,8 @@ public class BootstrapData implements CommandLineRunner {
         Account account5 = new Account();
         account5.setUser(user4);
         account5.setEmployee(employee3);
-        account5.setReservedAmount(new BigDecimal(200000.0));
-        account5.setAvailableBalance(new BigDecimal(0.0));
+        account5.setReservedAmount(new BigDecimal(0.0));
+        account5.setAvailableBalance(new BigDecimal(200000.0));
         account5.setAccountNumber("1258963400124583");
         account5.setCreationDate(new Date().getTime());
         account5.setExpireDate(new Date().getTime() + 1000 * 3600);
@@ -401,8 +401,8 @@ public class BootstrapData implements CommandLineRunner {
         Account account6 = new Account();
         account6.setUser(user4);
         account6.setEmployee(employee3);
-        account6.setReservedAmount(new BigDecimal(200000.0));
-        account6.setAvailableBalance(new BigDecimal(0.0));
+        account6.setReservedAmount(new BigDecimal(0.0));
+        account6.setAvailableBalance(new BigDecimal(200000.0));
         account6.setAccountNumber("4489205063987420");
         account6.setCreationDate(new Date().getTime());
         account6.setExpireDate(new Date().getTime() + 1000 * 3600);

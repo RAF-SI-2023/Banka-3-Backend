@@ -27,7 +27,6 @@ public class Card implements Serializable {
     private Long userId;
 
     @NotNull
-    @UniqueElements
     @Size(min = 8, max = 8, message = "Currency mark must be exactly 3 characters long")
     private String cardNumber;
 
