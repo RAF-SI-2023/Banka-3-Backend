@@ -11,6 +11,7 @@ import rs.edu.raf.userservice.domains.dto.account.RebalanceAccountDto;
 import rs.edu.raf.userservice.domains.dto.card.CreateCardDto;
 import rs.edu.raf.userservice.domains.mappers.AccountMapper;
 import rs.edu.raf.userservice.domains.model.Account;
+import rs.edu.raf.userservice.domains.model.Card;
 import rs.edu.raf.userservice.domains.model.enums.AccountTypeName;
 import rs.edu.raf.userservice.domains.model.enums.CurrencyName;
 import rs.edu.raf.userservice.repositories.*;
@@ -22,6 +23,7 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -37,10 +39,10 @@ public class AccountService {
     private final CurrencyRepository currencyRepository;
     private final UserRepository userRepository;
     private final EmployeeRepository employeeRepository;
+    private final CardRepository cardRepository;
     private final BankServiceClient bankServiceClient;
 
     //TODO dodati u test
-
 
     private String randAccNumber() { //generise broj racuna
         String fixedPart = "5053791";
@@ -141,11 +143,18 @@ public class AccountService {
 
 
         //Kreira se kartica
-        CreateCardDto createCardDto = new CreateCardDto();
-        createCardDto.setAccountNumber(account.getAccountNumber());
-        createCardDto.setUserId(accountCreateDto.getUserId());
-        bankServiceClient.createCard(createCardDto);
-
+        Card card = new Card();
+        card.setUserId(accountCreateDto.getUserId());
+        //treba random broj od 8 cifara
+        Random random = new Random();
+        card.setCardNumber(String.valueOf(random.nextInt(90000000) + 10000000));
+        card.setAccountNumber(account.getAccountNumber());
+        card.setCardName("no_name_card");
+        card.setCreationDate(System.currentTimeMillis());
+        card.setExpireDate(System.currentTimeMillis() + 365L * 24 * 60 * 60 * 1000);
+        card.setCvv(String.valueOf(random.nextInt(900) + 100));
+        card.setStatus(true);
+        cardRepository.save(card);
 
         return AccountMapper.INSTANCE.accountToAccountDto(account);
     }

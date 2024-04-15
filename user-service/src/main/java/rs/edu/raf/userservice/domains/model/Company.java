@@ -46,8 +46,4 @@ public class Company implements Serializable {
     @Email
     private String email;
 
-    @OneToMany(mappedBy = "companyAccountId")
-    private List<CompanyAccount> companyAccounts = new ArrayList<>();
-
-
 }

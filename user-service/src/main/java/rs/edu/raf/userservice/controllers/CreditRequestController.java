@@ -20,13 +20,13 @@ public class CreditRequestController {
 
     private CreditRequestService creditRequestService;
 
-    @PreAuthorize("hasRole('ROLE_CREDIT_OFFICER')")
+    @PreAuthorize("hasRole('ROLE_CREDIT_OFFICER') OR hasRole('ROLE_ADMIN')")
     @GetMapping(path = "/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<CreditRequestDto> getAllCredits() {
         return creditRequestService.findAll();
     }
 
-    @PreAuthorize("hasRole('ROLE_CREDIT_OFFICER')")
+    @PreAuthorize("hasRole('ROLE_CREDIT_OFFICER') OR hasRole('ROLE_ADMIN')")
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public CreditRequestDto getCreditById(@PathVariable Long id) {
         return creditRequestService.findById(id);
@@ -45,7 +45,7 @@ public class CreditRequestController {
      * @param processCreditRequestDto
      * @return creditRequestDto
      */
-    @PreAuthorize("hasRole('ROLE_CREDIT_OFFICER')")
+    @PreAuthorize("hasRole('ROLE_CREDIT_OFFICER') OR hasRole('ROLE_ADMIN')")
     @PutMapping
     public CreditRequestDto processCreditRequest(@RequestBody ProcessCreditRequestDto processCreditRequestDto) {
         return creditRequestService.processCreditRequest(processCreditRequestDto);
