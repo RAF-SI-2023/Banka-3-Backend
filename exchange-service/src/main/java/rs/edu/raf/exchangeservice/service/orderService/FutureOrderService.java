@@ -48,7 +48,6 @@ public class FutureOrderService {
         FutureOrder futureOrder = new FutureOrder();
         futureOrder.setEmployeeId(buyFutureDto.getEmployeeId());
         futureOrder.setFutureId(buyFutureDto.getFutureId());
-        futureOrder.setPrice(buyFutureDto.getPrice());
 
         this.ordersToBuy.add(this.futureOrderRepository.save(futureOrder));
 
