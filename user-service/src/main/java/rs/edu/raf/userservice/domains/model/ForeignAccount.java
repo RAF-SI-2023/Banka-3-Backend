@@ -14,6 +14,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
+@Table(schema = "user_service_schema")
 public class ForeignAccount implements Serializable {
 
     @Id

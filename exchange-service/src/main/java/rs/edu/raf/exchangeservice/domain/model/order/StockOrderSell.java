@@ -6,16 +6,14 @@ import lombok.NoArgsConstructor;
 import rs.edu.raf.exchangeservice.domain.model.enums.StockOrderStatus;
 import rs.edu.raf.exchangeservice.domain.model.enums.StockOrderType;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(schema = "exchange_service_schema")
 public class StockOrderSell implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,5 +1,4 @@
-package rs.edu.raf.exchangeservice.domain.model.history;
-
+package rs.edu.raf.exchangeservice.domain.model.order;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,11 +12,11 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(schema = "exchange_service_schema")
-public class StockDaily implements Serializable {
+public class FutureOrderSell implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long stockDailyId;
-    private Long date;
-    private double price; //highest
-    private String ticker;
+    private Long futureOrderSellId;
+    private Long futureId;
+    private Long employeeId;
+    private double price;
 }

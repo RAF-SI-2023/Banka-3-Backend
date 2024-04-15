@@ -12,7 +12,7 @@ import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "password_reset", indexes = @Index(name = "identifierII", columnList = "email, identifier, date, active"))
+@Table(name = "password_reset", indexes = @Index(name = "identifierII", columnList = "email, identifier, date, active"), schema = "email_service_schema")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

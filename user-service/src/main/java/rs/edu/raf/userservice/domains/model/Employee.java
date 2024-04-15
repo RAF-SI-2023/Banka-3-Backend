@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
-@Table(name = "employees", uniqueConstraints = {@UniqueConstraint(columnNames = {"email"})})
+@Table(name = "employees", uniqueConstraints = {@UniqueConstraint(columnNames = {"email"})}, schema = "user_service_schema")
 public class Employee implements Serializable {
 
     @Id

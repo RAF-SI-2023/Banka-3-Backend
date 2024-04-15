@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 @Entity
 @ToString
+@Table(schema = "user_service_schema")
 public class Credit implements Serializable {
 
     @Id

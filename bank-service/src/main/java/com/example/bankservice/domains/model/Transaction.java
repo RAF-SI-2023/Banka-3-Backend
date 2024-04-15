@@ -16,6 +16,7 @@ import java.io.Serializable;
 @RequiredArgsConstructor
 @Entity
 @ToString
+@Table(schema = "bank_service_schema")
 public class Transaction implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

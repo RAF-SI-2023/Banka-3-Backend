@@ -15,6 +15,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
+@Table(schema = "user_service_schema")
 public class Permission implements GrantedAuthority {
 
     @Id

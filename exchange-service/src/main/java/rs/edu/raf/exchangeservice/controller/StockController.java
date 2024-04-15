@@ -89,7 +89,6 @@ public class StockController {
     @PostMapping("/sellStock")
     @Operation(description = "ruta koja se gadja prilikom prodaje Stocks")
     public ResponseEntity sellStock(@RequestBody SellStockDto sellStockDto){
-        sellStockDto.toString();
         return ResponseEntity.ok(this.myStockService.sellStock(sellStockDto));
     }
 }
