@@ -125,7 +125,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     protected String getText(String identifier) {
-        return "http://localhost:4200/change-password/" + identifier;
+        return "http://localhost:80/change-password/" + identifier;
     }
 
     protected String getReturnValue() {
@@ -133,6 +133,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     protected String getLocation(String identifier) {
-        return "http://localhost:4200/employee/password-confirm/" + identifier;
+        return "http://localhost:80/employee/password-confirm/" + identifier;
     }
 }
