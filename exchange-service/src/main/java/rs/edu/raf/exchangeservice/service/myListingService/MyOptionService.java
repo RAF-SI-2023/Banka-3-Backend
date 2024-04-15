@@ -104,14 +104,14 @@ public class MyOptionService {
 
 
             if (optionOrderSell.getType().equalsIgnoreCase("MARKET")){
-                printer(1 , currentPrice);    //TODO: poslati currentPrice*1 ka Transaction-service
+                //TODO: poslati currentPrice*1 ka Transaction-service
                 optionOrderSell.setStatus("FINISHED");
                 ordersToSell.remove(optionNumber);    //uklanjamo ga iz liste jer je zavrsio
 
             }
             if (optionOrderSell.getType().equalsIgnoreCase("LIMIT")){
                 if (currentPrice > optionOrderSell.getLimitValue()){
-                    printer(1, currentPrice); //TODO: poslati currentPrice*1 ka Transaction-service
+                    //TODO: poslati currentPrice*1 ka Transaction-service
                     optionOrderSell.setStatus("FINISHED");
                     ordersToSell.remove(optionNumber);    //uklanjamo ga iz liste jer je zavrsio
                 }
@@ -141,9 +141,6 @@ public class MyOptionService {
 
             this.optionOrderSellRepository.save(optionOrderSell); //cuvamo promenjene vrednosti u bazi
         }
-    }
-    private void printer(int amountToBuy, double currentPrice){
-        System.out.println("Prodato: " + amountToBuy + " OPTION, po ceni: " + currentPrice*amountToBuy);
     }
 
 }
