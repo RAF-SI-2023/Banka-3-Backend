@@ -559,6 +559,7 @@ public class BootstrapData implements CommandLineRunner {
         creditRequestRepository.save(creditRequest);
 
         Card card1 = new Card();
+        card1.setUserId(user4.getUserId());
         card1.setAccountNumber(account5.getAccountNumber());
         card1.setCardName("Visa");
         card1.setCardNumber("12345678");
