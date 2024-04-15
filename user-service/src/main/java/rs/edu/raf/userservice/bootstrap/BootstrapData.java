@@ -414,6 +414,8 @@ public class BootstrapData implements CommandLineRunner {
         accountRepository.save(account2);
         accountRepository.save(account3);
         accountRepository.save(account4);
+        accountRepository.save(account5);
+        accountRepository.save(account5);
 
         Company banka = new Company();
         banka.setTitle("banka 3");
