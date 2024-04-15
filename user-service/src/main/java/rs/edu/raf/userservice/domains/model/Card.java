@@ -1,6 +1,7 @@
 package rs.edu.raf.userservice.domains.model;
 
 import lombok.*;
+import org.hibernate.validator.constraints.UniqueElements;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -26,7 +27,7 @@ public class Card implements Serializable {
     private Long userId;
 
     @NotNull
-    @Size(min = 16, max = 16, message = "Currency mark must be exactly 3 characters long")
+    @Size(min = 8, max = 8, message = "Currency mark must be exactly 3 characters long")
     private String cardNumber;
 
     @NotNull
@@ -47,11 +48,5 @@ public class Card implements Serializable {
 
     @NotNull
     private boolean status;
-
-
-
-
-
-
 
 }

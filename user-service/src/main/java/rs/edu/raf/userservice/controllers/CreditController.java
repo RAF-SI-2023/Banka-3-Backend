@@ -35,7 +35,7 @@ public class CreditController {
      *
      * @return List<CreditDto>
      */
-    @PreAuthorize("hasRole('ROLE_CREDIT_OFFICER')")
+    @PreAuthorize("hasRole('ROLE_CREDIT_OFFICER') OR hasRole('ROLE_ADMIN')")
     @GetMapping(path = "/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<CreditDto> getAllCredits() {
         return creditService.findAll();
@@ -49,7 +49,7 @@ public class CreditController {
      * @param createCreditDto
      * @return CreditDto
      */
-    @PreAuthorize("hasRole('ROLE_CREDIT_OFFICER')")
+    @PreAuthorize("hasRole('ROLE_CREDIT_OFFICER') OR hasRole('ROLE_ADMIN')")
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public CreditDto createCredit(@RequestBody CreateCreditDto createCreditDto) {
         return creditService.createCredit(createCreditDto);

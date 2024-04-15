@@ -39,10 +39,10 @@ public class MyFutureService {
         return "UBACENO U ORDER";
     }
 
-    @Scheduled(fixedRate = 45000)
+    @Scheduled(fixedRate = 40000)
     public void executeTask() {
         if (ordersToSell.isEmpty()){
-            System.out.println("Executing task every 45 seconds, but list to sell is empty :-(");
+
         }else {
             Random rand = new Random();
             int futureNumber = rand.nextInt(ordersToSell.size());

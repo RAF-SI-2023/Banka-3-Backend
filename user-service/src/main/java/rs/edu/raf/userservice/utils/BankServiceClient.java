@@ -12,14 +12,14 @@ import rs.edu.raf.userservice.domains.dto.credit.CreditTransactionDto;
 import java.util.List;
 
 @FeignClient(value = "bankServiceClient",
-        url = "${bankServiceLocation}/")
+        url = "${bankServiceLocation}")
 public interface BankServiceClient {
 
     @PostMapping
     public ResponseEntity<?> createCreditTransactions(@RequestBody List<CreditTransactionDto> transactionCreditDtos);
 
-    @PostMapping("/card/create")
-    public ResponseEntity<?> createCard(@RequestBody CreateCardDto createCardDto);
+//    @PostMapping("/card/create")
+//    public ResponseEntity<?> createCard(@RequestBody CreateCardDto createCardDto);
 
 
 }

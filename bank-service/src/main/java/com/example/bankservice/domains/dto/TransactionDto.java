@@ -17,4 +17,5 @@ public class TransactionDto {
     private String currencyMark;
     private Double sifraPlacanja;
     private String pozivNaBroj;
+    private Long date;
 }

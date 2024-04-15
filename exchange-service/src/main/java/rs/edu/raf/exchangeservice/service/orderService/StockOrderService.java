@@ -160,6 +160,7 @@ public class StockOrderService {
             //TODO naci broj racuna banke i berze preko valute
             stockTransactionDto.setAccountFrom("3030303030303030");
             stockTransactionDto.setAccountTo("3333333333333333");
+            stockTransactionDto.setCurrencyMark("USD");
 
             if (stockOrder.getType().equals(StockOrderType.MARKET)) {
                 stockTransactionDto.setAmount(currentPrice * amountToBuy);

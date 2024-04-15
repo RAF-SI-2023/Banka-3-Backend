@@ -142,8 +142,9 @@ public class MyStockService {
             StockTransactionDto stockTransactionDto = new StockTransactionDto();
 
             //TODO naci broj racuna banke i berze preko valute
-            stockTransactionDto.setAccountFrom("RACUN BERZE");
-            stockTransactionDto.setAccountTo("RACUN BANKE");
+            stockTransactionDto.setAccountFrom("3030303030303030");
+            stockTransactionDto.setAccountTo("3333333333333333");
+            stockTransactionDto.setCurrencyMark("USD");
 
             if (stockOrderSell.getType().equals(StockOrderType.MARKET)){
                 stockTransactionDto.setAmount(currentPrice * amountToSell);

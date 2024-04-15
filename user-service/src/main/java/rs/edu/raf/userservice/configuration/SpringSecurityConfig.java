@@ -58,6 +58,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/v1/credit/**").permitAll()
                 .antMatchers("/api/v1/contact/**").permitAll()
                 .antMatchers("/api/v1/account/**").permitAll()
+                .antMatchers("/api/v1/company/**").permitAll()
                 .antMatchers("/api/v1/companyAccount/**").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
                 .antMatchers("/swagger-ui/**").permitAll()

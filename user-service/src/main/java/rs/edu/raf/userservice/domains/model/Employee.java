@@ -75,8 +75,5 @@ public class Employee implements Serializable {
     private List<Account> accounts;
 
     @OneToMany
-    private List<ForeignAccount> foreignAccounts;
-
-    @OneToMany
     private List<CompanyAccount> companyAccounts;
 }

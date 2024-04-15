@@ -11,6 +11,7 @@ import rs.edu.raf.userservice.domains.model.enums.CreditRequestStatus;
 @NoArgsConstructor
 public class CreditRequestDto {
     private User user;
+    private Long creditRequestId;
     private String name;
     private String accountNumber;
     private String currencyMark;
