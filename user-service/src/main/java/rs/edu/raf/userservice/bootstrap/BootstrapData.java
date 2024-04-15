@@ -330,7 +330,7 @@ public class BootstrapData implements CommandLineRunner {
         account1.setEmployee(employee3);
         account1.setReservedAmount(new BigDecimal(20000.0));
         account1.setAvailableBalance(new BigDecimal(100000.0));
-        account1.setAccountNumber("22222222222");
+        account1.setAccountNumber("2222222222275396");
         account1.setCreationDate(new Date().getTime());
         account1.setExpireDate(new Date().getTime() + 1000 * 3600);
         account1.setActive(true);
@@ -342,7 +342,7 @@ public class BootstrapData implements CommandLineRunner {
         account1Devizni.setEmployee(employee3);
         account1Devizni.setReservedAmount(new BigDecimal(20000.0));
         account1Devizni.setAvailableBalance(new BigDecimal(100000.0));
-        account1Devizni.setAccountNumber("88888888888");
+        account1Devizni.setAccountNumber("8888888888871239");
         account1Devizni.setCreationDate(new Date().getTime());
         account1Devizni.setExpireDate(new Date().getTime() + 1000 * 3600);
         account1Devizni.setActive(true);
@@ -354,7 +354,7 @@ public class BootstrapData implements CommandLineRunner {
         account2.setEmployee(employee3);
         account2.setReservedAmount(new BigDecimal(20000.0));
         account2.setAvailableBalance(new BigDecimal(100000.0));
-        account2.setAccountNumber("11111111111");
+        account2.setAccountNumber("1111111111174963");
         account2.setCreationDate(new Date().getTime());
         account2.setExpireDate(new Date().getTime() + 1000 * 3600);
         account2.setActive(true);
@@ -366,7 +366,7 @@ public class BootstrapData implements CommandLineRunner {
         account3.setEmployee(employee3);
         account3.setReservedAmount(new BigDecimal(20000.0));
         account3.setAvailableBalance(new BigDecimal(100000.0));
-        account3.setAccountNumber("33333333333");
+        account3.setAccountNumber("3333333333321056");
         account3.setCreationDate(new Date().getTime());
         account3.setExpireDate(new Date().getTime() + 1000 * 3600);
         account3.setActive(true);
@@ -378,12 +378,36 @@ public class BootstrapData implements CommandLineRunner {
         account4.setEmployee(employee7);
         account4.setReservedAmount(new BigDecimal(20000.0));
         account4.setAvailableBalance(new BigDecimal(100000.0));
-        account4.setAccountNumber("99999999999");
+        account4.setAccountNumber("9999999999999999");
         account4.setCreationDate(new Date().getTime());
         account4.setExpireDate(new Date().getTime() + 1000 * 3600);
         account4.setActive(true);
         account4.setCurrency(currency1);
         account4.setAccountType(accountType2);
+
+        Account account5 = new Account();
+        account5.setUser(user4);
+        account5.setEmployee(employee3);
+        account5.setReservedAmount(new BigDecimal(200000.0));
+        account5.setAvailableBalance(new BigDecimal(0.0));
+        account5.setAccountNumber("1258963400124583");
+        account5.setCreationDate(new Date().getTime());
+        account5.setExpireDate(new Date().getTime() + 1000 * 3600);
+        account5.setActive(true);
+        account5.setCurrency(currency1);
+        account5.setAccountType(accountType2);
+
+        Account account6 = new Account();
+        account6.setUser(user4);
+        account6.setEmployee(employee3);
+        account6.setReservedAmount(new BigDecimal(200000.0));
+        account6.setAvailableBalance(new BigDecimal(0.0));
+        account6.setAccountNumber("4489205063987420");
+        account6.setCreationDate(new Date().getTime());
+        account6.setExpireDate(new Date().getTime() + 1000 * 3600);
+        account6.setActive(true);
+        account6.setCurrency(currency2);
+        account6.setAccountType(accountType2);
 
         accountRepository.save(account1);
         accountRepository.save(account1Devizni);
