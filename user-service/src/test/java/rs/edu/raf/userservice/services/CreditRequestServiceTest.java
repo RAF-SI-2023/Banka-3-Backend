@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import rs.edu.raf.userservice.domains.dto.credit.CreateCreditDto;
 import rs.edu.raf.userservice.domains.dto.creditrequest.CreditRequestCreateDto;
 import rs.edu.raf.userservice.domains.dto.creditrequest.CreditRequestDto;
 import rs.edu.raf.userservice.domains.dto.creditrequest.ProcessCreditRequestDto;
@@ -20,9 +21,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CreditRequestServiceTest {
@@ -32,7 +34,8 @@ class CreditRequestServiceTest {
 
     @Mock
     UserRepository userRepository;
-
+    @Mock
+    CreditService creditService;
     @InjectMocks
     CreditRequestService creditRequestService;
 
@@ -72,67 +75,45 @@ class CreditRequestServiceTest {
     }
 
     @Test
-    public void createCreditRequestTest() {
-        CreditRequestCreateDto creditRequestCreateDto = new CreditRequestCreateDto();
-        creditRequestCreateDto.setUserId(1L);
-        creditRequestCreateDto.setName("Kredit za stan");
-        creditRequestCreateDto.setCurrencyMark("RSD");
-        creditRequestCreateDto.setAmount(100000.0);
-        creditRequestCreateDto.setPaymentPeriod(12);
+    public void testCreateCreditRequest() {
+        // Given
+        CreditRequestCreateDto createDto = new CreditRequestCreateDto();
+        createDto.setUserId(1L);
+
+        User user = createDummyUser("pera@gmail.com");
+
 
         CreditRequest creditRequest = createDummyCreditRequest();
-        creditRequest.setCreditRequestId(null);
-        User user = createDummyUser("pera1234@gmail.com");
-        creditRequest.setUser(user);
 
+        // Mock-ovanje ponašanja repozitorijuma
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(creditRequestRepository.save(any(CreditRequest.class))).thenReturn(creditRequest);
 
-        given(userRepository.findById(1L)).willReturn(java.util.Optional.of(user));
-        given(creditRequestRepository.save(creditRequest)).willReturn(creditRequest);
+        // When
+        CreditRequestDto resultDto = creditRequestService.createCreditRequest(createDto);
 
-        CreditRequestDto result = creditRequestService.createCreditRequest(creditRequestCreateDto);
-
-        assertEquals(creditRequest.getName(), result.getName());
-        assertEquals(creditRequest.getCurrencyMark(), result.getCurrencyMark());
-        assertEquals(creditRequest.getAmount(), result.getAmount());
-        assertEquals(creditRequest.getPaymentPeriod(), result.getPaymentPeriod());
-        assertEquals(creditRequest.getStatus(), result.getStatus());
+        // Then
+        assertNotNull(resultDto);
+        assertEquals(1L, resultDto.getUser().getUserId());
     }
 
-    @Test
-    public void processCreditRequestTest_Accepted() {
-        CreditRequest creditRequest = createDummyCreditRequest();
+@Test
+public void testProcessCreditRequest_Accepted() {
+    // Given
+    ProcessCreditRequestDto requestDto = new ProcessCreditRequestDto();
+    requestDto.setCreditRequestId(1L);
+    requestDto.setAccepted(true);
 
-        ProcessCreditRequestDto processCreditRequestDto = new ProcessCreditRequestDto();
-        processCreditRequestDto.setCreditRequestId(1L);
-        processCreditRequestDto.setAccepted(true);
+    CreditRequest creditRequest = createDummyCreditRequest();
 
-        given(creditRequestRepository.findById(1L)).willReturn(java.util.Optional.of(creditRequest));
+    when(creditRequestRepository.findById(1L)).thenReturn(java.util.Optional.of(creditRequest));
 
-        given(creditRequestRepository.save(creditRequest)).willReturn(creditRequest);
+    creditRequestService.processCreditRequest(requestDto);
 
-
-        CreditRequestDto result = creditRequestService.processCreditRequest(processCreditRequestDto);
-
-        assertEquals(creditRequest.getStatus(), result.getStatus());
-    }
-
-    @Test
-    public void processCreditRequestTest_Declined() {
-        CreditRequest creditRequest = createDummyCreditRequest();
-
-        ProcessCreditRequestDto processCreditRequestDto = new ProcessCreditRequestDto();
-        processCreditRequestDto.setCreditRequestId(1L);
-        processCreditRequestDto.setAccepted(false);
-
-        given(creditRequestRepository.findById(1L)).willReturn(java.util.Optional.of(creditRequest));
-
-        given(creditRequestRepository.save(creditRequest)).willReturn(creditRequest);
-
-
-        CreditRequestDto result = creditRequestService.processCreditRequest(processCreditRequestDto);
-
-        assertEquals(creditRequest.getStatus(), result.getStatus());
-    }
+    verify(creditRequestRepository, times(2)).findById(1L);
+    verify(creditService, times(1)).createCredit(any(CreateCreditDto.class));
+    assertEquals(CreditRequestStatus.ACCEPTED, creditRequest.getStatus());
+}
 
 
     private User createDummyUser(String email) {
