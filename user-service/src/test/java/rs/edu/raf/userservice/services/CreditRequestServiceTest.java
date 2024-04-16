@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import rs.edu.raf.userservice.domains.dto.creditrequest.CreditRequestCreateDto;
 import rs.edu.raf.userservice.domains.dto.creditrequest.CreditRequestDto;
 import rs.edu.raf.userservice.domains.dto.creditrequest.ProcessCreditRequestDto;
+import rs.edu.raf.userservice.domains.mappers.CreditRequestMapper;
 import rs.edu.raf.userservice.domains.model.CreditRequest;
 import rs.edu.raf.userservice.domains.model.User;
 import rs.edu.raf.userservice.domains.model.enums.CreditRequestStatus;
@@ -15,9 +16,13 @@ import rs.edu.raf.userservice.repositories.CreditRequestRepository;
 import rs.edu.raf.userservice.repositories.UserRepository;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CreditRequestServiceTest {
@@ -31,36 +36,39 @@ class CreditRequestServiceTest {
     @InjectMocks
     CreditRequestService creditRequestService;
 
-    @Test
-    public void findAllTest() {
-        CreditRequestDto creditRequestDto = createDummyCreditRequestDto();
-        CreditRequestDto creditRequestDto2 = createDummyCreditRequestDto();
+        @Test
+        public void findAllTest() {
 
-        CreditRequest creditRequest = createDummyCreditRequest();
-        CreditRequest creditRequest2 = createDummyCreditRequest();
+            CreditRequest creditRequest1 = createDummyCreditRequest();
+            CreditRequest creditRequest2 = createDummyCreditRequest();
 
-        List<CreditRequest> creditRequests = List.of(creditRequest, creditRequest2);
+            List<CreditRequest> creditRequests = List.of(creditRequest1, creditRequest2);
 
-        given(creditRequestRepository.findAll()).willReturn(creditRequests);
+            when(creditRequestRepository.findAll()).thenReturn(creditRequests);
 
-        List<CreditRequestDto> result = creditRequestService.findAll();
+            List<CreditRequestDto> result = creditRequestService.findAll();
 
-        assertEquals(2, result.size());
-        assertEquals(creditRequestDto, result.get(0));
-        assertEquals(creditRequestDto2, result.get(1));
+            List<CreditRequestDto> expected = creditRequests.stream()
+                    .map(CreditRequestMapper.INSTANCE::creditRequestToCreditRequestDto)
+                    .collect(Collectors.toList());
 
-    }
+            assertEquals(expected.size(), result.size());
+            for (int i = 0; i < expected.size(); i++) {
+                assertEquals(expected.get(i), result.get(i));
+            }
+        }
 
     @Test
     public void findByIdTest() {
-        CreditRequestDto creditRequestDto = createDummyCreditRequestDto();
         CreditRequest creditRequest = createDummyCreditRequest();
 
-        given(creditRequestRepository.findById(1L)).willReturn(java.util.Optional.of(creditRequest));
+        when(creditRequestRepository.findById(any(Long.class))).thenReturn(Optional.of(creditRequest));
 
         CreditRequestDto result = creditRequestService.findById(1L);
 
-        assertEquals(creditRequestDto, result);
+        CreditRequestDto expected = CreditRequestMapper.INSTANCE.creditRequestToCreditRequestDto(creditRequest);
+
+        assertEquals(expected, result);
     }
 
     @Test
@@ -73,7 +81,7 @@ class CreditRequestServiceTest {
         creditRequestCreateDto.setPaymentPeriod(12);
 
         CreditRequest creditRequest = createDummyCreditRequest();
-        creditRequest.setId(null);
+        creditRequest.setCreditRequestId(null);
         User user = createDummyUser("pera1234@gmail.com");
         creditRequest.setUser(user);
 
@@ -158,7 +166,7 @@ class CreditRequestServiceTest {
 
     private CreditRequest createDummyCreditRequest() {
         CreditRequest creditRequest = new CreditRequest();
-        creditRequest.setId(1L);
+        creditRequest.setCreditRequestId(1L);
         User user = createDummyUser("pera123@gmail.com");
         creditRequest.setUser(user);
         creditRequest.setName("Kredit za stan");

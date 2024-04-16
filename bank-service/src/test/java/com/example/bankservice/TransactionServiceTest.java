@@ -37,7 +37,6 @@ class TransactionServiceTest {
 
     @Mock
     private TransactionRepository transactionRepository;
-
     @InjectMocks
     private TransactionService transactionService;
 
@@ -154,18 +153,78 @@ class TransactionServiceTest {
 
     @Test
     public void testGetAllTransactions_WithNoData() {
-        // Priprema testnih podataka
+
         String accountId = "123456";
 
-        // Podešavanje ponašanja mock-a
         when(transactionRepository.findAllTransactionsByAccountFrom(accountId)).thenReturn(Optional.empty());
         when(transactionRepository.findAllTransactionsByAccountTo(accountId)).thenReturn(Optional.empty());
 
-        // Izvršavanje metode koju testiramo
         List<TransactionDto> result = transactionService.getAllTransactions(accountId);
 
-        // Provera rezultata
         assertEquals(null, result); // Provera da li je vraćena null vrednost kada nema podataka
     }
+    @Test
+    public void testProcessTransactions_NoAcceptedTransactions() {
 
+        when(transactionRepository.findByState(TransactionState.ACCEPTED)).thenReturn(Optional.empty());
+
+        transactionService.processTransactions();
+
+        verify(userServiceClient, never()).unreserveMoney(any(RebalanceAccountDto.class));
+        verify(userServiceClient, never()).takeMoneyFromAccount(any(RebalanceAccountDto.class));
+        verify(userServiceClient, never()).addMoneyToAccount(any(RebalanceAccountDto.class));
+        verify(transactionRepository, never()).save(any(Transaction.class));
+    }
+
+    @Test
+    public void testProcessTransactions_WithAcceptedTransactions() {
+
+        List<Transaction> transactions = createDummyTransactions();
+
+        when(transactionRepository.findByState(TransactionState.ACCEPTED)).thenReturn(Optional.of(transactions));
+
+        transactionService.processTransactions();
+
+
+        for (Transaction transaction : transactions) {
+            verify(transactionRepository, times(1)).save(transaction);
+        }
+    }
+    private List<Transaction> createDummyTransactions() {
+        List<Transaction> transactions = new ArrayList<>();
+
+        TransactionDto transactionDto1 = createDummyTransactionDto("123456789", "987654321", 100.0, "USD", 123456789.0, "ABC123", 1647774000L);
+        TransactionDto transactionDto2 = createDummyTransactionDto("987654321", "123456789", 50.0, "EUR", 987654321.0, "XYZ456", 1647775000L);
+        TransactionDto transactionDto3 = createDummyTransactionDto("111222333", "444555666", 200.0, "GBP", 111222333.0, "DEF789", 1647776000L);
+
+        transactions.add(convertDtoToTransaction(transactionDto1));
+        transactions.add(convertDtoToTransaction(transactionDto2));
+        transactions.add(convertDtoToTransaction(transactionDto3));
+
+        return transactions;
+    }
+
+    private TransactionDto createDummyTransactionDto(String accountFrom, String accountTo, Double amount, String currencyMark, Double sifraPlacanja, String pozivNaBroj, Long date) {
+        TransactionDto transactionDto = new TransactionDto();
+        transactionDto.setAccountFrom(accountFrom);
+        transactionDto.setAccountTo(accountTo);
+        transactionDto.setAmount(amount);
+        transactionDto.setCurrencyMark(currencyMark);
+        transactionDto.setSifraPlacanja(sifraPlacanja);
+        transactionDto.setPozivNaBroj(pozivNaBroj);
+        transactionDto.setDate(date);
+        return transactionDto;
+    }
+
+    private Transaction convertDtoToTransaction(TransactionDto transactionDto) {
+        Transaction transaction = new Transaction();
+        transaction.setAccountFrom(transactionDto.getAccountFrom());
+        transaction.setAccountTo(transactionDto.getAccountTo());
+        transaction.setAmount(transactionDto.getAmount());
+        transaction.setCurrencyMark(transactionDto.getCurrencyMark());
+        //transaction.setSifraPlacanja(Integer.parseInt(String.valueOf(transactionDto.getSifraPlacanja())));
+        transaction.setPozivNaBroj(transactionDto.getPozivNaBroj());
+        transaction.setDate(transactionDto.getDate());
+        return transaction;
+    }
 }

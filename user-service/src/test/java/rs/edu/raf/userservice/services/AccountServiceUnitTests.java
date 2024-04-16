@@ -45,6 +45,8 @@ public class AccountServiceUnitTests {
 
     @Mock
     AccountTypeRepository accountTypeRepository;
+    @Mock
+    private CardRepository cardRepository;
 
     @BeforeEach
     public void setup() {
@@ -258,6 +260,17 @@ public class AccountServiceUnitTests {
 
         when(accountRepository.save(any(Account.class))).thenReturn(account);
 
+        Card card = new Card();
+        card.setUserId(accountCreateDto.getUserId());
+        card.setCardNumber("12345678");
+        card.setAccountNumber(account.getAccountNumber());
+        card.setCardName("no_name_card");
+        card.setCreationDate(System.currentTimeMillis());
+        card.setExpireDate(System.currentTimeMillis() + 365L * 24 * 60 * 60 * 1000);
+        card.setCvv("123");
+        card.setStatus(true);
+
+        when(cardRepository.save(any(Card.class))).thenReturn(card);
         AccountDto account1 = accountService.create(accountCreateDto);
 
         assertEquals(account1.getAvailableBalance(), account.getAvailableBalance());
