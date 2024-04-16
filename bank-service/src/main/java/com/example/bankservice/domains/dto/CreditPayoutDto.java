@@ -9,9 +9,7 @@ import java.math.BigDecimal;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreditTransactionDto {
-    private String accountFrom;
-    private Long creditId;
+public class CreditPayoutDto {
     private BigDecimal amount;
     private String currencyMark;
     private Long date;

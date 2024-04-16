@@ -1,4 +1,4 @@
-package com.example.bankservice.domains.dto;
+package rs.edu.raf.userservice.domains.dto.credit;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,9 +9,7 @@ import java.math.BigDecimal;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreditTransactionDto {
-    private String accountFrom;
-    private Long creditId;
+public class CreditPayoutDto {
     private BigDecimal amount;
     private String currencyMark;
     private Long date;

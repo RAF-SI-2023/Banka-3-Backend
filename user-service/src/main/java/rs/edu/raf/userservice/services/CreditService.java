@@ -4,6 +4,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import rs.edu.raf.userservice.domains.dto.credit.CreateCreditDto;
 import rs.edu.raf.userservice.domains.dto.credit.CreditDto;
+import rs.edu.raf.userservice.domains.dto.credit.CreditPayoutDto;
 import rs.edu.raf.userservice.domains.dto.credit.CreditTransactionDto;
 import rs.edu.raf.userservice.domains.mappers.CreditMapper;
 import rs.edu.raf.userservice.domains.model.Account;
@@ -65,15 +66,26 @@ public class CreditService {
 //        credit.setMonthlyFee((credit.getAmount() * (1 + credit.getFee())) / credit.getPaymentPeriod());
         credit.setRemainingAmount(credit.getAmount().multiply(new BigDecimal(1).add(credit.getFee())));
 //        credit.setRemainingAmount(credit.getAmount() * (1 + credit.getFee()));
+        credit.setCurrencyMark(createCreditDto.getCurrencyMark());
         credit.setAccountNumber(createCreditDto.getAccountNumber());
 
         creditRepository.save(credit);
 
+        CreditPayoutDto creditPayoutDto = new CreditPayoutDto();
+        creditPayoutDto.setAmount(credit.getAmount());
+        creditPayoutDto.setDate(System.currentTimeMillis());
+        creditPayoutDto.setCurrencyMark(credit.getCurrencyMark());
+
+        bankServiceClient.creditPayout(creditPayoutDto);
         //Da li je potrebno prebaciti novac na racun preko transakcije ?
         Account account = accountRepository.findByAccountNumber(credit.getAccountNumber()).orElseThrow();
         account.setAvailableBalance(account.getAvailableBalance().add(credit.getAmount()));
 //        account.setAvailableBalance(account.getAvailableBalance() + credit.getAmount());
         accountRepository.save(account);
+
+        String bankAccountNumber = findBankAccount(credit.getCurrencyMark());
+        Account bankAccount = accountRepository.findByAccountNumber(bankAccountNumber).orElseThrow();
+        bankAccount.setAvailableBalance(bankAccount.getAvailableBalance().subtract(credit.getAmount()));
 
         return CreditMapper.INSTANCE.creditToCreditDto(credit);
     }
@@ -104,7 +116,7 @@ public class CreditService {
             }
         }
 
-        bankServiceClient.createCreditTransactions(transactionCreditDtos);
+        bankServiceClient.creditMonthlyPayments(transactionCreditDtos);
     }
 
     private long calculateEndDate(long startDate, int paymentPeriod) {
@@ -116,5 +128,17 @@ public class CreditService {
         return calendar.getTimeInMillis();
     }
 
-
+    private String findBankAccount(String currencyMark) {
+        if (currencyMark.equalsIgnoreCase("RSD")) {
+            return "1010101010101010";
+        } else if (currencyMark.equalsIgnoreCase("EUR")) {
+            return "2020202020202020";
+        } else if (currencyMark.equalsIgnoreCase("USD")) {
+            return "3030303030303030";
+        } else if (currencyMark.equalsIgnoreCase("GBR")) {
+            return "6060606060606060";
+        } else {
+            return null;
+        }
+    }
 }

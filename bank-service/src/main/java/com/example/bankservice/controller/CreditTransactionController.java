@@ -1,5 +1,6 @@
 package com.example.bankservice.controller;
 
+import com.example.bankservice.domains.dto.CreditPayoutDto;
 import com.example.bankservice.domains.dto.CreditTransactionDto;
 import com.example.bankservice.services.CreditTransactionService;
 import lombok.AllArgsConstructor;
@@ -19,9 +20,15 @@ public class CreditTransactionController {
     @Autowired
     private CreditTransactionService creditTransactionService;
 
-    @PostMapping()
+    @PostMapping("/creditTransaction/creditMonthlyPayments")
     public ResponseEntity<?> createCreditTransactions(@RequestBody List<CreditTransactionDto> transactionCreditDtos) {
         creditTransactionService.createCreditTransactions(transactionCreditDtos);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/creditTransaction/creditPayout")
+    public ResponseEntity<?> createCreditPayout(@RequestBody CreditPayoutDto creditPayoutDto) {
+        creditTransactionService.createCreditPayout(creditPayoutDto);
         return ResponseEntity.ok().build();
     }
 }
