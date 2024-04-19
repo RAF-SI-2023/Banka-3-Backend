@@ -27,8 +27,7 @@ public class TransactionService {
     private final UserServiceClient userServiceClient;
     private final EmailServiceClient emailServiceClient;
 
-    //Ako ima novca,vracamo transacionId. Posle se taj id koristi sa proveru koda
-    public ResponseEntity<Long> startTransaction(TransactionDto dto) {
+    public ResponseEntity<Long> startPaymentTransaction(TransactionDto dto) {
 
         ResponseEntity<String> response =
                 userServiceClient.checkEnoughBalance(new CheckEnoughBalanceDto(dto.getAccountFrom(), dto.getAmount(),
@@ -50,10 +49,7 @@ public class TransactionService {
         return ResponseEntity.ok(transaction.getTransactionId());
     }
 
-    //Kada korisnik potvrdi transakciju,email servis proverava da li je kod dobar,ako jeste prebacujemo transakciju u
-    // ACCEPTED stanje
-
-    public ResponseEntity<String> confirmTransaction(ConfirmTransactionDto confirmTransactionDto) {
+    public ResponseEntity<String> confirmPaymentTransaction(ConfirmTransactionDto confirmTransactionDto) {
 
         Optional<Transaction> optionalTransaction =
                 transactionRepository.findById(confirmTransactionDto.getTransactionId());

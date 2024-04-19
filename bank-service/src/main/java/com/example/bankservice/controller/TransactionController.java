@@ -27,12 +27,12 @@ public class TransactionController {
      */
     @PostMapping(value = "/startTransaction")
     public ResponseEntity<Long> startTransaction(@RequestBody TransactionDto dto) {
-        return transactionService.startTransaction(dto);
+        return transactionService.startPaymentTransaction(dto);
     }
 
     @PostMapping(value = "/confirmTransaction")
     public ResponseEntity<String> confirmTransaction(@RequestBody ConfirmTransactionDto confirmTransactionDto) {
-        return transactionService.confirmTransaction(confirmTransactionDto);
+        return transactionService.confirmPaymentTransaction(confirmTransactionDto);
     }
 
     @GetMapping(value = "/getAllTransactions/{accountId}")
