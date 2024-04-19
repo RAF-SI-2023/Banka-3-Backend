@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface CreditRepository extends JpaRepository<Credit, Long> {
 
     Optional<List<Credit>> findByUser_UserId(Long userId);
+
 }

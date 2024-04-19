@@ -19,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
-@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = {"email"})})
+@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = {"email"})}, schema = "user_service_schema")
 public class User implements Serializable {
 
     @Id
@@ -61,9 +61,6 @@ public class User implements Serializable {
 
     @OneToMany
     private List<Account> accounts = new ArrayList<>();
-
-    @OneToMany
-    private List<ForeignAccount> foreignAccounts = new ArrayList<>();
 
     @OneToMany
     private List<Credit> credits = new ArrayList<>();

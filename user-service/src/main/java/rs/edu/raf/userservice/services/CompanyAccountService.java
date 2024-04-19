@@ -1,9 +1,14 @@
 package rs.edu.raf.userservice.services;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import rs.edu.raf.userservice.domains.dto.account.CheckEnoughBalanceDto;
+import rs.edu.raf.userservice.domains.dto.account.RebalanceAccountDto;
 import rs.edu.raf.userservice.domains.dto.companyaccount.CompanyAccountCreateDto;
 import rs.edu.raf.userservice.domains.dto.companyaccount.CompanyAccountDto;
 import rs.edu.raf.userservice.domains.mappers.CompanyAccountMapper;
+import rs.edu.raf.userservice.domains.model.Account;
 import rs.edu.raf.userservice.domains.model.CompanyAccount;
 import rs.edu.raf.userservice.domains.model.Currency;
 import rs.edu.raf.userservice.domains.model.enums.CurrencyName;
@@ -12,7 +17,9 @@ import rs.edu.raf.userservice.repositories.CompanyRepository;
 import rs.edu.raf.userservice.repositories.CurrencyRepository;
 import rs.edu.raf.userservice.repositories.EmployeeRepository;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -91,4 +98,68 @@ public class CompanyAccountService {
         CompanyAccount companyAccount = companyAccountRepository.findByAccountNumber(accountNumber);
         return CompanyAccountMapper.INSTANCE.companyAccountToCompanyAccountDto(companyAccount);
     }
+
+    public ResponseEntity<String> checkCompanyBalance(CheckEnoughBalanceDto dto) {
+
+        CompanyAccount companyAccount = companyAccountRepository.findByAccountNumber(dto.getAccountNumber());
+        if(companyAccount == null)
+            return ResponseEntity.badRequest().build();
+
+        if (companyAccount.getAvailableBalance().subtract(companyAccount.getReservedAmount()).compareTo(BigDecimal.valueOf(dto.getAmount())) >= 0) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Insufficient funds!");
+        }
+
+    }
+
+    public ResponseEntity<String> reserveCompanyMoney(RebalanceAccountDto dto) {
+
+        CompanyAccount companyAccount = companyAccountRepository.findByAccountNumber(dto.getAccountNumber());
+        if(companyAccount == null)
+            return ResponseEntity.badRequest().build();
+
+        if (companyAccount.getAvailableBalance().subtract(companyAccount.getReservedAmount()).compareTo(BigDecimal.valueOf(dto.getAmount())) < 0)
+            return ResponseEntity.badRequest().build();
+
+        companyAccount.setReservedAmount(companyAccount.getReservedAmount().add(BigDecimal.valueOf(dto.getAmount())));
+        companyAccountRepository.save(companyAccount);
+        return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity<String> unreserveCompanyMoney(RebalanceAccountDto dto) {
+
+        CompanyAccount companyAccount = companyAccountRepository.findByAccountNumber(dto.getAccountNumber());
+        if (companyAccount == null)
+            return ResponseEntity.badRequest().build();
+
+        if (companyAccount.getReservedAmount().compareTo(BigDecimal.valueOf(dto.getAmount())) < 0)
+            return ResponseEntity.badRequest().build();
+        companyAccount.setReservedAmount(companyAccount.getReservedAmount().subtract(BigDecimal.valueOf(dto.getAmount())));
+        companyAccountRepository.save(companyAccount);
+        return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity<String> addMoneyToCompanyAccount(RebalanceAccountDto dto) {
+
+        CompanyAccount companyAccount = companyAccountRepository.findByAccountNumber(dto.getAccountNumber());
+        if (companyAccount == null)
+            return ResponseEntity.badRequest().build();
+
+        companyAccount.setAvailableBalance(companyAccount.getAvailableBalance().add(BigDecimal.valueOf(dto.getAmount())));
+        companyAccountRepository.save(companyAccount);
+        return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity<String> takeMoneyFromCompanyAccount(RebalanceAccountDto dto) {
+
+        CompanyAccount companyAccount = companyAccountRepository.findByAccountNumber(dto.getAccountNumber());
+        if (companyAccount == null)
+            return ResponseEntity.badRequest().build();
+
+        companyAccount.setAvailableBalance(companyAccount.getAvailableBalance().subtract(BigDecimal.valueOf(dto.getAmount())));
+        companyAccountRepository.save(companyAccount);
+        return ResponseEntity.ok().build();
+    }
+
 }

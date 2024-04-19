@@ -12,6 +12,7 @@ import java.io.Serializable;
 @RequiredArgsConstructor
 @Entity
 @ToString
+@Table(schema = "user_service_schema")
 public class Contact implements Serializable {
 
     @Id

@@ -54,7 +54,7 @@ public class TickerService {
             ticker.setPrimaryExchange(exchange.getExchange());
             ticker.setCurrencyName(exchange.getCurrency());
             tickerRepository.save(ticker);
-            break;
+            break;  //obrisati ovo
         }
 
         stockService.loadData();

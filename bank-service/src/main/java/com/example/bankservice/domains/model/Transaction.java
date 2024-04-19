@@ -16,6 +16,7 @@ import java.io.Serializable;
 @RequiredArgsConstructor
 @Entity
 @ToString
+@Table(schema = "bank_service_schema")
 public class Transaction implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +40,6 @@ public class Transaction implements Serializable {
     @Max(value = 999, message = "Sifra placanja must be exactly 3 characters long")
     private int sifraPlacanja;
 
-    @NotNull(message = "This field cannot be NULL")
     private String pozivNaBroj;
 
     @Enumerated(EnumType.STRING)

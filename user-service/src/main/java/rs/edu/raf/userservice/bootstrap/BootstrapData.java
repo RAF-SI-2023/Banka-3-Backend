@@ -30,6 +30,7 @@ public class BootstrapData implements CommandLineRunner {
     private final RoleRepository roleRepository;
     private final AccountRepository accountRepository;
     private final CreditRequestRepository creditRequestRepository;
+    private final CardRepository cardRepository;
 
     @Override
     public void run(String... args) {
@@ -190,6 +191,21 @@ public class BootstrapData implements CommandLineRunner {
                 .permissions(List.of(canTrade, canBuy))
                 .build();
 
+        Employee employee7 = Employee.builder()
+                .firstName("Mina")
+                .lastName("Ljubinkovic")
+                .username("mina")
+                .email("mljubinkovic9120rn@raf.rs")
+                .jmbg("1011021030")
+                .phoneNumber("066555555")
+                .password(passwordEncoder.encode("5a5a5a5a5a"))
+                .isActive(true)
+                .gender("F")
+                .dateOfBirth(1710274123787L)
+                .role(bankingOfficer)
+                .permissions(List.of(canTrade, canBuy))
+                .build();
+
         List<Employee> employees = new ArrayList<>();
         employees.add(employee1);
         employees.add(employee2);
@@ -198,6 +214,7 @@ public class BootstrapData implements CommandLineRunner {
         employees.add(employee4);
         employees.add(employee5);
         employees.add(employee6);
+        employees.add(employee7);
 
         employeeRepository.saveAll(employees);
 
@@ -287,17 +304,9 @@ public class BootstrapData implements CommandLineRunner {
                 .mark("USD")
                 .name(CurrencyName.DOLAR)
                 .build();
-        Currency rublja = Currency.builder()
-                .mark("RUB")
-                .name(CurrencyName.RUBLJA)
-                .build();
         Currency funta = Currency.builder()
                 .mark("GBP")
                 .name(CurrencyName.FUNTA)
-                .build();
-        Currency jen = Currency.builder()
-                .mark("JPY")
-                .name(CurrencyName.JEN)
                 .build();
         AccountType accountType1 = AccountType.builder()
                 .accountType(AccountTypeName.ZA_MLADE)
@@ -308,34 +317,45 @@ public class BootstrapData implements CommandLineRunner {
                 .accountType(AccountTypeName.LICNI)
                 .monthlyFee(0)
                 .build();
+
         accountTypeRepository.save(accountType1);
         accountTypeRepository.save(accountType2);
 
         currencyRepository.save(currency1);
         currencyRepository.save(currency2);
         currencyRepository.save(funta);
-        currencyRepository.save(rublja);
         currencyRepository.save(dolar);
-        currencyRepository.save(jen);
 
         Account account1 = new Account();
         account1.setUser(user1);
         account1.setEmployee(employee3);
         account1.setReservedAmount(new BigDecimal(20000.0));
         account1.setAvailableBalance(new BigDecimal(100000.0));
-        account1.setAccountNumber("22222222222");
+        account1.setAccountNumber("2222222222275396");
         account1.setCreationDate(new Date().getTime());
         account1.setExpireDate(new Date().getTime() + 1000 * 3600);
         account1.setActive(true);
         account1.setCurrency(currency1);
         account1.setAccountType(accountType1);
 
+        Account account1Devizni = new Account();
+        account1Devizni.setUser(user1);
+        account1Devizni.setEmployee(employee3);
+        account1Devizni.setReservedAmount(new BigDecimal(20000.0));
+        account1Devizni.setAvailableBalance(new BigDecimal(100000.0));
+        account1Devizni.setAccountNumber("8888888888871239");
+        account1Devizni.setCreationDate(new Date().getTime());
+        account1Devizni.setExpireDate(new Date().getTime() + 1000 * 3600);
+        account1Devizni.setActive(true);
+        account1Devizni.setCurrency(currency2);
+        account1Devizni.setAccountType(accountType1);
+
         Account account2 = new Account();
         account2.setUser(user3);
         account2.setEmployee(employee3);
         account2.setReservedAmount(new BigDecimal(20000.0));
         account2.setAvailableBalance(new BigDecimal(100000.0));
-        account2.setAccountNumber("11111111111");
+        account2.setAccountNumber("1111111111174963");
         account2.setCreationDate(new Date().getTime());
         account2.setExpireDate(new Date().getTime() + 1000 * 3600);
         account2.setActive(true);
@@ -347,17 +367,56 @@ public class BootstrapData implements CommandLineRunner {
         account3.setEmployee(employee3);
         account3.setReservedAmount(new BigDecimal(20000.0));
         account3.setAvailableBalance(new BigDecimal(100000.0));
-        account3.setAccountNumber("33333333333");
+        account3.setAccountNumber("3333333333321056");
         account3.setCreationDate(new Date().getTime());
         account3.setExpireDate(new Date().getTime() + 1000 * 3600);
         account3.setActive(true);
         account3.setCurrency(currency2);
         account3.setAccountType(accountType2);
 
+        Account account4 = new Account();
+        account4.setUser(user2);
+        account4.setEmployee(employee7);
+        account4.setReservedAmount(new BigDecimal(20000.0));
+        account4.setAvailableBalance(new BigDecimal(100000.0));
+        account4.setAccountNumber("9999999999999999");
+        account4.setCreationDate(new Date().getTime());
+        account4.setExpireDate(new Date().getTime() + 1000 * 3600);
+        account4.setActive(true);
+        account4.setCurrency(currency1);
+        account4.setAccountType(accountType2);
+
+        Account account5 = new Account();
+        account5.setUser(user4);
+        account5.setEmployee(employee3);
+        account5.setReservedAmount(new BigDecimal(0.0));
+        account5.setAvailableBalance(new BigDecimal(200000.0));
+        account5.setAccountNumber("1258963400124583");
+        account5.setCreationDate(new Date().getTime());
+        account5.setExpireDate(new Date().getTime() + 1000 * 3600);
+        account5.setActive(true);
+        account5.setCurrency(currency1);
+        account5.setAccountType(accountType2);
+
+        Account account6 = new Account();
+        account6.setUser(user4);
+        account6.setEmployee(employee3);
+        account6.setReservedAmount(new BigDecimal(0.0));
+        account6.setAvailableBalance(new BigDecimal(200000.0));
+        account6.setAccountNumber("4489205063987420");
+        account6.setCreationDate(new Date().getTime());
+        account6.setExpireDate(new Date().getTime() + 1000 * 3600);
+        account6.setActive(true);
+        account6.setCurrency(currency2);
+        account6.setAccountType(accountType2);
 
         accountRepository.save(account1);
+        accountRepository.save(account1Devizni);
         accountRepository.save(account2);
         accountRepository.save(account3);
+        accountRepository.save(account4);
+        accountRepository.save(account5);
+        accountRepository.save(account6);
 
         Company banka = new Company();
         banka.setTitle("banka 3");
@@ -370,8 +429,9 @@ public class BootstrapData implements CommandLineRunner {
         CompanyAccount bankaRsd = new CompanyAccount();
         bankaRsd.setCompany(banka);
         bankaRsd.setAccountNumber("1010101010101010");
-        bankaRsd.setBalance(10000000000000000.0);
-        bankaRsd.setAvailableBalance(10000000000000000.0);
+        bankaRsd.setBalance(new BigDecimal("10000000000000000.0"));
+        bankaRsd.setAvailableBalance(new BigDecimal("10000000000000000.0"));
+        bankaRsd.setReservedAmount(new BigDecimal("0.0"));
         bankaRsd.setEmployee(employee3);
         bankaRsd.setCreationDate(new Date().getTime());
         bankaRsd.setExpireDate(new Date().getTime() + 1000 * 3600);
@@ -381,8 +441,9 @@ public class BootstrapData implements CommandLineRunner {
         CompanyAccount bankaEur = new CompanyAccount();
         bankaEur.setCompany(banka);
         bankaEur.setAccountNumber("2020202020202020");
-        bankaEur.setBalance(10000000000000000.0);
-        bankaEur.setAvailableBalance(10000000000000000.0);
+        bankaEur.setBalance(new BigDecimal("10000000000000000.0"));
+        bankaEur.setAvailableBalance(new BigDecimal("10000000000000000.0"));
+        bankaEur.setReservedAmount(new BigDecimal("0.0"));
         bankaEur.setEmployee(employee3);
         bankaEur.setCreationDate(new Date().getTime());
         bankaEur.setExpireDate(new Date().getTime() + 1000 * 3600);
@@ -392,54 +453,94 @@ public class BootstrapData implements CommandLineRunner {
         CompanyAccount bankaUsd = new CompanyAccount();
         bankaUsd.setCompany(banka);
         bankaUsd.setAccountNumber("3030303030303030");
-        bankaUsd.setBalance(10000000000000000.0);
-        bankaUsd.setAvailableBalance(10000000000000000.0);
+        bankaUsd.setBalance(new BigDecimal("10000000000000000.0"));
+        bankaUsd.setAvailableBalance(new BigDecimal("10000000000000000.0"));
+        bankaUsd.setReservedAmount(new BigDecimal("0.0"));
         bankaUsd.setEmployee(employee3);
         bankaUsd.setCreationDate(new Date().getTime());
         bankaUsd.setExpireDate(new Date().getTime() + 1000 * 3600);
         bankaUsd.setActive(true);
         bankaUsd.setCurrency(dolar);
 
-        CompanyAccount bankaJpy = new CompanyAccount();
-        bankaJpy.setCompany(banka);
-        bankaJpy.setAccountNumber("4040404040404040");
-        bankaJpy.setBalance(10000000000000000.0);
-        bankaJpy.setAvailableBalance(10000000000000000.0);
-        bankaJpy.setEmployee(employee3);
-        bankaJpy.setCreationDate(new Date().getTime());
-        bankaJpy.setExpireDate(new Date().getTime() + 1000 * 3600);
-        bankaJpy.setActive(true);
-        bankaJpy.setCurrency(jen);
-
-        CompanyAccount bankaRub = new CompanyAccount();
-        bankaRub.setCompany(banka);
-        bankaRub.setAccountNumber("5050505050505050");
-        bankaRub.setBalance(10000000000000000.0);
-        bankaRub.setAvailableBalance(10000000000000000.0);
-        bankaRub.setEmployee(employee3);
-        bankaRub.setCreationDate(new Date().getTime());
-        bankaRub.setExpireDate(new Date().getTime() + 1000 * 3600);
-        bankaRub.setActive(true);
-        bankaRub.setCurrency(rublja);
-
         CompanyAccount bankaGbp = new CompanyAccount();
         bankaGbp.setCompany(banka);
         bankaGbp.setAccountNumber("6060606060606060");
-        bankaGbp.setBalance(10000000000000000.0);
-        bankaGbp.setAvailableBalance(10000000000000000.0);
+        bankaGbp.setBalance(new BigDecimal("10000000000000000.0"));
+        bankaGbp.setAvailableBalance(new BigDecimal("10000000000000000.0"));
+        bankaGbp.setReservedAmount(new BigDecimal("0.0"));
         bankaGbp.setEmployee(employee3);
         bankaGbp.setCreationDate(new Date().getTime());
         bankaGbp.setExpireDate(new Date().getTime() + 1000 * 3600);
         bankaGbp.setActive(true);
         bankaGbp.setCurrency(funta);
 
+        Company stock = new Company();
+        stock.setTitle("stock");
+        stock.setNumber("0113161077");
+        stock.setPib(456456456);
+        stock.setMaticniBroj(78787878);
+        stock.setSifraDelatnosti(5555);
+        stock.setEmail("mljubinkovic9120rn@raf.rs");
+
+        CompanyAccount stockRsd = new CompanyAccount();
+        stockRsd.setCompany(stock);
+        stockRsd.setAccountNumber("1111111111111111");
+        stockRsd.setBalance(BigDecimal.valueOf(10000000000000000.0));
+        stockRsd.setAvailableBalance(BigDecimal.valueOf(10000000000000000.0));
+        stockRsd.setReservedAmount(BigDecimal.ZERO);
+        stockRsd.setEmployee(employee7);
+        stockRsd.setCreationDate(new Date().getTime());
+        stockRsd.setExpireDate(new Date().getTime() + 1000 * 3600);
+        stockRsd.setActive(true);
+        stockRsd.setCurrency(currency1);
+
+        CompanyAccount stockEur = new CompanyAccount();
+        stockEur.setCompany(stock);
+        stockEur.setAccountNumber("2222222222222222");
+        stockEur.setBalance(BigDecimal.valueOf(10000000000000000.0));
+        stockEur.setAvailableBalance(BigDecimal.valueOf(10000000000000000.0));
+        stockEur.setReservedAmount(BigDecimal.ZERO);
+        stockEur.setEmployee(employee7);
+        stockEur.setCreationDate(new Date().getTime());
+        stockEur.setExpireDate(new Date().getTime() + 1000 * 3600);
+        stockEur.setActive(true);
+        stockEur.setCurrency(currency2);
+
+        CompanyAccount stockUsd = new CompanyAccount();
+        stockUsd.setCompany(stock);
+        stockUsd.setAccountNumber("3333333333333333");
+        stockUsd.setBalance(BigDecimal.valueOf(10000000000000000.0));
+        stockUsd.setAvailableBalance(BigDecimal.valueOf(10000000000000000.0));
+        stockUsd.setReservedAmount(BigDecimal.ZERO);
+        stockUsd.setEmployee(employee7);
+        stockUsd.setCreationDate(new Date().getTime());
+        stockUsd.setExpireDate(new Date().getTime() + 1000 * 3600);
+        stockUsd.setActive(true);
+        stockUsd.setCurrency(dolar);
+
+        CompanyAccount stockGbp = new CompanyAccount();
+        stockGbp.setCompany(stock);
+        stockGbp.setAccountNumber("6666666666666666");
+        stockGbp.setBalance(BigDecimal.valueOf(10000000000000000.0));
+        stockGbp.setAvailableBalance(BigDecimal.valueOf(10000000000000000.0));
+        stockGbp.setReservedAmount(BigDecimal.ZERO);
+        stockGbp.setEmployee(employee7);
+        stockGbp.setCreationDate(new Date().getTime());
+        stockGbp.setExpireDate(new Date().getTime() + 1000 * 3600);
+        stockGbp.setActive(true);
+        stockGbp.setCurrency(funta);
+
         companyRepository.save(banka);
         companyAccountRepository.save(bankaRsd);
         companyAccountRepository.save(bankaEur);
         companyAccountRepository.save(bankaUsd);
-        companyAccountRepository.save(bankaJpy);
-        companyAccountRepository.save(bankaRub);
         companyAccountRepository.save(bankaGbp);
+
+        companyRepository.save(stock);
+        companyAccountRepository.save(stockRsd);
+        companyAccountRepository.save(stockEur);
+        companyAccountRepository.save(stockUsd);
+        companyAccountRepository.save(stockGbp);
 
 
         CreditRequest creditRequest = new CreditRequest();
@@ -456,6 +557,18 @@ public class BootstrapData implements CommandLineRunner {
         creditRequest.setCurrencyMark("rsd");
 
         creditRequestRepository.save(creditRequest);
+
+        Card card1 = new Card();
+        card1.setUserId(user4.getUserId());
+        card1.setAccountNumber(account5.getAccountNumber());
+        card1.setCardName("Visa");
+        card1.setCardNumber("12345678");
+        card1.setCreationDate(new Date().getTime());
+        card1.setCvv("123");
+        card1.setExpireDate(new Date(2026,12,30).getTime());
+        card1.setStatus(true);
+
+        cardRepository.save(card1);
 
     }
 }

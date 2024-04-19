@@ -1,6 +1,7 @@
 package rs.edu.raf.exchangeservice.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import rs.edu.raf.exchangeservice.domain.model.Exchange;
 import rs.edu.raf.exchangeservice.repository.ExchangeRepository;
@@ -10,6 +11,7 @@ import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -20,8 +22,7 @@ import java.util.List;
 public class ExchangeService {
     private final ExchangeRepository exchangeRepository;
     private final TickerService tickerService;
-    private final String pathToFile = "exchange-service/src/main/resources/data/exchange_data.csv";
-
+//    private final String pathToFile = "exchange-service/src/main/resources/data/exchange_data.csv";
     public List<Exchange> findAll(){
         return this.exchangeRepository.findAll();
     }
@@ -33,7 +34,7 @@ public class ExchangeService {
 
     @PostConstruct
     private void loadData(){
-        try (BufferedReader br = new BufferedReader(new FileReader(pathToFile))) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new ClassPathResource("data/exchange_data.csv").getInputStream()))) {
             String line;
             // Skip the header line
             br.readLine();

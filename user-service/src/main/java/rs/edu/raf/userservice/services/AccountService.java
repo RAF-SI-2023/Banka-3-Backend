@@ -1,5 +1,6 @@
 package rs.edu.raf.userservice.services;
 
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -7,11 +8,14 @@ import rs.edu.raf.userservice.domains.dto.account.AccountCreateDto;
 import rs.edu.raf.userservice.domains.dto.account.AccountDto;
 import rs.edu.raf.userservice.domains.dto.account.CheckEnoughBalanceDto;
 import rs.edu.raf.userservice.domains.dto.account.RebalanceAccountDto;
+import rs.edu.raf.userservice.domains.dto.card.CreateCardDto;
 import rs.edu.raf.userservice.domains.mappers.AccountMapper;
 import rs.edu.raf.userservice.domains.model.Account;
+import rs.edu.raf.userservice.domains.model.Card;
 import rs.edu.raf.userservice.domains.model.enums.AccountTypeName;
 import rs.edu.raf.userservice.domains.model.enums.CurrencyName;
 import rs.edu.raf.userservice.repositories.*;
+import rs.edu.raf.userservice.utils.BankServiceClient;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,11 +23,12 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
-
+@AllArgsConstructor
 @Service
 public class AccountService {
 
@@ -34,19 +39,10 @@ public class AccountService {
     private final CurrencyRepository currencyRepository;
     private final UserRepository userRepository;
     private final EmployeeRepository employeeRepository;
+    private final CardRepository cardRepository;
+    private final BankServiceClient bankServiceClient;
 
     //TODO dodati u test
-
-    public AccountService(AccountRepository accountRepository,
-                          EmployeeRepository employeeRepository,
-                          UserRepository userRepository, AccountTypeRepository accountTypeRepository,
-                          CurrencyRepository currencyRepository) {
-        this.currencyRepository = currencyRepository;
-        this.userRepository = userRepository;
-        this.accountRepository = accountRepository;
-        this.accountTypeRepository = accountTypeRepository;
-        this.employeeRepository = employeeRepository;
-    }
 
     private String randAccNumber() { //generise broj racuna
         String fixedPart = "5053791";
@@ -144,8 +140,25 @@ public class AccountService {
         account.setAvailableBalance(new BigDecimal(accountCreateDto.getBalance()));
         account.setAccountType(accountTypeRepository.findByAccountType(accountTypeName).orElseThrow());
         account = accountRepository.save(account);
+
+
+        //Kreira se kartica
+        Card card = new Card();
+        card.setUserId(accountCreateDto.getUserId());
+        //treba random broj od 8 cifara
+        Random random = new Random();
+        card.setCardNumber(String.valueOf(random.nextInt(90000000) + 10000000));
+        card.setAccountNumber(account.getAccountNumber());
+        card.setCardName("no_name_card");
+        card.setCreationDate(System.currentTimeMillis());
+        card.setExpireDate(System.currentTimeMillis() + 365L * 24 * 60 * 60 * 1000);
+        card.setCvv(String.valueOf(random.nextInt(900) + 100));
+        card.setStatus(true);
+        cardRepository.save(card);
+
         return AccountMapper.INSTANCE.accountToAccountDto(account);
     }
+
 
     public void deactivate(Long accountId) {
         Account account = accountRepository.findById(accountId).orElseThrow();

@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
                 LocalDateTime.now(),
                 true);
         passwordResetRepository.save(passwordReset);
-        emailService.sendSimpleMessage(email, "Reset password request", "localhost:4200/resetPassword/" + identifier);
+        emailService.sendSimpleMessage(email, "Reset password request", "localhost:80/resetPassword/" + identifier);
         new Thread(() -> {
             long activationAvailableTime = 5 * 60 * 1000;
             try {

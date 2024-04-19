@@ -17,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Entity
 @ToString
+@Table(schema = "user_service_schema")
 public class Company implements Serializable {
 
     @Id
@@ -44,9 +45,5 @@ public class Company implements Serializable {
     @NotNull(message = "This field cannot be NULL")
     @Email
     private String email;
-
-    @OneToMany(mappedBy = "companyAccountId")
-    private List<CompanyAccount> companyAccounts = new ArrayList<>();
-
 
 }

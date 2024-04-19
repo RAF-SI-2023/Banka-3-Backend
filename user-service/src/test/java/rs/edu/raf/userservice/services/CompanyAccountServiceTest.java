@@ -17,6 +17,7 @@ import rs.edu.raf.userservice.repositories.CompanyRepository;
 import rs.edu.raf.userservice.repositories.CurrencyRepository;
 import rs.edu.raf.userservice.repositories.EmployeeRepository;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,7 +46,7 @@ class CompanyAccountServiceTest {
 
     @Test
     public void createTest() {
-        CompanyAccountCreateDto companyAccountCreateDto = new CompanyAccountCreateDto(1L, 100.0, "DINAR", "ZA_MLADE", 1L);
+        CompanyAccountCreateDto companyAccountCreateDto = new CompanyAccountCreateDto(1L, new BigDecimal(100.0), "DINAR", "ZA_MLADE", 1L);
         Currency currency = new Currency(1L, CurrencyName.DINAR, "RSD");
         Company company = new Company();
         Employee employee = new Employee();

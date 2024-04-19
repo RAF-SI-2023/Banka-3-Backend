@@ -111,7 +111,6 @@ class UserServiceApplicationTests {
         user.setCodeActive(null);
         user.setActive(false);
         user.setAccounts(null);
-        user.setForeignAccounts(null);
         user.setCredits(null);
         user.setContacts(null);
         user.setCreditsRequests(null);

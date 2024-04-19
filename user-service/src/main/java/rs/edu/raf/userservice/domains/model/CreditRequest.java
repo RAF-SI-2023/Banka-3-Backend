@@ -13,11 +13,12 @@ import java.io.Serializable;
 @RequiredArgsConstructor
 @Entity
 @ToString
+@Table(schema = "user_service_schema")
 public class CreditRequest implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long creditRequestId;
 
     @ManyToOne
     @JoinColumn(name = "userId")
