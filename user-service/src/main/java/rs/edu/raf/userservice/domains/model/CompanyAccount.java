@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
+@Table(schema = "user_service_schema")
 public class CompanyAccount implements Serializable {
 
     @Id
@@ -52,7 +53,6 @@ public class CompanyAccount implements Serializable {
 
     @NotNull(message = "This field cannot be NULL")
     private String accountNumber;
-
 
 }
 

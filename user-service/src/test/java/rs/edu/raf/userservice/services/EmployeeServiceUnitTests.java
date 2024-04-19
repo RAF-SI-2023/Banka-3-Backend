@@ -245,8 +245,6 @@ public class EmployeeServiceUnitTests {
         String result = employeeService.resetPassword(resetPasswordDTO);
         assertEquals("Successfully reseted password for " + resetPasswordDTO.getEmail(), result);
     }
-
-
     private Employee createDummyEmployee(String email) {
         Employee employee = new Employee();
         employee.setEmployeeId(1L);

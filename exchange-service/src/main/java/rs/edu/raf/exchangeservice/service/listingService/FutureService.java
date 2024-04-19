@@ -1,6 +1,7 @@
 package rs.edu.raf.exchangeservice.service.listingService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import rs.edu.raf.exchangeservice.domain.dto.FutureDto;
 import rs.edu.raf.exchangeservice.domain.dto.StockDto;
@@ -14,6 +15,7 @@ import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,11 +23,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class FutureService {
     private final FutureRepository futureRepository;
-    private final String pathToFile = "exchange-service/src/main/resources/data/future_data.csv";
-
+//    private final String pathToFile = "exchange-service/src/main/resources/data/future_data.csv";
     @PostConstruct
     public void loadData(){
-        try (BufferedReader br = new BufferedReader(new FileReader(pathToFile))) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new ClassPathResource("data/future_data.csv").getInputStream()))) {
             String line;
             // Skip the header line
             br.readLine();

@@ -12,5 +12,5 @@ import lombok.ToString;
 public class CardDto {
     private String cardNumber;
     private Long expireDate;
-    private String cvc;
+    private String cvv;
 }

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import rs.edu.raf.exchangeservice.domain.model.listing.Ticker;
 
+import javax.persistence.Table;
 import java.util.List;
 
 

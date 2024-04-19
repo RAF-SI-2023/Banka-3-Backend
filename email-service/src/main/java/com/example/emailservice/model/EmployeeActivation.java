@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "employee_activation", indexes = @Index(name = "identifierIx", columnList = "identifier, " +
-        "activation_possible"))
+        "activation_possible"), schema = "email_service_schema")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

@@ -13,6 +13,7 @@ import javax.validation.constraints.Size;
 @RequiredArgsConstructor
 @Entity
 @ToString
+@Table(schema = "bank_service_schema")
 public class StockTransaction {
 
     @Id
@@ -28,18 +29,14 @@ public class StockTransaction {
     @NotNull(message = "This field cannot be NULL")
     private Double amount;
 
-    @NotNull(message = "This field cannot be NULL")
     @Size(min = 3, max = 4, message = "Currency mark must be exactly 3 characters long")
     private String currencyMark;
 
     @Enumerated(EnumType.STRING)
-    @NotNull(message = "This field cannot be NULL")
     private TransactionState state;
 
-    @NotNull(message = "This field cannot be NULL")
     private String pozivNaBroj;
 
-    @NotNull(message = "This field cannot be NULL")
     private Long date;
 
 }

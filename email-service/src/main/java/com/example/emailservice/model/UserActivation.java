@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "user_activation", indexes = @Index(columnList = "email, code, timeCreated, activationPossible"))
+@Table(name = "user_activation", indexes = @Index(columnList = "email, code, timeCreated, activationPossible"), schema = "email_service_schema")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

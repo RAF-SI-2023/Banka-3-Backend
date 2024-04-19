@@ -64,11 +64,11 @@ public class StockTransactionService {
 
     private void finishStockTransaction(StockTransaction stockTransaction) {
         userServiceClient.unreserveCompanyMoney(new RebalanceAccountDto(stockTransaction.getAccountFrom(),
-                stockTransaction.getAmount(), null));
+                stockTransaction.getAmount(), stockTransaction.getCurrencyMark()));
         userServiceClient.takeMoneyFromCompanyAccount(new RebalanceAccountDto(stockTransaction.getAccountFrom(),
-                stockTransaction.getAmount(), null));
+                stockTransaction.getAmount(), stockTransaction.getCurrencyMark()));
         userServiceClient.addMoneyToCompanyAccount(new RebalanceAccountDto(stockTransaction.getAccountTo(),
-                stockTransaction.getAmount(), null));
+                stockTransaction.getAmount(), stockTransaction.getCurrencyMark()));
         stockTransaction.setState(TransactionState.FINISHED);
         stockTransactionRepository.save(stockTransaction);
     }
