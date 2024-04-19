@@ -90,8 +90,6 @@ public class AccountService {
     }
 
     public ResponseEntity<String> reserveMoney(RebalanceAccountDto dto) {
-
-
         Optional<Account> optionalAccount = accountRepository.findByAccountNumber(dto.getAccountNumber());
         if (!optionalAccount.isPresent()) return ResponseEntity.badRequest().build();
         Account account = optionalAccount.get();
