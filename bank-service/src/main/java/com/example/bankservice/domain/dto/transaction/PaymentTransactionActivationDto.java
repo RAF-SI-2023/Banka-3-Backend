@@ -9,11 +9,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @ToString
-public class PaymentTransactionDto {
-    private String accountFrom; //accountNumber
-    private String accountTo;
-    private Double amount;
-    private String currencyMark;
-    private int sifraPlacanja;
-    private String pozivNaBroj;
+public class PaymentTransactionActivationDto {
+    private String email;
+    private Long transactionId;
 }

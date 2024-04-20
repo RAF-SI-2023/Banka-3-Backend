@@ -94,6 +94,11 @@ public class AccountService {
         account.setActive(false);
     }
 
+    public boolean checkBalance(String accountNumber, Double amount) {
+        Account account = accountRepository.findByAccountNumber(accountNumber).orElseThrow(() -> new RuntimeException("Account not found"));
+        return account.getAvailableBalance().compareTo(new BigDecimal(amount)) >= 0;
+    }
+
     private void createCard(Account userAccount) {
         Card card = new Card();
         card.setAccountNumber(userAccount.getAccountNumber());

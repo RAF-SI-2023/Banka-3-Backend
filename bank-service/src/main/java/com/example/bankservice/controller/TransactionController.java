@@ -16,13 +16,13 @@ public class TransactionController {
     private TransactionService transactionService;
 
     @PostMapping(value = "/startPaymentTransaction")
-    public ResponseEntity<Long> startTransaction(@RequestBody PaymentTransactionDto paymentTransactionDto) {
-//        try {
-//            return ResponseEntity.ok(transactionService.startPaymentTransaction(paymentTransactionDto));
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().build();
-//        }
-        return null;
+    public ResponseEntity<?> startTransaction(@RequestBody PaymentTransactionDto paymentTransactionDto) {
+        try {
+            transactionService.startPaymentTransaction(paymentTransactionDto);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PostMapping(value = "/confirmPaymentTransaction")

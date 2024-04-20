@@ -57,7 +57,7 @@ public class BootstrapData implements CommandLineRunner {
         }
 
         UserAccount userAccount = new UserAccount();
-        userAccount.setUserId(1L);
+        userAccount.setUserId(2L);
         userAccount.setEmployeeId(1L);
         userAccount.setAccountNumber("1111111111111111");
         userAccount.setReservedAmount(new BigDecimal(1000));
