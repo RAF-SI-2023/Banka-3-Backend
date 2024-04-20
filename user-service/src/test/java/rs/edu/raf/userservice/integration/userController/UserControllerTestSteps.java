@@ -55,18 +55,18 @@ public class UserControllerTestSteps extends UserControllerTestsConfig{
 
     @When("kreiramo korsisnika sa imenom {string} i prezimenom {string} i emailom {string} i lozinkom {string}, jmbg {string}")
     public void kreiramoKorsisnikaSaImenomIPrezimenomIEmailomILozinkomJmbg(String ime, String prezime, String email, String password, String jmbg) {
-        CreateUserDto createUserDto = new CreateUserDto();
-        createUserDto.setFirstName(ime);
-        createUserDto.setLastName(prezime);
-        createUserDto.setEmail(email);
-        createUserDto.setJmbg(jmbg);
-        createUserDto.setAddress("Adresa 1");
-        createUserDto.setDateOfBirth("123124124213");
-        createUserDto.setGender("M");
-        createUserDto.setPhoneNumber("1231241512");
+        UserPostPutDto userPostPutDto = new UserPostPutDto();
+        userPostPutDto.setFirstName(ime);
+        userPostPutDto.setLastName(prezime);
+        userPostPutDto.setEmail(email);
+        userPostPutDto.setJmbg(jmbg);
+        userPostPutDto.setAddress("Adresa 1");
+        userPostPutDto.setDateOfBirth("123124124213");
+        userPostPutDto.setGender("M");
+        userPostPutDto.setPhoneNumber("1231241512");
 
         try {
-            String createUserDtoJson = objectMapper.writeValueAsString(createUserDto);
+            String createUserDtoJson = objectMapper.writeValueAsString(userPostPutDto);
             ResultActions resultActions = mockMvc.perform(
                     post("/api/v1/user/register")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -169,7 +169,7 @@ public class UserControllerTestSteps extends UserControllerTestsConfig{
 
     @When("korisnik setuje sifru {string} i email {string}")
     public void korisnikSetujeSifruIEmail(String password, String email) {
-        SetPasswordDTO setPasswordDTO = new SetPasswordDTO();
+        SetPasswordDto setPasswordDTO = new SetPasswordDto();
         setPasswordDTO.setPassword(password);
         setPasswordDTO.setEmail(email);
 
@@ -236,10 +236,10 @@ public class UserControllerTestSteps extends UserControllerTestsConfig{
 
     @When("promena adrese korisniku sa id-em {string} u {string}")
     public void promenaAdreseKorisnikuSaIdEmU(String id, String address) {
-        UpdateUserDto updateUserDto = new UpdateUserDto();
-        updateUserDto.setAddress(address);
+        UserUpdateDto userUpdateDto = new UserUpdateDto();
+        userUpdateDto.setAddress(address);
         try {
-            String updateUserDtoJSON = objectMapper.writeValueAsString(updateUserDto);
+            String updateUserDtoJSON = objectMapper.writeValueAsString(userUpdateDto);
             ResultActions resultActions = mockMvc.perform(
                     put("/api/v1/user/" + id)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -355,18 +355,18 @@ public class UserControllerTestSteps extends UserControllerTestsConfig{
 
     @When("korisnik se registruje sa emailom {string}")
     public void korisnikSeRegistrujeSaEmailom(String email) {
-        CreateUserDto createUserDto = new CreateUserDto();
-        createUserDto.setFirstName("Pera");
-        createUserDto.setLastName("Peric");
-        createUserDto.setEmail(email);
-        createUserDto.setJmbg("1234567891234");
-        createUserDto.setAddress("Adresa 1");
-        createUserDto.setDateOfBirth("123124124213");
-        createUserDto.setGender("M");
-        createUserDto.setPhoneNumber("1231241512");
+        UserPostPutDto userPostPutDto = new UserPostPutDto();
+        userPostPutDto.setFirstName("Pera");
+        userPostPutDto.setLastName("Peric");
+        userPostPutDto.setEmail(email);
+        userPostPutDto.setJmbg("1234567891234");
+        userPostPutDto.setAddress("Adresa 1");
+        userPostPutDto.setDateOfBirth("123124124213");
+        userPostPutDto.setGender("M");
+        userPostPutDto.setPhoneNumber("1231241512");
 
         try {
-            String createUserDtoJson = objectMapper.writeValueAsString(createUserDto);
+            String createUserDtoJson = objectMapper.writeValueAsString(userPostPutDto);
             ResultActions resultActions = mockMvc.perform(
                     post("/api/v1/user")
                             .contentType(MediaType.APPLICATION_JSON)

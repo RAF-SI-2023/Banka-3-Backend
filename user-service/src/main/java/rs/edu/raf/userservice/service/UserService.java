@@ -27,18 +27,14 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService{
-
     private final Pattern emailPattern = Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$");
     private final Pattern jmbgPattern = Pattern.compile("[0-9]{13}");
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
-
-    private EmailServiceClient emailServiceClient;
-
+    private final EmailServiceClient emailServiceClient;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-
         User user = this.userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("user not " +
                 "found"));
 
@@ -53,36 +49,33 @@ public class UserService implements UserDetailsService{
                 new ArrayList<>());
     }
 
-//    @Override
     public UserDto getUserById(Long id) {
         Optional<User> user = userRepository.findById(id);
         return user.map(UserMapper.INSTANCE::userToUserDto).orElseThrow(() -> new NotFoundException("user with" + id + " not found"));
     }
 
-//    @Override
-    public UserDto addUser(CreateUserDto createUserDto) {
-        if (!emailPattern.matcher(createUserDto.getEmail()).matches()) {
+    public List<UserDto> getUsers() {
+        List<User> users = userRepository.findAll();
+        if (users.isEmpty()) {
+            throw new NotFoundException("not found users");
+        }
+        return users.stream().map(UserMapper.INSTANCE::userToUserDto).collect(Collectors.toList());
+    }
+
+    public UserDto addUser(UserPostPutDto userPostPutDto) {
+        if (!emailPattern.matcher(userPostPutDto.getEmail()).matches()) {
             throw new ValidationException("invalid email");
         }
-        if (!jmbgPattern.matcher(createUserDto.getJmbg()).matches()) {
+        if (!jmbgPattern.matcher(userPostPutDto.getJmbg()).matches()) {
             throw new ValidationException("invalid jmbg");
         }
-        User user = UserMapper.INSTANCE.userCreateDtoToUser(createUserDto);
+        User user = UserMapper.INSTANCE.userCreateDtoToUser(userPostPutDto);
         user.setActive(false);
         userRepository.save(user);
         return UserMapper.INSTANCE.userToUserDto(user);
     }
 
-//    @Override
-    public UserDto deactivateUser(Long id) {
-        User newUser = userRepository.findById(id).orElseThrow(() -> new NotFoundException("user with" + id + " not " +
-                "found"));
-        newUser.setActive(false);
-        return UserMapper.INSTANCE.userToUserDto(userRepository.save(newUser));
-    }
-
-//    @Override
-    public UserDto updateUser(UpdateUserDto user, Long id) {
+    public UserDto updateUser(UserPostPutDto user, Long id) {
         User newUser = userRepository.findById(id).orElseThrow(() -> new NotFoundException("user with" + id + " not " +
                 "found"));//TODO dodaj exception
         UserMapper.INSTANCE.updateUserFromUserUpdateDto(newUser, user);
@@ -90,22 +83,23 @@ public class UserService implements UserDetailsService{
         return UserMapper.INSTANCE.userToUserDto(newUser);
     }
 
-//    @Override
-    public List<UserDto> getUsers() {
-        List<User> listaUsera = userRepository.findAll();
-        if (listaUsera.isEmpty()) {
-            throw new NotFoundException("not found users");
-        }
-        return listaUsera.stream().map(UserMapper.INSTANCE::userToUserDto).collect(Collectors.toList());
+    public UserDto deactivateUser(Long id) {
+        User newUser = userRepository.findById(id).orElseThrow(() -> new NotFoundException("user with" + id + " not " +
+                "found"));
+        newUser.setActive(false);
+        return UserMapper.INSTANCE.userToUserDto(userRepository.save(newUser));
     }
 
-//    @Override
     public UserDto getUserByEmail(String email) {
         Optional<User> user = userRepository.findByEmail(email);
         return user.map(UserMapper.INSTANCE::userToUserDto).orElseThrow(() -> new NotFoundException("user with" + email + " not found"));
     }
 
-//    @Override
+    public UserEmailDto getEmailByUser(Long userId){
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("user with id: " + userId + " not found"));
+        return UserMapper.INSTANCE.userEmailDtoFromUser(user);
+    }
+
     public List<UserDto> search(String firstName, String lastName, String email) {
         List<User> users = userRepository.findUsers(firstName, lastName, email)
                 .orElseThrow(() -> new NotFoundException("No users found matching the criteria"));
@@ -122,7 +116,7 @@ public class UserService implements UserDetailsService{
         return UserMapper.INSTANCE.userToIsAUserActiveDTO(user);
     }
 
-    public String setPassword(SetPasswordDTO setPasswordDTO) {
+    public String setPassword(SetPasswordDto setPasswordDTO) {
         User user = userRepository.findByEmail(setPasswordDTO.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
@@ -132,7 +126,7 @@ public class UserService implements UserDetailsService{
         return "Successfully updated password for " + setPasswordDTO.getEmail();
     }
 
-    public String resetPassword(ResetUserPasswordDTO resetPasswordDTO) {
+    public String resetPassword(SetPasswordDto resetPasswordDTO) {
         System.out.println(resetPasswordDTO.getEmail());
         User user = userRepository.findByEmail(resetPasswordDTO.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));

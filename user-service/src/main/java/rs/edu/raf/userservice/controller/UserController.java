@@ -1,37 +1,31 @@
 package rs.edu.raf.userservice.controller;
 
-
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import rs.edu.raf.userservice.domain.dto.login.LoginRequest;
 import rs.edu.raf.userservice.domain.dto.login.LoginResponse;
-import rs.edu.raf.userservice.domain.dto.user.*;
+import rs.edu.raf.userservice.domain.dto.user.SetPasswordDto;
+import rs.edu.raf.userservice.domain.dto.user.UserPostPutDto;
 import rs.edu.raf.userservice.service.UserService;
 import rs.edu.raf.userservice.util.jwt.JwtUtil;
-
-import java.util.List;
 
 @RestController
 @AllArgsConstructor
 @CrossOrigin
 @RequestMapping("/api/v1/user")
 public class UserController {
-
     private final AuthenticationManager authenticationManager;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final UserService userService;
+    private final JwtUtil jwtUtil;
 
     @PostMapping("/auth/login")
+    @Operation(description = "za Login korisnika")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
@@ -39,40 +33,52 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.status(401).build();
         }
-
         return ResponseEntity.ok(new LoginResponse(jwtUtil.generateToken(userService.getUserByEmail(loginRequest.getEmail()))));
     }
 
     @GetMapping(path = "/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<UserDto> getAllUsers() {
-        return userService.getUsers();
-    }
-
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody CreateUserDto createUserDto) {
-        userService.addUser(createUserDto);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BANKING_OFFICER')")
+    @Operation(description = "vracam listu svih korsinika")
+    public ResponseEntity<?> getAllUsers() {
+        try{
+            return ResponseEntity.ok(userService.getUsers());
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body("Couldn't get all users");
+        }
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserDto getUserById(@PathVariable Long id) {
-        return userService.getUserById(id);
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BANKING_OFFICER')")
+    @Operation(description = "vraca korisnika sa odgovarajucim id-om")
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(userService.getUserById(id));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body("Coundn't find User with id: " + id);
+        }
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserDto createUser(@RequestBody CreateUserDto createUserDto) {
-        return userService.addUser(createUserDto);
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BANKING_OFFICER')")
+    @Operation(description = "pravimo novog korisnika")
+    public ResponseEntity<?> createUser(@RequestBody UserPostPutDto userPostPutDto) {
+        return ResponseEntity.ok(userService.addUser(userPostPutDto));
     }
 
     @PutMapping(value = "/{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserDto updateUser(@RequestBody UpdateUserDto updatedUser, @PathVariable Long id) {
-        return userService.updateUser(updatedUser, id);
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BANKING_OFFICER')")
+    public ResponseEntity<?> updateUser(@RequestBody UserPostPutDto updatedUser, @PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(userService.updateUser(updatedUser, id));
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().body("Couldn't update user");
+        }
     }
 
     @DeleteMapping(value = "/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BANKING_OFFICER')")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         if (userService.getUserById(id) != null) {
             userService.deactivateUser(id);
@@ -82,8 +88,21 @@ public class UserController {
     }
 
     @GetMapping(value = "/findByEmail/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserDto getUserByEmail(@PathVariable String email) {
-        return userService.getUserByEmail(email);
+    public ResponseEntity<?> getUserByEmail(@PathVariable String email) {
+        try {
+            return ResponseEntity.ok(userService.getUserByEmail(email));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body("Couldn't find user with email: " + email);
+        }
+    }
+
+    @GetMapping(value = "/findEmailById/{userId}")
+    public ResponseEntity<?> getUSerEmailById(@PathVariable Long userId){
+        try {
+            return ResponseEntity.ok(userService.getEmailByUser(userId));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body("Coulnd't find user with id: " + userId);
+        }
     }
 
     @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -94,19 +113,18 @@ public class UserController {
     }
 
     @GetMapping(value = "/isUserActive/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public IsUserActiveDTO isUserActive(@PathVariable String email) {
-        return this.userService.isUserActive(email);
+    public ResponseEntity<?> isUserActive(@PathVariable String email) {
+        return ResponseEntity.ok(userService.isUserActive(email));
     }
 
     @PostMapping(value = "/setPassword")
-    public ResponseEntity<?> setPassword(@RequestBody SetPasswordDTO setPasswordDTO) {
+    public ResponseEntity<?> setPassword(@RequestBody SetPasswordDto setPasswordDTO) {
         return ResponseEntity.ok(userService.setPassword(setPasswordDTO));
     }
 
     @PostMapping("/resetPassword")
-    public ResponseEntity<?> resetPassword(@RequestBody ResetUserPasswordDTO resetUserPasswordDTO) {
-        userService.resetPassword(resetUserPasswordDTO);
-
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<?> resetPassword(@RequestBody SetPasswordDto setPasswordDto) {
+        userService.resetPassword(setPasswordDto);
+        return ResponseEntity.ok(userService.resetPassword(setPasswordDto));
     }
 }

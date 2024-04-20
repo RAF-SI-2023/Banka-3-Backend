@@ -2,7 +2,6 @@ package rs.edu.raf.userservice.controller;
 
 
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,14 +22,9 @@ import java.util.List;
 @CrossOrigin()
 @RequestMapping("/api/v1/employee")
 public class EmployeeController {
-
     private final AuthenticationManager authenticationManager;
-
-    @Autowired
-    private EmployeeService employeeService;
-
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final EmployeeService employeeService;
+    private final JwtUtil jwtUtil;
 
     @PostMapping("/auth/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {

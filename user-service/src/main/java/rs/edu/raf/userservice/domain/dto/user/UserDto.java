@@ -1,5 +1,6 @@
 package rs.edu.raf.userservice.domain.dto.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -37,6 +38,7 @@ public class UserDto implements AuthenticationDetails {
     }
 
     @Override
+    @JsonIgnore
     public List<Permission> getPermissions() {
         return new ArrayList<>();
     }
