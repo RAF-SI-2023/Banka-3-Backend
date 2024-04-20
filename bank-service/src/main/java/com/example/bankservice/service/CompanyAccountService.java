@@ -1,13 +1,12 @@
 package com.example.bankservice.service;
 
-import com.example.bankservice.domain.dto.account.AccountCreateDto;
-import com.example.bankservice.domain.dto.account.AccountDto;
 import com.example.bankservice.domain.dto.companyaccount.CompanyAccountCreateDto;
 import com.example.bankservice.domain.dto.companyaccount.CompanyAccountDto;
-import com.example.bankservice.domain.mapper.AccountMapper;
 import com.example.bankservice.domain.mapper.CompanyAccountMapper;
 import com.example.bankservice.domain.model.Account;
+import com.example.bankservice.domain.model.Card;
 import com.example.bankservice.domain.model.CompanyAccount;
+import com.example.bankservice.repository.CardRepository;
 import com.example.bankservice.repository.CompanyAccountRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +23,7 @@ public class CompanyAccountService {
 
     private final CompanyAccountMapper companyAccountMapper;
     private final CompanyAccountRepository companyAccountRepository;
+    private final CardRepository cardRepository;
 
 
     public List<CompanyAccountDto> findAll() {
@@ -46,11 +46,26 @@ public class CompanyAccountService {
         account.setExpireDate(System.currentTimeMillis() + 31556952000L);
         account.setReservedAmount(new BigDecimal(0));
         account.setActive(true);
+
+        createCard(account);
         return companyAccountMapper.companyaccountToCompanyAccountDto(companyAccountRepository.save(account));
     }
 
     public void deleteCompanyAccount(Long id) {
         CompanyAccount account = companyAccountRepository.findById(id).orElseThrow(() -> new RuntimeException("Account not found"));
         account.setActive(false);
+    }
+
+    private void createCard(CompanyAccount account) {
+        Card card = new Card();
+        card.setAccountNumber(account.getAccountNumber());
+        card.setCardNumber(String.valueOf(new BigInteger(53, new Random())));
+        card.setCardName("COMPANY");
+        card.setCVV(String.valueOf(new Random().nextInt(999)));
+        card.setCreationDate(System.currentTimeMillis());
+        card.setExpireDate(System.currentTimeMillis() + 31556952000L);
+        card.setActive(true);
+
+        cardRepository.save(card);
     }
 }

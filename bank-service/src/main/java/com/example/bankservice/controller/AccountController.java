@@ -23,8 +23,13 @@ public class AccountController {
     }
 
     @GetMapping("/getByUser/{userId}")
-    public List<AccountDto> getByUser(@PathVariable Long userId) {
-        return accountService.findByUser(userId);
+    public ResponseEntity<?> getByUser(@PathVariable Long userId) {
+        try {
+            List<AccountDto> accountDtos = accountService.findByUser(userId);
+            return ResponseEntity.ok(accountDtos);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Unable to get accounts by user");
+        }
     }
 
     @PostMapping("/createAccount")

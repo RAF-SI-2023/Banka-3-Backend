@@ -1,6 +1,7 @@
 package com.example.bankservice.bootstrap;
 
 import com.example.bankservice.domain.model.Account;
+import com.example.bankservice.domain.model.Card;
 import com.example.bankservice.domain.model.CompanyAccount;
 import com.example.bankservice.domain.model.Currency;
 import com.example.bankservice.domain.model.enums.CurrencyName;
@@ -86,6 +87,28 @@ public class BootstrapData implements CommandLineRunner {
         if (companyAccountRepository.count() == 0) {
             loadCompanyAccountData(List.of(companyAccount));
         }
+
+        Card normalAccountCard = new Card();
+        normalAccountCard.setAccountNumber("1111111111111111");
+        normalAccountCard.setCardNumber("12345678");
+        normalAccountCard.setCardName("DEBIT");
+        normalAccountCard.setCVV("123");
+        normalAccountCard.setCreationDate(System.currentTimeMillis());
+        normalAccountCard.setExpireDate(System.currentTimeMillis() + 60 * 60 * 24 * 365 * 10);
+        normalAccountCard.setActive(true);
+
+        Card companyAccountCard = new Card();
+        companyAccountCard.setAccountNumber("2222222222222222");
+        companyAccountCard.setCardNumber("87654321");
+        companyAccountCard.setCardName("DEBIT");
+        companyAccountCard.setCVV("321");
+        companyAccountCard.setCreationDate(System.currentTimeMillis());
+        companyAccountCard.setExpireDate(System.currentTimeMillis() + 60 * 60 * 24 * 365 * 10);
+        companyAccountCard.setActive(true);
+
+        if (cardRepository.count() == 0) {
+            loadCardData(List.of(normalAccountCard, companyAccountCard));
+        }
     }
 
     private void loadAccountData(List<Account> accounts) {
@@ -98,5 +121,9 @@ public class BootstrapData implements CommandLineRunner {
 
     private void loadCompanyAccountData(List<CompanyAccount> companyAccounts) {
         companyAccountRepository.saveAll(companyAccounts);
+    }
+
+    private void loadCardData(List<Card> cards) {
+        cardRepository.saveAll(cards);
     }
 }

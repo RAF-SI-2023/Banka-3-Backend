@@ -43,5 +43,5 @@ public class Card implements Serializable {
     private String CVV;
 
     @NotNull
-    private boolean status;
+    private boolean active;
 }
