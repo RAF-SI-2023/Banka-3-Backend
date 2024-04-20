@@ -1,7 +1,7 @@
-name: Java CI
+name: Java CI - Build and test with Maven
 
 on:
-  push:
+  pull_request:
     
 
 jobs:
