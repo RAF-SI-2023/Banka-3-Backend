@@ -5,8 +5,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import rs.edu.raf.userservice.domains.model.AccountType;
-import rs.edu.raf.userservice.domains.model.enums.AccountTypeName;
+import rs.edu.raf.userservice.domain.model.AccountType;
+import rs.edu.raf.userservice.domain.model.enums.AccountTypeName;
 import rs.edu.raf.userservice.repositories.AccountTypeRepository;
 import rs.edu.raf.userservice.services.AccountTypeService;
 

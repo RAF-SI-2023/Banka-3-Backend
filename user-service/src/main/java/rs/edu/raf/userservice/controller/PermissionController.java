@@ -1,0 +1,26 @@
+package rs.edu.raf.userservice.controller;
+
+import lombok.AllArgsConstructor;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import rs.edu.raf.userservice.service.PermissionService;
+
+@RestController
+@AllArgsConstructor
+@RequestMapping("/api/v1/permission")
+@CrossOrigin
+public class PermissionController {
+
+    private final PermissionService permissionService;
+
+    @GetMapping(path = "/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getAllRoles() {
+        return ResponseEntity.ok(permissionService.getAllPermissions());
+    }
+
+    @GetMapping(value = "/findByPermissionName", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> findByRoleName(@RequestParam(value = "permissionName") String permissionName) {
+        return ResponseEntity.ok(this.permissionService.getPermissionByName(permissionName));
+    }
+}

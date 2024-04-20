@@ -5,12 +5,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import rs.edu.raf.userservice.domains.dto.contact.ContactCreateDto;
-import rs.edu.raf.userservice.domains.dto.contact.ContactDto;
-import rs.edu.raf.userservice.domains.dto.contact.ContactUpdateDto;
-import rs.edu.raf.userservice.domains.mappers.ContactMapper;
-import rs.edu.raf.userservice.domains.model.Contact;
-import rs.edu.raf.userservice.domains.model.User;
+import rs.edu.raf.userservice.domain.dto.contact.ContactCreateDto;
+import rs.edu.raf.userservice.domain.dto.contact.ContactDto;
+import rs.edu.raf.userservice.domain.dto.contact.ContactUpdateDto;
+import rs.edu.raf.userservice.domain.mappers.ContactMapper;
+import rs.edu.raf.userservice.domain.model.Contact;
+import rs.edu.raf.userservice.domain.model.User;
 import rs.edu.raf.userservice.repositories.ContactRepository;
 import rs.edu.raf.userservice.repositories.UserRepository;
 import rs.edu.raf.userservice.services.ContactService;
@@ -23,7 +23,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)

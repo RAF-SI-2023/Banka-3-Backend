@@ -5,10 +5,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import rs.edu.raf.userservice.domains.dto.company.CompanyCreateDto;
-import rs.edu.raf.userservice.domains.dto.company.CompanyDto;
-import rs.edu.raf.userservice.domains.mappers.CompanyMapper;
-import rs.edu.raf.userservice.domains.model.Company;
+import rs.edu.raf.userservice.domain.dto.company.CompanyCreateDto;
+import rs.edu.raf.userservice.domain.dto.company.CompanyDto;
+import rs.edu.raf.userservice.domain.mappers.CompanyMapper;
+import rs.edu.raf.userservice.domain.model.Company;
 import rs.edu.raf.userservice.repositories.CompanyRepository;
 
 import java.util.Arrays;

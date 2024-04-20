@@ -5,8 +5,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import rs.edu.raf.userservice.domains.model.Permission;
-import rs.edu.raf.userservice.domains.model.enums.PermissionName;
+import rs.edu.raf.userservice.domain.model.Permission;
+import rs.edu.raf.userservice.domain.model.enums.PermissionName;
 import rs.edu.raf.userservice.repositories.PermissionRepository;
 import rs.edu.raf.userservice.services.PermissionService;
 

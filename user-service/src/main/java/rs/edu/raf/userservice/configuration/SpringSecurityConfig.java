@@ -11,10 +11,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import rs.edu.raf.userservice.filters.JwtFilter;
-import rs.edu.raf.userservice.services.CustomDetailsService;
-import rs.edu.raf.userservice.services.EmployeeService;
-import rs.edu.raf.userservice.services.UserService;
+import rs.edu.raf.userservice.service.CustomDetailsService;
+import rs.edu.raf.userservice.service.EmployeeService;
+import rs.edu.raf.userservice.service.UserService;
+import rs.edu.raf.userservice.util.jwt.JwtFilter;
 
 @CrossOrigin("*")
 @EnableWebSecurity
