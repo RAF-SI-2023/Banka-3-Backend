@@ -1,14 +1,15 @@
 package rs.edu.raf.userservice.domain.dto.contact;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
-public class ContactUpdateDto {
+@RequiredArgsConstructor
+@ToString
+public class ContactPostPutDto {
     private String myName;
     private String name;
     private String accountNumber;

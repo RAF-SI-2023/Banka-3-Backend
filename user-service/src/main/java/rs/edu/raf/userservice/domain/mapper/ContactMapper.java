@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
-import rs.edu.raf.userservice.domain.dto.contact.ContactCreateDto;
+import rs.edu.raf.userservice.domain.dto.contact.ContactPostPutDto;
 import rs.edu.raf.userservice.domain.dto.contact.ContactDto;
 import rs.edu.raf.userservice.domain.model.Contact;
 
@@ -16,5 +16,5 @@ public interface ContactMapper {
 
     ContactDto contactToContactDto(Contact contact);
 
-    Contact contactCreateDtoToContact(ContactCreateDto contactCreateDto);
+    Contact contactPostPutDtoToContact(ContactPostPutDto contactPostPutDto);
 }

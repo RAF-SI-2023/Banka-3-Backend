@@ -9,7 +9,7 @@ import rs.edu.raf.userservice.domain.model.User;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ContactDto {
-    private Long id;
+    private Long contactId;
     private User user;
     private String myName;
     private String name;

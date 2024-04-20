@@ -6,7 +6,7 @@ import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 import rs.edu.raf.userservice.domain.model.Company;
 import rs.edu.raf.userservice.domain.dto.company.CompanyDto;
-import rs.edu.raf.userservice.domain.dto.company.CreateCompanyDto;
+import rs.edu.raf.userservice.domain.dto.company.CompanyCreateDto;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE,
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -16,5 +16,5 @@ public interface CompanyMapper {
 
     CompanyDto companyToCompanyDto(Company company);
 
-    Company createCompanyDtoToCompany(CreateCompanyDto createCompanyDto);
+    Company createCompanyDtoToCompany(CompanyCreateDto companyCreateDto);
 }

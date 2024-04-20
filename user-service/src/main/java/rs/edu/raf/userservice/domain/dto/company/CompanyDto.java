@@ -16,4 +16,5 @@ public class CompanyDto implements Serializable {
     private int pib;
     private int maticniBroj;
     private int sifraDelatnosti;
+    private boolean isActive;
 }

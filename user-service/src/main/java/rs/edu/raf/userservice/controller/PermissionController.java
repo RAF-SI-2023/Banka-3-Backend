@@ -8,10 +8,9 @@ import rs.edu.raf.userservice.service.PermissionService;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/v1/permission")
 @CrossOrigin
+@RequestMapping("/api/v1/permission")
 public class PermissionController {
-
     private final PermissionService permissionService;
 
     @GetMapping(path = "/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -19,8 +18,12 @@ public class PermissionController {
         return ResponseEntity.ok(permissionService.getAllPermissions());
     }
 
-    @GetMapping(value = "/findByPermissionName", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/findByName", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> findByRoleName(@RequestParam(value = "permissionName") String permissionName) {
-        return ResponseEntity.ok(this.permissionService.getPermissionByName(permissionName));
+        try {
+            return ResponseEntity.ok(this.permissionService.getPermissionByName(permissionName));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body("Couldn't find PERMISSION with given name: " + permissionName);
+        }
     }
 }

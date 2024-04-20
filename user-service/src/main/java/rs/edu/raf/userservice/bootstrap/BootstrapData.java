@@ -12,7 +12,6 @@ import rs.edu.raf.userservice.repository.*;
 import java.util.Arrays;
 import java.util.List;
 
-
 @AllArgsConstructor
 @Component
 public class BootstrapData implements CommandLineRunner {
@@ -36,7 +35,6 @@ public class BootstrapData implements CommandLineRunner {
             Role exchangeSupervisor = Role.builder().roleName(RoleName.ROLE_SUPERVISOR).build();
             Role exchangeAgent = Role.builder().roleName(RoleName.ROLE_AGENT).build();
             roleRepository.saveAll(Arrays.asList(adminRole, bankingOfficer, clientAdvisor, creditOfficer, exchangeAgent, exchangeSupervisor));
-
 
             //PERMISSIONS
             Permission canTrade = Permission.builder().permissionName(PermissionName.CAN_TRADE).build();
@@ -182,6 +180,23 @@ public class BootstrapData implements CommandLineRunner {
                     .build();
 
             userRepository.saveAll(Arrays.asList(user1, user2, user3));
+
+            //CONTACTS
+            Contact contact1 = Contact.builder()
+                    .user(user1)
+                    .name("Janko Ristic")
+                    .myName("jane")
+                    .accountNumber("1111222233334444")
+                    .build();
+
+            Contact contact2 = Contact.builder()
+                    .user(user1)
+                    .name("Marko Petrovic")
+                    .myName("mare")
+                    .accountNumber("6666777788889999")
+                    .build();
+
+            contactRepository.saveAll(Arrays.asList(contact1, contact2));
 
             //BANK
             Company bank = Company.builder()

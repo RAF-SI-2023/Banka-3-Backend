@@ -8,10 +8,9 @@ import rs.edu.raf.userservice.service.RoleService;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/v1/role")
 @CrossOrigin
+@RequestMapping("/api/v1/role")
 public class RoleController {
-
     private final RoleService roleService;
 
     @GetMapping(path = "/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -19,9 +18,12 @@ public class RoleController {
         return ResponseEntity.ok(roleService.getAllRoles());
     }
 
-    @GetMapping(value = "/findByRoleName", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/findByName", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> findByRoleName(@RequestParam(value = "roleName") String roleName){
-        return ResponseEntity.ok(this.roleService.getRoleByName(roleName));
+        try {
+            return ResponseEntity.ok(this.roleService.getRoleByName(roleName));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body("Couldn't find ROLE with given name: " + roleName);
+        }
     }
-
 }
