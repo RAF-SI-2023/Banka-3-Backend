@@ -22,7 +22,7 @@ public class AccountService {
     private final AccountMapper accountMapper;
 
     public List<AccountDto> findAll() {
-        return accountRepository.findAll().stream().map(accountMapper::accountToAccountDto)
+        return accountRepository.findAll().stream().filter(Account::isActive).map(accountMapper::accountToAccountDto)
                 .collect(Collectors.toList());
     }
 
@@ -40,5 +40,10 @@ public class AccountService {
         account.setReservedAmount(new BigDecimal(0));
         account.setActive(true);
         return accountMapper.accountToAccountDto(accountRepository.save(account));
+    }
+
+    public void deleteAccount(Long id) {
+        Account account = accountRepository.findById(id).orElseThrow(() -> new RuntimeException("Account not found"));
+        account.setActive(false);
     }
 }

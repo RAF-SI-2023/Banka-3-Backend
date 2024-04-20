@@ -1,6 +1,7 @@
 package com.example.bankservice.bootstrap;
 
 import com.example.bankservice.domain.model.Account;
+import com.example.bankservice.domain.model.CompanyAccount;
 import com.example.bankservice.domain.model.Currency;
 import com.example.bankservice.domain.model.enums.CurrencyName;
 import com.example.bankservice.repository.*;
@@ -52,7 +53,7 @@ public class BootstrapData implements CommandLineRunner {
         jpy.setName(CurrencyName.JEN);
 
         if (currencyRepository.count() == 0) {
-            loadCurrencyData(Arrays.asList(rsd, eur, usd, chf, gbp, jpy));
+            loadCurrencyData(List.of(rsd, eur, usd, chf, gbp, jpy));
         }
 
         Account account = new Account();
@@ -68,7 +69,22 @@ public class BootstrapData implements CommandLineRunner {
         account.setActive(true);
 
         if (accountRepository.count() == 0) {
-            loadAccountData(Arrays.asList(account));
+            loadAccountData(List.of(account));
+        }
+
+        CompanyAccount companyAccount = new CompanyAccount();
+        companyAccount.setCompanyId(1L);
+        companyAccount.setEmployeeId(1L);
+        companyAccount.setAccountNumber("2222222222222222");
+        companyAccount.setReservedAmount(new BigDecimal(1000));
+        companyAccount.setAvailableBalance(new BigDecimal(10000));
+        companyAccount.setCreationDate(System.currentTimeMillis());
+        companyAccount.setExpireDate(System.currentTimeMillis() + 60 * 60 * 24 * 365 * 10);
+        companyAccount.setCurrency(currencyRepository.findById(1L).orElse(null));
+        companyAccount.setActive(true);
+
+        if (companyAccountRepository.count() == 0) {
+            loadCompanyAccountData(List.of(companyAccount));
         }
     }
 
@@ -78,5 +94,9 @@ public class BootstrapData implements CommandLineRunner {
 
     private void loadCurrencyData(List<Currency> currencies) {
         currencyRepository.saveAll(currencies);
+    }
+
+    private void loadCompanyAccountData(List<CompanyAccount> companyAccounts) {
+        companyAccountRepository.saveAll(companyAccounts);
     }
 }

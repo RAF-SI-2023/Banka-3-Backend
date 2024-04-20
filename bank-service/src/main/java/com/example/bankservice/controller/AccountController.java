@@ -4,6 +4,7 @@ import com.example.bankservice.domain.dto.account.AccountCreateDto;
 import com.example.bankservice.domain.dto.account.AccountDto;
 import com.example.bankservice.service.AccountService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,7 +28,22 @@ public class AccountController {
     }
 
     @PostMapping("/createAccount")
-    public AccountDto createAccount(@RequestBody AccountCreateDto accountCreateDto) {
-        return accountService.createAccount(accountCreateDto);
+    public ResponseEntity<?> createAccount(@RequestBody AccountCreateDto accountCreateDto) {
+        try {
+            AccountDto accountDto = accountService.createAccount(accountCreateDto);
+            return ResponseEntity.ok(accountDto);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("Unable to create account");
+        }
+    }
+
+    @DeleteMapping("/deleteAccount/{id}")
+    public ResponseEntity<?> deleteAccount(@PathVariable Long id) {
+        try {
+            accountService.deleteAccount(id);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("Unable to delete account");
+        }
     }
 }
