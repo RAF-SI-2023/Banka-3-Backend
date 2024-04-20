@@ -1,4 +1,4 @@
 package com.example.bankservice.controller;
 
-public class TransactionController {
+public class CreditRequestController {
 }
