@@ -2,12 +2,12 @@ package com.example.bankservice.domain.model.enums;
 
 public enum CurrencyName {
     EURO,
-    DOLAR,
+    DOLLAR,
     DINAR,
 
     FUNTA,
 
     JEN,
-
-    RUBLJA
+    RUBLJA,
+    FRANK
 }

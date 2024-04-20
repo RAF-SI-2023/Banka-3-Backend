@@ -1,12 +1,16 @@
 package com.example.bankservice.bootstrap;
 
 import com.example.bankservice.domain.model.Account;
+import com.example.bankservice.domain.model.Currency;
+import com.example.bankservice.domain.model.enums.CurrencyName;
 import com.example.bankservice.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 @AllArgsConstructor
@@ -21,14 +25,36 @@ public class BootstrapData implements CommandLineRunner {
     private final CardRepository cardRepository;
 
     @Override
-    public void run(String... args) throws Exception {
-        if (accountRepository.count() == 0) {
-            loadAccountData();
+    public void run(String... args) {
+
+        Currency rsd = new Currency();
+        rsd.setMark("RSD");
+        rsd.setName(CurrencyName.DINAR);
+
+        Currency eur = new Currency();
+        eur.setMark("EUR");
+        eur.setName(CurrencyName.EURO);
+
+        Currency usd = new Currency();
+        usd.setMark("USD");
+        usd.setName(CurrencyName.DOLLAR);
+
+        Currency chf = new Currency();
+        chf.setMark("CHF");
+        chf.setName(CurrencyName.FRANK);
+
+        Currency gbp = new Currency();
+        gbp.setMark("GBP");
+        gbp.setName(CurrencyName.FUNTA);
+
+        Currency jpy = new Currency();
+        jpy.setMark("JPY");
+        jpy.setName(CurrencyName.JEN);
+
+        if (currencyRepository.count() == 0) {
+            loadCurrencyData(Arrays.asList(rsd, eur, usd, chf, gbp, jpy));
         }
 
-    }
-
-    private void loadAccountData() {
         Account account = new Account();
         account.setUserId(1L);
         account.setEmployeeId(1L);
@@ -41,6 +67,16 @@ public class BootstrapData implements CommandLineRunner {
         account.setAccountType("DEBIT");
         account.setActive(true);
 
-        accountRepository.save(account);
+        if (accountRepository.count() == 0) {
+            loadAccountData(Arrays.asList(account));
+        }
+    }
+
+    private void loadAccountData(List<Account> accounts) {
+        accountRepository.saveAll(accounts);
+    }
+
+    private void loadCurrencyData(List<Currency> currencies) {
+        currencyRepository.saveAll(currencies);
     }
 }
