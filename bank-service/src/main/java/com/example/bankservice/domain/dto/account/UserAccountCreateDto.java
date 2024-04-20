@@ -9,7 +9,7 @@ import javax.validation.constraints.NotBlank;
 @Data
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class AccountCreateDto {
+public class UserAccountCreateDto {
     @NotBlank
     private Long employeeId;
     @NotBlank

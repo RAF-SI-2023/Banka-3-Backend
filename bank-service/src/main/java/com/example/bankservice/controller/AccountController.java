@@ -1,7 +1,7 @@
 package com.example.bankservice.controller;
 
-import com.example.bankservice.domain.dto.account.AccountCreateDto;
-import com.example.bankservice.domain.dto.account.AccountDto;
+import com.example.bankservice.domain.dto.account.UserAccountCreateDto;
+import com.example.bankservice.domain.dto.account.UserAccountDto;
 import com.example.bankservice.service.AccountService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,25 +18,25 @@ public class AccountController {
     private AccountService accountService;
 
     @GetMapping("/getAll")
-    public List<AccountDto> getAll() {
-        return accountService.findAll();
+    public List<UserAccountDto> getAll() {
+        return accountService.findAllUserAccounts();
     }
 
     @GetMapping("/getByUser/{userId}")
     public ResponseEntity<?> getByUser(@PathVariable Long userId) {
         try {
-            List<AccountDto> accountDtos = accountService.findByUser(userId);
-            return ResponseEntity.ok(accountDtos);
+            List<UserAccountDto> userAccountDtos = accountService.findUserAccountByUser(userId);
+            return ResponseEntity.ok(userAccountDtos);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Unable to get accounts by user");
         }
     }
 
     @PostMapping("/createAccount")
-    public ResponseEntity<?> createAccount(@RequestBody AccountCreateDto accountCreateDto) {
+    public ResponseEntity<?> createAccount(@RequestBody UserAccountCreateDto userAccountCreateDto) {
         try {
-            AccountDto accountDto = accountService.createAccount(accountCreateDto);
-            return ResponseEntity.ok(accountDto);
+            UserAccountDto userAccountDto = accountService.createUserAccount(userAccountCreateDto);
+            return ResponseEntity.ok(userAccountDto);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body("Unable to create account");
         }

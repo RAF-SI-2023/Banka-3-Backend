@@ -2,11 +2,11 @@ package com.example.bankservice;
 
 import com.example.bankservice.client.EmailServiceClient;
 import com.example.bankservice.client.UserServiceClient;
-import com.example.bankservice.domains.dto.*;
-import com.example.bankservice.domains.model.Transaction;
-import com.example.bankservice.domains.model.enums.TransactionState;
-import com.example.bankservice.repositories.TransactionRepository;
-import com.example.bankservice.services.TransactionService;
+import com.example.bankservice.domain.dto.*;
+import com.example.bankservice.domain.model.Transaction;
+import com.example.bankservice.domain.model.enums.TransactionState;
+import com.example.bankservice.repository.TransactionRepository;
+import com.example.bankservice.service.TransactionService;
 import io.cucumber.java.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

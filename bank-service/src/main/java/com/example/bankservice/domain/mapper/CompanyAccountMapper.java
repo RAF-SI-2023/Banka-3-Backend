@@ -2,7 +2,7 @@ package com.example.bankservice.domain.mapper;
 
 import com.example.bankservice.domain.dto.companyaccount.CompanyAccountCreateDto;
 import com.example.bankservice.domain.dto.companyaccount.CompanyAccountDto;
-import com.example.bankservice.domain.model.CompanyAccount;
+import com.example.bankservice.domain.model.accounts.CompanyAccount;
 import com.example.bankservice.domain.model.Currency;
 import com.example.bankservice.repository.CurrencyRepository;
 import org.mapstruct.Mapper;
@@ -18,7 +18,7 @@ public abstract class CompanyAccountMapper {
     @Autowired
     private CurrencyRepository currencyRepository;
 
-    public abstract CompanyAccountDto companyaccountToCompanyAccountDto(CompanyAccount companyAccount);
+    public abstract CompanyAccountDto companyAccountToCompanyAccountDto(CompanyAccount companyAccount);
 
     @Mapping(target = "currency", source = "currencyMark", qualifiedByName = "stringToCurrency")
     public abstract CompanyAccount companyAccountCreateDtoToCompanyAccount(CompanyAccountCreateDto companyAccountCreateDto);

@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @ToString
-public class AccountDto {
+public class UserAccountDto {
     private Long accountId;
     private Long userId;
     private Long employeeId;

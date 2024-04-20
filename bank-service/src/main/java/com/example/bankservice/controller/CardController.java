@@ -1,7 +1,6 @@
 package com.example.bankservice.controller;
 
 import com.example.bankservice.domain.dto.card.CardDto;
-import com.example.bankservice.domain.dto.card.CreateCardDto;
 import com.example.bankservice.service.CardService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -1,39 +1,37 @@
-package com.example.bankservice.domain.model;
+package com.example.bankservice.domain.model.accounts;
 
-import lombok.*;
+import com.example.bankservice.domain.model.Currency;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Data
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @RequiredArgsConstructor
-@ToString
 @Entity
 @Table(schema = "bank_service_schema")
-public class Account implements Serializable {
+public class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accountId;
 
-    private Long userId;
-
     private Long employeeId;
 
     @NotNull(message = "This field cannot be NULL")
-    @Size(min = 16, max = 16, message = "Account number must be 16 characters")
     private String accountNumber;
 
     @NotNull(message = "This field cannot be NULL")
-    private BigDecimal reservedAmount;
+    private BigDecimal availableBalance;
 
     @NotNull(message = "This field cannot be NULL")
-    private BigDecimal availableBalance;
+    private BigDecimal reservedAmount;
 
     @NotNull(message = "This field cannot be NULL")
     private Long creationDate;
@@ -44,8 +42,6 @@ public class Account implements Serializable {
     @ManyToOne
     @JoinColumn(name = "currencyId")
     private Currency currency;
-
-    private String accountType;
 
     @NotNull(message = "This field cannot be NULL")
     private boolean active;
