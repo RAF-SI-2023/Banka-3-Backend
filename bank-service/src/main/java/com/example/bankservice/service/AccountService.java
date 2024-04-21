@@ -120,6 +120,11 @@ public class AccountService {
         return account.getAvailableBalance().compareTo(new BigDecimal(amount)) >= 0;
     }
 
+    public Account extractAccountForAccountNumber(String accountNumber) {
+        return accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+    }
+
     private void createCard(Account userAccount) {
         Card card = new Card();
         card.setAccountNumber(userAccount.getAccountNumber());

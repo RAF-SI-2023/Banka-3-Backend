@@ -2,6 +2,7 @@ package com.example.bankservice.service;
 
 import com.example.bankservice.client.EmailServiceClient;
 import com.example.bankservice.client.UserServiceClient;
+import com.example.bankservice.domain.dto.currencyExchange.CurrencyExchangeDto;
 import com.example.bankservice.domain.dto.transaction.ConfirmPaymentTransactionDto;
 import com.example.bankservice.domain.dto.transaction.PaymentTransactionActivationDto;
 import com.example.bankservice.domain.dto.transaction.PaymentTransactionDto;
@@ -37,10 +38,8 @@ public class TransactionService {
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void startPaymentTransaction(PaymentTransactionDto paymentTransactionDto) {
-        Account accountFrom = accountRepository.findByAccountNumber(paymentTransactionDto.getAccountFrom())
-                .orElseThrow(() -> new RuntimeException("Account not found"));
-        Account accountTo = accountRepository.findByAccountNumber(paymentTransactionDto.getAccountTo())
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+        Account accountFrom = accountService.extractAccountForAccountNumber(paymentTransactionDto.getAccountFrom());
+        Account accountTo = accountService.extractAccountForAccountNumber(paymentTransactionDto.getAccountTo());
 
         if (!accountService.checkBalance(paymentTransactionDto.getAccountFrom(), paymentTransactionDto.getAmount())) {
             throw new RuntimeException("Insufficient funds");
@@ -60,17 +59,28 @@ public class TransactionService {
 
         if (transaction.getTransactionStatus().equals(TransactionStatus.PENDING)) {
             acceptTransaction(transaction);
-            Account accountFrom = accountRepository.findByAccountNumber(transaction.getAccountFrom())
-                    .orElseThrow(() -> new RuntimeException("Account not found"));
+            Account accountFrom = accountService.extractAccountForAccountNumber(transaction.getAccountFrom());
 
-            accountService.reserveFunds(accountFrom, BigDecimal.valueOf(transaction.getAmount()));
+            accountService.reserveFunds(accountFrom, transaction.getAmount());
         } else {
             throw new RuntimeException("Transaction already completed");
         }
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void startCurrencyExchangeTransaction() {
+    public void startCurrencyExchangeTransaction(CurrencyExchangeDto currencyExchangeDto) {
+        Account accountFrom = accountService.extractAccountForAccountNumber(currencyExchangeDto.getAccountFrom());
+        Account accountTo = accountService.extractAccountForAccountNumber(currencyExchangeDto.getAccountTo());
+
+        if (!accountService.checkBalance(currencyExchangeDto.getAccountFrom(), currencyExchangeDto.getAmount())) {
+            throw new RuntimeException("Insufficient funds");
+        }
+
+        if (accountFrom.getCurrency().getMark().equals(accountTo.getCurrency().getMark())) {
+
+        } else {
+            throw new RuntimeException("Different currency transactions are not supported");
+        }
 
     }
 
@@ -109,7 +119,7 @@ public class TransactionService {
         Account accountTo = accountRepository.findByAccountNumber(transaction.getAccountTo())
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
-        accountService.transferFunds(accountFrom, accountTo, BigDecimal.valueOf(transaction.getAmount()));
+        accountService.transferFunds(accountFrom, accountTo, transaction.getAmount());
         transaction.setTransactionStatus(TransactionStatus.FINISHED);
         transactionRepository.save(transaction);
     }
