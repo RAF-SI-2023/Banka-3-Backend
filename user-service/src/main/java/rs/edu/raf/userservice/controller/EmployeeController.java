@@ -112,5 +112,4 @@ public class EmployeeController {
     public ResponseEntity<?> getExchangeEmployees() {
         return ResponseEntity.ok(employeeService.findSupervisorsAndAgents());
     }
-
 }
