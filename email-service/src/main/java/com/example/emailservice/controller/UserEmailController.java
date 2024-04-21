@@ -1,7 +1,7 @@
 package com.example.emailservice.controller;
 
-import com.example.emailservice.dto.SetUserPasswordCodeDTO;
-import com.example.emailservice.dto.TryPasswordResetDTO;
+import com.example.emailservice.dto.SetUserPasswordCodeDto;
+import com.example.emailservice.dto.TryPasswordResetDto;
 import com.example.emailservice.model.PasswordReset;
 import com.example.emailservice.service.EmailService;
 import com.example.emailservice.service.UserService;
@@ -30,7 +30,7 @@ public class UserEmailController {
     }
 
     @PostMapping("/activateUser")
-    public ResponseEntity<?> setUserPassword(@RequestBody SetUserPasswordCodeDTO setUserPasswordCodeDTO) {
+    public ResponseEntity<?> setUserPassword(@RequestBody SetUserPasswordCodeDto setUserPasswordCodeDTO) {
         Boolean userActivated = userService.setUserPassword(setUserPasswordCodeDTO);
         if (userActivated) {
             return new ResponseEntity<>(HttpStatus.OK);
@@ -46,7 +46,7 @@ public class UserEmailController {
     }
 
     @PostMapping("/tryPasswordReset")
-    public String tryChangePassword(@RequestBody TryPasswordResetDTO tryPasswordResetDTO) {
+    public String tryChangePassword(@RequestBody TryPasswordResetDto tryPasswordResetDTO) {
         return userService.tryChangePassword(tryPasswordResetDTO);
     }
 }

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin
 @AllArgsConstructor
 @RestController
-@RequestMapping("/api/v2/transaction")
+@RequestMapping("/api/v1/transaction")
 public class TransactionController {
 
     private TransactionService transactionService;
@@ -27,12 +27,12 @@ public class TransactionController {
 
     @PostMapping(value = "/confirmPaymentTransaction")
     public ResponseEntity<String> confirmTransaction(@RequestBody ConfirmPaymentTransactionDto confirmPaymentTransactionDto) {
-//        try {
-//            return ResponseEntity.ok(transactionService.confirmPaymentTransaction(confirmPaymentTransactionDto));
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().build();
-//        }
-        return null;
+        try {
+            transactionService.confirmPaymentTransaction(confirmPaymentTransactionDto);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @GetMapping(value = "/getAllPaymentTransactions/{accountId}")

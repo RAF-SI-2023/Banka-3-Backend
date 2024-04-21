@@ -1,15 +1,13 @@
-package com.example.bankservice.domain.dto.user;
+package com.example.emailservice.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserEmailDto implements Serializable {
-    private Long userId;
+public class TransactionActivationDto {
     private String email;
+    private String transactionId;
 }

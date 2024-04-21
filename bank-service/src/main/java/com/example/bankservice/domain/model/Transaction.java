@@ -42,7 +42,7 @@ public class Transaction implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @NotNull(message = "This field cannot be NULL")
-    private TransactionStatus status;
+    private TransactionStatus transactionStatus;
 
     @NotNull(message = "This field cannot be NULL")
     private Long date;

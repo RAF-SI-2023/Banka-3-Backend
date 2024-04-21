@@ -1,9 +1,12 @@
 package com.example.bankservice.service;
 
+import com.example.bankservice.client.EmailServiceClient;
+import com.example.bankservice.client.UserServiceClient;
 import com.example.bankservice.domain.dto.account.UserAccountCreateDto;
 import com.example.bankservice.domain.dto.account.UserAccountDto;
 import com.example.bankservice.domain.dto.companyaccount.CompanyAccountCreateDto;
 import com.example.bankservice.domain.dto.companyaccount.CompanyAccountDto;
+import com.example.bankservice.domain.dto.emailService.TransactionFinishedDto;
 import com.example.bankservice.domain.mapper.CompanyAccountMapper;
 import com.example.bankservice.domain.mapper.UserAccountMapper;
 import com.example.bankservice.domain.model.Card;
@@ -33,6 +36,8 @@ public class AccountService {
     private final UserAccountRepository userAccountRepository;
     private final CompanyAccountRepository companyAccountRepository;
     private final CompanyAccountMapper companyAccountMapper;
+    private final EmailServiceClient emailServiceClient;
+    private final UserServiceClient userServiceClient;
 
     public List<UserAccountDto> findAllUserAccounts() {
         return userAccountRepository.findAll().stream().filter(Account::isActive)
@@ -89,6 +94,22 @@ public class AccountService {
         return companyAccountMapper.companyAccountToCompanyAccountDto(accountRepository.save(account));
     }
 
+    public void reserveFunds(Account account, BigDecimal amount) {
+        account.setReservedAmount(account.getReservedAmount().add(amount));
+        account.setAvailableBalance(account.getAvailableBalance().subtract(amount));
+        accountRepository.save(account);
+    }
+
+    public void transferFunds(Account accountFrom, Account accountTo, BigDecimal amount) {
+        accountFrom.setReservedAmount(accountFrom.getReservedAmount().subtract(amount));
+        accountTo.setAvailableBalance(accountTo.getAvailableBalance().add(amount));
+        accountRepository.save(accountFrom);
+        accountRepository.save(accountTo);
+        if (accountTo instanceof UserAccount) {
+            sendFundsRecievedEmail(accountTo, amount);
+        }
+    }
+
     public void deleteAccount(Long id) {
         Account account = accountRepository.findById(id).orElseThrow(() -> new RuntimeException("Account not found"));
         account.setActive(false);
@@ -110,5 +131,12 @@ public class AccountService {
         card.setActive(true);
 
         cardRepository.save(card);
+    }
+
+    private void sendFundsRecievedEmail(Account account, BigDecimal amount) {
+        if (account instanceof UserAccount) {
+            String email = userServiceClient.getEmailByUserId(String.valueOf(((UserAccount) account).getUserId())).getEmail();
+            emailServiceClient.sendTransactionFinishedEmailToEmailService(new TransactionFinishedDto(email, account.getCurrency().getMark(), amount));
+        }
     }
 }

@@ -1,14 +1,16 @@
 package com.example.emailservice.service.impl;
 
 
-import com.example.emailservice.dto.ConfirmTransactionDTO;
-import com.example.emailservice.dto.TransactionActivationDTO;
+import com.example.emailservice.client.BankServiceClient;
+import com.example.emailservice.dto.ConfirmTransactionDto;
+import com.example.emailservice.dto.FinalizeTransactionDto;
+import com.example.emailservice.dto.TransactionActivationDto;
+import com.example.emailservice.dto.bankService.TransactionFinishedDto;
 import com.example.emailservice.model.TransactionActivation;
 import com.example.emailservice.repository.TransactionActivationRepository;
 import com.example.emailservice.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,6 +28,8 @@ public class TransactionService {
 
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private BankServiceClient bankServiceClient;
 
     public TransactionService(EmailService emailService,
                               TransactionActivationRepository transactionActivationRepository) {
@@ -33,7 +37,7 @@ public class TransactionService {
         this.emailService = emailService;
     }
 
-    public void beginTransaction(TransactionActivationDTO dto) {
+    public void beginTransaction(TransactionActivationDto dto) {
         Integer code = new Random().nextInt(100000, 999999);
         TransactionActivation transactionActivation = new TransactionActivation(null, dto.getEmail(), code,
                 LocalDateTime.now(), true);
@@ -54,7 +58,7 @@ public class TransactionService {
     }
 
     //validate transaction,return ResponseEntity with message
-    public ResponseEntity<String> confirmTransaction(ConfirmTransactionDTO dto) {
+    public void confirmTransaction(ConfirmTransactionDto dto) {
         Optional<TransactionActivation> optional =
                 transactionActivationRepository.findByIdAndActiveIsTrue(dto.getTransactionId());
         if (optional.isPresent()) {
@@ -62,17 +66,21 @@ public class TransactionService {
             if (transactionActivation.getCode() == (dto.getCode())) {
                 transactionActivation.setActive(false);
                 transactionActivationRepository.save(transactionActivation);
-                return ResponseEntity.ok("Transaction is valid");
-                //Obavestiti banka servis da je transakcija validna
-
+                bankServiceClient.confirmPaymentTransaction(new FinalizeTransactionDto(dto.getTransactionId()));
             } else {
-                return ResponseEntity.badRequest().build();
+                throw new RuntimeException("Invalid code");
             }
         } else {
-            return ResponseEntity.badRequest().build();
+            throw new RuntimeException("Transaction not found");
         }
     }
 
+    public void sendTransactionFinishedEmail(TransactionFinishedDto transactionFinishedDto) {
+        emailService.sendSimpleMessage(transactionFinishedDto.getEmail(),
+                "Payment recieved", "You have recieved " +
+                        transactionFinishedDto.getAmount() + " " +
+                transactionFinishedDto.getCurrencyMark() + ".");
+    }
 
     protected String getSubject() {
         return "Transaction activation";

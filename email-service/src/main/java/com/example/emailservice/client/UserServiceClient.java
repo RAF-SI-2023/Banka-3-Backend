@@ -1,11 +1,10 @@
 package com.example.emailservice.client;
 
-import com.example.emailservice.dto.ResetPasswordDTO;
-import com.example.emailservice.dto.ResetUserPasswordDTO;
-import com.example.emailservice.dto.SetPasswordDTO;
+import com.example.emailservice.dto.ResetPasswordDto;
+import com.example.emailservice.dto.ResetUserPasswordDto;
+import com.example.emailservice.dto.SetPasswordDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -22,12 +21,12 @@ public interface UserServiceClient {
     @PostMapping(value = "/user/setPassword",
             produces = "application/json",
             consumes = "application/json")
-    ResponseEntity<String> setUserPassword(@RequestBody SetPasswordDTO passwordDTO);
+    ResponseEntity<String> setUserPassword(@RequestBody SetPasswordDto passwordDTO);
 
     @PostMapping(value = "/employee/setPassword",
             produces = "application/json",
             consumes = "application/json")
-    ResponseEntity<String> setPassword(@RequestBody SetPasswordDTO passwordDTO);
+    ResponseEntity<String> setPassword(@RequestBody SetPasswordDto passwordDTO);
 
 
 
@@ -39,11 +38,11 @@ public interface UserServiceClient {
             produces = "application/json"
             , consumes = "application/json"
     )
-    ResponseEntity<String> resetPassword(@RequestBody ResetPasswordDTO passwordDTO);
+    ResponseEntity<String> resetPassword(@RequestBody ResetPasswordDto passwordDTO);
 
     @PostMapping(value = "/user/resetPassword",
             produces = "application/json"
             , consumes = "application/json"
     )
-    ResponseEntity<String> resetUserPassword(@RequestBody ResetUserPasswordDTO passwordDTO);
+    ResponseEntity<String> resetUserPassword(@RequestBody ResetUserPasswordDto passwordDTO);
 }

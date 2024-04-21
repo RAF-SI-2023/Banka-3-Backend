@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ConfirmTransactionDTO {
+public class ConfirmTransactionDto {
     private Long transactionId;
     private int code;
 }

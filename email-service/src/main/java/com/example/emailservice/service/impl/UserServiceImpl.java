@@ -1,10 +1,10 @@
 package com.example.emailservice.service.impl;
 
 import com.example.emailservice.client.UserServiceClient;
-import com.example.emailservice.dto.ResetUserPasswordDTO;
-import com.example.emailservice.dto.SetPasswordDTO;
-import com.example.emailservice.dto.SetUserPasswordCodeDTO;
-import com.example.emailservice.dto.TryPasswordResetDTO;
+import com.example.emailservice.dto.ResetUserPasswordDto;
+import com.example.emailservice.dto.SetPasswordDto;
+import com.example.emailservice.dto.SetUserPasswordCodeDto;
+import com.example.emailservice.dto.TryPasswordResetDto;
 import com.example.emailservice.model.PasswordReset;
 import com.example.emailservice.model.UserActivation;
 import com.example.emailservice.repository.PasswordResetRepository;
@@ -60,12 +60,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Boolean setUserPassword(SetUserPasswordCodeDTO setUserPasswordCodeDTO) {
+    public Boolean setUserPassword(SetUserPasswordCodeDto setUserPasswordCodeDTO) {
         UserActivation userActivation =
                 userActivationRepository.findUserActivationByCodeAndActivationPossibleIsTrue(setUserPasswordCodeDTO.getCode())
                         .orElseThrow(() -> new NotFoundException("Activation code not found."));
         if (userActivation.isActivationPossible()) {
-            userServiceClient.setUserPassword(new SetPasswordDTO(setUserPasswordCodeDTO.getPassword(),
+            userServiceClient.setUserPassword(new SetPasswordDto(setUserPasswordCodeDTO.getPassword(),
                     setUserPasswordCodeDTO.getEmail()));
             return true;
         }
@@ -98,11 +98,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String tryChangePassword(TryPasswordResetDTO tryPasswordResetDTO) {
+    public String tryChangePassword(TryPasswordResetDto tryPasswordResetDTO) {
         PasswordReset passwordReset =
                 passwordResetRepository.findByIdentifier(tryPasswordResetDTO.getIdentifier()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request not found."));
         if (passwordReset.getActive()) {
-            ResetUserPasswordDTO resetPasswordDTO = new ResetUserPasswordDTO(tryPasswordResetDTO.getPassword(),
+            ResetUserPasswordDto resetPasswordDTO = new ResetUserPasswordDto(tryPasswordResetDTO.getPassword(),
                     passwordReset.getEmail());
             ResponseEntity<String> response = userServiceClient.resetUserPassword(resetPasswordDTO);
             if (!response.getStatusCode().is2xxSuccessful()) {

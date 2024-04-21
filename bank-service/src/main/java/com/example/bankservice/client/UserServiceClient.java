@@ -1,6 +1,6 @@
 package com.example.bankservice.client;
 
-import com.example.bankservice.domain.dto.user.UserEmailDto;
+import com.example.bankservice.domain.dto.userService.UserEmailDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

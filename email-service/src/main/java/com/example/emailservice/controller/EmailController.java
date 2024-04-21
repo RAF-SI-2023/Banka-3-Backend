@@ -1,6 +1,6 @@
 package com.example.emailservice.controller;
 
-import com.example.emailservice.dto.TryPasswordResetDTO;
+import com.example.emailservice.dto.TryPasswordResetDto;
 import com.example.emailservice.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -47,7 +47,7 @@ public class EmailController {
      * identifera i menja sifru
      */
     @PostMapping("/tryPasswordReset")
-    public ResponseEntity<String> resetPassword(@RequestBody TryPasswordResetDTO tryPasswordResetDTO) {
+    public ResponseEntity<String> resetPassword(@RequestBody TryPasswordResetDto tryPasswordResetDTO) {
         return ResponseEntity.ok(employeeService.resetPassword(tryPasswordResetDTO));
     }
 

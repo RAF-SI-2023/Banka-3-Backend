@@ -1,9 +1,9 @@
 package com.example.emailservice.service.impl;
 
 import com.example.emailservice.client.UserServiceClient;
-import com.example.emailservice.dto.ResetPasswordDTO;
-import com.example.emailservice.dto.SetPasswordDTO;
-import com.example.emailservice.dto.TryPasswordResetDTO;
+import com.example.emailservice.dto.ResetPasswordDto;
+import com.example.emailservice.dto.SetPasswordDto;
+import com.example.emailservice.dto.TryPasswordResetDto;
 import com.example.emailservice.model.EmployeeActivation;
 import com.example.emailservice.repository.EmployeeActivationRepository;
 import com.example.emailservice.service.EmailService;
@@ -65,7 +65,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         Optional<EmployeeActivation> employeeActivationOptional =
                 employeeActivationRepository.findEmployeeActivationByIdentifierAndActivationPossibleIsTrue(identifier);
         EmployeeActivation employeeActivation = employeeActivationOptional.get();
-        SetPasswordDTO passwordDTO = new SetPasswordDTO(password, employeeActivation.getEmail());
+        SetPasswordDto passwordDTO = new SetPasswordDto(password, employeeActivation.getEmail());
         ResponseEntity<String> response = userServiceClient.setPassword(passwordDTO);
         System.out.println(response.toString());
         if (!response.getStatusCode().is2xxSuccessful()) {
@@ -106,12 +106,12 @@ public class EmployeeServiceImpl implements EmployeeService {
      * Salje se nova sifra user servisu ukoliko je identifer dobar
      */
     @Override
-    public String resetPassword(TryPasswordResetDTO tryPasswordResetDTO) {
+    public String resetPassword(TryPasswordResetDto tryPasswordResetDTO) {
         EmployeeActivation employeeActivation =
                 employeeActivationRepository.findEmployeeActivationByIdentifierAndActivationPossibleIsTrue(tryPasswordResetDTO.getIdentifier())
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Activation is not " +
                                 "possible"));
-        ResetPasswordDTO resetPasswordDTO = new ResetPasswordDTO(tryPasswordResetDTO.getPassword(),
+        ResetPasswordDto resetPasswordDTO = new ResetPasswordDto(tryPasswordResetDTO.getPassword(),
                 employeeActivation.getEmail());
         ResponseEntity<String> response = userServiceClient.resetPassword(resetPasswordDTO);
         if (!response.getStatusCode().is2xxSuccessful()) {

@@ -1,6 +1,6 @@
 package com.example.emailservice.service;
 
-import com.example.emailservice.dto.TryPasswordResetDTO;
+import com.example.emailservice.dto.TryPasswordResetDto;
 
 public interface EmployeeService {
     void employeeCreated(String email);
@@ -9,5 +9,5 @@ public interface EmployeeService {
 
     void tryResetPassword(String email);
 
-    String resetPassword(TryPasswordResetDTO tryPasswordResetDTO);
+    String resetPassword(TryPasswordResetDto tryPasswordResetDTO);
 }

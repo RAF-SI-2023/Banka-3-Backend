@@ -11,7 +11,7 @@ import java.util.List;
 @CrossOrigin
 @AllArgsConstructor
 @RestController
-@RequestMapping("/api/v2/card")
+@RequestMapping("/api/v1/card")
 public class CardController {
 
     private final CardService cardService;

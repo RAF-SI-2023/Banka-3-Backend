@@ -1,8 +1,8 @@
 package com.example.emailservice;
 
 import com.example.emailservice.client.UserServiceClient;
-import com.example.emailservice.dto.ResetPasswordDTO;
-import com.example.emailservice.dto.TryPasswordResetDTO;
+import com.example.emailservice.dto.ResetPasswordDto;
+import com.example.emailservice.dto.TryPasswordResetDto;
 import com.example.emailservice.model.EmployeeActivation;
 import com.example.emailservice.repository.EmployeeActivationRepository;
 import com.example.emailservice.service.EmailService;
@@ -98,9 +98,9 @@ public class EmployeeServiceImplUnitTest {
     @Test
     public void testResetPassword_Success() {
         // Priprema podataka za test
-        TryPasswordResetDTO tryPasswordResetDTO = new TryPasswordResetDTO();
+        TryPasswordResetDto tryPasswordResetDTO = new TryPasswordResetDto();
         EmployeeActivation employeeActivation = new EmployeeActivation();
-        ResetPasswordDTO resetPasswordDTO = new ResetPasswordDTO();
+        ResetPasswordDto resetPasswordDTO = new ResetPasswordDto();
         ResponseEntity<String> successResponse = new ResponseEntity<>("Success", HttpStatus.OK);
 
         when(employeeActivationRepository.findEmployeeActivationByIdentifierAndActivationPossibleIsTrue(tryPasswordResetDTO.getIdentifier())).thenReturn(Optional.of(employeeActivation));
@@ -116,9 +116,9 @@ public class EmployeeServiceImplUnitTest {
     @Test
     public void testResetPassword_Failure() {
         // Priprema podataka za test
-        TryPasswordResetDTO tryPasswordResetDTO = new TryPasswordResetDTO(/* Popunite polja za TryPasswordResetDTO */);
+        TryPasswordResetDto tryPasswordResetDTO = new TryPasswordResetDto(/* Popunite polja za TryPasswordResetDTO */);
         EmployeeActivation employeeActivation = new EmployeeActivation(/* Popunite polja za EmployeeActivation */);
-        ResetPasswordDTO resetPasswordDTO = new ResetPasswordDTO(/* Popunite polja za ResetPasswordDTO */);
+        ResetPasswordDto resetPasswordDTO = new ResetPasswordDto(/* Popunite polja za ResetPasswordDTO */);
         ResponseEntity<String> errorResponse = new ResponseEntity<>("Error message", HttpStatus.BAD_REQUEST);
 
         when(employeeActivationRepository.findEmployeeActivationByIdentifierAndActivationPossibleIsTrue(tryPasswordResetDTO.getIdentifier())).thenReturn(Optional.of(employeeActivation));

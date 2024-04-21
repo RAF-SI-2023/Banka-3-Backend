@@ -1,10 +1,10 @@
 package com.example.emailservice.service.impl;
 
 import com.example.emailservice.client.UserServiceClient;
-import com.example.emailservice.dto.ResetUserPasswordDTO;
-import com.example.emailservice.dto.SetPasswordDTO;
-import com.example.emailservice.dto.SetUserPasswordCodeDTO;
-import com.example.emailservice.dto.TryPasswordResetDTO;
+import com.example.emailservice.dto.ResetUserPasswordDto;
+import com.example.emailservice.dto.SetPasswordDto;
+import com.example.emailservice.dto.SetUserPasswordCodeDto;
+import com.example.emailservice.dto.TryPasswordResetDto;
 import com.example.emailservice.model.PasswordReset;
 import com.example.emailservice.model.UserActivation;
 import com.example.emailservice.repository.PasswordResetRepository;
@@ -32,9 +32,9 @@ import static org.mockito.Mockito.*;
 public class UserServiceImplTest {
 
     @Mock
-    private SetPasswordDTO setPasswordDTO;
+    private SetPasswordDto setPasswordDTO;
     @Mock
-    private SetUserPasswordCodeDTO setUserPasswordCodeDTO;
+    private SetUserPasswordCodeDto setUserPasswordCodeDTO;
     @Mock
     private UserServiceClient userServiceClient;
     @Mock
@@ -68,7 +68,7 @@ public class UserServiceImplTest {
 
     @Test
     public void setUserPasswordTest() {
-        SetUserPasswordCodeDTO setUserPasswordCodeDTO = new SetUserPasswordCodeDTO();
+        SetUserPasswordCodeDto setUserPasswordCodeDTO = new SetUserPasswordCodeDto();
         setUserPasswordCodeDTO.setCode(1234);
         setUserPasswordCodeDTO.setEmail("test@example.com");
         setUserPasswordCodeDTO.setPassword("newPassword");
@@ -83,12 +83,12 @@ public class UserServiceImplTest {
 
 
         assertTrue(result);
-        verify(userServiceClient, times(1)).setUserPassword(any(SetPasswordDTO.class));
+        verify(userServiceClient, times(1)).setUserPassword(any(SetPasswordDto.class));
     }
 
     @Test
     public void setUserPasswordTest_Fail() {
-        SetUserPasswordCodeDTO setUserPasswordCodeDTO = new SetUserPasswordCodeDTO();
+        SetUserPasswordCodeDto setUserPasswordCodeDTO = new SetUserPasswordCodeDto();
         setUserPasswordCodeDTO.setCode(1234);
 
         UserActivation userActivation = new UserActivation();
@@ -100,19 +100,19 @@ public class UserServiceImplTest {
         boolean result = userServiceImpl.setUserPassword(setUserPasswordCodeDTO);
 
         assertFalse(result);
-        verify(userServiceClient, never()).setUserPassword(any(SetPasswordDTO.class));
+        verify(userServiceClient, never()).setUserPassword(any(SetPasswordDto.class));
     }
 
     @Test
     public void setUserPasswordTest_Fail_Code() {
-        SetUserPasswordCodeDTO setUserPasswordCodeDTO = new SetUserPasswordCodeDTO();
+        SetUserPasswordCodeDto setUserPasswordCodeDTO = new SetUserPasswordCodeDto();
         setUserPasswordCodeDTO.setCode(1234);
 
         when(userActivationRepository.findUserActivationByCodeAndActivationPossibleIsTrue(1234))
                 .thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> userServiceImpl.setUserPassword(setUserPasswordCodeDTO));
-        verify(userServiceClient, never()).setUserPassword(any(SetPasswordDTO.class));
+        verify(userServiceClient, never()).setUserPassword(any(SetPasswordDto.class));
     }
 
     @Test
@@ -134,7 +134,7 @@ public class UserServiceImplTest {
 
     @Test
     public void tryChangePasswordTest() {
-        TryPasswordResetDTO tryPasswordResetDTO = new TryPasswordResetDTO();
+        TryPasswordResetDto tryPasswordResetDTO = new TryPasswordResetDto();
         tryPasswordResetDTO.setIdentifier("testIdentifier");
         tryPasswordResetDTO.setPassword("newPassword");
 
@@ -145,28 +145,28 @@ public class UserServiceImplTest {
         when(passwordResetRepository.findByIdentifier("testIdentifier")).thenReturn(Optional.of(passwordReset));
 
         ResponseEntity<String> successResponse = new ResponseEntity<>("Success", HttpStatus.OK);
-        when(userServiceClient.resetUserPassword(any(ResetUserPasswordDTO.class))).thenReturn(successResponse);
+        when(userServiceClient.resetUserPassword(any(ResetUserPasswordDto.class))).thenReturn(successResponse);
 
         String result = userServiceImpl.tryChangePassword(tryPasswordResetDTO);
 
         assertEquals("Password successfully changed", result);
-        verify(userServiceClient, times(1)).resetUserPassword(any(ResetUserPasswordDTO.class));
+        verify(userServiceClient, times(1)).resetUserPassword(any(ResetUserPasswordDto.class));
     }
 
     @Test
     public void tryChangePasswordTest_Fail_Identifier() {
-        TryPasswordResetDTO tryPasswordResetDTO = new TryPasswordResetDTO();
+        TryPasswordResetDto tryPasswordResetDTO = new TryPasswordResetDto();
         tryPasswordResetDTO.setIdentifier("nonExistentIdentifier");
 
         when(passwordResetRepository.findByIdentifier("nonExistentIdentifier")).thenReturn(Optional.empty());
 
         assertThrows(ResponseStatusException.class, () -> userServiceImpl.tryChangePassword(tryPasswordResetDTO));
-        verify(userServiceClient, never()).resetUserPassword(any(ResetUserPasswordDTO.class));
+        verify(userServiceClient, never()).resetUserPassword(any(ResetUserPasswordDto.class));
     }
 
     @Test
     public void tryChangePasswordTest_Fail() {
-        TryPasswordResetDTO tryPasswordResetDTO = new TryPasswordResetDTO();
+        TryPasswordResetDto tryPasswordResetDTO = new TryPasswordResetDto();
         tryPasswordResetDTO.setIdentifier("testIdentifier");
 
         PasswordReset passwordReset = new PasswordReset();
@@ -177,7 +177,7 @@ public class UserServiceImplTest {
         String result = userServiceImpl.tryChangePassword(tryPasswordResetDTO);
 
         assertEquals("Password reset failed", result);
-        verify(userServiceClient, never()).resetUserPassword(any(ResetUserPasswordDTO.class));
+        verify(userServiceClient, never()).resetUserPassword(any(ResetUserPasswordDto.class));
     }
 }
 

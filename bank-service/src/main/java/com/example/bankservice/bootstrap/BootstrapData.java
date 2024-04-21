@@ -56,17 +56,29 @@ public class BootstrapData implements CommandLineRunner {
             loadCurrencyData(List.of(rsd, eur, usd, chf, gbp, jpy));
         }
 
-        UserAccount userAccount = new UserAccount();
-        userAccount.setUserId(2L);
-        userAccount.setEmployeeId(1L);
-        userAccount.setAccountNumber("1111111111111111");
-        userAccount.setReservedAmount(new BigDecimal(1000));
-        userAccount.setAvailableBalance(new BigDecimal(10000));
-        userAccount.setCreationDate(System.currentTimeMillis());
-        userAccount.setExpireDate(System.currentTimeMillis() + 60 * 60 * 24 * 365 * 10);
-        userAccount.setCurrency(currencyRepository.findById(1L).orElse(null));
-        userAccount.setAccountType("DEBIT");
-        userAccount.setActive(true);
+        UserAccount userAccount1 = new UserAccount();
+        userAccount1.setUserId(2L);
+        userAccount1.setEmployeeId(1L);
+        userAccount1.setAccountNumber("1111111111111111");
+        userAccount1.setReservedAmount(new BigDecimal(1000));
+        userAccount1.setAvailableBalance(new BigDecimal(10000));
+        userAccount1.setCreationDate(System.currentTimeMillis());
+        userAccount1.setExpireDate(System.currentTimeMillis() + 60 * 60 * 24 * 365 * 10);
+        userAccount1.setCurrency(currencyRepository.findById(1L).orElse(null));
+        userAccount1.setAccountType("DEBIT");
+        userAccount1.setActive(true);
+
+        UserAccount userAccount2 = new UserAccount();
+        userAccount2.setUserId(1L);
+        userAccount2.setEmployeeId(1L);
+        userAccount2.setAccountNumber("3333333333333333");
+        userAccount2.setReservedAmount(new BigDecimal(1000));
+        userAccount2.setAvailableBalance(new BigDecimal(10000));
+        userAccount2.setCreationDate(System.currentTimeMillis());
+        userAccount2.setExpireDate(System.currentTimeMillis() + 60 * 60 * 24 * 365 * 10);
+        userAccount2.setCurrency(currencyRepository.findById(1L).orElse(null));
+        userAccount2.setAccountType("DEBIT");
+        userAccount2.setActive(true);
 
         CompanyAccount companyAccount = new CompanyAccount();
         companyAccount.setCompanyId(1L);
@@ -80,7 +92,7 @@ public class BootstrapData implements CommandLineRunner {
         companyAccount.setActive(true);
 
         if (accountRepository.count() == 0) {
-            loadUserAccountData(List.of(userAccount));
+            loadUserAccountData(List.of(userAccount1, userAccount2));
             loadCompanyAccountData(List.of(companyAccount));
         }
 
