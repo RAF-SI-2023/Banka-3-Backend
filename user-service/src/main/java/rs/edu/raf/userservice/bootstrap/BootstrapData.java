@@ -142,9 +142,9 @@ public class BootstrapData implements CommandLineRunner {
             employeeRepository.saveAll(Arrays.asList(employee1, employee2, employee3, employee4, employee5, employee6));
 
             User user1 = User.builder()
-                    .firstName("Pera")
-                    .lastName("Peric")
-                    .email("pera@peric.com")
+                    .firstName("Janko")
+                    .lastName("Ristic")
+                    .email("jristic3620rn@raf.rs")
                     .password(passwordEncoder.encode("user1234"))
                     .jmbg("0101001710058")
                     .phoneNumber("061445109")
@@ -157,7 +157,7 @@ public class BootstrapData implements CommandLineRunner {
             User user2 = User.builder()
                     .firstName("Strahinja")
                     .lastName("Ljubicic")
-                    .email("sljubicic@raf.rs")
+                    .email("sljubicic7120rn@raf.rs")
                     .jmbg("2211001710058")
                     .phoneNumber("064132211")
                     .isActive(true)

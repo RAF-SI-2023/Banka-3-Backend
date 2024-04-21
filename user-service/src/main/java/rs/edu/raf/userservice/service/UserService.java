@@ -70,7 +70,7 @@ public class UserService implements UserDetailsService{
             throw new ValidationException("invalid jmbg");
         }
         User user = UserMapper.INSTANCE.userCreateDtoToUser(userPostPutDto);
-        user.setActive(false);
+        user.setActive(true);
         userRepository.save(user);
         return UserMapper.INSTANCE.userToUserDto(user);
     }

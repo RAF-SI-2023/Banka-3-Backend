@@ -88,6 +88,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/findByEmail/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "na osnovu Email-a vraca User-a")
     public ResponseEntity<?> getUserByEmail(@PathVariable String email) {
         try {
             return ResponseEntity.ok(userService.getUserByEmail(email));
@@ -97,6 +98,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/findEmailById/{userId}")
+    @Operation(description = "na osnovu ID-a vraca korisnikov email")
     public ResponseEntity<?> getUSerEmailById(@PathVariable Long userId){
         try {
             return ResponseEntity.ok(userService.getEmailByUser(userId));
