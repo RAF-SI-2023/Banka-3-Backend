@@ -9,6 +9,7 @@ import java.io.Serializable;
 @RequiredArgsConstructor
 @ToString
 public class CompanyDto implements Serializable {
+    //kada vracamo getAllCompanies ili kada vracamo single Kompaniju
     private long companyId;
     private String title;
     private String number;

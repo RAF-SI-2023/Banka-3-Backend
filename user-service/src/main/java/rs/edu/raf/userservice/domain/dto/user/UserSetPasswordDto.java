@@ -9,7 +9,8 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class IsUserActiveDTO implements Serializable {
+public class UserSetPasswordDto implements Serializable {
+    //kada korisnik restartuje lozinku
     private String email;
-    private boolean isActive;
+    private String password;
 }

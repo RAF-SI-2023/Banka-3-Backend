@@ -9,7 +9,9 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SetPasswordDto implements Serializable {
+public class IsUserActiveDto implements Serializable {
+    //ovo nam treba da proverimo, prilikom Login-a, da li je korisnik
+    //uneo kod za aktivaciju
     private String email;
-    private String password;
+    private boolean isActive;
 }

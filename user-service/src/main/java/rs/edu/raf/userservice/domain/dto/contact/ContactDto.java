@@ -9,6 +9,7 @@ import rs.edu.raf.userservice.domain.model.User;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ContactDto {
+    //za vracnje kompletnog Kontakta, kada front zove getALl
     private Long contactId;
     private User user;
     private String myName;

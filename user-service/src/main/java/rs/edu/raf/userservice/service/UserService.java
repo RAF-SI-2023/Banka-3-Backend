@@ -71,13 +71,11 @@ public class UserService implements UserDetailsService{
         }
         User user = UserMapper.INSTANCE.userCreateDtoToUser(userPostPutDto);
         user.setActive(true);
-        userRepository.save(user);
-        return UserMapper.INSTANCE.userToUserDto(user);
+        return UserMapper.INSTANCE.userToUserDto(userRepository.save(user));
     }
 
     public UserDto updateUser(UserPostPutDto user, Long id) {
-        User newUser = userRepository.findById(id).orElseThrow(() -> new NotFoundException("user with" + id + " not " +
-                "found"));//TODO dodaj exception
+        User newUser = userRepository.findById(id).orElseThrow(() -> new NotFoundException("user with" + id + " not found"));
         UserMapper.INSTANCE.updateUserFromUserUpdateDto(newUser, user);
         userRepository.save(newUser);
         return UserMapper.INSTANCE.userToUserDto(newUser);
@@ -106,7 +104,7 @@ public class UserService implements UserDetailsService{
         return users.stream().map(UserMapper.INSTANCE::userToUserDto).collect(Collectors.toList());
     }
 
-    public IsUserActiveDTO isUserActive(String email) {
+    public IsUserActiveDto isUserActive(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User with" + email +
                 " not found"));
 
@@ -116,22 +114,12 @@ public class UserService implements UserDetailsService{
         return UserMapper.INSTANCE.userToIsAUserActiveDTO(user);
     }
 
-    public String setPassword(SetPasswordDto setPasswordDTO) {
-        User user = userRepository.findByEmail(setPasswordDTO.getEmail())
+    public void setPassword(UserSetPasswordDto userSetPasswordDTO) {
+        User user = userRepository.findByEmail(userSetPasswordDTO.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        user.setPassword(passwordEncoder.encode(setPasswordDTO.getPassword()));
+        user.setPassword(passwordEncoder.encode(userSetPasswordDTO.getPassword()));
         user.setActive(true);
         userRepository.save(user);
-        return "Successfully updated password for " + setPasswordDTO.getEmail();
-    }
-
-    public String resetPassword(SetPasswordDto resetPasswordDTO) {
-        System.out.println(resetPasswordDTO.getEmail());
-        User user = userRepository.findByEmail(resetPasswordDTO.getEmail())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-        user.setPassword(passwordEncoder.encode(resetPasswordDTO.getPassword()));
-        userRepository.save(user);
-        return "Successfully reseted password for " + resetPasswordDTO.getEmail();
     }
 }

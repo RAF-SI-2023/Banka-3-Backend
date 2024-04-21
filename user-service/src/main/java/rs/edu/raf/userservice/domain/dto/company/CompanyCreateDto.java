@@ -10,6 +10,7 @@ import javax.validation.constraints.*;
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class CompanyCreateDto {
+    //prilikom kreiranja kompanije
     @NotBlank
     @Max(20)
     private String title;

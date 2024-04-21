@@ -5,7 +5,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
-import rs.edu.raf.userservice.domain.dto.user.IsUserActiveDTO;
+import rs.edu.raf.userservice.domain.dto.user.IsUserActiveDto;
 import rs.edu.raf.userservice.domain.dto.user.UserDto;
 import rs.edu.raf.userservice.domain.dto.user.UserEmailDto;
 import rs.edu.raf.userservice.domain.dto.user.UserPostPutDto;
@@ -18,7 +18,7 @@ public interface UserMapper {
 
     UserDto userToUserDto(User user);
 
-    IsUserActiveDTO userToIsAUserActiveDTO(User user);
+    IsUserActiveDto userToIsAUserActiveDTO(User user);
 
     User userCreateDtoToUser(UserPostPutDto userPostPutDto);
 

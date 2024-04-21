@@ -15,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDto implements AuthenticationDetails {
+    //za GetAll ili kada vracamo single User-a
     private Long userId;
     private String firstName;
     private String lastName;

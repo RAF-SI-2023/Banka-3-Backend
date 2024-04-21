@@ -169,12 +169,12 @@ public class UserControllerTestSteps extends UserControllerTestsConfig{
 
     @When("korisnik setuje sifru {string} i email {string}")
     public void korisnikSetujeSifruIEmail(String password, String email) {
-        SetPasswordDto setPasswordDTO = new SetPasswordDto();
-        setPasswordDTO.setPassword(password);
-        setPasswordDTO.setEmail(email);
+        UserSetPasswordDto userSetPasswordDTO = new UserSetPasswordDto();
+        userSetPasswordDTO.setPassword(password);
+        userSetPasswordDTO.setEmail(email);
 
         try {
-            String setPasswordDTOJson = objectMapper.writeValueAsString(setPasswordDTO);
+            String setPasswordDTOJson = objectMapper.writeValueAsString(userSetPasswordDTO);
             ResultActions resultActions = mockMvc.perform(
                     post("/api/v1/user/setPassword")
                             .contentType(MediaType.APPLICATION_JSON)

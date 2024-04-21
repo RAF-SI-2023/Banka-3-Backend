@@ -10,7 +10,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.web.bind.annotation.*;
 import rs.edu.raf.userservice.domain.dto.login.LoginRequest;
 import rs.edu.raf.userservice.domain.dto.login.LoginResponse;
-import rs.edu.raf.userservice.domain.dto.user.SetPasswordDto;
+import rs.edu.raf.userservice.domain.dto.user.UserSetPasswordDto;
 import rs.edu.raf.userservice.domain.dto.user.UserPostPutDto;
 import rs.edu.raf.userservice.service.UserService;
 import rs.edu.raf.userservice.util.jwt.JwtUtil;
@@ -21,15 +21,15 @@ import rs.edu.raf.userservice.util.jwt.JwtUtil;
 @RequestMapping("/api/v1/user")
 public class UserController {
     private final AuthenticationManager authenticationManager;
-    private final UserService userService;
     private final JwtUtil jwtUtil;
+    private final UserService userService;
 
     @PostMapping("/auth/login")
     @Operation(description = "za Login korisnika")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
-                    loginRequest.getPassword()));
+                        loginRequest.getPassword()));
         } catch (Exception e) {
             return ResponseEntity.status(401).build();
         }
@@ -62,13 +62,16 @@ public class UserController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BANKING_OFFICER')")
     @Operation(description = "pravimo novog korisnika")
     public ResponseEntity<?> createUser(@RequestBody UserPostPutDto userPostPutDto) {
-        return ResponseEntity.ok(userService.addUser(userPostPutDto));
+        try {
+            return ResponseEntity.ok(userService.addUser(userPostPutDto));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body("Couldn't add User");
+        }
     }
 
-    @PutMapping(value = "/{id}",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BANKING_OFFICER')")
+    @Operation(description = "izmena postojeceg korisnika")
     public ResponseEntity<?> updateUser(@RequestBody UserPostPutDto updatedUser, @PathVariable Long id) {
         try {
             return ResponseEntity.ok(userService.updateUser(updatedUser, id));
@@ -79,12 +82,13 @@ public class UserController {
 
     @DeleteMapping(value = "/{id}")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BANKING_OFFICER')")
+    @Operation(description = "deaktivacija naloga korisnika")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-        if (userService.getUserById(id) != null) {
-            userService.deactivateUser(id);
-            return ResponseEntity.ok().build();
+        try {
+            return ResponseEntity.ok(userService.deactivateUser(id));
+        }catch (Exception e){
+            return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.notFound().build();
     }
 
     @GetMapping(value = "/findByEmail/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -98,7 +102,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/findEmailById/{userId}")
-    @Operation(description = "na osnovu ID-a vraca korisnikov email")
+    @Operation(description = "na osnovu ID-a korisnika vraca korisnikov email")
     public ResponseEntity<?> getUSerEmailById(@PathVariable Long userId){
         try {
             return ResponseEntity.ok(userService.getEmailByUser(userId));
@@ -108,25 +112,35 @@ public class UserController {
     }
 
     @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BANKING_OFFICER')")
+    @Operation(description = "pretraga korisnika po parametrima")
     public ResponseEntity<?> searchUsers(@RequestParam(value = "firstName", required = false) String firstName,
                                          @RequestParam(value = "lastName", required = false) String lastName,
                                          @RequestParam(value = "email", required = false) String email) {
-        return ResponseEntity.ok(this.userService.search(firstName, lastName, email));
+        try {
+            return ResponseEntity.ok(this.userService.search(firstName, lastName, email));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body("Something went wrong");
+        }
     }
 
     @GetMapping(value = "/isUserActive/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> isUserActive(@PathVariable String email) {
-        return ResponseEntity.ok(userService.isUserActive(email));
+        try {
+            return ResponseEntity.ok(userService.isUserActive(email));
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body("Something went wrong");
+        }
     }
 
     @PostMapping(value = "/setPassword")
-    public ResponseEntity<?> setPassword(@RequestBody SetPasswordDto setPasswordDTO) {
-        return ResponseEntity.ok(userService.setPassword(setPasswordDTO));
-    }
-
-    @PostMapping("/resetPassword")
-    public ResponseEntity<?> resetPassword(@RequestBody SetPasswordDto setPasswordDto) {
-        userService.resetPassword(setPasswordDto);
-        return ResponseEntity.ok(userService.resetPassword(setPasswordDto));
+    @Operation(description = "kada korisnik hoce da postavi prvi put sifru, ili da promeni postojecu")
+    public ResponseEntity<?> setPassword(@RequestBody UserSetPasswordDto userSetPasswordDto) {
+        try {
+            userService.setPassword(userSetPasswordDto);
+            return ResponseEntity.ok().build();
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body("Couldn't set password for User with email: " + userSetPasswordDto.getEmail());
+        }
     }
 }

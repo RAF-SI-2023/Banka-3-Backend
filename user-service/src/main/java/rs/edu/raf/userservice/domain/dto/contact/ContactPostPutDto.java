@@ -10,6 +10,7 @@ import lombok.ToString;
 @RequiredArgsConstructor
 @ToString
 public class ContactPostPutDto {
+    //za pravljenje novog, ili za update postojeceg kontakta
     private String myName;
     private String name;
     private String accountNumber;

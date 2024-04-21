@@ -11,6 +11,8 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserPostPutDto {
+    //kada pravimo novog
+    //kada update-ujemo postojeceg
     private String firstName;
     private String lastName;
     private String jmbg;

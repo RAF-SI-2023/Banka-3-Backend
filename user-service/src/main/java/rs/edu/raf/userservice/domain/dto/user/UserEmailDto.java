@@ -10,6 +10,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserEmailDto implements Serializable {
+    //za komunikaciju sa Bank Service-om
     private Long userId;
     private String email;
 }
