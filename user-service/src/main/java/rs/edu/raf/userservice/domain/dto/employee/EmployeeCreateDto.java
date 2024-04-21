@@ -14,6 +14,7 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class EmployeeCreateDto {
+    //kad kreiramo novog zaposlenog
     @NotBlank
     private String firstName;
     @NotBlank

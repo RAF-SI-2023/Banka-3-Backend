@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import rs.edu.raf.userservice.domain.AuthenticationDetails;
+import rs.edu.raf.userservice.domain.dto.company.CompanyDto;
 import rs.edu.raf.userservice.domain.dto.user.UserDto;
 
 import java.util.Date;
@@ -34,7 +35,7 @@ public class JwtUtil {
     public String generateToken(AuthenticationDetails authenticationDetails) {
         Map<String, Object> claims = new HashMap<>();
 
-        if (authenticationDetails instanceof UserDto) {
+        if (authenticationDetails instanceof UserDto || authenticationDetails instanceof CompanyDto) {
             claims.put("id", authenticationDetails.getId());
         } else {
             List<String> permissions = authenticationDetails.getPermissions().stream()

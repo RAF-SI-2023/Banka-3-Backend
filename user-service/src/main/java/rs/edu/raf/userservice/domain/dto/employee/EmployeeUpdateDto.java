@@ -16,6 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class EmployeeUpdateDto {
+    //kada update-ujemo zaposlenog
     @NotBlank
     private String firstName;
     @NotBlank

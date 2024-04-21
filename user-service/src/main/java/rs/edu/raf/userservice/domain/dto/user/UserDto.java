@@ -43,5 +43,4 @@ public class UserDto implements AuthenticationDetails {
     public List<Permission> getPermissions() {
         return new ArrayList<>();
     }
-
 }

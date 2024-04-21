@@ -24,6 +24,7 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     @PostMapping("/auth/login")
+    @Operation(description = "login zaposlenog")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),

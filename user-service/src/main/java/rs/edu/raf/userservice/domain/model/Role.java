@@ -13,7 +13,6 @@ import java.io.Serializable;
 @Data
 @Builder
 @AllArgsConstructor
-
 @RequiredArgsConstructor
 @Entity
 @Table(name = "roles", schema = "user_service_schema")

@@ -16,6 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @ToString
 public class EmployeeDto implements AuthenticationDetails {
+    //kada radimo getAllEmployees ili kad trazimo Single employee
     private Long employeeId;
     private String firstName;
     private String lastName;

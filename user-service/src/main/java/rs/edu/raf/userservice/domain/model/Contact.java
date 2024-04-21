@@ -13,7 +13,6 @@ import java.io.Serializable;
 @Data
 @Builder
 @AllArgsConstructor
-
 @RequiredArgsConstructor
 @Entity
 @Table(name = "contacts", schema = "user_service_schema")

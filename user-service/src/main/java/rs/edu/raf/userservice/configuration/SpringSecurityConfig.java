@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import rs.edu.raf.userservice.service.CompanyService;
 import rs.edu.raf.userservice.service.CustomDetailsService;
 import rs.edu.raf.userservice.service.EmployeeService;
 import rs.edu.raf.userservice.service.UserService;
@@ -23,17 +24,19 @@ import rs.edu.raf.userservice.util.jwt.JwtFilter;
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserService userService;
     private final EmployeeService employeeService;
+    private final CompanyService companyService;
     private final JwtFilter jwtFilter;
 
-    public SpringSecurityConfig(UserService userService, EmployeeService employeeService, JwtFilter jwtFilter) {
+    public SpringSecurityConfig(UserService userService, EmployeeService employeeService, CompanyService companyService, JwtFilter jwtFilter) {
         this.userService = userService;
         this.employeeService = employeeService;
+        this.companyService = companyService;
         this.jwtFilter = jwtFilter;
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        CustomDetailsService customDetailsService = new CustomDetailsService(userService, employeeService);
+        CustomDetailsService customDetailsService = new CustomDetailsService(userService, employeeService, companyService);
         auth.userDetailsService(customDetailsService);
     }
 
@@ -46,24 +49,18 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf()
                 .disable()
                 .authorizeRequests()
-                .antMatchers("/api/v1/credit-request/**").permitAll()
                 .antMatchers("/api/v1/user/auth/**").permitAll()
                 .antMatchers("/api/v1/user/resetPassword/**").permitAll()
-                .antMatchers("/api/v1/user/isUserActive/**").permitAll()
                 .antMatchers("/api/v1/user/setPassword/**").permitAll()
+                .antMatchers("/api/v1/user/isUserActive/**").permitAll()
                 .antMatchers("/api/v1/user/findEmailById/**").permitAll()
+                .antMatchers("/api/v1/employee/auth/**").permitAll()
                 .antMatchers("/api/v1/employee/resetPassword/**").permitAll()
                 .antMatchers("/api/v1/employee/setPassword/**").permitAll()
-                .antMatchers("/api/v1/employee/getExchangeEmployees/**").permitAll()
-                .antMatchers("/api/v1/employee/auth/**").permitAll()
-                .antMatchers("/api/v1/credit/**").permitAll()
                 .antMatchers("/api/v1/contact/**").permitAll()
-                .antMatchers("/api/v1/account/**").permitAll()
+                .antMatchers("/api/v1/company/auth/**").permitAll()
                 .antMatchers("/api/v1/company/**").permitAll()
-                .antMatchers("/api/v1/companyAccount/**").permitAll()
-                .antMatchers("/h2-console/**").permitAll()
                 .antMatchers("/swagger-ui/**").permitAll()
-                .antMatchers("/v3/**").permitAll()
                 .anyRequest().authenticated()
                 .and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

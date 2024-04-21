@@ -34,8 +34,7 @@ public class UserService implements UserDetailsService{
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = this.userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("user not " +
-                "found"));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("user not found"));
 
         if (user == null) {
             throw new UsernameNotFoundException("User with the email: " + email + " not found");
@@ -44,8 +43,7 @@ public class UserService implements UserDetailsService{
             throw new ForbiddenException("user not active");
         }
 
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(),
-                new ArrayList<>());
+        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), new ArrayList<>());
     }
 
     public UserDto getUserById(Long id) {

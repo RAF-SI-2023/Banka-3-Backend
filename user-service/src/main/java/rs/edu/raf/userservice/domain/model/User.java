@@ -15,7 +15,6 @@ import java.io.Serializable;
 @Data
 @Builder
 @AllArgsConstructor
-
 @RequiredArgsConstructor
 @Entity
 @Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = {"email"})}, schema = "user_service_schema")

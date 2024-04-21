@@ -4,18 +4,35 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import rs.edu.raf.userservice.domain.dto.company.CompanyCreateDto;
+import rs.edu.raf.userservice.domain.dto.login.LoginRequest;
+import rs.edu.raf.userservice.domain.dto.login.LoginResponse;
 import rs.edu.raf.userservice.service.CompanyService;
+import rs.edu.raf.userservice.util.jwt.JwtUtil;
 
 @RestController
 @AllArgsConstructor
 @CrossOrigin
 @RequestMapping("/api/v1/company")
 public class CompanyController {
-//    private final AuthenticationManager authenticationManager;
-//    private final JwtUtil jwtUtil;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
     private final CompanyService companyService;
+
+    @PostMapping("/auth/login")
+    @Operation(description = "za Login Kompanije")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        try {
+            System.out.println(loginRequest.getEmail() + "   " + loginRequest.getPassword());
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+        } catch (Exception e) {
+            return ResponseEntity.status(401).build();
+        }
+        return ResponseEntity.ok(new LoginResponse(jwtUtil.generateToken(companyService.getCompanyByEmail(loginRequest.getEmail()))));
+    }
 
     @GetMapping("/getAll")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BANKING_OFFICER')")

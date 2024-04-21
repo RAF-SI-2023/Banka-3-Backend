@@ -16,7 +16,6 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
-
 @RequiredArgsConstructor
 @Entity
 @Table(name = "employees", uniqueConstraints = {@UniqueConstraint(columnNames = {"email"})}, schema = "user_service_schema")
