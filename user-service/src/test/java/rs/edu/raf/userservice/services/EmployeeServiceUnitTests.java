@@ -210,21 +210,21 @@ public class EmployeeServiceUnitTests {
     @Test
     public void setPasswordTest() {
         Employee employee = createDummyEmployee("employee@gmail.com");
-        SetPasswordDTO setPasswordDTO = new SetPasswordDTO("pera1234", "employee@gmail.com");
+        EmployeeSetPasswordDto employeeSetPasswordDto = new EmployeeSetPasswordDto("pera1234", "employee@gmail.com");
 
         given(employeeRepository.findByEmail("employee@gmail.com")).willReturn(Optional.of(employee));
         given(employeeRepository.save(employee)).willReturn(employee);
         when(passwordEncoder.encode("pera1234")).thenReturn("encodedPassword");
 
         //TODO DA VIDIMO DAL TREBA DA SE PROVERI DAL JE PASSWORD ISTI
-        String result = employeeService.setPassword(setPasswordDTO);
-        assertEquals("Successfully updated password for " + setPasswordDTO.getEmail(), result);
+        String result = employeeService.setPassword(employeeSetPasswordDto);
+        assertEquals("Successfully updated password for " + employeeSetPasswordDto.getEmail(), result);
     }
     @Test
     public void setPasswordTest_Fail() {
         given(employeeRepository.findByEmail("email@gmail.com")).willReturn(Optional.empty());
-        SetPasswordDTO setPasswordDTO = new SetPasswordDTO("pera1234", "email@gmail.com");
-        assertThrows(ResponseStatusException.class, () -> employeeService.setPassword(setPasswordDTO));
+        EmployeeSetPasswordDto employeeSetPasswordDto = new EmployeeSetPasswordDto("pera1234", "email@gmail.com");
+        assertThrows(ResponseStatusException.class, () -> employeeService.setPassword(employeeSetPasswordDto));
     }
 
     @Test

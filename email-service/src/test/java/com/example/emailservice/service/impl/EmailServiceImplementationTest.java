@@ -1,5 +1,6 @@
 package com.example.emailservice.service.impl;
 
+import com.example.emailservice.service.email.EmailServiceImplementation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,12 +13,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class EmailServiceImplTest {
+public class EmailServiceImplementationTest {
 
     @Mock
     private JavaMailSender javaMailSender;
     @InjectMocks
-    private EmailServiceImpl emailService;
+    private EmailServiceImplementation emailService;
 
     @Test
     public void sendSimpleMessageTest() {

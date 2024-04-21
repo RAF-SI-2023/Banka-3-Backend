@@ -1,6 +1,5 @@
-package com.example.emailservice.service.impl;
+package com.example.emailservice.service.email;
 
-import com.example.emailservice.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -9,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class EmailServiceImpl implements EmailService {
+public class EmailServiceImplementation implements EmailService {
     private final JavaMailSender emailSender;
     @Value("${email}")
     public String email;

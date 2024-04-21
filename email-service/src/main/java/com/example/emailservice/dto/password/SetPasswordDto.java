@@ -1,4 +1,4 @@
-package com.example.emailservice.dto;
+package com.example.emailservice.dto.password;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,6 +10,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SetPasswordDto implements Serializable {
-    private String password;
+    //saljemo email zaposlenog ili korisnika,
+    //i password koji mu treba postaviti
     private String email;
+    private String password;
 }

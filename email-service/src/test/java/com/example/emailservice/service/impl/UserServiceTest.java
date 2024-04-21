@@ -2,14 +2,15 @@ package com.example.emailservice.service.impl;
 
 import com.example.emailservice.client.UserServiceClient;
 import com.example.emailservice.dto.ResetUserPasswordDto;
-import com.example.emailservice.dto.SetPasswordDto;
-import com.example.emailservice.dto.SetUserPasswordCodeDto;
-import com.example.emailservice.dto.TryPasswordResetDto;
+import com.example.emailservice.dto.password.SetPasswordDto;
+import com.example.emailservice.dto.password.SetUserPasswordCodeDto;
+import com.example.emailservice.dto.password.TryPasswordResetDto;
 import com.example.emailservice.model.PasswordReset;
 import com.example.emailservice.model.UserActivation;
 import com.example.emailservice.repository.PasswordResetRepository;
 import com.example.emailservice.repository.UserActivationRepository;
-import com.example.emailservice.service.EmailService;
+import com.example.emailservice.service.email.EmailService;
+import com.example.emailservice.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -29,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class UserServiceImplTest {
+public class UserServiceTest {
 
     @Mock
     private SetPasswordDto setPasswordDTO;
@@ -44,7 +45,7 @@ public class UserServiceImplTest {
     @Mock
     private UserActivationRepository userActivationRepository;
     @InjectMocks
-    private UserServiceImpl userServiceImpl;
+    private UserService userService;
 
     @Test
     public void userActivationTest() {
@@ -61,7 +62,7 @@ public class UserServiceImplTest {
         when(userActivationRepository.save(any())).thenReturn(userActivation);
         doNothing().when(emailService).sendSimpleMessage(eq(email), anyString(), anyString());
 
-        userServiceImpl.userActivation(email);
+        userService.userActivation(email);
 
         verify(userActivationRepository, times(1)).save(any(UserActivation.class));
     }
@@ -79,7 +80,7 @@ public class UserServiceImplTest {
         when(userActivationRepository.findUserActivationByCodeAndActivationPossibleIsTrue(1234))
                 .thenReturn(Optional.of(userActivation));
 
-        boolean result = userServiceImpl.setUserPassword(setUserPasswordCodeDTO);
+        boolean result = userService.setUserPassword(setUserPasswordCodeDTO);
 
 
         assertTrue(result);
@@ -97,7 +98,7 @@ public class UserServiceImplTest {
         when(userActivationRepository.findUserActivationByCodeAndActivationPossibleIsTrue(1234))
                 .thenReturn(Optional.of(userActivation));
 
-        boolean result = userServiceImpl.setUserPassword(setUserPasswordCodeDTO);
+        boolean result = userService.setUserPassword(setUserPasswordCodeDTO);
 
         assertFalse(result);
         verify(userServiceClient, never()).setUserPassword(any(SetPasswordDto.class));
@@ -111,7 +112,7 @@ public class UserServiceImplTest {
         when(userActivationRepository.findUserActivationByCodeAndActivationPossibleIsTrue(1234))
                 .thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> userServiceImpl.setUserPassword(setUserPasswordCodeDTO));
+        assertThrows(NotFoundException.class, () -> userService.setUserPassword(setUserPasswordCodeDTO));
         verify(userServiceClient, never()).setUserPassword(any(SetPasswordDto.class));
     }
 
@@ -123,7 +124,7 @@ public class UserServiceImplTest {
 
         when(passwordResetRepository.save(any(PasswordReset.class))).thenReturn(passwordReset);
 
-        userServiceImpl.generateResetCode(email);
+        userService.generateResetCode(email);
 
         verify(passwordResetRepository, times(1)).save(any(PasswordReset.class));
         verify(emailService, times(1)).sendSimpleMessage(eq(email), anyString(), anyString());
@@ -147,7 +148,7 @@ public class UserServiceImplTest {
         ResponseEntity<String> successResponse = new ResponseEntity<>("Success", HttpStatus.OK);
         when(userServiceClient.resetUserPassword(any(ResetUserPasswordDto.class))).thenReturn(successResponse);
 
-        String result = userServiceImpl.tryChangePassword(tryPasswordResetDTO);
+        String result = userService.tryChangePassword(tryPasswordResetDTO);
 
         assertEquals("Password successfully changed", result);
         verify(userServiceClient, times(1)).resetUserPassword(any(ResetUserPasswordDto.class));
@@ -160,7 +161,7 @@ public class UserServiceImplTest {
 
         when(passwordResetRepository.findByIdentifier("nonExistentIdentifier")).thenReturn(Optional.empty());
 
-        assertThrows(ResponseStatusException.class, () -> userServiceImpl.tryChangePassword(tryPasswordResetDTO));
+        assertThrows(ResponseStatusException.class, () -> userService.tryChangePassword(tryPasswordResetDTO));
         verify(userServiceClient, never()).resetUserPassword(any(ResetUserPasswordDto.class));
     }
 
@@ -174,7 +175,7 @@ public class UserServiceImplTest {
 
         when(passwordResetRepository.findByIdentifier("testIdentifier")).thenReturn(Optional.of(passwordReset));
 
-        String result = userServiceImpl.tryChangePassword(tryPasswordResetDTO);
+        String result = userService.tryChangePassword(tryPasswordResetDTO);
 
         assertEquals("Password reset failed", result);
         verify(userServiceClient, never()).resetUserPassword(any(ResetUserPasswordDto.class));

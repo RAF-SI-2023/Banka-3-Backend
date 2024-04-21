@@ -1,4 +1,4 @@
-package com.example.emailservice.dto;
+package com.example.emailservice.dto.password;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +9,8 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResetPasswordDto implements Serializable {
-    private String newPassword;
+public class SetUserPasswordCodeDto implements Serializable {
     private String email;
+    private int code;
+    private String password;
 }

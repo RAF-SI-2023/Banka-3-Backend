@@ -72,9 +72,9 @@ public class UserController {
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BANKING_OFFICER')")
     @Operation(description = "izmena postojeceg korisnika")
-    public ResponseEntity<?> updateUser(@RequestBody UserPostPutDto updatedUser, @PathVariable Long id) {
+    public ResponseEntity<?> updateUser(@RequestBody UserPostPutDto userPostPutDto, @PathVariable Long id) {
         try {
-            return ResponseEntity.ok(userService.updateUser(updatedUser, id));
+            return ResponseEntity.ok(userService.updateUser(userPostPutDto, id));
         }catch (Exception e) {
             return ResponseEntity.badRequest().body("Couldn't update user");
         }
@@ -125,6 +125,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/isUserActive/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "provera da li je korisnik Code active")
     public ResponseEntity<?> isUserActive(@PathVariable String email) {
         try {
             return ResponseEntity.ok(userService.isUserActive(email));

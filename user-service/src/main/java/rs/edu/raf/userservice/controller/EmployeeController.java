@@ -1,8 +1,7 @@
 package rs.edu.raf.userservice.controller;
 
-
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,16 +14,14 @@ import rs.edu.raf.userservice.domain.dto.login.LoginResponse;
 import rs.edu.raf.userservice.service.EmployeeService;
 import rs.edu.raf.userservice.util.jwt.JwtUtil;
 
-import java.util.List;
-
 @RestController
 @AllArgsConstructor
 @CrossOrigin()
 @RequestMapping("/api/v1/employee")
 public class EmployeeController {
     private final AuthenticationManager authenticationManager;
-    private final EmployeeService employeeService;
     private final JwtUtil jwtUtil;
+    private final EmployeeService employeeService;
 
     @PostMapping("/auth/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
@@ -34,82 +31,100 @@ public class EmployeeController {
         } catch (Exception e) {
             return ResponseEntity.status(401).build();
         }
-
         return ResponseEntity.ok(new LoginResponse(jwtUtil.generateToken(employeeService.findByEmail(loginRequest.getEmail()))));
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody EmployeeCreateDto employeeCreateDto) {
-        employeeService.create(employeeCreateDto);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public EmployeeDto createEmployee(@RequestBody EmployeeCreateDto createEmployeeDto) {
-        return employeeService.create(createEmployeeDto);
-    }
-
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(path = "/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<EmployeeDto> findAllEmployees() {
-        return employeeService.findAll();
-    }
-
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces =
-            MediaType.APPLICATION_JSON_VALUE)
-    public EmployeeDto updateEmployee(@RequestBody EmployeeUpdateDto updatedEmployee, @PathVariable Long id) {
-        return employeeService.update(updatedEmployee, id);
+    @Operation(description = "vracam listu svih zaposlenih")
+    public ResponseEntity<?> getAllEmployees() {
+        return ResponseEntity.ok(employeeService.findAll());
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity<?> deleteEmployee(@PathVariable Long id) {
-        if (employeeService.findById(id) != null) {
-            employeeService.delete(id);
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.notFound().build();
-    }
-
-    @PostMapping(value = "/setPassword")
-    public ResponseEntity<String> changePassword(@RequestBody SetPasswordDTO passwordDTO) {
-        return ResponseEntity.ok(employeeService.setPassword(passwordDTO));
-    }
-
-    @PostMapping(value = "/resetPassword")
-    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordDTO resetPasswordDTO) {
-        return ResponseEntity.ok(employeeService.resetPassword(resetPasswordDTO));
-    }
-
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/findById/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(description = "vracam zaposlenog po ID-u")
     public ResponseEntity<?> findEmployeeById(@PathVariable Long id) {
-        return ResponseEntity.ok(employeeService.findById(id));
+        try {
+            return ResponseEntity.ok(employeeService.findById(id));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body("Couldn't find Employee withd id: " + id);
+        }
     }
 
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(description = "pravimo novog zaposlenog")
+    public ResponseEntity<?> createEmployee(@RequestBody EmployeeCreateDto createEmployeeDto) {
+        try {
+            return ResponseEntity.ok(employeeService.addEmployee(createEmployeeDto));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body("Couldn't add Employee");
+        }
+    }
+
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(description = "izmena postojeceg zapolsenog")
+    public ResponseEntity<?> updateEmployee(@RequestBody EmployeeUpdateDto updatedEmployee, @PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(employeeService.updateEmployee(updatedEmployee, id));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body("Couldn't update Employee with id: " + id);
+        }
+    }
+
+    @DeleteMapping(value = "/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(description = "deaktivacija naloga zaposlenog")
+    public ResponseEntity<?> deleteEmployee(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(employeeService.deactivateEmployee(id));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body("Couldn't deactivate Employee id:" + id);
+        }
+    }
+
     @GetMapping(value = "/findByEmail/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public EmployeeDto findEmployeeByEmail(@PathVariable String email) {
-        return employeeService.findByEmail(email);
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<?> findEmployeeByEmail(@PathVariable String email) {
+        try {
+            return ResponseEntity.ok(employeeService.findByEmail(email));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body("Couldn't find employee with email: " + email);
+        }
     }
 
     @GetMapping(value = "/findByUsername/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public EmployeeDto findEmployeeByUsername(@PathVariable String username) {
-        return employeeService.findByUsername(username);
+    public ResponseEntity<?> findEmployeeByUsername(@PathVariable String username) {
+        try {
+            return ResponseEntity.ok(employeeService.findByUsername(username));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body("Couldn't find Employe with username: " + username);
+        }
     }
 
     @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> searchEmployees(@RequestParam(value = "firstName", required = false) String firstName,
                                              @RequestParam(value = "lastName", required = false) String lastName,
                                              @RequestParam(value = "email", required = false) String email,
                                              @RequestParam(value = "role", required = false) String role) {
-        return ResponseEntity.ok(this.employeeService.search(firstName, lastName, email, role));
+        try {
+            return ResponseEntity.ok(this.employeeService.search(firstName, lastName, email, role));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body("Something went wrong");
+        }
     }
 
-    @GetMapping(value="/getExchangeEmployees", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getExchangeEmployees() {
-        return ResponseEntity.ok(employeeService.findSupervisorsAndAgents());
+    @PostMapping(value = "/setPassword")
+    @Operation(description = "kada zaposleni prvi put postavlja sifru, ili da promeni postojecu")
+    public ResponseEntity<String> changePassword(@RequestBody EmployeeSetPasswordDto passwordDto) {
+        try {
+            employeeService.setPassword(passwordDto);
+            return ResponseEntity.ok().build();
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body("Couldn't set password for User with email: " + passwordDto.getEmail());
+        }
     }
 }

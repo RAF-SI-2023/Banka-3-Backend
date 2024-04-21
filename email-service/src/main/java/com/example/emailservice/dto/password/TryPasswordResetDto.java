@@ -1,4 +1,4 @@
-package com.example.emailservice.dto;
+package com.example.emailservice.dto.password;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +9,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserActivationDto implements Serializable {
-    String email;
-    Boolean isActive;
+public class TryPasswordResetDto implements Serializable {
+    private String identifier;
+    private String password;
 }

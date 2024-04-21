@@ -2,11 +2,11 @@ package com.example.emailservice;
 
 import com.example.emailservice.client.UserServiceClient;
 import com.example.emailservice.dto.ResetPasswordDto;
-import com.example.emailservice.dto.TryPasswordResetDto;
+import com.example.emailservice.dto.password.TryPasswordResetDto;
 import com.example.emailservice.model.EmployeeActivation;
 import com.example.emailservice.repository.EmployeeActivationRepository;
-import com.example.emailservice.service.EmailService;
-import com.example.emailservice.service.impl.EmployeeServiceImpl;
+import com.example.emailservice.service.email.EmailService;
+import com.example.emailservice.service.EmployeeService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,7 +25,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class EmployeeServiceImplUnitTest {
+public class EmployeeServiceUnitTest {
 
     @Mock
     private EmployeeActivationRepository employeeActivationRepository;
@@ -35,7 +35,7 @@ public class EmployeeServiceImplUnitTest {
     private EmailService emailService;
 
     @InjectMocks
-    private EmployeeServiceImpl employeeServiceImpl;
+    private EmployeeService employeeService;
 
 
     @Test
@@ -45,7 +45,7 @@ public class EmployeeServiceImplUnitTest {
         EmployeeActivation employeeActivation = new EmployeeActivation(null, email,identifier, LocalDateTime.now(), true);
         when(employeeActivationRepository.save(any())).thenReturn(employeeActivation);
 
-        employeeServiceImpl.employeeCreated(email);
+        employeeService.employeeCreated(email);
 
         verify(employeeActivationRepository, times(1)).save(any());
         verify(emailService, times(1)).sendSimpleMessage(eq(email), anyString(), anyString());
@@ -65,9 +65,9 @@ public class EmployeeServiceImplUnitTest {
         when(employeeActivationRepository.findEmployeeActivationByIdentifierAndActivationPossibleIsTrue(identifier))
                 .thenReturn(Optional.of(employeeActivation));
         ResponseEntity<String> successfulResponse = ResponseEntity.ok("Password successfully updated");
-        when(userServiceClient.setPassword(any())).thenReturn(successfulResponse);
+        when(userServiceClient.setEmployeePassword(any())).thenReturn(successfulResponse);
 
-        String result = employeeServiceImpl.changePassword(identifier, password);
+        String result = employeeService.changePassword(identifier, password);
 
         assertEquals("Password successfully changed", result);
     }
@@ -76,7 +76,7 @@ public class EmployeeServiceImplUnitTest {
         given(employeeActivationRepository.findEmployeeActivationByIdentifierAndActivationPossibleIsTrue("invalidIdentifier")).willReturn(Optional.empty());
         String identifier = "invalidIdentifier";
         String password = "newPassword";
-        assertThrows(Exception.class, () -> employeeServiceImpl.changePassword(identifier, password));
+        assertThrows(Exception.class, () -> employeeService.changePassword(identifier, password));
     }
     @Test
     public void changePasswordTest_Fail() {
@@ -88,10 +88,10 @@ public class EmployeeServiceImplUnitTest {
         when(employeeActivationRepository.findEmployeeActivationByIdentifierAndActivationPossibleIsTrue(identifier))
                 .thenReturn(Optional.of(employeeActivation));
         ResponseEntity<String> failedResponse = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Password change failed");
-        when(userServiceClient.setPassword(any())).thenReturn(failedResponse);
+        when(userServiceClient.setEmployeePassword(any())).thenReturn(failedResponse);
 
         ResponseStatusException exception =
-                assertThrows(ResponseStatusException.class, () -> employeeServiceImpl.changePassword(identifier, password));
+                assertThrows(ResponseStatusException.class, () -> employeeService.changePassword(identifier, password));
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
         assertEquals("Password change failed", exception.getReason());
     }
@@ -107,7 +107,7 @@ public class EmployeeServiceImplUnitTest {
         when(userServiceClient.resetPassword(resetPasswordDTO)).thenReturn(successResponse);
 
         // Izvršavanje metode koju testiramo
-        String result = employeeServiceImpl.resetPassword(tryPasswordResetDTO);
+        String result = employeeService.resetPassword(tryPasswordResetDTO);
 
         // Provera rezultata
         assertEquals("Password successfully changed", result);
@@ -124,7 +124,7 @@ public class EmployeeServiceImplUnitTest {
         when(employeeActivationRepository.findEmployeeActivationByIdentifierAndActivationPossibleIsTrue(tryPasswordResetDTO.getIdentifier())).thenReturn(Optional.of(employeeActivation));
         when(userServiceClient.resetPassword(resetPasswordDTO)).thenReturn(errorResponse);
 
-        assertThrows(ResponseStatusException.class,() -> employeeServiceImpl.resetPassword(tryPasswordResetDTO));
+        assertThrows(ResponseStatusException.class,() -> employeeService.resetPassword(tryPasswordResetDTO));
     }
 
     @Test
@@ -132,7 +132,7 @@ public class EmployeeServiceImplUnitTest {
         // Priprema podataka za test
         String email = "test@example.com";
 
-        employeeServiceImpl.tryResetPassword(email);
+        employeeService.tryResetPassword(email);
 
         verify(employeeActivationRepository, times(1)).save(any(EmployeeActivation.class));
 

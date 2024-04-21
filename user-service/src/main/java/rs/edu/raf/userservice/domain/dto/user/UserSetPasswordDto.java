@@ -10,7 +10,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserSetPasswordDto implements Serializable {
-    //kada korisnik restartuje lozinku
+    //kada korisnik restartuje lozinku ili kad je postavlja
     private String email;
     private String password;
 }

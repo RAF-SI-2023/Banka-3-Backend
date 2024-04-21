@@ -39,7 +39,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().headers()
                 .frameOptions().disable();
-
     }
 
     @Override

@@ -13,5 +13,5 @@ public class IsUserActiveDto implements Serializable {
     //ovo nam treba da proverimo, prilikom Login-a, da li je korisnik
     //uneo kod za aktivaciju
     private String email;
-    private boolean isActive;
+    private boolean codeActive;
 }

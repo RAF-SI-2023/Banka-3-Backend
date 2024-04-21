@@ -1,4 +1,4 @@
-package com.example.emailservice.service.impl;
+package com.example.emailservice.service;
 
 
 import com.example.emailservice.client.BankServiceClient;
@@ -8,7 +8,7 @@ import com.example.emailservice.dto.TransactionActivationDto;
 import com.example.emailservice.dto.bankService.TransactionFinishedDto;
 import com.example.emailservice.model.TransactionActivation;
 import com.example.emailservice.repository.TransactionActivationRepository;
-import com.example.emailservice.service.EmailService;
+import com.example.emailservice.service.email.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

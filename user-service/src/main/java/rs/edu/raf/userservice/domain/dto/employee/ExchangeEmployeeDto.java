@@ -9,9 +9,9 @@ import lombok.ToString;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @ToString
-public class ExchangeEmployeeDTO {
+public class ExchangeEmployeeDto {
+    //za slanje podataka ka Exchange Servicu
     private Long employeeId;
     private String email;
     private String role;
-
 }

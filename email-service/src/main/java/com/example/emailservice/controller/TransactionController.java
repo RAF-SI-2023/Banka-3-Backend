@@ -4,7 +4,7 @@ package com.example.emailservice.controller;
 import com.example.emailservice.dto.ConfirmTransactionDto;
 import com.example.emailservice.dto.TransactionActivationDto;
 import com.example.emailservice.dto.bankService.TransactionFinishedDto;
-import com.example.emailservice.service.impl.TransactionService;
+import com.example.emailservice.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,5 @@
 package rs.edu.raf.userservice.service;
 
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -76,14 +75,14 @@ public class UserService implements UserDetailsService{
 
     public UserDto updateUser(UserPostPutDto user, Long id) {
         User newUser = userRepository.findById(id).orElseThrow(() -> new NotFoundException("user with" + id + " not found"));
+        newUser.setActive(true);
         UserMapper.INSTANCE.updateUserFromUserUpdateDto(newUser, user);
         userRepository.save(newUser);
         return UserMapper.INSTANCE.userToUserDto(newUser);
     }
 
     public UserDto deactivateUser(Long id) {
-        User newUser = userRepository.findById(id).orElseThrow(() -> new NotFoundException("user with" + id + " not " +
-                "found"));
+        User newUser = userRepository.findById(id).orElseThrow(() -> new NotFoundException("user with" + id + " not found"));
         newUser.setActive(false);
         return UserMapper.INSTANCE.userToUserDto(userRepository.save(newUser));
     }
@@ -108,7 +107,7 @@ public class UserService implements UserDetailsService{
         User user = userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User with" + email +
                 " not found"));
 
-        if (!user.isActive()) {
+        if (!user.isCodeActive()) {
             emailServiceClient.sendUserActivationEmailToEmailService(email);
         }
         return UserMapper.INSTANCE.userToIsAUserActiveDTO(user);
@@ -120,6 +119,7 @@ public class UserService implements UserDetailsService{
 
         user.setPassword(passwordEncoder.encode(userSetPasswordDTO.getPassword()));
         user.setActive(true);
+        user.setCodeActive(true);
         userRepository.save(user);
     }
 }
