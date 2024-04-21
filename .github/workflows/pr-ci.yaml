@@ -1,0 +1,31 @@
+name: Java CI - Build and test with Maven
+
+on:
+  pull_request:
+    
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        project: [bank-service, email-service, exchange-service, user-service]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Build and test with Maven
+      run: mvn -f ${{ matrix.project }}/pom.xml clean test
+
+    - name: Archive test results
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results-${{ matrix.project }}
+        path: ${{ matrix.project }}/target/surefire-reports/
