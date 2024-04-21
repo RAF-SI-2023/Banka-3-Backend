@@ -183,26 +183,44 @@ public class BootstrapData implements CommandLineRunner {
                     companyAccount6));
         }
 
-        Card normalAccountCard = new Card();
-        normalAccountCard.setAccountNumber("1111111111111111");
-        normalAccountCard.setCardNumber("12345678");
-        normalAccountCard.setCardName("DEBIT");
-        normalAccountCard.setCVV("123");
-        normalAccountCard.setCreationDate(System.currentTimeMillis());
-        normalAccountCard.setExpireDate(System.currentTimeMillis() + 60 * 60 * 24 * 365 * 10);
-        normalAccountCard.setActive(true);
+        Card jankoDinarskiKartica = new Card();
+        jankoDinarskiKartica.setAccountNumber("1111111111111111");
+        jankoDinarskiKartica.setCardNumber("12345678");
+        jankoDinarskiKartica.setCardName("Janko dinarski kartica");
+        jankoDinarskiKartica.setCVV("123");
+        jankoDinarskiKartica.setCreationDate(System.currentTimeMillis());
+        jankoDinarskiKartica.setExpireDate(System.currentTimeMillis() + 60 * 60 * 24 * 365 * 10);
+        jankoDinarskiKartica.setActive(true);
 
-        Card companyAccountCard = new Card();
-        companyAccountCard.setAccountNumber("2222222222222222");
-        companyAccountCard.setCardNumber("87654321");
-        companyAccountCard.setCardName("DEBIT");
-        companyAccountCard.setCVV("321");
-        companyAccountCard.setCreationDate(System.currentTimeMillis());
-        companyAccountCard.setExpireDate(System.currentTimeMillis() + 60 * 60 * 24 * 365 * 10);
-        companyAccountCard.setActive(true);
+        Card jankoEurskiKartica = new Card();
+        jankoEurskiKartica.setAccountNumber("1231231231231231");
+        jankoEurskiKartica.setCardNumber("12312312");
+        jankoEurskiKartica.setCardName("Janko dinarski kartica");
+        jankoEurskiKartica.setCVV("456");
+        jankoEurskiKartica.setCreationDate(System.currentTimeMillis());
+        jankoEurskiKartica.setExpireDate(System.currentTimeMillis() + 60 * 60 * 24 * 365 * 10);
+        jankoEurskiKartica.setActive(true);
+
+        Card strahinjaDinarskiKartica = new Card();
+        strahinjaDinarskiKartica.setAccountNumber("2222222222222222");
+        strahinjaDinarskiKartica.setCardNumber("87654321");
+        strahinjaDinarskiKartica.setCardName("DEBIT");
+        strahinjaDinarskiKartica.setCVV("321");
+        strahinjaDinarskiKartica.setCreationDate(System.currentTimeMillis());
+        strahinjaDinarskiKartica.setExpireDate(System.currentTimeMillis() + 60 * 60 * 24 * 365 * 10);
+        strahinjaDinarskiKartica.setActive(true);
+
+        Card strahinjaEurskiKartica = new Card();
+        strahinjaEurskiKartica.setAccountNumber("3213213213213213");
+        strahinjaEurskiKartica.setCardNumber("32132132");
+        strahinjaEurskiKartica.setCardName("DEBIT");
+        strahinjaEurskiKartica.setCVV("789");
+        strahinjaEurskiKartica.setCreationDate(System.currentTimeMillis());
+        strahinjaEurskiKartica.setExpireDate(System.currentTimeMillis() + 60 * 60 * 24 * 365 * 10);
+        strahinjaEurskiKartica.setActive(true);
 
         if (cardRepository.count() == 0) {
-            loadCardData(List.of(normalAccountCard, companyAccountCard));
+            loadCardData(List.of(jankoDinarskiKartica, jankoEurskiKartica, strahinjaDinarskiKartica, strahinjaEurskiKartica));
         }
     }
 
