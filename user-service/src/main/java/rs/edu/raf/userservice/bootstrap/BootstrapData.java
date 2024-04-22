@@ -184,16 +184,16 @@ public class BootstrapData implements CommandLineRunner {
             //CONTACTS
             Contact contact1 = Contact.builder()
                     .user(user1)
-                    .name("Janko Ristic")
-                    .myName("jane")
-                    .accountNumber("1111222233334444")
+                    .name("Strahinja Ljubicic")
+                    .myName("strale dinarski")
+                    .accountNumber("2222222222222222")
                     .build();
 
             Contact contact2 = Contact.builder()
                     .user(user1)
-                    .name("Marko Petrovic")
-                    .myName("mare")
-                    .accountNumber("6666777788889999")
+                    .name("Strahinja Ljubicic")
+                    .myName("strale eurski")
+                    .accountNumber("3213213213213213")
                     .build();
 
             contactRepository.saveAll(Arrays.asList(contact1, contact2));
