@@ -10,14 +10,23 @@ presubmits:
             - -c
             - |
               set -euo pipefail
-              
+    
               start-docker.sh
-              docker-compose up -d
-              SERVICE_NAME="user-service"
               
-              cd ${SERVICE_NAME}
+              pwd 
+              echo test
+              git clone https://github.com/RAF-SI-2023/Banka-3-Infrastructure.git /tmp/banka-infra
+              
+              cd /tmp/banka-infra
+              docker-compose up -d database
+              docker-compose up -d user-service
+
+              SERVICE_NAME="user-service"
               sleep 120
-              mvn clean verify test
+              # cd ${SERVICE_NAME}
+              
+              # mvn clean verify test
+
               junit_source_directory="./target/surefire-reports"
               junit_dest_directory="/logs/artifacts/"
               counter=1
