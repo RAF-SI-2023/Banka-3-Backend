@@ -15,4 +15,7 @@ public interface EmailServiceClient {
 
     @RequestMapping(method = RequestMethod.GET, value = "/user/userActivation")
     ResponseEntity<Void> sendUserActivationEmailToEmailService(@RequestParam(name = "email") String email);
+
+    @RequestMapping(method = RequestMethod.GET, value = "/company/companyActivation")
+    ResponseEntity<Void> sendCompanyActivationEmailToEmailService(@RequestParam(name = "email") String email);
 }

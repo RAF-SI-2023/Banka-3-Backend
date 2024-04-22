@@ -1,4 +1,4 @@
-package com.example.emailservice.model;
+package com.example.emailservice.domain.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,11 +19,11 @@ public class UserActivation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "This field cannot be NULL")
+    @NotNull(message = "email field cannot be NULL")
     @Email
     private String email;
 
-    @NotNull(message = "This field cannot be NULL")
+    @NotNull(message = "code field cannot be NULL")
     private int code;
 
     @NotNull

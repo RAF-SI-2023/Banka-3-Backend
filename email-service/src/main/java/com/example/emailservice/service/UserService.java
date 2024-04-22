@@ -1,22 +1,24 @@
 package com.example.emailservice.service;
 
 import com.example.emailservice.client.UserServiceClient;
-import com.example.emailservice.dto.password.SetPasswordDto;
-import com.example.emailservice.dto.password.SetUserPasswordCodeDto;
-import com.example.emailservice.dto.password.TryPasswordResetDto;
-import com.example.emailservice.model.PasswordReset;
-import com.example.emailservice.model.UserActivation;
+import com.example.emailservice.domain.dto.password.SetPasswordDto;
+import com.example.emailservice.domain.dto.password.SetUserPasswordCodeDto;
+import com.example.emailservice.domain.dto.password.TryPasswordResetDto;
+import com.example.emailservice.domain.model.PasswordReset;
+import com.example.emailservice.domain.model.UserActivation;
 import com.example.emailservice.repository.PasswordResetRepository;
 import com.example.emailservice.repository.UserActivationRepository;
 import com.example.emailservice.service.email.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.webjars.NotFoundException;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
@@ -52,6 +54,7 @@ public class UserService {
         }).start();
     }
 
+    //saljemo novu sifru ka User-servicu
     public Boolean setUserPassword(SetUserPasswordCodeDto setUserPasswordCodeDto) {
         UserActivation userActivation = userActivationRepository.findUserActivationByCodeAndActivationPossibleIsTrue(setUserPasswordCodeDto.getCode()).orElseThrow(
                 () -> new NotFoundException("Activation code not found."));
@@ -105,6 +108,19 @@ public class UserService {
             return "Password successfully changed";
         } else {
             return "Password reset failed";
+        }
+    }
+
+    @Scheduled(fixedRate = 900000) // 15 minutes in milliseconds
+    public void cleanupInactiveEntities() {
+        try {
+            // Get all entities with setActive == false
+            Optional<UserActivation> inactiveEntities = userActivationRepository.findByActivationPossible(false);
+
+            // Delete inactive entities
+            userActivationRepository.deleteAll(inactiveEntities.stream().toList());
+        } catch (Exception e) {
+            System.err.println("Error occurred during entity cleanup: " + e.getMessage());
         }
     }
 

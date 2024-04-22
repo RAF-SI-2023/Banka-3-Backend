@@ -1,6 +1,6 @@
 package com.example.emailservice.client;
 
-import com.example.emailservice.dto.password.SetPasswordDto;
+import com.example.emailservice.domain.dto.password.SetPasswordDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +13,11 @@ public interface UserServiceClient {
             produces = "application/json",
             consumes = "application/json")
     ResponseEntity<String> setUserPassword(@RequestBody SetPasswordDto passwordDTO);
+
+    @PostMapping(value = "/company/setPassword",
+            produces = "application/json",
+            consumes = "application/json")
+    ResponseEntity<String> setCompanyPassword(@RequestBody SetPasswordDto passwordDTO);
 
     @PostMapping(value = "/employee/setPassword",
             produces = "application/json",

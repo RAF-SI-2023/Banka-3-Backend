@@ -1,9 +1,9 @@
 package com.example.emailservice.service;
 
 import com.example.emailservice.client.UserServiceClient;
-import com.example.emailservice.dto.password.SetPasswordDto;
-import com.example.emailservice.dto.password.TryPasswordResetDto;
-import com.example.emailservice.model.EmployeeActivation;
+import com.example.emailservice.domain.dto.password.SetPasswordDto;
+import com.example.emailservice.domain.dto.password.TryPasswordResetDto;
+import com.example.emailservice.domain.model.EmployeeActivation;
 import com.example.emailservice.repository.EmployeeActivationRepository;
 import com.example.emailservice.service.email.EmailService;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +21,9 @@ import static java.lang.Thread.sleep;
 @Service
 @RequiredArgsConstructor
 public class EmployeeService {
-    private final EmployeeActivationRepository employeeActivationRepository;
-    private final UserServiceClient userServiceClient;
     private final EmailService emailService;
+    private final UserServiceClient userServiceClient;
+    private final EmployeeActivationRepository employeeActivationRepository;
 
     /***
      *Pravi se random identifier, objekat employeeActivation i cuva se u bazu

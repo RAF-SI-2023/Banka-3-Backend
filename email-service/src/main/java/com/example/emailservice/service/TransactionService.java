@@ -2,11 +2,11 @@ package com.example.emailservice.service;
 
 
 import com.example.emailservice.client.BankServiceClient;
-import com.example.emailservice.dto.ConfirmTransactionDto;
-import com.example.emailservice.dto.FinalizeTransactionDto;
-import com.example.emailservice.dto.TransactionActivationDto;
-import com.example.emailservice.dto.bankService.TransactionFinishedDto;
-import com.example.emailservice.model.TransactionActivation;
+import com.example.emailservice.domain.dto.ConfirmTransactionDto;
+import com.example.emailservice.domain.dto.FinalizeTransactionDto;
+import com.example.emailservice.domain.dto.TransactionActivationDto;
+import com.example.emailservice.domain.dto.bankService.TransactionFinishedDto;
+import com.example.emailservice.domain.model.TransactionActivation;
 import com.example.emailservice.repository.TransactionActivationRepository;
 import com.example.emailservice.service.email.EmailService;
 import lombok.RequiredArgsConstructor;

@@ -10,7 +10,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class IsUserActiveDto implements Serializable {
-    //ovo nam treba da proverimo, prilikom Login-a, da li je korisnik
+    //ovo nam treba da proverimo, prilikom Login-a, da li je korisnik ili Compnay
     //uneo kod za aktivaciju
     private String email;
     private boolean codeActive;

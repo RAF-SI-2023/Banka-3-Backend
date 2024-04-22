@@ -2,11 +2,11 @@ package com.example.emailservice.service.impl;
 
 import com.example.emailservice.client.UserServiceClient;
 import com.example.emailservice.dto.ResetUserPasswordDto;
-import com.example.emailservice.dto.password.SetPasswordDto;
-import com.example.emailservice.dto.password.SetUserPasswordCodeDto;
-import com.example.emailservice.dto.password.TryPasswordResetDto;
-import com.example.emailservice.model.PasswordReset;
-import com.example.emailservice.model.UserActivation;
+import com.example.emailservice.domain.dto.password.SetPasswordDto;
+import com.example.emailservice.domain.dto.password.SetUserPasswordCodeDto;
+import com.example.emailservice.domain.dto.password.TryPasswordResetDto;
+import com.example.emailservice.domain.model.PasswordReset;
+import com.example.emailservice.domain.model.UserActivation;
 import com.example.emailservice.repository.PasswordResetRepository;
 import com.example.emailservice.repository.UserActivationRepository;
 import com.example.emailservice.service.email.EmailService;

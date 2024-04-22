@@ -1,6 +1,6 @@
 package com.example.emailservice.client;
 
-import com.example.emailservice.dto.FinalizeTransactionDto;
+import com.example.emailservice.domain.dto.FinalizeTransactionDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

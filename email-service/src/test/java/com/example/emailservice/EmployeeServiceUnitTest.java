@@ -2,8 +2,8 @@ package com.example.emailservice;
 
 import com.example.emailservice.client.UserServiceClient;
 import com.example.emailservice.dto.ResetPasswordDto;
-import com.example.emailservice.dto.password.TryPasswordResetDto;
-import com.example.emailservice.model.EmployeeActivation;
+import com.example.emailservice.domain.dto.password.TryPasswordResetDto;
+import com.example.emailservice.domain.model.EmployeeActivation;
 import com.example.emailservice.repository.EmployeeActivationRepository;
 import com.example.emailservice.service.email.EmailService;
 import com.example.emailservice.service.EmployeeService;
