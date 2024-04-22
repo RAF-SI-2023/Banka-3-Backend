@@ -19,6 +19,8 @@ presubmits:
               
               start-docker.sh
               
+              pwd
+              ls
               docker-compose up -d database
               docker-compose up -d user-service
 
