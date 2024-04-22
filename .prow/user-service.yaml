@@ -19,10 +19,9 @@ presubmits:
               
               start-docker.sh
               
-              pwd
-              ls
-              docker-compose up -d database
-              docker-compose up -d user-service
+              
+              docker compose up -d database
+              docker compose up -d user-service
 
 #              SERVICE_NAME="user-service"
 #              sleep 120
