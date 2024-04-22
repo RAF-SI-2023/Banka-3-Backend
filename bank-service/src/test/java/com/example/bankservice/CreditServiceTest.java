@@ -1,21 +1,8 @@
-package rs.edu.raf.userservice.services;
+package com.example.bankservice;
 
 
-import org.junit.Before;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import rs.edu.raf.userservice.domain.model.User;
-
-import java.math.BigDecimal;
-import java.util.*;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class CreditServiceTest {

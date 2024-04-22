@@ -2,11 +2,16 @@ package rs.edu.raf.userservice.services;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import rs.edu.raf.userservice.service.CompanyService;
+import rs.edu.raf.userservice.service.CustomDetailsService;
+import rs.edu.raf.userservice.service.EmployeeService;
+import rs.edu.raf.userservice.service.UserService;
 
 import java.util.Collections;
 
@@ -15,49 +20,59 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CustomDetailsServiceTest {
-//    @Mock
-//    private UserService userService;
-//    @Mock
-//    private EmployeeService employeeService;
-//
-//    @Test
-//    public void testLoadUserByUsername_UserFoundInUserService() {
-//        // Priprema testnih podataka
-//        String email = "test@example.com";
-//        UserDetails userDetailsFromUserService = new User("username", "password", Collections.emptyList());
-//
-//        // Podešavanje ponašanja mock-ova
-//        when(userService.loadUserByUsername(email)).thenReturn(userDetailsFromUserService);
-//
-//        // Izvršavanje metode koju testiramo
-//        CustomDetailsService userDetailsService = new CustomDetailsService(userService, employeeService);
-//        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-//
-//        // Provera rezultata
-//        assertNotNull(userDetails);
-//        assertEquals(userDetailsFromUserService, userDetails);
-//        verify(userService, times(1)).loadUserByUsername(email); // Provera da li je metoda pozvana tačno jednom
-//        verify(employeeService, never()).loadUserByUsername(anyString()); // Provera da li je metoda na employeeService nikada nije pozvana
-//    }
-//
-//    @Test
-//    public void testLoadUserByUsername_UserFoundInEmployeeService() {
-//        // Priprema testnih podataka
-//        String email = "test@example.com";
-//        UserDetails userDetailsFromEmployeeService = new User("test", "password", Collections.emptyList());
-//
-//        // Podešavanje ponašanja mock-ova
-//        when(userService.loadUserByUsername(email)).thenThrow(new UsernameNotFoundException("User not found")); // Simulacija da korisnik nije pronađen u userService
-//        when(employeeService.loadUserByUsername(email)).thenReturn(userDetailsFromEmployeeService);
-//
-//        // Izvršavanje metode koju testiramo
-//        CustomDetailsService userDetailsService = new CustomDetailsService(userService, employeeService);
-//        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-//
-//        // Provera rezultata
-//        assertNotNull(userDetails);
-//        assertEquals(userDetailsFromEmployeeService, userDetails);
-//        verify(userService, times(1)).loadUserByUsername(email); // Provera da li je metoda pozvana tačno jednom na userService
-//        verify(employeeService, times(1)).loadUserByUsername(email); // Provera da li je metoda pozvana tačno jednom na employeeService
-//    }
+    @Mock
+    private UserService userService;
+    @Mock
+    private EmployeeService employeeService;
+
+    @Mock
+    private CompanyService companyService;
+
+    @InjectMocks
+    private CustomDetailsService customDetailsService;
+
+    @Test
+    public void testLoadUserByUsername_UserService() {
+        // Priprema
+        String email = "test@example.com";
+        UserDetails userDetails = mock(UserDetails.class);
+        when(userService.loadUserByUsername(email)).thenReturn(userDetails);
+
+        // Izvršavanje
+        UserDetails result = customDetailsService.loadUserByUsername(email);
+
+        // Provjera
+        verify(userService, times(1)).loadUserByUsername(email);
+        verify(companyService, never()).loadUserByUsername(email);
+        verify(employeeService, never()).loadUserByUsername(email);
+    }
+
+    @Test
+    public void testLoadUserByUsername_CompanyService() {
+        String email = "test@example.com";
+        UserDetails userDetails = mock(UserDetails.class);
+        when(userService.loadUserByUsername(email)).thenThrow(new UsernameNotFoundException("User not found"));
+        when(companyService.loadUserByUsername(email)).thenReturn(userDetails);
+
+        UserDetails result = customDetailsService.loadUserByUsername(email);
+
+        verify(userService, times(1)).loadUserByUsername(email);
+        verify(companyService, times(1)).loadUserByUsername(email);
+        verify(employeeService, never()).loadUserByUsername(email);
+    }
+
+    @Test
+    public void testLoadUserByUsername_EmployeeService() {
+        String email = "test@example.com";
+        UserDetails userDetails = mock(UserDetails.class);
+        when(userService.loadUserByUsername(email)).thenThrow(new UsernameNotFoundException("User not found"));
+        when(companyService.loadUserByUsername(email)).thenThrow(new UsernameNotFoundException("Company not found"));
+        when(employeeService.loadUserByUsername(email)).thenReturn(userDetails);
+
+        UserDetails result = customDetailsService.loadUserByUsername(email);
+
+        verify(userService, times(1)).loadUserByUsername(email);
+        verify(companyService, times(1)).loadUserByUsername(email);
+        verify(employeeService, times(1)).loadUserByUsername(email);
+    }
 }

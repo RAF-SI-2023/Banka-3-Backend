@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import rs.edu.raf.userservice.domain.dto.user.IsUserActiveDto;
 import rs.edu.raf.userservice.domain.dto.user.UserPostPutDto;
@@ -60,7 +61,7 @@ class UserServiceApplicationTests {
     @Test
     public void testLoadUserByUsername_FailUserIsNull() {
 
-        given(userRepository.findByEmail("pera123@gmaill.com")).willReturn(null);
+        given(userRepository.findByEmail("pera123@gmaill.com")).willReturn(Optional.empty());
 
         assertThrows(Exception.class, () -> userService.loadUserByUsername("pera123@gmail.com"));
     }

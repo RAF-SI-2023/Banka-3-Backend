@@ -1,24 +1,7 @@
-package rs.edu.raf.userservice.services;
+package com.example.bankservice;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import rs.edu.raf.userservice.domain.model.Company;
-
-
-import rs.edu.raf.userservice.domain.model.Employee;
-
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CompanyAccountServiceTest {

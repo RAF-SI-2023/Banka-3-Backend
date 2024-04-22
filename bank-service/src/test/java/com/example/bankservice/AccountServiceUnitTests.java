@@ -1,5 +1,9 @@
-package rs.edu.raf.userservice.services;
+package com.example.bankservice;
 
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
 public class AccountServiceUnitTests {
 /*
     @InjectMocks
