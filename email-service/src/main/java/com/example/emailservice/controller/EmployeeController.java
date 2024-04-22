@@ -27,7 +27,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/setPassword/{identifier}")
-    @Operation(description = "")
+    @Operation(description = "employee postavlja sifru prvi put")
     public ResponseEntity<String> changePassword(@PathVariable(name = "identifier") String identifier,
                                                  @RequestBody String password) {
         String response = employeeService.changePassword(identifier, password);
