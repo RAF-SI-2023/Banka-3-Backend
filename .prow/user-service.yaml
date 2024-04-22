@@ -13,11 +13,10 @@ presubmits:
     
               start-docker.sh
               
-              pwd 
-              echo test
-              git clone https://github.com/RAF-SI-2023/Banka-3-Infrastructure.git /tmp/banka-infra
-              
-              cd /tmp/banka-infra
+              cd ..
+              git clone https://github.com/RAF-SI-2023/Banka-3-Infrastructure.git ./Banka-3-Infrastructure
+              cd Banka-3-Infrastructure
+
               docker-compose up -d database
               docker-compose up -d user-service
 
