@@ -1,7 +1,7 @@
 package com.example.emailservice.controller;
 
-import com.example.emailservice.dto.password.SetUserPasswordCodeDto;
-import com.example.emailservice.dto.password.TryPasswordResetDto;
+import com.example.emailservice.domain.dto.password.SetUserPasswordCodeDto;
+import com.example.emailservice.domain.dto.password.TryPasswordResetDto;
 import com.example.emailservice.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;

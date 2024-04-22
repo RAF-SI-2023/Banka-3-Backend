@@ -1,9 +1,9 @@
 package com.example.emailservice.service.impl;
 
 
-import com.example.emailservice.dto.TransactionActivationDto;
-import com.example.emailservice.dto.ConfirmTransactionDto;
-import com.example.emailservice.model.TransactionActivation;
+import com.example.emailservice.domain.dto.TransactionActivationDto;
+import com.example.emailservice.domain.dto.ConfirmTransactionDto;
+import com.example.emailservice.domain.model.TransactionActivation;
 import com.example.emailservice.repository.TransactionActivationRepository;
 import com.example.emailservice.service.email.EmailService;
 import com.example.emailservice.service.TransactionService;

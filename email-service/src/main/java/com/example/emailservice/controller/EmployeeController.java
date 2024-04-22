@@ -1,6 +1,6 @@
 package com.example.emailservice.controller;
 
-import com.example.emailservice.dto.password.TryPasswordResetDto;
+import com.example.emailservice.domain.dto.password.TryPasswordResetDto;
 import com.example.emailservice.service.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
@@ -14,13 +14,8 @@ import org.springframework.web.bind.annotation.*;
 public class EmployeeController {
     private final EmployeeService employeeService;
 
-    /***
-     *Kada se kreira employee, user service salje request na employeeCreated da bi se napravio
-     *identifier koji vazi 5 minuta i
-     *
-     */
     @GetMapping("/employeeCreated")
-    @Operation(description = "ovu rutu ganja User-Service kada se doda zaposleni")
+    @Operation(description = "ovu rutu ganja User-Service kada se doda zaposleni, da bi napravio idetifier")
     public ResponseEntity<?> employeeCreated(@RequestParam(name = "email") String email) {
         employeeService.employeeCreated(email);
         return ResponseEntity.ok().build();

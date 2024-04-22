@@ -1,4 +1,4 @@
-package com.example.emailservice.dto.password;
+package com.example.emailservice.domain.dto.password;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
