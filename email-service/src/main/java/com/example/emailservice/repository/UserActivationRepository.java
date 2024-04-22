@@ -4,6 +4,7 @@ import com.example.emailservice.domain.model.UserActivation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -11,5 +12,5 @@ public interface UserActivationRepository extends JpaRepository<UserActivation, 
 
     Optional<UserActivation> findUserActivationByCodeAndActivationPossibleIsTrue(int code);
 
-    Optional<UserActivation> findByActivationPossible(boolean bool);
+    Optional<List<UserActivation>> findAllByActivationPossible(boolean bool);
 }

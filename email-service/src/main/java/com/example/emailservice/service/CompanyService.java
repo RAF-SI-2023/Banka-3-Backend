@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -64,11 +65,8 @@ public class CompanyService {
     @Scheduled(fixedRate = 900000) // 15 minutes in milliseconds
     public void cleanupInactiveEntities() {
         try {
-            // Get all entities with setActive == false
-            Optional<CompanyActivation> inactiveEntities = companyActivationRepository.findByActivationPossible(false);
-
-            // Delete inactive entities
-            companyActivationRepository.deleteAll(inactiveEntities.stream().toList());
+            Optional<List<CompanyActivation>> inactiveEntities = companyActivationRepository.findAllByActivationPossible(false);
+            companyActivationRepository.deleteAll(inactiveEntities.get());
         } catch (Exception e) {
             System.err.println("Error occurred during entity cleanup: " + e.getMessage());
         }
