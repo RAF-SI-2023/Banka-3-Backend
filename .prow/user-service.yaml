@@ -12,17 +12,15 @@ presubmits:
               set -euo pipefail
     
               start-docker.sh
-              pwd
+              
               cd ..
-              pwd
+              
               git clone https://github.com/RAF-SI-2023/Banka-3-Infrastructure.git ./Banka-3-Infrastructure
               
               cd ./Banka-3-Infrastructure
               
-              pwd
-              
-#              docker-compose up -d database
-#              docker-compose up -d user-service
+              docker-compose up -d database
+              docker-compose up -d user-service
 
 #              SERVICE_NAME="user-service"
 #              sleep 120
