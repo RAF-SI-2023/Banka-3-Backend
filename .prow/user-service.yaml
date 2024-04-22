@@ -18,25 +18,27 @@ presubmits:
               git clone https://github.com/RAF-SI-2023/Banka-3-Infrastructure.git ./Banka-3-Infrastructure
               
               cd ./Banka-3-Infrastructure
+              
+              pwd
+              
+#              docker-compose up -d database
+#              docker-compose up -d user-service
 
-              docker-compose up -d database
-              docker-compose up -d user-service
-
-              SERVICE_NAME="user-service"
-              sleep 120
+#              SERVICE_NAME="user-service"
+#              sleep 120
               # cd ${SERVICE_NAME}
               
               # mvn clean verify test
 
-              junit_source_directory="./target/surefire-reports"
-              junit_dest_directory="/logs/artifacts/"
-              counter=1
-              
-              for file in "$junit_source_directory"/*.xml; do 
-                cp "$file" "$junit_dest_directory/junit.$counter.xml" 
-                ((counter++))
-              done
-              echo "${GCSWEB_URL}/prow/logs/pr-logs/pull/${REPO_OWNER}_${REPO_NAME}/${PULL_NUMBER}/${JOB_NAME}/${BUILD_NUMBER}/artifacts/jacoco/index.html" > /logs/artifacts/coverage.link.text
+#              junit_source_directory="./target/surefire-reports"
+#              junit_dest_directory="/logs/artifacts/"
+#              counter=1
+#
+#              for file in "$junit_source_directory"/*.xml; do
+#                cp "$file" "$junit_dest_directory/junit.$counter.xml"
+#                ((counter++))
+#              done
+#              echo "${GCSWEB_URL}/prow/logs/pr-logs/pull/${REPO_OWNER}_${REPO_NAME}/${PULL_NUMBER}/${JOB_NAME}/${BUILD_NUMBER}/artifacts/jacoco/index.html" > /logs/artifacts/coverage.link.text
           securityContext:
             privileged: true
           imagePullPolicy: Always
