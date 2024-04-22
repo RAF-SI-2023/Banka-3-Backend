@@ -20,18 +20,13 @@ public class CustomDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         try {
-            if (userService.loadUserByUsername(email) != null){
-                System.out.println("user service");
-                return userService.loadUserByUsername(email);
-            }
-            if (companyService.loadUserByUsername(email) != null){
-                System.out.println("company service, " + email);
-                return companyService.loadUserByUsername(email);
-            }
+            return userService.loadUserByUsername(email);
         } catch (Exception ex) {
-            // Ako UserService ne može pronaći korisnika, pokušaj sa EmployeeService
-            return employeeService.loadUserByUsername(email);
+            try {
+                return companyService.loadUserByUsername(email);
+            } catch (Exception e) {
+                return employeeService.loadUserByUsername(email);
+            }
         }
-        return null;
     }
 }

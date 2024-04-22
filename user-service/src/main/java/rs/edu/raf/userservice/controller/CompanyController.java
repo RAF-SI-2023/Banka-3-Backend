@@ -26,7 +26,6 @@ public class CompanyController {
     @Operation(description = "za Login Kompanije")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
-            System.out.println(loginRequest.getEmail() + "   " + loginRequest.getPassword());
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
         } catch (Exception e) {
             return ResponseEntity.status(401).build();
@@ -66,7 +65,7 @@ public class CompanyController {
         if (companyService.changeCompanyActive(id, false)){
             return ResponseEntity.ok().build();
         }
-        return ResponseEntity.badRequest().body("Couldn't deactivete Company");
+        return ResponseEntity.badRequest().body("Couldn't deactivate Company");
     }
 
     @PutMapping("/activate/{id}")
