@@ -1,5 +1,5 @@
 presubmits:
-  - name: pull-banka-3-backend-test
+  - name: pull-banka-3-backend-bank-service
     always_run: true
     decorate: true
     spec:
