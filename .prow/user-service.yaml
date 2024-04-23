@@ -10,28 +10,10 @@ presubmits:
             - -c
             - |
               set -euo pipefail
-    
-              cd ..
-              
-              git clone https://github.com/RAF-SI-2023/Banka-3-Infrastructure.git ./Banka-3-Infrastructure
-              
-              cd ./Banka-3-Infrastructure
-              
-            
-              echo "BACKEND_REPO_ABSOLUTE_PATH=/home/prow/go/src/github.com/RAF-SI-2023/Banka-3-Backend" > .env 
-              echo "INFRA_REPO_ABSOLUTE_PATH=/home/prow/go/src/github.com/RAF-SI-2023/Banka-3-Infrastructure" >> .env
-              echo "FRONTEND_REPO_ABSOLUTE_PATH=/home/prow/go/src/github.com/RAF-SI-2023/Banka-3-Frontend" >> .env
-
-              cat .env
-
-              start-docker.sh
-              
-              
-#              docker compose up -d database
 
               SERVICE_NAME="user-service"
-              sleep 120
-              cd ../Banka-3-Backend/${SERVICE_NAME}
+              
+              cd ../${SERVICE_NAME}
               
               mvn clean verify test
 
