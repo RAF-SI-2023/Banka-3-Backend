@@ -6,6 +6,7 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 @Data
 @Builder
@@ -29,12 +30,12 @@ public class CreditRequest implements Serializable {
     private String accountNumber;
 
     @NotNull(message = "This field cannot be NULL")
-    private Double amount;
+    private BigDecimal amount;
 
     @NotNull(message = "This field cannot be NULL")
     private String applianceReason;
 
-    private Double monthlyPaycheck;
+    private BigDecimal monthlyPaycheck;
 
     @NotNull(message = "This field cannot be NULL")
     private Boolean employed;

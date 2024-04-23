@@ -1,9 +1,11 @@
 package com.example.bankservice.bootstrap;
 
 import com.example.bankservice.domain.model.Card;
+import com.example.bankservice.domain.model.CreditRequest;
 import com.example.bankservice.domain.model.Currency;
 import com.example.bankservice.domain.model.accounts.CompanyAccount;
 import com.example.bankservice.domain.model.accounts.UserAccount;
+import com.example.bankservice.domain.model.enums.CreditRequestStatus;
 import com.example.bankservice.domain.model.enums.CurrencyName;
 import com.example.bankservice.repository.*;
 import lombok.AllArgsConstructor;
@@ -222,6 +224,23 @@ public class BootstrapData implements CommandLineRunner {
         if (cardRepository.count() == 0) {
             loadCardData(List.of(jankoDinarskiKartica, jankoEurskiKartica, strahinjaDinarskiKartica, strahinjaEurskiKartica));
         }
+
+        CreditRequest creditRequest = new CreditRequest();
+        creditRequest.setUserId(1L);
+        creditRequest.setName("KES");
+        creditRequest.setAccountNumber("2222222222222222");
+        creditRequest.setAmount(new BigDecimal(100000));
+        creditRequest.setApplianceReason("Kupovina stana");
+        creditRequest.setMonthlyPaycheck(new BigDecimal(1000));
+        creditRequest.setEmployed(true);
+        creditRequest.setDateOfEmployment(System.currentTimeMillis());
+        creditRequest.setPaymentPeriod(100);
+        creditRequest.setStatus(CreditRequestStatus.PROCESSING);
+        creditRequest.setCurrencyMark("RSD");
+
+        if (creditRequestRepository.count() == 0) {
+            loadCreditRequestData(List.of(creditRequest));
+        }
     }
 
     private void loadUserAccountData(List<UserAccount> userAccounts) {
@@ -238,5 +257,9 @@ public class BootstrapData implements CommandLineRunner {
 
     private void loadCardData(List<Card> cards) {
         cardRepository.saveAll(cards);
+    }
+
+    private void loadCreditRequestData(List<CreditRequest> creditRequests) {
+        creditRequestRepository.saveAll(creditRequests);
     }
 }
