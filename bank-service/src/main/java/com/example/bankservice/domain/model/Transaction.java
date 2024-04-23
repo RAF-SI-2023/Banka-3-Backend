@@ -3,6 +3,7 @@ package com.example.bankservice.domain.model;
 import com.example.bankservice.domain.model.enums.TransactionStatus;
 import com.example.bankservice.domain.model.enums.TransactionType;
 import lombok.*;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.Max;
@@ -32,8 +33,6 @@ public class Transaction implements Serializable {
     @NotNull(message = "This field cannot be NULL")
     private BigDecimal amount;
 
-    @Min(value = 100, message = "Sifra placanja must be exactly 3 characters long")
-    @Max(value = 999, message = "Sifra placanja must be exactly 3 characters long")
     private int sifraPlacanja;
 
     private String pozivNaBroj;

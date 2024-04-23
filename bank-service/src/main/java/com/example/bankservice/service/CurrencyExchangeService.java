@@ -24,12 +24,6 @@ public class CurrencyExchangeService {
 
     private static final String API_KEY = "96aa86545baf8162d6ecbe21";
     private static final String API_URL = "https://v6.exchangerate-api.com/v6/" + API_KEY + "/pair/";
-    private static final String bankAccountRSD = "3333333333333333";
-    private static final String bankAccountEUR = "4444444444444444";
-    private static final String bankAccountUSD = "5555555555555555";
-    private static final String bankAccountCHF = "6666666666666666";
-    private static final String bankAccountGBP = "7777777777777777";
-    private static final String bankAccountJPY = "8888888888888888";
     private final CurrencyExchangeRepository currencyExchangeRepository;
     private final AccountService accountService;
     private final AccountRepository accountRepository;
@@ -44,8 +38,8 @@ public class CurrencyExchangeService {
             throw new RuntimeException("Insufficient funds");
         }
 
-        Account bankAccountReciever = findBankAccountForGivenCurrency(accountFrom.getCurrency().getMark());
-        Account bankAccountSender = findBankAccountForGivenCurrency(accountTo.getCurrency().getMark());
+        Account bankAccountReciever = accountService.findBankAccountForGivenCurrency(accountFrom.getCurrency().getMark());
+        Account bankAccountSender = accountService.findBankAccountForGivenCurrency(accountTo.getCurrency().getMark());
 
         BigDecimal commission = BigDecimal.valueOf(currencyExchangeDto.getAmount()).multiply(new BigDecimal("0.05"));
         BigDecimal convertedAmount;
@@ -79,30 +73,7 @@ public class CurrencyExchangeService {
                 accountFrom.getCurrency().getMark()));
     }
 
-    private Account findBankAccountForGivenCurrency(String currencyMark) {
-        switch (currencyMark) {
-            case "RSD":
-                return accountRepository.findByAccountNumber(bankAccountRSD)
-                        .orElseThrow(() -> new RuntimeException("Bank account not found"));
-            case "EUR":
-                return accountRepository.findByAccountNumber(bankAccountEUR)
-                        .orElseThrow(() -> new RuntimeException("Bank account not found"));
-            case "USD":
-                return accountRepository.findByAccountNumber(bankAccountUSD)
-                        .orElseThrow(() -> new RuntimeException("Bank account not found"));
-            case "CHF":
-                return accountRepository.findByAccountNumber(bankAccountCHF)
-                        .orElseThrow(() -> new RuntimeException("Bank account not found"));
-            case "GBP":
-                return accountRepository.findByAccountNumber(bankAccountGBP)
-                        .orElseThrow(() -> new RuntimeException("Bank account not found"));
-            case "JPY":
-                return accountRepository.findByAccountNumber(bankAccountJPY)
-                        .orElseThrow(() -> new RuntimeException("Bank account not found"));
-            default:
-                throw new RuntimeException("Bank account not found");
-        }
-    }
+
 
     private BigDecimal convertCurrency(String fromCurrency, String toCurrency, Double amount) {
         fromCurrency = fromCurrency.toUpperCase();

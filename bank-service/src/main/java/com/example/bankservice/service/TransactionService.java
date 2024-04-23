@@ -109,7 +109,11 @@ public class TransactionService {
         if (!optionalTransactions.isPresent()) return;
         transactions = optionalTransactions.get();
         for (Transaction transaction : transactions) {
-            finishTransaction(transaction);
+            if (transaction.getType().equals(TransactionType.CREDIT_APPROVE_TRANSACTION)) {
+                finishCreditTransaction(transaction);
+            } else if (transaction.getType().equals(TransactionType.PAYMENT_TRANSACTION)) {
+                finishTransaction(transaction);
+            }
         }
     }
 
@@ -120,6 +124,17 @@ public class TransactionService {
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
         accountService.transferFunds(accountFrom, accountTo, transaction.getAmount());
+        transaction.setTransactionStatus(TransactionStatus.FINISHED);
+        transactionRepository.save(transaction);
+    }
+
+    private void finishCreditTransaction(Transaction transaction) {
+        Account accountFrom = accountRepository.findByAccountNumber(transaction.getAccountFrom())
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+        Account accountTo = accountRepository.findByAccountNumber(transaction.getAccountTo())
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        accountService.transferCreditFunds(accountFrom, accountTo, transaction.getAmount());
         transaction.setTransactionStatus(TransactionStatus.FINISHED);
         transactionRepository.save(transaction);
     }

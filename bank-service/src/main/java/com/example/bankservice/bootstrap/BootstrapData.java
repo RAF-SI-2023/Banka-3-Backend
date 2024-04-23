@@ -111,7 +111,7 @@ public class BootstrapData implements CommandLineRunner {
         companyAccount.setEmployeeId(1L);
         companyAccount.setAccountNumber("3333333333333333");
         companyAccount.setReservedAmount(new BigDecimal(1000));
-        companyAccount.setAvailableBalance(new BigDecimal(10000));
+        companyAccount.setAvailableBalance(new BigDecimal(10000000));
         companyAccount.setCreationDate(System.currentTimeMillis());
         companyAccount.setExpireDate(System.currentTimeMillis() + 60 * 60 * 24 * 365 * 10);
         companyAccount.setCurrency(currencyRepository.findById(1L).orElse(null));

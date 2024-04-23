@@ -9,5 +9,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ProcessCreditRequestDto {
     private Long creditRequestId;
+    private Long employeeId;
     private Boolean accepted;
 }

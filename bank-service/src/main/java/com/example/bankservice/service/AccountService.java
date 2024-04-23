@@ -30,6 +30,13 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class AccountService {
 
+    private static final String bankAccountRSD = "3333333333333333";
+    private static final String bankAccountEUR = "4444444444444444";
+    private static final String bankAccountUSD = "5555555555555555";
+    private static final String bankAccountCHF = "6666666666666666";
+    private static final String bankAccountGBP = "7777777777777777";
+    private static final String bankAccountJPY = "8888888888888888";
+
     private final AccountRepository accountRepository;
     private final UserAccountMapper userAccountMapper;
     private final CardRepository cardRepository;
@@ -110,6 +117,16 @@ public class AccountService {
         }
     }
 
+    public void transferCreditFunds(Account accountFrom, Account accountTo, BigDecimal amount) {
+        accountFrom.setAvailableBalance(accountFrom.getAvailableBalance().subtract(amount));
+        accountTo.setAvailableBalance(accountTo.getAvailableBalance().add(amount));
+        accountRepository.save(accountFrom);
+        accountRepository.save(accountTo);
+        if (accountTo instanceof UserAccount) {
+            sendFundsRecievedEmail(accountTo, amount);
+        }
+    }
+
     public void deleteAccount(Long id) {
         Account account = accountRepository.findById(id).orElseThrow(() -> new RuntimeException("Account not found"));
         account.setActive(false);
@@ -123,6 +140,31 @@ public class AccountService {
     public Account extractAccountForAccountNumber(String accountNumber) {
         return accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
+    }
+
+    public Account findBankAccountForGivenCurrency(String currencyMark) {
+        switch (currencyMark) {
+            case "RSD":
+                return accountRepository.findByAccountNumber(bankAccountRSD)
+                        .orElseThrow(() -> new RuntimeException("Bank account not found"));
+            case "EUR":
+                return accountRepository.findByAccountNumber(bankAccountEUR)
+                        .orElseThrow(() -> new RuntimeException("Bank account not found"));
+            case "USD":
+                return accountRepository.findByAccountNumber(bankAccountUSD)
+                        .orElseThrow(() -> new RuntimeException("Bank account not found"));
+            case "CHF":
+                return accountRepository.findByAccountNumber(bankAccountCHF)
+                        .orElseThrow(() -> new RuntimeException("Bank account not found"));
+            case "GBP":
+                return accountRepository.findByAccountNumber(bankAccountGBP)
+                        .orElseThrow(() -> new RuntimeException("Bank account not found"));
+            case "JPY":
+                return accountRepository.findByAccountNumber(bankAccountJPY)
+                        .orElseThrow(() -> new RuntimeException("Bank account not found"));
+            default:
+                throw new RuntimeException("Bank account not found");
+        }
     }
 
     private void createCard(Account userAccount) {
