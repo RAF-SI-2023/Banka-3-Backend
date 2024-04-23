@@ -13,7 +13,7 @@ presubmits:
 
               SERVICE_NAME="bank-service"
               
-              cd ../${SERVICE_NAME}
+              cd "${SERVICE_NAME}"
               
               mvn clean verify test
 
