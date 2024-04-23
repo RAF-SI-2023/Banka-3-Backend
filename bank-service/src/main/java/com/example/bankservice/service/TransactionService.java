@@ -3,7 +3,9 @@ package com.example.bankservice.service;
 import com.example.bankservice.client.EmailServiceClient;
 import com.example.bankservice.client.UserServiceClient;
 import com.example.bankservice.domain.dto.currencyExchange.CurrencyExchangeDto;
+import com.example.bankservice.domain.dto.emailService.TransactionFinishedDto;
 import com.example.bankservice.domain.dto.transaction.ConfirmPaymentTransactionDto;
+import com.example.bankservice.domain.dto.transaction.CreditTransactionDto;
 import com.example.bankservice.domain.dto.transaction.PaymentTransactionActivationDto;
 import com.example.bankservice.domain.dto.transaction.PaymentTransactionDto;
 import com.example.bankservice.domain.mapper.TransactionMapper;
@@ -82,6 +84,13 @@ public class TransactionService {
             throw new RuntimeException("Different currency transactions are not supported");
         }
 
+    }
+
+    public List<CreditTransactionDto> getAllCreditTransactions() {
+        List<Transaction> transactions = transactionRepository.findAllByType(TransactionType.CREDIT_APPROVE_TRANSACTION)
+                .orElseThrow(() -> new RuntimeException("Transactions not found"));
+
+        return transactions.stream().map(transactionMapper::transactionToCreditTransactionDto).toList();
     }
 
     private void startSameCurrencyPaymentTransaction(PaymentTransactionDto paymentTransactionDto,
