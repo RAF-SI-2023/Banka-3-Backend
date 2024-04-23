@@ -10,13 +10,9 @@ presubmits:
             - -c
             - |
               set -euo pipefail
-              
-              start-docker.sh
-              
-              docker compose up -d database
 
               SERVICE_NAME="bank-service"
-              sleep 120
+              
               cd ../${SERVICE_NAME}
               
               mvn clean verify test
