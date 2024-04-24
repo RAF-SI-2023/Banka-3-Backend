@@ -18,6 +18,7 @@ public class MyFuture implements Serializable {
     private Long myFutureId;
     private String contractName;
     private Integer amount;
+    private String currencyMark;
     @Version
     private Integer version;
 }

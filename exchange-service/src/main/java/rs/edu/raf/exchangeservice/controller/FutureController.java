@@ -6,12 +6,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rs.edu.raf.exchangeservice.domain.dto.*;
+import rs.edu.raf.exchangeservice.domain.dto.listing.FutureDto;
 import rs.edu.raf.exchangeservice.domain.model.listing.Future;
 import rs.edu.raf.exchangeservice.service.listingService.FutureService;
 import rs.edu.raf.exchangeservice.service.myListingService.MyFutureService;
-import rs.edu.raf.exchangeservice.service.myListingService.MyStockService;
 import rs.edu.raf.exchangeservice.service.orderService.FutureOrderService;
-import rs.edu.raf.exchangeservice.service.orderService.StockOrderService;
 
 import java.util.List;
 

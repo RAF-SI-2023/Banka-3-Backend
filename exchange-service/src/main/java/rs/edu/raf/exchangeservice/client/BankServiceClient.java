@@ -6,7 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import rs.edu.raf.exchangeservice.domain.dto.StockTransactionDto;
+import rs.edu.raf.exchangeservice.domain.dto.bank.BankTransactionDto;
 
 @FeignClient(name = "bankServiceClient", url = "${bankServiceLocation}")
 public interface BankServiceClient {
@@ -15,11 +15,11 @@ public interface BankServiceClient {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "kada banka kupuje nesto od Exchange")
-    ResponseEntity<?> stockBuyTransaction (@RequestBody StockTransactionDto stockTransactionDto);
+    ResponseEntity<?> stockBuyTransaction (@RequestBody BankTransactionDto bankTransactionDto);
 
     @PostMapping(value = "/transaction/stockSellTransaction",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "kada banka prodaje nesto Exchange-u")
-    ResponseEntity<?> stockSellTransaction (@RequestBody StockTransactionDto stockTransactionDto);
+    ResponseEntity<?> stockSellTransaction (@RequestBody BankTransactionDto bankTransactionDto);
 }

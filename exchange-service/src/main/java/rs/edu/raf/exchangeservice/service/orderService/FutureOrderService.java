@@ -5,7 +5,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import rs.edu.raf.exchangeservice.client.BankServiceClient;
 import rs.edu.raf.exchangeservice.domain.dto.BuyFutureDto;
-import rs.edu.raf.exchangeservice.domain.dto.StockTransactionDto;
+import rs.edu.raf.exchangeservice.domain.dto.bank.BankTransactionDto;
 import rs.edu.raf.exchangeservice.domain.model.listing.Future;
 import rs.edu.raf.exchangeservice.domain.model.order.FutureOrder;
 import rs.edu.raf.exchangeservice.repository.listingRepository.FutureRepository;
@@ -67,12 +67,12 @@ public class FutureOrderService {
             Optional<Future> optionalFuture = this.futureRepository.findById(futureOrder.getFutureId());
             if(optionalFuture.isPresent()) {
                 Future future = optionalFuture.get();  //uzimao future iz baze koji kupujemo
-                StockTransactionDto stockTransactionDto = new StockTransactionDto();
+                BankTransactionDto bankTransactionDto = new BankTransactionDto();
 
-                stockTransactionDto.setCurrencyMark("USD");
-                stockTransactionDto.setAmount((double) future.getMaintenanceMargin());
+                bankTransactionDto.setCurrencyMark("USD");
+                bankTransactionDto.setAmount((double) future.getMaintenanceMargin());
 //                bankServiceClient.startStockTransaction(stockTransactionDto);
-                bankServiceClient.stockBuyTransaction(stockTransactionDto);
+                bankServiceClient.stockBuyTransaction(bankTransactionDto);
             }else {
                 System.out.println("No futures available with id "+futureOrder.getFutureId()+", restarting in 15 seconds...");
                 return;

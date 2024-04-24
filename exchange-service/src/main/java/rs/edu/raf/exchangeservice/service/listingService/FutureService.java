@@ -3,7 +3,7 @@ package rs.edu.raf.exchangeservice.service.listingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
-import rs.edu.raf.exchangeservice.domain.dto.FutureDto;
+import rs.edu.raf.exchangeservice.domain.dto.listing.FutureDto;
 import rs.edu.raf.exchangeservice.domain.mappers.FutureMapper;
 import rs.edu.raf.exchangeservice.domain.model.listing.Future;
 import rs.edu.raf.exchangeservice.repository.listingRepository.FutureRepository;

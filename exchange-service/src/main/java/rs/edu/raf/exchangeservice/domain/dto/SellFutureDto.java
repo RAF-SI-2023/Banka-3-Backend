@@ -10,7 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SellFutureDto {
-
     private Long futureId;
     private Long employeeId;
     private double price;

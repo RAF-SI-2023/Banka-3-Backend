@@ -6,9 +6,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import rs.edu.raf.exchangeservice.domain.dto.BuyStockDto;
-import rs.edu.raf.exchangeservice.domain.dto.SellStockDto;
-import rs.edu.raf.exchangeservice.domain.dto.StockDto;
+import rs.edu.raf.exchangeservice.domain.dto.buySell.BuySellStockDto;
+import rs.edu.raf.exchangeservice.domain.dto.listing.StockDto;
 import rs.edu.raf.exchangeservice.domain.dto.StockOrderDto;
 import rs.edu.raf.exchangeservice.domain.model.listing.Stock;
 import rs.edu.raf.exchangeservice.service.listingService.StockService;
@@ -82,13 +81,14 @@ public class StockController {
 
     @PostMapping("/buyStock")
     @Operation(description = "ruta koja se gadja prilikom kupovine Stocks")
-    public ResponseEntity<StockOrderDto> buyStock(@RequestBody BuyStockDto buyStockDto){
-        return ResponseEntity.ok(stockOrderService.buyStock(buyStockDto));
+    public ResponseEntity<StockOrderDto> buyStock(@RequestBody BuySellStockDto buySellStockDto){
+        return ResponseEntity.ok(stockOrderService.buyStock(buySellStockDto));
     }
 
     @PostMapping("/sellStock")
     @Operation(description = "ruta koja se gadja prilikom prodaje Stocks")
-    public ResponseEntity sellStock(@RequestBody SellStockDto sellStockDto){
-        return ResponseEntity.ok(this.myStockService.sellStock(sellStockDto));
+    public ResponseEntity<?> sellStock(@RequestBody BuySellStockDto sellStockDto){
+        this.myStockService.sellStock(sellStockDto);
+        return ResponseEntity.ok().build();
     }
 }

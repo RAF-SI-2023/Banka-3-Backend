@@ -3,8 +3,10 @@ package rs.edu.raf.exchangeservice.service.myListingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import rs.edu.raf.exchangeservice.domain.dto.SellFutureDto;
-import rs.edu.raf.exchangeservice.domain.dto.StockTransactionDto;
+import rs.edu.raf.exchangeservice.domain.dto.bank.BankTransactionDto;
 import rs.edu.raf.exchangeservice.domain.model.myListing.MyFuture;
 import rs.edu.raf.exchangeservice.domain.model.order.FutureOrderSell;
 import rs.edu.raf.exchangeservice.repository.listingRepository.FutureRepository;
@@ -18,7 +20,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Service
 @RequiredArgsConstructor
 public class MyFutureService {
-
     private final MyFutureRepository myFutureRepository;
     private final FutureOrderSellRepository futureOrderSellRepository;
     private final FutureRepository futureRepository;
@@ -29,6 +30,7 @@ public class MyFutureService {
         return this.myFutureRepository.findAll();
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public String sellFuture(SellFutureDto sellFutureDto){
         FutureOrderSell futureOrderSell = new FutureOrderSell();
         futureOrderSell.setFutureId(sellFutureDto.getFutureId());
@@ -50,7 +52,7 @@ public class MyFutureService {
 
             //kreirati stockTransactionDto koji sadrzi sracunatu kolicinu novca u zavisnosti od tipa stock-a,
             //broj racuna banke, broj racuna berze.
-            StockTransactionDto stockTransactionDto = new StockTransactionDto();
+            BankTransactionDto bankTransactionDto = new BankTransactionDto();
 
             //TODO naci broj racuna banke i berze preko valute
 

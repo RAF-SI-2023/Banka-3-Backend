@@ -1,4 +1,4 @@
-package rs.edu.raf.exchangeservice.domain.dto;
+package rs.edu.raf.exchangeservice.domain.dto.bank;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +9,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @ToString
-public class StockTransactionDto {
+public class BankTransactionDto {
     //kada banka nesto kupuje sa BErze
     //kada banka nesto prodaje Berzi
     private Double amount;
