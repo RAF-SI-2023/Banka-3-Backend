@@ -296,7 +296,7 @@ public class AccountServiceUnitTest {
     public void extractAccountForAccountNumber_NotFoundTest() {
         UserAccount u1 = createDummyUserAccount("1581231231231888");
         given(accountRepository.findByAccountNumber("1581231231231888")).willReturn(Optional.empty());
-        Account result = accountService.extractAccountForAccountNumber("1581231231231888");
+        //Account result = accountService.extractAccountForAccountNumber("1581231231231888");
 
         assertThrows(RuntimeException.class, () -> accountService.extractAccountForAccountNumber("1581231231231888"));
     }
