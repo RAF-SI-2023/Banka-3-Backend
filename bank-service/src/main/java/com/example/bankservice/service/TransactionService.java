@@ -125,6 +125,24 @@ public class TransactionService {
         transactionRepository.save(transaction);
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public void stockSellTransaction(StockTransactionDto stockTransactionDto) {
+        Account accountFrom = accountService.findExchangeAccountForGivenCurrency(stockTransactionDto.getCurrencyMark());
+        Account accountTo = accountService.findBankAccountForGivenCurrency(stockTransactionDto.getCurrencyMark());
+
+        if (accountFrom.getAvailableBalance().compareTo(BigDecimal.valueOf(stockTransactionDto.getAmount())) < 0) {
+            throw new RuntimeException("Insufficient funds");
+        }
+
+        Transaction transaction = new Transaction();
+        transaction.setAccountFrom(accountFrom.getAccountNumber());
+        transaction.setAccountTo(accountTo.getAccountNumber());
+        transaction.setAmount(BigDecimal.valueOf(stockTransactionDto.getAmount()));
+        transaction.setType(TransactionType.STOCK_TRANSACTION);
+        transaction.setTransactionStatus(TransactionStatus.ACCEPTED);
+        transaction.setDate(System.currentTimeMillis());
+    }
+
     public List<CreditTransactionDto> getAllCreditTransactions() {
         List<Transaction> transactions = transactionRepository.findAllByType(TransactionType.CREDIT_APPROVE_TRANSACTION)
                 .orElseThrow(() -> new RuntimeException("Transactions not found"));
