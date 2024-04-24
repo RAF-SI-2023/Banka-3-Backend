@@ -98,6 +98,8 @@ public class TransactionService {
         transaction.setType(TransactionType.STOCK_TRANSACTION);
         transaction.setTransactionStatus(TransactionStatus.ACCEPTED);
         transaction.setDate(System.currentTimeMillis());
+
+        transactionRepository.save(transaction);
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
@@ -116,6 +118,8 @@ public class TransactionService {
         transaction.setType(TransactionType.STOCK_TRANSACTION);
         transaction.setTransactionStatus(TransactionStatus.ACCEPTED);
         transaction.setDate(System.currentTimeMillis());
+
+        transactionRepository.save(transaction);
     }
 
     public List<CreditTransactionDto> getAllCreditTransactions() {
