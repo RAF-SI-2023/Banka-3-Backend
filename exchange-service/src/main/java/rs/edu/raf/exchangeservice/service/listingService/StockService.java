@@ -42,6 +42,7 @@ public class StockService {
             response.getBody().getStock().setName(ticker.getName());
             response.getBody().getStock().setTicker(ticker.getTicker());
             response.getBody().getStock().setExchange(ticker.getPrimaryExchange());
+            response.getBody().getStock().setCurrencyMark(ticker.getCurrencyName());
             response.getBody().getStock().setLastRefresh(System.currentTimeMillis());
 
             stockRepository.save(response.getBody().getStock());

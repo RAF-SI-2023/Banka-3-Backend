@@ -68,11 +68,11 @@ public class FutureOrderService {
             if(optionalFuture.isPresent()) {
                 Future future = optionalFuture.get();  //uzimao future iz baze koji kupujemo
                 StockTransactionDto stockTransactionDto = new StockTransactionDto();
-                stockTransactionDto.setAccountFrom("3030303030303030");
-                stockTransactionDto.setAccountTo("3333333333333333");
+
                 stockTransactionDto.setCurrencyMark("USD");
                 stockTransactionDto.setAmount((double) future.getMaintenanceMargin());
-                bankServiceClient.startStockTransaction(stockTransactionDto);
+//                bankServiceClient.startStockTransaction(stockTransactionDto);
+                bankServiceClient.stockBuyTransaction(stockTransactionDto);
             }else {
                 System.out.println("No futures available with id "+futureOrder.getFutureId()+", restarting in 15 seconds...");
                 return;

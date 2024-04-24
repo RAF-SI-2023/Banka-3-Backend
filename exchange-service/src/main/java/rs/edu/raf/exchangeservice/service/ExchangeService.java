@@ -9,7 +9,6 @@ import rs.edu.raf.exchangeservice.service.listingService.TickerService;
 
 import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.LocalTime;
@@ -22,22 +21,21 @@ import java.util.List;
 public class ExchangeService {
     private final ExchangeRepository exchangeRepository;
     private final TickerService tickerService;
-//    private final String pathToFile = "exchange-service/src/main/resources/data/exchange_data.csv";
+
     public List<Exchange> findAll(){
         return this.exchangeRepository.findAll();
     }
 
-    //vraca objekat Exchange na osnovu njegove oznake
-    public Exchange findByExchange(String exchange){
+    public Exchange findByExchangeMark(String exchange){
         return exchangeRepository.findByExchange(exchange);
     }
 
     @PostConstruct
     private void loadData(){
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(new ClassPathResource("data/exchange_data.csv").getInputStream()))) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new ClassPathResource("exchange_data.csv").getInputStream()))) {
             String line;
-            // Skip the header line
             br.readLine();
+
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
                 Exchange exchange = new Exchange();
@@ -70,7 +68,7 @@ public class ExchangeService {
                 LocalTime closeTime = LocalTime.of(hoursClose, minutesClose);
                 exchange.setCloseTime(timeByBelgrade(exchange.getTimeZone(),closeTime));
 
-                this.exchangeRepository.save(exchange); //save in DB
+                this.exchangeRepository.save(exchange);
             }
 
             tickerService.loadData();

@@ -10,8 +10,8 @@ import lombok.ToString;
 @RequiredArgsConstructor
 @ToString
 public class StockTransactionDto {
-    private String accountFrom;
-    private String accountTo;
+    //kada banka nesto kupuje sa BErze
+    //kada banka nesto prodaje Berzi
     private Double amount;
     private String currencyMark;
 }

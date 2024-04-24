@@ -19,7 +19,7 @@ public class CompanyDto implements Serializable, AuthenticationDetails {
     private String title;
     private String number;
     private String email;
-    private int pib;
+    private int PIB;
     private int maticniBroj;
     private int sifraDelatnosti;
     private boolean isActive;

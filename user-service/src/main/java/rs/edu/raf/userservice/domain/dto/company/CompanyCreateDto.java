@@ -23,7 +23,7 @@ public class CompanyCreateDto{
     @NotBlank
     @Min(100000000)
     @Max(999999999)
-    private int pib;
+    private int PIB;
     @NotBlank
     @Min(10000000)
     @Max(99999999)

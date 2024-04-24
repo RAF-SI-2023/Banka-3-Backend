@@ -128,4 +128,14 @@ public class EmployeeController {
             return ResponseEntity.badRequest().body("Couldn't set password for User with email: " + passwordDto.getEmail());
         }
     }
+
+    @GetMapping("/getExchangeEmployees")
+    @Operation(description = "dohvatamo sve zaposlene potrebne za Exchange Service")
+    public ResponseEntity<?> getExchangeEmployees(){
+        try {
+            return ResponseEntity.ok(employeeService.getExchangeEmployees());
+        }catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }

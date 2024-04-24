@@ -3,8 +3,8 @@ package rs.edu.raf.exchangeservice.domain.model.order;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import rs.edu.raf.exchangeservice.domain.model.enums.StockOrderStatus;
-import rs.edu.raf.exchangeservice.domain.model.enums.StockOrderType;
+import rs.edu.raf.exchangeservice.domain.model.enums.OrderStatus;
+import rs.edu.raf.exchangeservice.domain.model.enums.OrderType;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -20,8 +20,8 @@ public class StockOrder implements Serializable {
     private Long stockOrderId;
     private Long employeeId;
     private String ticker;
-    private StockOrderStatus status;  //PROCESSING, WAITING, FAILED, FINISHED
-    private StockOrderType type;    //MARKET, STOP, LIMIT, STOP-LIMIT
+    private OrderStatus status;  //PROCESSING, WAITING, FAILED, FINISHED
+    private OrderType type;    //MARKET, STOP, LIMIT, STOP-LIMIT
     private Double limitValue;
     private Double stopValue;
     private int amount;     //ukupna kolicina
