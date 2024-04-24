@@ -62,12 +62,24 @@ public class TransactionController {
         }
     }
 
-    @PostMapping(value = "/stockTransaction",
+    @PostMapping(value = "/stockBuyTransaction",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> stockTransaction(@RequestBody StockTransactionDto stockTransactionDto) {
+    public ResponseEntity<?> stockBuyTransaction(@RequestBody StockTransactionDto stockTransactionDto) {
         try {
             transactionService.stockBuyTransaction(stockTransactionDto);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping(value = "/stockSellTransaction",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> stockSellTransaction(@RequestBody StockTransactionDto stockTransactionDto) {
+        try {
+            transactionService.stockSellTransaction(stockTransactionDto);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
