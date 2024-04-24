@@ -10,8 +10,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ActuaryRepository extends JpaRepository<Actuary, Long> {
+
     Optional<Actuary> findByActuaryId (Long id);
+
     Actuary findByEmployeeId(Long id);
+
     List<Actuary> findByRole (String role);
 
     @Modifying

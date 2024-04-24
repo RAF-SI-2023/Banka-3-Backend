@@ -44,4 +44,5 @@ public class Option implements Serializable {
     private double change;
     @JsonProperty("volume")
     private double volume;
+    private String currencyMark;
 }

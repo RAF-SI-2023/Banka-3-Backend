@@ -8,8 +8,8 @@ import rs.edu.raf.exchangeservice.domain.dto.BuyStockDto;
 import rs.edu.raf.exchangeservice.domain.dto.StockOrderDto;
 import rs.edu.raf.exchangeservice.domain.dto.StockTransactionDto;
 import rs.edu.raf.exchangeservice.domain.mappers.StockMapper;
-import rs.edu.raf.exchangeservice.domain.model.enums.StockOrderStatus;
-import rs.edu.raf.exchangeservice.domain.model.enums.StockOrderType;
+import rs.edu.raf.exchangeservice.domain.model.enums.OrderStatus;
+import rs.edu.raf.exchangeservice.domain.model.enums.OrderType;
 import rs.edu.raf.exchangeservice.domain.model.listing.Stock;
 import rs.edu.raf.exchangeservice.domain.model.order.StockOrder;
 import rs.edu.raf.exchangeservice.repository.ActuaryRepository;
@@ -53,11 +53,11 @@ public class StockOrderService {
     public StockOrder approveStockOrder(Long id, boolean approved){
         StockOrder stockOrder = stockOrderRepository.findByStockOrderId(id);
         if (approved){
-            stockOrder.setStatus(StockOrderStatus.PROCESSING);
+            stockOrder.setStatus(OrderStatus.PROCESSING);
             this.ordersToApprove.remove(stockOrder);
             this.ordersToBuy.add(stockOrder);
         }else {
-            stockOrder.setStatus(StockOrderStatus.REJECTED);
+            stockOrder.setStatus(OrderStatus.REJECTED);
             this.ordersToApprove.remove(stockOrder);
         }
         return this.stockOrderRepository.save(stockOrder);
@@ -76,9 +76,9 @@ public class StockOrderService {
         stockOrder.setMargin(buyStockDto.isMargin());
 
         if (actuaryRepository.findByEmployeeId(buyStockDto.getEmployeeId()).isOrderRequest()){
-            stockOrder.setStatus(StockOrderStatus.WAITING);
+            stockOrder.setStatus(OrderStatus.WAITING);
         }else {
-            stockOrder.setStatus(StockOrderStatus.PROCESSING);
+            stockOrder.setStatus(OrderStatus.PROCESSING);
         }
 
         if(buyStockDto.getStopValue() == null)
@@ -93,22 +93,22 @@ public class StockOrderService {
 
         //market order
         if (stockOrder.getStopValue() == 0.0 && stockOrder.getLimitValue() == 0.0)
-            stockOrder.setType(StockOrderType.MARKET);
+            stockOrder.setType(OrderType.MARKET);
 
         //stop order
         if(stockOrder.getStopValue() != 0.0 && stockOrder.getLimitValue() == 0.0)
-            stockOrder.setType(StockOrderType.STOP);
+            stockOrder.setType(OrderType.STOP);
 
         //limit order
         if(stockOrder.getStopValue() == 0.0 && stockOrder.getLimitValue() != 0.0)
-            stockOrder.setType(StockOrderType.LIMIT);
+            stockOrder.setType(OrderType.LIMIT);
 
         //stop-limit order
         if(stockOrder.getStopValue() != 0.0 && stockOrder.getLimitValue() != 0.0)
-            stockOrder.setType(StockOrderType.STOP_LIMIT);
+            stockOrder.setType(OrderType.STOP_LIMIT);
 
 
-        if (stockOrder.getStatus().equals(StockOrderStatus.PROCESSING)) {
+        if (stockOrder.getStatus().equals(OrderStatus.PROCESSING)) {
             this.ordersToBuy.add(this.stockOrderRepository.save(stockOrder));
         } else {
             this.ordersToApprove.add(this.stockOrderRepository.save(stockOrder));
@@ -158,18 +158,17 @@ public class StockOrderService {
             StockTransactionDto stockTransactionDto = new StockTransactionDto();
 
             //TODO naci broj racuna banke i berze preko valute
-            stockTransactionDto.setAccountFrom("3030303030303030");
-            stockTransactionDto.setAccountTo("3333333333333333");
+
             stockTransactionDto.setCurrencyMark("USD");
 
-            if (stockOrder.getType().equals(StockOrderType.MARKET)) {
+            if (stockOrder.getType().equals(OrderType.MARKET)) {
                 stockTransactionDto.setAmount(currentPrice * amountToBuy);
-                bankServiceClient.startStockTransaction(stockTransactionDto);
+                bankServiceClient.stockBuyTransaction(stockTransactionDto);
 
                 myStockService.addAmountToMyStock(stockOrder.getTicker(), amountToBuy);    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
                 stockOrder.setAmountLeft(stockOrder.getAmountLeft() - amountToBuy);
                 if (stockOrder.getAmountLeft() <= 0) {
-                    stockOrder.setStatus(StockOrderStatus.FINISHED);
+                    stockOrder.setStatus(OrderStatus.FINISHED);
                     ordersToBuy.remove(stockNumber);    //uklanjamo ga iz liste jer je zavrsio
                 } else {
                     ordersToBuy.remove(stockNumber);
@@ -177,36 +176,36 @@ public class StockOrderService {
                 }
             }
 
-            if (stockOrder.getType().equals(StockOrderType.LIMIT)){
+            if (stockOrder.getType().equals(OrderType.LIMIT)){
                 if (currentPrice < stockOrder.getLimitValue()){
                     stockTransactionDto.setAmount(currentPrice * amountToBuy);
-                    bankServiceClient.startStockTransaction(stockTransactionDto);
+                    bankServiceClient.stockBuyTransaction(stockTransactionDto);
                     myStockService.addAmountToMyStock(stockOrder.getTicker(), amountToBuy);    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
                     stockOrder.setAmountLeft(stockOrder.getAmountLeft() - amountToBuy);
                     if (stockOrder.getAmountLeft() <= 0) {
-                        stockOrder.setStatus(StockOrderStatus.FINISHED);
+                        stockOrder.setStatus(OrderStatus.FINISHED);
                         ordersToBuy.remove(stockNumber);    //uklanjamo ga iz liste jer je zavrsio
                     }else {
                         ordersToBuy.remove(stockNumber);
                         ordersToBuy.add(stockNumber,stockOrder);    //update Objekta u listi
                     }
                 } else {
-                    stockOrder.setStatus(StockOrderStatus.FAILED);
+                    stockOrder.setStatus(OrderStatus.FAILED);
                     ordersToBuy.remove(stockNumber);
                 }
             }
 
-            if (stockOrder.getType().equals(StockOrderType.STOP)){
+            if (stockOrder.getType().equals(OrderType.STOP)){
                 if (currentPrice > stockOrder.getStopValue()){
-                    stockOrder.setType(StockOrderType.MARKET);
+                    stockOrder.setType(OrderType.MARKET);
                 } else {
                     System.out.println("Stop value hasn't been approved ");
                 }
             }
 
-            if (stockOrder.getType().equals(StockOrderType.STOP_LIMIT)){
+            if (stockOrder.getType().equals(OrderType.STOP_LIMIT)){
                 if (currentPrice > stockOrder.getStopValue()){
-                    stockOrder.setType(StockOrderType.LIMIT);
+                    stockOrder.setType(OrderType.LIMIT);
                 } else {
                     System.out.println("Stop value hasn't been approved ");
                 }
