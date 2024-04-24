@@ -3,11 +3,7 @@ package com.example.bankservice.service;
 import com.example.bankservice.client.EmailServiceClient;
 import com.example.bankservice.client.UserServiceClient;
 import com.example.bankservice.domain.dto.currencyExchange.CurrencyExchangeDto;
-import com.example.bankservice.domain.dto.emailService.TransactionFinishedDto;
-import com.example.bankservice.domain.dto.transaction.ConfirmPaymentTransactionDto;
-import com.example.bankservice.domain.dto.transaction.CreditTransactionDto;
-import com.example.bankservice.domain.dto.transaction.PaymentTransactionActivationDto;
-import com.example.bankservice.domain.dto.transaction.PaymentTransactionDto;
+import com.example.bankservice.domain.dto.transaction.*;
 import com.example.bankservice.domain.mapper.TransactionMapper;
 import com.example.bankservice.domain.model.Transaction;
 import com.example.bankservice.domain.model.accounts.Account;
@@ -86,6 +82,24 @@ public class TransactionService {
 
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public void stockBuyTransaction(StockTransactionDto stockTransactionDto) {
+        Account accountFrom = accountService.findBankAccountForGivenCurrency(stockTransactionDto.getCurrencyMark());
+        Account accountTo = accountService.findExchangeAccountForGivenCurrency(stockTransactionDto.getCurrencyMark());
+
+        if (accountFrom.getAvailableBalance().compareTo(BigDecimal.valueOf(stockTransactionDto.getAmount())) < 0) {
+            throw new RuntimeException("Insufficient funds");
+        }
+
+        Transaction transaction = new Transaction();
+        transaction.setAccountFrom(accountFrom.getAccountNumber());
+        transaction.setAccountTo(accountTo.getAccountNumber());
+        transaction.setAmount(BigDecimal.valueOf(stockTransactionDto.getAmount()));
+        transaction.setType(TransactionType.STOCK_TRANSACTION);
+        transaction.setTransactionStatus(TransactionStatus.ACCEPTED);
+        transaction.setDate(System.currentTimeMillis());
+    }
+
     public List<CreditTransactionDto> getAllCreditTransactions() {
         List<Transaction> transactions = transactionRepository.findAllByType(TransactionType.CREDIT_APPROVE_TRANSACTION)
                 .orElseThrow(() -> new RuntimeException("Transactions not found"));
@@ -129,6 +143,8 @@ public class TransactionService {
                 finishCreditTransaction(transaction);
             } else if (transaction.getType().equals(TransactionType.PAYMENT_TRANSACTION)) {
                 finishTransaction(transaction);
+            } else if (transaction.getType().equals(TransactionType.STOCK_TRANSACTION)) {
+                finishStockTransaction(transaction);
             }
         }
     }
@@ -151,6 +167,17 @@ public class TransactionService {
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
         accountService.transferCreditFunds(accountFrom, accountTo, transaction.getAmount());
+        transaction.setTransactionStatus(TransactionStatus.FINISHED);
+        transactionRepository.save(transaction);
+    }
+
+    private void finishStockTransaction(Transaction transaction) {
+        Account accountFrom = accountRepository.findByAccountNumber(transaction.getAccountFrom())
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+        Account accountTo = accountRepository.findByAccountNumber(transaction.getAccountTo())
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        accountService.transferStockFunds(accountFrom, accountTo, transaction.getAmount());
         transaction.setTransactionStatus(TransactionStatus.FINISHED);
         transactionRepository.save(transaction);
     }

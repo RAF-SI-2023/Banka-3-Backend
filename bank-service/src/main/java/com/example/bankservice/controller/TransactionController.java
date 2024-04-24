@@ -1,11 +1,9 @@
 package com.example.bankservice.controller;
 
-import com.example.bankservice.domain.dto.currencyExchange.CurrencyExchangeDto;
-import com.example.bankservice.domain.dto.emailService.TransactionFinishedDto;
 import com.example.bankservice.domain.dto.transaction.ConfirmPaymentTransactionDto;
 import com.example.bankservice.domain.dto.transaction.CreditTransactionDto;
 import com.example.bankservice.domain.dto.transaction.PaymentTransactionDto;
-import com.example.bankservice.domain.model.Transaction;
+import com.example.bankservice.domain.dto.transaction.StockTransactionDto;
 import com.example.bankservice.service.TransactionService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
@@ -59,6 +57,18 @@ public class TransactionController {
         try {
             List<PaymentTransactionDto> transactions = transactionService.getAllPaymentTransactions();
             return ResponseEntity.ok().body(transactions);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping(value = "/stockTransaction",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> stockTransaction(@RequestBody StockTransactionDto stockTransactionDto) {
+        try {
+            transactionService.stockBuyTransaction(stockTransactionDto);
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

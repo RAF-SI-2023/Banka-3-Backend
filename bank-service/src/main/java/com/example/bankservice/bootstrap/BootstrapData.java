@@ -172,6 +172,50 @@ public class BootstrapData implements CommandLineRunner {
         companyAccount6.setCurrency(currencyRepository.findById(6L).orElse(null));
         companyAccount6.setActive(true);
 
+        CompanyAccount exchangeAccount1 = new CompanyAccount();
+        exchangeAccount1.setCompanyId(2L);
+        exchangeAccount1.setEmployeeId(1L);
+        exchangeAccount1.setAccountNumber("1234567891231231");
+        exchangeAccount1.setReservedAmount(new BigDecimal(1000));
+        exchangeAccount1.setAvailableBalance(new BigDecimal(10000));
+        exchangeAccount1.setCreationDate(System.currentTimeMillis());
+        exchangeAccount1.setExpireDate(System.currentTimeMillis() + 60 * 60 * 24 * 365 * 10);
+        exchangeAccount1.setCurrency(currencyRepository.findById(1L).orElse(null));
+        exchangeAccount1.setActive(true);
+
+        CompanyAccount exchangeAccount2 = new CompanyAccount();
+        exchangeAccount2.setCompanyId(2L);
+        exchangeAccount2.setEmployeeId(1L);
+        exchangeAccount2.setAccountNumber("9876543219876543");
+        exchangeAccount2.setReservedAmount(new BigDecimal(1000));
+        exchangeAccount2.setAvailableBalance(new BigDecimal(10000));
+        exchangeAccount2.setCreationDate(System.currentTimeMillis());
+        exchangeAccount2.setExpireDate(System.currentTimeMillis() + 60 * 60 * 24 * 365 * 10);
+        exchangeAccount2.setCurrency(currencyRepository.findById(2L).orElse(null));
+        exchangeAccount2.setActive(true);
+
+        CompanyAccount exchangeAccount3 = new CompanyAccount();
+        exchangeAccount3.setCompanyId(2L);
+        exchangeAccount3.setEmployeeId(1L);
+        exchangeAccount3.setAccountNumber("1098765432101234");
+        exchangeAccount3.setReservedAmount(new BigDecimal(1000));
+        exchangeAccount3.setAvailableBalance(new BigDecimal(10000));
+        exchangeAccount3.setCreationDate(System.currentTimeMillis());
+        exchangeAccount3.setExpireDate(System.currentTimeMillis() + 60 * 60 * 24 * 365 * 10);
+        exchangeAccount3.setCurrency(currencyRepository.findById(3L).orElse(null));
+        exchangeAccount3.setActive(true);
+
+        CompanyAccount exchangeAccount4 = new CompanyAccount();
+        exchangeAccount4.setCompanyId(2L);
+        exchangeAccount4.setEmployeeId(1L);
+        exchangeAccount4.setAccountNumber("9988776655443322");
+        exchangeAccount4.setReservedAmount(new BigDecimal(1000));
+        exchangeAccount4.setAvailableBalance(new BigDecimal(10000));
+        exchangeAccount4.setCreationDate(System.currentTimeMillis());
+        exchangeAccount4.setExpireDate(System.currentTimeMillis() + 60 * 60 * 24 * 365 * 10);
+        exchangeAccount4.setCurrency(currencyRepository.findById(5L).orElse(null));
+        exchangeAccount4.setActive(true);
+
         if (accountRepository.count() == 0) {
             loadUserAccountData(List.of(jankoRacunDinarski,
                     strahinjaRacunDinarski,
@@ -182,7 +226,11 @@ public class BootstrapData implements CommandLineRunner {
                     companyAccount3,
                     companyAccount4,
                     companyAccount5,
-                    companyAccount6));
+                    companyAccount6,
+                    exchangeAccount1,
+                    exchangeAccount2,
+                    exchangeAccount3,
+                    exchangeAccount4));
         }
 
         Card jankoDinarskiKartica = new Card();
