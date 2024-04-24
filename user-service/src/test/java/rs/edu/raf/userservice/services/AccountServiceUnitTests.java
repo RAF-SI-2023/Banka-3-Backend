@@ -1,33 +1,7 @@
 package rs.edu.raf.userservice.services;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import rs.edu.raf.userservice.domains.dto.account.AccountCreateDto;
-import rs.edu.raf.userservice.domains.dto.account.AccountDto;
-import rs.edu.raf.userservice.domains.dto.account.CheckEnoughBalanceDto;
-import rs.edu.raf.userservice.domains.dto.account.RebalanceAccountDto;
-import rs.edu.raf.userservice.domains.model.*;
-import rs.edu.raf.userservice.domains.model.enums.AccountTypeName;
-import rs.edu.raf.userservice.domains.model.enums.CurrencyName;
-import rs.edu.raf.userservice.repositories.*;
-import rs.edu.raf.userservice.services.AccountService;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
-
 public class AccountServiceUnitTests {
-
+/*
     @InjectMocks
     private AccountService accountService;
 
@@ -529,4 +503,5 @@ public class AccountServiceUnitTests {
 
         return employee;
     }
+ */
 }

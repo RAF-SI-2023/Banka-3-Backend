@@ -1,6 +1,7 @@
 package com.example.bankservice.client;
 
-import com.example.bankservice.domains.dto.TransactionActivationDto;
+import com.example.bankservice.domain.dto.emailService.TransactionFinishedDto;
+import com.example.bankservice.domain.dto.transaction.PaymentTransactionActivationDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,5 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 @FeignClient(value = "emailServiceClient", url = "${emailServiceLocation}")
 public interface EmailServiceClient {
     @PostMapping(value = "/transaction/begin")
-    ResponseEntity<Void> sendTransactionActivationEmailToEmailService(@RequestBody TransactionActivationDto transactionActivationDto);
+    ResponseEntity<Void> sendTransactionActivationEmailToEmailService(@RequestBody PaymentTransactionActivationDto paymentTransactionActivationDto);
+
+    @PostMapping(value = "/transaction/finished")
+    ResponseEntity<Void> sendTransactionFinishedEmailToEmailService(@RequestBody TransactionFinishedDto transactionFinishedDto);
 }

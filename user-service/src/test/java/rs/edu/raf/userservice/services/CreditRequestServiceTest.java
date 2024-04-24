@@ -5,14 +5,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import rs.edu.raf.userservice.domains.dto.credit.CreateCreditDto;
-import rs.edu.raf.userservice.domains.dto.creditrequest.CreditRequestCreateDto;
-import rs.edu.raf.userservice.domains.dto.creditrequest.CreditRequestDto;
-import rs.edu.raf.userservice.domains.dto.creditrequest.ProcessCreditRequestDto;
-import rs.edu.raf.userservice.domains.mappers.CreditRequestMapper;
-import rs.edu.raf.userservice.domains.model.CreditRequest;
-import rs.edu.raf.userservice.domains.model.User;
-import rs.edu.raf.userservice.domains.model.enums.CreditRequestStatus;
+import rs.edu.raf.userservice.domain.dto.credit.CreateCreditDto;
+import rs.edu.raf.userservice.domain.dto.creditrequest.CreditRequestCreateDto;
+import rs.edu.raf.userservice.domain.dto.creditrequest.CreditRequestDto;
+import rs.edu.raf.userservice.domain.dto.creditrequest.ProcessCreditRequestDto;
+import rs.edu.raf.userservice.domain.mappers.CreditRequestMapper;
+import rs.edu.raf.userservice.domain.model.CreditRequest;
+import rs.edu.raf.userservice.domain.model.User;
+import rs.edu.raf.userservice.domain.model.enums.CreditRequestStatus;
 import rs.edu.raf.userservice.repositories.CreditRequestRepository;
 import rs.edu.raf.userservice.repositories.UserRepository;
 
@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)

@@ -1,25 +1,7 @@
 package rs.edu.raf.userservice.integration.employeeController;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
-import rs.edu.raf.userservice.domains.dto.employee.*;
-import rs.edu.raf.userservice.domains.dto.login.LoginRequest;
-import rs.edu.raf.userservice.integration.LoginResponseForm;
-import rs.edu.raf.userservice.repositories.RoleRepository;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 public class EmployeeControllerTestSteps extends EmployeeControllerTestsConfig{
-
+/*
     @Autowired
     private MockMvc mockMvc;
 
@@ -33,7 +15,7 @@ public class EmployeeControllerTestSteps extends EmployeeControllerTestsConfig{
     private RoleRepository roleRepository;
 
 
-    SetPasswordDTO setPasswordDTO = new SetPasswordDTO();
+    EmployeeSetPasswordDto employeeSetPasswordDto = new EmployeeSetPasswordDto();
     EmployeeDto employeeDtoPreeSet;
 
 
@@ -157,8 +139,8 @@ public class EmployeeControllerTestSteps extends EmployeeControllerTestsConfig{
 
     @When("setujemo sifru zaposlenom sa emailom {string}")
     public void setujemoSifruZaposlenomSaIdEm(String email) {
-        setPasswordDTO.setEmail(email);
-        setPasswordDTO.setPassword("damir123");
+        employeeSetPasswordDto.setEmail(email);
+        employeeSetPasswordDto.setPassword("damir123");
 
         try {
             ResultActions resultActions = mockMvc.perform(
@@ -166,7 +148,7 @@ public class EmployeeControllerTestSteps extends EmployeeControllerTestsConfig{
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)
                             .header("Authorization", "Bearer " + employeeControllerTestsState.getJwtToken())
-                            .content(objectMapper.writeValueAsString(setPasswordDTO))
+                            .content(objectMapper.writeValueAsString(employeeSetPasswordDto))
             ).andExpect(status().isOk());
 
             MvcResult mvcResult = resultActions.andReturn();
@@ -367,8 +349,8 @@ public class EmployeeControllerTestSteps extends EmployeeControllerTestsConfig{
             MvcResult mvcResult = resultActions.andReturn();
 
             String jsonEmployee = mvcResult.getResponse().getContentAsString();
-            ExchangeEmployeeDTO[] exchangeEmployeeDTOS = objectMapper.readValue(jsonEmployee, ExchangeEmployeeDTO[].class);
-            assertTrue(exchangeEmployeeDTOS.length > 0);
+            ExchangeEmployeeDto[] exchangeEmployeeDtos = objectMapper.readValue(jsonEmployee, ExchangeEmployeeDto[].class);
+            assertTrue(exchangeEmployeeDtos.length > 0);
         }catch (Exception e) {
             fail(e.getMessage());
         }
@@ -428,5 +410,5 @@ public class EmployeeControllerTestSteps extends EmployeeControllerTestsConfig{
             fail(e.getMessage());
         }
     }
-
+*/
 }

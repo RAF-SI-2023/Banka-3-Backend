@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableFeignClients
 @EnableScheduling
-public class BankServiceApplication {
+public class  BankServiceApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(BankServiceApplication.class, args);

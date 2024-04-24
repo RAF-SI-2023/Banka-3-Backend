@@ -1,4 +1,4 @@
-Feature: Testiranje account type kontrolera - integracioni testovi
+Feature: Testiranje userAccount type kontrolera - integracioni testovi
 
   Scenario: Povlacenje svih tipova naloga
     Given Korisnik je ulogovan

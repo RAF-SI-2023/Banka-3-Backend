@@ -1,0 +1,16 @@
+//EMPLOYEES:
+ADMIN: admin@admin.com, admin1234
+BANKING_OFFICER: salter@banka.com, employee1234
+CLIENT_ADVISOR: jdrljan@banka.com, employee1234
+CREDIT_OFFICER: credit@banka.com, employee1234
+SUPERVISOR: jristic@banka.com, employee1234
+AGENT: mljubinkovic@banka.com, employee1234
+
+//USERS:
+jristic3620rn@raf.rs, user1234
+sljubicic7120rn@raf.rs, user1234
+ostojanovic10021rn@raf.rs, //nije codeActive
+
+//COMPANIES
+banak.tri@gmail.com, Banka3najbolja
+exchange@gmail.com, exchange1234

@@ -5,8 +5,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import rs.edu.raf.userservice.domains.model.Role;
-import rs.edu.raf.userservice.domains.model.enums.RoleName;
+import rs.edu.raf.userservice.domain.model.Role;
+import rs.edu.raf.userservice.domain.model.enums.RoleName;
 import rs.edu.raf.userservice.repositories.RoleRepository;
 import rs.edu.raf.userservice.services.RoleService;
 

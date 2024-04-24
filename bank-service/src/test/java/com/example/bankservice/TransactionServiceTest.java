@@ -2,11 +2,11 @@ package com.example.bankservice;
 
 import com.example.bankservice.client.EmailServiceClient;
 import com.example.bankservice.client.UserServiceClient;
-import com.example.bankservice.domains.dto.*;
-import com.example.bankservice.domains.model.Transaction;
-import com.example.bankservice.domains.model.enums.TransactionState;
-import com.example.bankservice.repositories.TransactionRepository;
-import com.example.bankservice.services.TransactionService;
+import com.example.bankservice.domain.dto.*;
+import com.example.bankservice.domain.model.Transaction;
+import com.example.bankservice.domain.model.enums.TransactionState;
+import com.example.bankservice.repository.TransactionRepository;
+import com.example.bankservice.service.TransactionService;
 import io.cucumber.java.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,7 +46,7 @@ class TransactionServiceTest {
     }
 
     @Test
-    public void testStartTransaction_Successful() {
+    public void testStartPaymentTransaction_Successful() {
 
         TransactionDto dto = new TransactionDto();
         ResponseEntity<String> successResponse = new ResponseEntity<>("Success", HttpStatus.OK);
@@ -57,7 +57,7 @@ class TransactionServiceTest {
         when(transactionRepository.save(any(Transaction.class))).thenReturn(transaction);
 
         // Izvršavanje metode koju testiramo
-        ResponseEntity<Long> result = transactionService.startTransaction(dto);
+        ResponseEntity<Long> result = transactionService.startPaymentTransaction(dto);
 
         // Provera rezultata
         assertEquals(HttpStatus.OK, result.getStatusCode());
@@ -66,17 +66,17 @@ class TransactionServiceTest {
     }
 
     @Test
-    public void testStartTransaction_NotEnoughBalance() {
+    public void testStartPaymentTransaction_NotEnoughBalance() {
         TransactionDto dto = new TransactionDto(/* Popunite polja za TransactionDto */);
         ResponseEntity<String> errorResponse = new ResponseEntity<>("Error", HttpStatus.BAD_REQUEST);
         when(userServiceClient.checkEnoughBalance(any(CheckEnoughBalanceDto.class))).thenReturn(errorResponse);
 
 
-        assertThrows(ResponseStatusException.class, ()-> transactionService.startTransaction(dto));
+        assertThrows(ResponseStatusException.class, ()-> transactionService.startPaymentTransaction(dto));
     }
 
     @Test
-    public void testConfirmTransaction_Successful() {
+    public void testConfirmPaymentTransaction_Successful() {
 
         long transactionId = 12345;
         ConfirmTransactionDto confirmTransactionDto = new ConfirmTransactionDto(transactionId, 1234);
@@ -85,7 +85,7 @@ class TransactionServiceTest {
         when(transactionRepository.findById(transactionId)).thenReturn(Optional.of(transaction));
 
         // Izvršavanje metode koju testiramo
-        ResponseEntity<String> result = transactionService.confirmTransaction(confirmTransactionDto);
+        ResponseEntity<String> result = transactionService.confirmPaymentTransaction(confirmTransactionDto);
 
         // Provera rezultata
         assertEquals(HttpStatus.OK, result.getStatusCode());
@@ -96,14 +96,14 @@ class TransactionServiceTest {
     }
 
     @Test
-    public void testConfirmTransaction_TransactionNotFound() {
+    public void testConfirmTransaction_Payment_TransactionNotFound() {
         // Priprema podataka za test
         long transactionId = 12345;
         ConfirmTransactionDto confirmTransactionDto = new ConfirmTransactionDto(transactionId, 1234);
         when(transactionRepository.findById(transactionId)).thenReturn(Optional.empty());
 
         // Izvršavanje metode koju testiramo
-        ResponseEntity<String> result = transactionService.confirmTransaction(confirmTransactionDto);
+        ResponseEntity<String> result = transactionService.confirmPaymentTransaction(confirmTransactionDto);
 
         // Provera rezultata
         assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
@@ -113,7 +113,7 @@ class TransactionServiceTest {
     }
 
     @Test
-    public void testConfirmTransaction_TransactionNotPending() {
+    public void testConfirmTransaction_Payment_TransactionNotPending() {
         // Priprema podataka za test
         long transactionId = 12345;
         ConfirmTransactionDto confirmTransactionDto = new ConfirmTransactionDto(transactionId, 1234);
@@ -122,7 +122,7 @@ class TransactionServiceTest {
         when(transactionRepository.findById(transactionId)).thenReturn(Optional.of(transaction));
 
         // Izvršavanje metode koju testiramo
-        ResponseEntity<String> result = transactionService.confirmTransaction(confirmTransactionDto);
+        ResponseEntity<String> result = transactionService.confirmPaymentTransaction(confirmTransactionDto);
 
         // Provera rezultata
         assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());

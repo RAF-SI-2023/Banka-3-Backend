@@ -27,7 +27,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/api/v1/employee/**").permitAll()
                 .antMatchers("/api/v1/user/**").permitAll()
+                .antMatchers("/api/v1/company/**").permitAll()
                 .antMatchers("/api/v1/user/activateUser/**").permitAll()
+                .antMatchers("/api/v1/company/activateCompany/**").permitAll()
                 .antMatchers("/api/v1/employee/resetPassword/**").permitAll()
                 .antMatchers("/api/v1/employee/setPassword/**").permitAll()
                 .antMatchers("/api/v1/transaction/**").permitAll()
@@ -39,7 +41,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().headers()
                 .frameOptions().disable();
-
     }
 
     @Override
