@@ -2,229 +2,458 @@ package com.example.bankservice;
 
 import com.example.bankservice.client.EmailServiceClient;
 import com.example.bankservice.client.UserServiceClient;
-import com.example.bankservice.domain.dto.*;
+import com.example.bankservice.domain.dto.currencyExchange.CurrencyExchangeDto;
+import com.example.bankservice.domain.dto.transaction.ConfirmPaymentTransactionDto;
+import com.example.bankservice.domain.dto.transaction.CreditTransactionDto;
+import com.example.bankservice.domain.dto.transaction.PaymentTransactionActivationDto;
+import com.example.bankservice.domain.dto.transaction.PaymentTransactionDto;
+import com.example.bankservice.domain.dto.userService.UserEmailDto;
+import com.example.bankservice.domain.mapper.TransactionMapper;
+import com.example.bankservice.domain.model.Currency;
 import com.example.bankservice.domain.model.Transaction;
-import com.example.bankservice.domain.model.enums.TransactionState;
+import com.example.bankservice.domain.model.accounts.Account;
+import com.example.bankservice.domain.model.accounts.CompanyAccount;
+import com.example.bankservice.domain.model.accounts.UserAccount;
+import com.example.bankservice.domain.model.enums.CurrencyName;
+import com.example.bankservice.domain.model.enums.TransactionStatus;
+import com.example.bankservice.domain.model.enums.TransactionType;
+import com.example.bankservice.repository.AccountRepository;
 import com.example.bankservice.repository.TransactionRepository;
+import com.example.bankservice.service.AccountService;
 import com.example.bankservice.service.TransactionService;
-import io.cucumber.java.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.math.BigDecimal;
+import java.util.*;
+
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-
 
 @ExtendWith(MockitoExtension.class)
 class TransactionServiceTest {
-    @Mock
-    private UserServiceClient userServiceClient;
 
+    @Mock
+    private AccountRepository accountRepository;
     @Mock
     private EmailServiceClient emailServiceClient;
-
+    @Mock
+    private UserServiceClient userServiceClient;
+    @Mock
+    private AccountService accountService;
+    @Mock
+    private TransactionMapper transactionMapper;
     @Mock
     private TransactionRepository transactionRepository;
+
     @InjectMocks
-    private TransactionService transactionService;
+    private TransactionService paymentTransactionService;
 
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
+    @Test
+    void testStartPaymentTransaction_InsufficientFunds() {
+        PaymentTransactionDto paymentTransactionDto = new PaymentTransactionDto();
+        paymentTransactionDto.setAccountFrom("fromAccountNumber");
+        paymentTransactionDto.setAccountTo("toAccountNumber");
+        paymentTransactionDto.setAmount(100.0);
+
+        Account accountFrom = new Account();
+        accountFrom.setAccountNumber("fromAccountNumber");
+        accountFrom.setAvailableBalance(new BigDecimal(50)); // Less than the amount to transfer
+        accountFrom.setCurrency(new Currency(1l, CurrencyName.DOLLAR,"USD"));
+
+        Account accountTo = new Account();
+        accountTo.setAccountNumber("toAccountNumber");
+        accountTo.setAvailableBalance(new BigDecimal(300));
+        accountTo.setCurrency(new Currency(2l, CurrencyName.EURO, "EUR"));
+
+        when(accountService.extractAccountForAccountNumber("fromAccountNumber")).thenReturn(accountFrom);
+        when(accountService.extractAccountForAccountNumber("toAccountNumber")).thenReturn(accountTo);
+        when(accountService.checkBalance("fromAccountNumber", 100.0)).thenReturn(false); // Insufficient funds
+
+        assertThrows(RuntimeException.class, () -> paymentTransactionService.startPaymentTransaction(paymentTransactionDto));
+
+        verify(accountService).extractAccountForAccountNumber("fromAccountNumber");
+        verify(accountService).extractAccountForAccountNumber("toAccountNumber");
+        verify(accountService).checkBalance("fromAccountNumber", 100.0);
+
+        verifyNoMoreInteractions(accountService);
     }
 
     @Test
-    public void testStartPaymentTransaction_Successful() {
+    void testStartPaymentTransaction_DifferentCurrencies() {
+        PaymentTransactionDto paymentTransactionDto = new PaymentTransactionDto();
+        paymentTransactionDto.setAccountFrom("fromAccountNumber");
+        paymentTransactionDto.setAccountTo("toAccountNumber");
+        paymentTransactionDto.setAmount(100.0);
 
-        TransactionDto dto = new TransactionDto();
-        ResponseEntity<String> successResponse = new ResponseEntity<>("Success", HttpStatus.OK);
-        long transactionId = 12345;
+        Account accountFrom = new Account();
+        accountFrom.setAccountNumber("fromAccountNumber");
+        accountFrom.setAvailableBalance(new BigDecimal(200));
+        accountFrom.setCurrency(new Currency(1l, CurrencyName.DOLLAR,"USD"));
+
+        Account accountTo = new Account();
+        accountTo.setAccountNumber("toAccountNumber");
+        accountTo.setAvailableBalance(new BigDecimal(300));
+        accountTo.setCurrency(new Currency(2l, CurrencyName.EURO, "EUR"));
+
+        when(accountService.extractAccountForAccountNumber("fromAccountNumber")).thenReturn(accountFrom);
+        when(accountService.extractAccountForAccountNumber("toAccountNumber")).thenReturn(accountTo);
+        when(accountService.checkBalance("fromAccountNumber", 100.0)).thenReturn(true); // Sufficient funds
+
+        assertThrows(RuntimeException.class, () -> paymentTransactionService.startPaymentTransaction(paymentTransactionDto));
+
+        verify(accountService).extractAccountForAccountNumber("fromAccountNumber");
+        verify(accountService).extractAccountForAccountNumber("toAccountNumber");
+        verify(accountService).checkBalance("fromAccountNumber", 100.0);
+
+        verifyNoMoreInteractions(accountService);
+    }
+
+    @Test
+    void testStartPaymentTransaction_SameCurrencies() {
+        PaymentTransactionDto paymentTransactionDto = new PaymentTransactionDto();
+        paymentTransactionDto.setAccountFrom("fromAccountNumber");
+        paymentTransactionDto.setAccountTo("toAccountNumber");
+        paymentTransactionDto.setAmount(100.0);
+
+        UserAccount accountFrom = new UserAccount();
+        accountFrom.setAccountNumber("fromAccountNumber");
+        accountFrom.setAvailableBalance(new BigDecimal(200));
+        accountFrom.setCurrency(new Currency(1l, CurrencyName.DOLLAR,"USD"));
+
+
+        Account accountTo = new Account();
+        accountTo.setAccountNumber("toAccountNumber");
+        accountTo.setAvailableBalance(new BigDecimal(300));
+        accountTo.setCurrency(new Currency(2l, CurrencyName.DOLLAR, "USD"));
+
         Transaction transaction = new Transaction();
-        transaction.setTransactionId(12345L);
-        when(userServiceClient.checkEnoughBalance(any(CheckEnoughBalanceDto.class))).thenReturn(successResponse);
+        transaction.setTransactionId(1l);
+        transaction.setDate(100l);
+        transaction.setType(TransactionType.PAYMENT_TRANSACTION);
+        transaction.setTransactionStatus(TransactionStatus.SUCCESSFUL);
+        transaction.setAmount(new BigDecimal(100));
+        transaction.setAccountTo("toAccountNumber");
+        transaction.setAccountFrom("fromAccountNumber");
+        transaction.setPozivNaBroj("189");
+        transaction.setSifraPlacanja(25);
+
+        UserEmailDto userEmailDto = new UserEmailDto();
+        userEmailDto.setUserId(1L);
+        userEmailDto.setEmail("test@example.com");
+
+
+        when(accountService.extractAccountForAccountNumber("fromAccountNumber")).thenReturn(accountFrom);
+        when(accountService.extractAccountForAccountNumber("toAccountNumber")).thenReturn(accountTo);
+        when(accountService.checkBalance("fromAccountNumber", 100.0)).thenReturn(true); // Sufficient funds
+        when(transactionMapper.paymentTransactionDtoToTransaction(paymentTransactionDto)).thenReturn(transaction);
         when(transactionRepository.save(any(Transaction.class))).thenReturn(transaction);
+        when(userServiceClient.getEmailByUserId(anyString())).thenReturn(userEmailDto);
+        when(emailServiceClient.sendTransactionActivationEmailToEmailService(any(PaymentTransactionActivationDto.class))).thenReturn(null);
 
-        // Izvršavanje metode koju testiramo
-        ResponseEntity<Long> result = transactionService.startPaymentTransaction(dto);
 
-        // Provera rezultata
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals(Long.valueOf(transactionId), result.getBody());
-        verify(emailServiceClient, times(1)).sendTransactionActivationEmailToEmailService(any(TransactionActivationDto.class));
+        assertDoesNotThrow(() -> paymentTransactionService.startPaymentTransaction(paymentTransactionDto));
+
+        verify(accountService).extractAccountForAccountNumber("fromAccountNumber");
+        verify(accountService).extractAccountForAccountNumber("toAccountNumber");
+        verify(accountService).checkBalance("fromAccountNumber", 100.0);
+
+        verifyNoMoreInteractions(accountService);
     }
-
     @Test
-    public void testStartPaymentTransaction_NotEnoughBalance() {
-        TransactionDto dto = new TransactionDto(/* Popunite polja za TransactionDto */);
-        ResponseEntity<String> errorResponse = new ResponseEntity<>("Error", HttpStatus.BAD_REQUEST);
-        when(userServiceClient.checkEnoughBalance(any(CheckEnoughBalanceDto.class))).thenReturn(errorResponse);
+    void testStartPaymentTransaction_SameCurrencies1() {
+        PaymentTransactionDto paymentTransactionDto = new PaymentTransactionDto();
+        paymentTransactionDto.setAccountFrom("fromAccountNumber");
+        paymentTransactionDto.setAccountTo("toAccountNumber");
+        paymentTransactionDto.setAmount(100.0);
+
+        CompanyAccount accountFrom = new CompanyAccount();
+        accountFrom.setAccountNumber("fromAccountNumber");
+        accountFrom.setAvailableBalance(new BigDecimal(200));
+        accountFrom.setCurrency(new Currency(1l, CurrencyName.DOLLAR,"USD"));
 
 
-        assertThrows(ResponseStatusException.class, ()-> transactionService.startPaymentTransaction(dto));
-    }
+        Account accountTo = new Account();
+        accountTo.setAccountNumber("toAccountNumber");
+        accountTo.setAvailableBalance(new BigDecimal(300));
+        accountTo.setCurrency(new Currency(2l, CurrencyName.DOLLAR, "USD"));
 
-    @Test
-    public void testConfirmPaymentTransaction_Successful() {
-
-        long transactionId = 12345;
-        ConfirmTransactionDto confirmTransactionDto = new ConfirmTransactionDto(transactionId, 1234);
         Transaction transaction = new Transaction();
-        transaction.setState(TransactionState.PENDING);
-        when(transactionRepository.findById(transactionId)).thenReturn(Optional.of(transaction));
+        transaction.setTransactionId(1l);
+        transaction.setDate(100l);
+        transaction.setType(TransactionType.PAYMENT_TRANSACTION);
+        transaction.setTransactionStatus(TransactionStatus.SUCCESSFUL);
+        transaction.setAmount(new BigDecimal(100));
+        transaction.setAccountTo("toAccountNumber");
+        transaction.setAccountFrom("fromAccountNumber");
+        transaction.setPozivNaBroj("189");
+        transaction.setSifraPlacanja(25);
 
-        // Izvršavanje metode koju testiramo
-        ResponseEntity<String> result = transactionService.confirmPaymentTransaction(confirmTransactionDto);
 
-        // Provera rezultata
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals("Transaction with id " + transactionId + " is confirmed", result.getBody());
-        assertEquals(TransactionState.ACCEPTED, transaction.getState());
-        verify(transactionRepository, times(1)).save(transaction);
-        verify(userServiceClient, times(1)).reserveMoney(new RebalanceAccountDto());
+
+        when(accountService.extractAccountForAccountNumber("fromAccountNumber")).thenReturn(accountFrom);
+        when(accountService.extractAccountForAccountNumber("toAccountNumber")).thenReturn(accountTo);
+        when(accountService.checkBalance("fromAccountNumber", 100.0)).thenReturn(true); // Sufficient funds
+        when(transactionMapper.paymentTransactionDtoToTransaction(paymentTransactionDto)).thenReturn(transaction);
+        when(transactionRepository.save(any(Transaction.class))).thenReturn(transaction);
+        when(userServiceClient.getEmailByCompanyId(anyString())).thenReturn("test@example.com");
+        when(emailServiceClient.sendTransactionActivationEmailToEmailService(any(PaymentTransactionActivationDto.class))).thenReturn(null);
+
+
+        assertDoesNotThrow(() -> paymentTransactionService.startPaymentTransaction(paymentTransactionDto));
+
+        verify(accountService).extractAccountForAccountNumber("fromAccountNumber");
+        verify(accountService).extractAccountForAccountNumber("toAccountNumber");
+        verify(accountService).checkBalance("fromAccountNumber", 100.0);
+
+        verifyNoMoreInteractions(accountService);
     }
 
     @Test
-    public void testConfirmTransaction_Payment_TransactionNotFound() {
-        // Priprema podataka za test
-        long transactionId = 12345;
-        ConfirmTransactionDto confirmTransactionDto = new ConfirmTransactionDto(transactionId, 1234);
-        when(transactionRepository.findById(transactionId)).thenReturn(Optional.empty());
+    public void testConfirmPaymentTransaction_PendingTransaction() {
+        ConfirmPaymentTransactionDto confirmDto = new ConfirmPaymentTransactionDto();
+        confirmDto.setTransactionId(1L);
 
-        // Izvršavanje metode koju testiramo
-        ResponseEntity<String> result = transactionService.confirmPaymentTransaction(confirmTransactionDto);
+        Transaction transaction = new Transaction();
+        transaction.setTransactionId(1L);
+        transaction.setTransactionStatus(TransactionStatus.PENDING);
+        transaction.setAmount(new BigDecimal(200)); // Dodao sam iznos transakcije
+        transaction.setAccountFrom("fromAccountNumber");
 
-        // Provera rezultata
-        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
-        assertEquals("Transaction with id " + transactionId + " does not exist", result.getBody());
-        verify(transactionRepository, never()).save(any());
-        verify(userServiceClient, never()).reserveMoney(any());
+        when(transactionRepository.findById(1L)).thenReturn(java.util.Optional.of(transaction));
+
+        Account accountFrom = new Account();
+        accountFrom.setAccountNumber("fromAccountNumber");
+        accountFrom.setAvailableBalance(new BigDecimal(300));
+        accountFrom.setCurrency(new Currency(2L, CurrencyName.DOLLAR, "USD"));
+
+        when(accountService.extractAccountForAccountNumber("fromAccountNumber")).thenReturn(accountFrom);
+
+
+        doThrow(new RuntimeException()).when(accountService).reserveFunds(eq(accountFrom), any(BigDecimal.class));
+
+        assertThrows(RuntimeException.class, () -> paymentTransactionService.confirmPaymentTransaction(confirmDto));
+
+        verify(transactionRepository).findById(1L);
+        verify(accountService).extractAccountForAccountNumber("fromAccountNumber");
+        verify(accountService).reserveFunds(eq(accountFrom), any(BigDecimal.class));
+    }
+
+
+    @Test
+    public void testConfirmPaymentTransaction_CompletedTransaction() {
+        ConfirmPaymentTransactionDto confirmDto = new ConfirmPaymentTransactionDto();
+        confirmDto.setTransactionId(1L);
+
+        Transaction transaction = new Transaction();
+        transaction.setTransactionId(1L);
+        transaction.setTransactionStatus(TransactionStatus.SUCCESSFUL);
+
+        when(transactionRepository.findById(1L)).thenReturn(java.util.Optional.of(transaction));
+
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            paymentTransactionService.confirmPaymentTransaction(confirmDto);
+        });
+        assertEquals("Transaction already completed", exception.getMessage());
+
+        verify(transactionRepository).findById(1L);
+        verifyNoMoreInteractions(transactionRepository);
+    }
+    @Test
+    public void testStartCurrencyExchangeTransaction_InsufficientFunds() {
+        MockitoAnnotations.initMocks(this);
+
+        String accountFrom = "account123";
+        String accountTo = "account456";
+        double amount = 100.0;
+        CurrencyExchangeDto currencyExchangeDto = new CurrencyExchangeDto(accountFrom, accountTo, amount);
+
+        Account mockAccountFrom = new Account();
+        mockAccountFrom.setAvailableBalance(BigDecimal.valueOf(50.0)); // Postavimo stanje računa na manje od traženog iznosa
+        when(accountService.extractAccountForAccountNumber(accountFrom)).thenReturn(mockAccountFrom);
+        when(accountService.extractAccountForAccountNumber(accountTo)).thenReturn(new Account());
+
+        assertThrows(RuntimeException.class, () -> paymentTransactionService.startCurrencyExchangeTransaction(currencyExchangeDto));
     }
 
     @Test
-    public void testConfirmTransaction_Payment_TransactionNotPending() {
-        // Priprema podataka za test
-        long transactionId = 12345;
-        ConfirmTransactionDto confirmTransactionDto = new ConfirmTransactionDto(transactionId, 1234);
-        Transaction transaction = new Transaction(/* Popunite polja za Transaction */);
-        transaction.setState(TransactionState.ACCEPTED);
-        when(transactionRepository.findById(transactionId)).thenReturn(Optional.of(transaction));
+    public void testStartCurrencyExchangeTransaction_DifferentCurrencies() {
 
-        // Izvršavanje metode koju testiramo
-        ResponseEntity<String> result = transactionService.confirmPaymentTransaction(confirmTransactionDto);
+        CurrencyExchangeDto currencyExchangeDto = new CurrencyExchangeDto();
+        currencyExchangeDto.setAccountFrom("fromAccountNumber");
+        currencyExchangeDto.setAccountTo("toAccountNumber");
+        currencyExchangeDto.setAmount(100.0);
 
-        // Provera rezultata
-        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
-        assertEquals("Transaction with id " + transactionId + " is not in PENDING state", result.getBody());
-        verify(transactionRepository, never()).save(any());
-        verify(userServiceClient, never()).reserveMoney(any());
-    }
-    @Test
-    public void testGetAllTransactions_WithValidData() {
-        // Priprema testnih podataka
-        String accountId = "123456";
-        List<Transaction> transactionsFrom = new ArrayList<>();
-        List<Transaction> transactionsTo = new ArrayList<>();
-        transactionsFrom.add(new Transaction());
-        transactionsTo.add(new Transaction());
+        Account accountFrom = new Account();
+        accountFrom.setAccountNumber("fromAccountNumber");
+        accountFrom.setAvailableBalance(new BigDecimal(200));
+        accountFrom.setCurrency(new Currency(1l, CurrencyName.DOLLAR,"USD"));
 
-        // Podešavanje ponašanja mock-a
-        when(transactionRepository.findAllTransactionsByAccountFrom(accountId)).thenReturn(Optional.of(transactionsFrom));
-        when(transactionRepository.findAllTransactionsByAccountTo(accountId)).thenReturn(Optional.of(transactionsTo));
+        Account accountTo = new Account();
+        accountTo.setAccountNumber("toAccountNumber");
+        accountTo.setAvailableBalance(new BigDecimal(300));
+        accountTo.setCurrency(new Currency(2l, CurrencyName.EURO, "EUR"));
 
-        // Izvršavanje metode koju testiramo
-        List<TransactionDto> result = transactionService.getAllTransactions(accountId);
+        when(accountService.extractAccountForAccountNumber("fromAccountNumber")).thenReturn(accountFrom);
+        when(accountService.extractAccountForAccountNumber("toAccountNumber")).thenReturn(accountTo);
+        when(accountService.checkBalance("fromAccountNumber", 100.0)).thenReturn(true);
 
-        // Provera rezultata
-        assertNotNull(result);
-        assertEquals(2, result.size()); // Provera da li su svi podaci uspešno dobijeni
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            paymentTransactionService.startCurrencyExchangeTransaction(currencyExchangeDto);
+        });
+
+        verify(accountService).checkBalance("fromAccountNumber", 100.0);
+        assertEquals("Different currency transactions are not supported", exception.getMessage());
     }
 
     @Test
-    public void testGetAllTransactions_WithNoData() {
+    public void testProcessTransactions_NoTransactionsToProcess() {
+        MockitoAnnotations.initMocks(this);
 
-        String accountId = "123456";
+        when(transactionRepository.findAllByTransactionStatus(TransactionStatus.ACCEPTED)).thenReturn(Optional.empty());
 
-        when(transactionRepository.findAllTransactionsByAccountFrom(accountId)).thenReturn(Optional.empty());
-        when(transactionRepository.findAllTransactionsByAccountTo(accountId)).thenReturn(Optional.empty());
+        paymentTransactionService.processTransactions();
 
-        List<TransactionDto> result = transactionService.getAllTransactions(accountId);
-
-        assertEquals(null, result); // Provera da li je vraćena null vrednost kada nema podataka
+        verify(transactionRepository, times(1)).findAllByTransactionStatus(TransactionStatus.ACCEPTED);
+        verifyNoMoreInteractions(transactionRepository);
     }
     @Test
-    public void testProcessTransactions_NoAcceptedTransactions() {
+    void testProcessTransactions() {
+        Transaction transaction1 = new Transaction();
+        transaction1.setType(TransactionType.CREDIT_APPROVE_TRANSACTION);
+        transaction1.setTransactionStatus(TransactionStatus.ACCEPTED);
+        transaction1.setAccountFrom("123456");
+        transaction1.setAccountTo("789012");
+        transaction1.setAmount(new BigDecimal("100.00"));
 
-        when(transactionRepository.findByState(TransactionState.ACCEPTED)).thenReturn(Optional.empty());
 
-        transactionService.processTransactions();
+        Transaction transaction2 = new Transaction();
+        transaction2.setType(TransactionType.PAYMENT_TRANSACTION);
+        transaction2.setTransactionStatus(TransactionStatus.ACCEPTED);
+        transaction2.setAccountFrom("123456");
+        transaction2.setAccountTo("789012");
+        transaction2.setAmount(new BigDecimal("100.00"));
 
-        verify(userServiceClient, never()).unreserveMoney(any(RebalanceAccountDto.class));
-        verify(userServiceClient, never()).takeMoneyFromAccount(any(RebalanceAccountDto.class));
-        verify(userServiceClient, never()).addMoneyToAccount(any(RebalanceAccountDto.class));
-        verify(transactionRepository, never()).save(any(Transaction.class));
+        Account accountFrom = new Account();
+        accountFrom.setAccountNumber("123456");
+        Account accountTo = new Account();
+        accountTo.setAccountNumber("789012");
+
+        when(transactionRepository.findAllByTransactionStatus(TransactionStatus.ACCEPTED))
+                .thenReturn(Optional.of(Arrays.asList(transaction1, transaction2)));
+
+        when(accountRepository.findByAccountNumber("123456")).thenReturn(Optional.of(accountFrom));
+        when(accountRepository.findByAccountNumber("789012")).thenReturn(Optional.of(accountTo));
+
+        paymentTransactionService.processTransactions();
+
+        verify(transactionRepository).findAllByTransactionStatus(TransactionStatus.ACCEPTED);
+        assertEquals(TransactionStatus.FINISHED, transaction1.getTransactionStatus());
+        assertEquals(TransactionStatus.FINISHED, transaction2.getTransactionStatus());
+        verify(transactionRepository, times(1)).save(transaction1);
+        verify(transactionRepository, times(1)).save(transaction2);
     }
-
     @Test
-    public void testProcessTransactions_WithAcceptedTransactions() {
+    void testGetAllPaymentTransactions() {
+        Transaction transaction1 = new Transaction();
+        transaction1.setType(TransactionType.CREDIT_APPROVE_TRANSACTION);
+        transaction1.setTransactionStatus(TransactionStatus.ACCEPTED);
+        transaction1.setAccountFrom("123456");
+        transaction1.setAccountTo("789012");
+        transaction1.setAmount(new BigDecimal("100.00"));
+        transaction1.setTransactionId(1L);
+        transaction1.setPozivNaBroj("Da");
+        transaction1.setDate(100L);
+        transaction1.setSifraPlacanja(125);
 
-        List<Transaction> transactions = createDummyTransactions();
+        Transaction transaction2 = new Transaction();
+        transaction2.setType(TransactionType.CREDIT_APPROVE_TRANSACTION);
+        transaction2.setTransactionStatus(TransactionStatus.ACCEPTED);
+        transaction2.setAccountFrom("123456");
+        transaction2.setAccountTo("789012");
+        transaction2.setAmount(new BigDecimal("100.00"));
+        transaction1.setTransactionId(2L);
+        transaction1.setPozivNaBroj("Da");
+        transaction1.setDate(100L);
+        transaction1.setSifraPlacanja(125);
 
-        when(transactionRepository.findByState(TransactionState.ACCEPTED)).thenReturn(Optional.of(transactions));
-
-        transactionService.processTransactions();
-
-
-        for (Transaction transaction : transactions) {
-            verify(transactionRepository, times(1)).save(transaction);
-        }
-    }
-    private List<Transaction> createDummyTransactions() {
         List<Transaction> transactions = new ArrayList<>();
+        transactions.add(transaction1);
+        transactions.add(transaction2);
 
-        TransactionDto transactionDto1 = createDummyTransactionDto("123456789", "987654321", 100.0, "USD", 123456789.0, "ABC123", 1647774000L);
-        TransactionDto transactionDto2 = createDummyTransactionDto("987654321", "123456789", 50.0, "EUR", 987654321.0, "XYZ456", 1647775000L);
-        TransactionDto transactionDto3 = createDummyTransactionDto("111222333", "444555666", 200.0, "GBP", 111222333.0, "DEF789", 1647776000L);
+        PaymentTransactionDto paymentTransactionDto1 = new PaymentTransactionDto();
+        PaymentTransactionDto paymentTransactionDto2 = new PaymentTransactionDto();
 
-        transactions.add(convertDtoToTransaction(transactionDto1));
-        transactions.add(convertDtoToTransaction(transactionDto2));
-        transactions.add(convertDtoToTransaction(transactionDto3));
 
-        return transactions;
+        List<PaymentTransactionDto> expectedDtoList = List.of(paymentTransactionDto1, paymentTransactionDto2);
+
+        when(transactionRepository.findAllByType(TransactionType.CREDIT_APPROVE_TRANSACTION))
+                .thenReturn(Optional.of(transactions));
+
+        when(transactionMapper.transactionToPaymentTransactionDto(transaction1)).thenReturn(paymentTransactionDto1);
+        when(transactionMapper.transactionToPaymentTransactionDto(transaction2)).thenReturn(paymentTransactionDto2);
+
+        List<PaymentTransactionDto> actualDtoList = paymentTransactionService.getAllPaymentTransactions();
+
+        assertEquals(expectedDtoList, actualDtoList);
+
+        verify(transactionRepository).findAllByType(TransactionType.CREDIT_APPROVE_TRANSACTION);
+        verify(transactionMapper).transactionToPaymentTransactionDto(transaction1);
+        verify(transactionMapper).transactionToPaymentTransactionDto(transaction2);
     }
+    @Test
+    void testGetAllCreditTransactions() {
+        Transaction transaction1 = new Transaction();
+        transaction1.setType(TransactionType.CREDIT_APPROVE_TRANSACTION);
+        transaction1.setTransactionStatus(TransactionStatus.ACCEPTED);
+        transaction1.setAccountFrom("123456");
+        transaction1.setAccountTo("789012");
+        transaction1.setAmount(new BigDecimal("100.00"));
+        transaction1.setTransactionId(1L);
+        transaction1.setPozivNaBroj("Da");
+        transaction1.setDate(100L);
+        transaction1.setSifraPlacanja(125);
 
-    private TransactionDto createDummyTransactionDto(String accountFrom, String accountTo, Double amount, String currencyMark, Double sifraPlacanja, String pozivNaBroj, Long date) {
-        TransactionDto transactionDto = new TransactionDto();
-        transactionDto.setAccountFrom(accountFrom);
-        transactionDto.setAccountTo(accountTo);
-        transactionDto.setAmount(amount);
-        transactionDto.setCurrencyMark(currencyMark);
-        transactionDto.setSifraPlacanja(sifraPlacanja);
-        transactionDto.setPozivNaBroj(pozivNaBroj);
-        transactionDto.setDate(date);
-        return transactionDto;
-    }
+        Transaction transaction2 = new Transaction();
+        transaction2.setType(TransactionType.CREDIT_APPROVE_TRANSACTION);
+        transaction2.setTransactionStatus(TransactionStatus.ACCEPTED);
+        transaction2.setAccountFrom("123456");
+        transaction2.setAccountTo("789012");
+        transaction2.setAmount(new BigDecimal("100.00"));
+        transaction1.setTransactionId(2L);
+        transaction1.setPozivNaBroj("Da");
+        transaction1.setDate(100L);
+        transaction1.setSifraPlacanja(125);
 
-    private Transaction convertDtoToTransaction(TransactionDto transactionDto) {
-        Transaction transaction = new Transaction();
-        transaction.setAccountFrom(transactionDto.getAccountFrom());
-        transaction.setAccountTo(transactionDto.getAccountTo());
-        transaction.setAmount(transactionDto.getAmount());
-        transaction.setCurrencyMark(transactionDto.getCurrencyMark());
-        //transaction.setSifraPlacanja(Integer.parseInt(String.valueOf(transactionDto.getSifraPlacanja())));
-        transaction.setPozivNaBroj(transactionDto.getPozivNaBroj());
-        transaction.setDate(transactionDto.getDate());
-        return transaction;
+        List<Transaction> transactions = new ArrayList<>();
+        transactions.add(transaction1);
+        transactions.add(transaction2);
+
+        CreditTransactionDto creditTransactionDto1 = new CreditTransactionDto();
+        CreditTransactionDto creditTransactionDto2 = new CreditTransactionDto();
+
+
+        List<CreditTransactionDto> expectedDtoList = List.of(creditTransactionDto1, creditTransactionDto2);
+
+        when(transactionRepository.findAllByType(TransactionType.CREDIT_APPROVE_TRANSACTION))
+                .thenReturn(Optional.of(transactions));
+
+        when(transactionMapper.transactionToCreditTransactionDto(transaction1)).thenReturn(creditTransactionDto1);
+        when(transactionMapper.transactionToCreditTransactionDto(transaction2)).thenReturn(creditTransactionDto2);
+
+        List<CreditTransactionDto> actualDtoList = paymentTransactionService.getAllCreditTransactions();
+
+        assertEquals(expectedDtoList, actualDtoList);
+
+        verify(transactionRepository).findAllByType(TransactionType.CREDIT_APPROVE_TRANSACTION);
+        verify(transactionMapper).transactionToCreditTransactionDto(transaction1);
+        verify(transactionMapper).transactionToCreditTransactionDto(transaction2);
     }
 }
