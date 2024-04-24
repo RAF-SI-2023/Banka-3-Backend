@@ -48,17 +48,19 @@ public class TransactionController {
             List<CreditTransactionDto> transactions = transactionService.getAllCreditTransactions();
             return ResponseEntity.ok(transactions);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @GetMapping(value = "/getAllPaymentTransactions/{accountId}")
+    @GetMapping(value = "/getAllPaymentTransactions/{accountId}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAllPaymentTransactions(@PathVariable String accountId) {
-//        try {
-//            return ResponseEntity.ok(transactionService.getAllPaymentTransactions(accountId));
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().build("Unable to get all transactions for accountId");
-//        }
-        return null;
+        try {
+            List<PaymentTransactionDto> transactions = transactionService.getAllPaymentTransactions();
+            return ResponseEntity.ok().body(transactions);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

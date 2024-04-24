@@ -13,4 +13,6 @@ public abstract class TransactionMapper {
     public abstract Transaction paymentTransactionDtoToTransaction(PaymentTransactionDto paymentTransactionDto);
 
     public abstract CreditTransactionDto transactionToCreditTransactionDto(Transaction transaction);
+
+    public abstract PaymentTransactionDto transactionToPaymentTransactionDto(Transaction transaction);
 }
