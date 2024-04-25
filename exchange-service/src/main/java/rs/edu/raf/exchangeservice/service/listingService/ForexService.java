@@ -25,7 +25,7 @@ public class ForexService {
     private final String exchangeApiKey = "96aa86545baf8162d6ecbe21";
     private final String currencyMark = "RSD";
 
-    @PostConstruct
+//    @PostConstruct
     public void loadData() throws JsonProcessingException {
         RestTemplate restTemplate = new RestTemplate();
         String url = "https://v6.exchangerate-api.com/v6/"+exchangeApiKey+"/latest/"+currencyMark;

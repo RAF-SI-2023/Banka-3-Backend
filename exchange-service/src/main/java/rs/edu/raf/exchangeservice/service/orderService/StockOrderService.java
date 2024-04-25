@@ -6,10 +6,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import rs.edu.raf.exchangeservice.client.BankServiceClient;
-import rs.edu.raf.exchangeservice.domain.dto.buySell.BuySellStockDto;
 import rs.edu.raf.exchangeservice.domain.dto.StockOrderDto;
 import rs.edu.raf.exchangeservice.domain.dto.bank.BankTransactionDto;
+import rs.edu.raf.exchangeservice.domain.dto.buySell.BuySellStockDto;
 import rs.edu.raf.exchangeservice.domain.mappers.StockMapper;
+import rs.edu.raf.exchangeservice.domain.model.Actuary;
 import rs.edu.raf.exchangeservice.domain.model.enums.OrderStatus;
 import rs.edu.raf.exchangeservice.domain.model.enums.OrderType;
 import rs.edu.raf.exchangeservice.domain.model.listing.Stock;
@@ -33,7 +34,6 @@ public class StockOrderService {
     private final MyStockService myStockService;
     private final BankServiceClient bankServiceClient;
     public CopyOnWriteArrayList<StockOrder> ordersToBuy = new CopyOnWriteArrayList<>();
-    public CopyOnWriteArrayList<StockOrder> ordersToApprove = new CopyOnWriteArrayList<>();
 
     public List<StockOrder> findAll() {
         return stockOrderRepository.findAll();
@@ -45,7 +45,7 @@ public class StockOrderService {
 
     //vracamo sve ordere koje treba approve-ovati
     public List<StockOrder> getAllOrdersToApprove() {
-        return this.ordersToApprove;
+        return stockOrderRepository.findStockOrderByStatus(OrderStatus.WAITING);
     }
 
     //odobravamo ili ne odobravamo StockOrder Agentu
@@ -54,13 +54,11 @@ public class StockOrderService {
         StockOrder stockOrder = stockOrderRepository.findByStockOrderId(id);
         if (approved) {
             stockOrder.setStatus(OrderStatus.PROCESSING);
-            this.ordersToApprove.remove(stockOrder);
             this.ordersToBuy.add(stockOrder);
         } else {
             stockOrder.setStatus(OrderStatus.REJECTED);
-            this.ordersToApprove.remove(stockOrder);
         }
-        return this.stockOrderRepository.save(stockOrder);
+        return stockOrderRepository.save(stockOrder);
     }
 
     //od buyOrderDto pravimo StockOrder i
@@ -107,19 +105,18 @@ public class StockOrderService {
             stockOrder.setType(OrderType.STOP_LIMIT);
 
         if (stockOrder.getStatus().equals(OrderStatus.PROCESSING)) {
-            this.ordersToBuy.add(this.stockOrderRepository.save(stockOrder));
-        } else {
-            this.ordersToApprove.add(this.stockOrderRepository.save(stockOrder));
+            this.ordersToBuy.add(stockOrderRepository.save(stockOrder));
+        }else {
+            stockOrderRepository.save(stockOrder);
         }
 
-        stockOrderRepository.save(stockOrder);
         return StockMapper.INSTANCE.stockOrderToStockOrderDto(stockOrder);
     }
 
-    @Scheduled(fixedRate = 15000)
+    @Scheduled(fixedRate = 10000)
     public void executeTask() {
         if (ordersToBuy.isEmpty()) {
-//            System.out.println("Executing task every 15 seconds, but list to buy is empty :-(");
+            System.out.println("Executing buy-task every 15 seconds, but list to buy is empty");
         } else {
             Random rand = new Random();
             int stockNumber = rand.nextInt(ordersToBuy.size());
@@ -139,6 +136,21 @@ public class StockOrderService {
 
             if (stockOrder.isAon()) {
                 amountToBuy = stockOrder.getAmount();
+            }
+
+            //dodavanje za limit zaposlenog
+            Actuary actuary = actuaryRepository.findByEmployeeId(stockOrder.getEmployeeId());
+            if (actuary.getLimitValue() != 0.0){
+                if(actuary.getLimitUsed() + (currentPrice * amountToBuy) > actuary.getLimitValue()){
+                    stockOrder.setStatus(OrderStatus.FAILED);
+                    ordersToBuy.remove(stockOrder);
+                    stockOrderRepository.save(stockOrder);
+                    actuaryRepository.save(actuary);
+                    return;
+                }else {
+                    actuary.setLimitUsed(actuary.getLimitUsed() + (currentPrice * amountToBuy));
+                    actuaryRepository.save(actuary);
+                }
             }
 
             //za bank service da skine pare
@@ -190,7 +202,6 @@ public class StockOrderService {
                 if (currentPrice > stockOrder.getStopValue()) {
                     stockOrder.setType(OrderType.LIMIT);
                 }
-
             }
 
             this.stockOrderRepository.save(stockOrder); //cuvamo promenjene vrednosti u bazi
