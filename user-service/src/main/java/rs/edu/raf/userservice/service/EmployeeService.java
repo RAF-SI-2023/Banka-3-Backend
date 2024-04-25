@@ -78,17 +78,20 @@ public class EmployeeService implements UserDetailsService {
         }
         Employee employee = EmployeeMapper.INSTANCE.employeeCreateDtoToEmployee(employeeCreateDto);
         employee.setIsActive(true);
-        emailServiceClient.sendEmailToEmailService(employee.getEmail());    //slanje mail-a za aktivaciju
+        Employee addedEmployee = employeeRepository.save(employee);
 
-        if (employee.getRole().getRoleName().equals(RoleName.ROLE_AGENT) ||
-                employee.getRole().getRoleName().equals(RoleName.ROLE_SUPERVISOR)){     //kad se doda zapolsnei, da se posalje Exchange Servicu
+        emailServiceClient.sendEmailToEmailService(addedEmployee.getEmail());    //slanje mail-a za aktivaciju
+
+        //kad se doda zapolsnei, da se posalje Exchange Servicu
+        if (employee.getRole().getRoleName().equals(RoleName.ROLE_AGENT) || employee.getRole().getRoleName().equals(RoleName.ROLE_SUPERVISOR)){
             ExchangeEmployeeDto exchangeEmployeeDto = new ExchangeEmployeeDto();
-            exchangeEmployeeDto.setEmployeeId(employee.getEmployeeId());
-            exchangeEmployeeDto.setEmail(employee.getEmail());
-            exchangeEmployeeDto.setRole(employee.getRole().getRoleName().toString());
+            exchangeEmployeeDto.setEmployeeId(addedEmployee.getEmployeeId());
+            exchangeEmployeeDto.setEmail(addedEmployee.getEmail());
+            exchangeEmployeeDto.setRole(addedEmployee.getRole().getRoleName().toString());
             exchangeServiceClient.addActuary(exchangeEmployeeDto);
         }
-        return EmployeeMapper.INSTANCE.employeeToEmployeeDto(employeeRepository.save(employee));
+
+        return EmployeeMapper.INSTANCE.employeeToEmployeeDto(addedEmployee);
     }
 
     public EmployeeDto updateEmployee(EmployeeUpdateDto employeeUpdateDto, Long id) {
