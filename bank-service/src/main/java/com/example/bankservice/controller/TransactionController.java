@@ -20,8 +20,8 @@ public class TransactionController {
     @PostMapping(value = "/startPaymentTransaction")
     public ResponseEntity<?> startTransaction(@RequestBody PaymentTransactionDto paymentTransactionDto) {
         try {
-            transactionService.startPaymentTransaction(paymentTransactionDto);
-            return ResponseEntity.ok().build();
+            StartPaymentTransactionDto startPaymentTransactionDto = transactionService.startPaymentTransaction(paymentTransactionDto);
+            return ResponseEntity.ok(startPaymentTransactionDto);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -58,6 +58,7 @@ public class TransactionController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
     @PostMapping(value = "/stockBuyTransaction",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
