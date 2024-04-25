@@ -31,7 +31,6 @@ public class MyStockService {
     private final StockRepository stockRepository;
     private final StockOrderSellRepository stockOrderSellRepository;
     private final BankServiceClient bankServiceClient;
-
     public CopyOnWriteArrayList<StockOrderSell> ordersToSell = new CopyOnWriteArrayList<>();
 
     public void loadData() {
@@ -52,12 +51,12 @@ public class MyStockService {
     public void addAmountToMyStock(String ticker, Integer amount) {
         MyStock myStock = myStockRepository.findByTicker(ticker);
         myStock.setAmount(myStock.getAmount() + amount);
-        this.myStockRepository.save(myStock);
+        myStockRepository.save(myStock);
     }
 
     //vracamo sve deonice koje su u vlasnistvu banke
     public List<MyStock> getAll() {
-        return this.myStockRepository.findAll();
+        return myStockRepository.findAll();
     }
 
     //funkcija kada prodajemo Stock i dodajemo
@@ -108,7 +107,7 @@ public class MyStockService {
         }
 
         stockOrderSell.setStatus(OrderStatus.PROCESSING);
-        this.ordersToSell.add(stockOrderSellRepository.save(stockOrderSell));
+        ordersToSell.add(stockOrderSellRepository.save(stockOrderSell));
     }
 
     //zovemo funkciju svakih 20 sekundi
@@ -116,17 +115,17 @@ public class MyStockService {
     //ako ima nesto, uzimamo random StockOrderSell u listi
     //proveravamo uslove za cenu i limit i stop
     //ako su dobri, prodajemo akciju i azuriramo MyStock u DB
-    @Scheduled(fixedRate = 20000)
+    @Scheduled(fixedRate = 15000)
     public void executeTask() {
         if (ordersToSell.isEmpty()) {
-//            System.out.println("Executing task every 20 seconds, but list to sell is empty :-(");
+            System.out.println("Executing sell-task every 15 seconds");
         } else {
             Random rand = new Random();
             int stockNumber = rand.nextInt(ordersToSell.size());
             StockOrderSell stockOrderSell = ordersToSell.get(stockNumber);   //StockOrder koji obradjujemo
 
-            Stock stock = this.stockRepository.findByTicker(stockOrderSell.getTicker()).get();  //uzimao stock iz baze koji kupujemo
-            double currentPrice = stock.getBid();   //trenutna cena po kojoj kupujemo
+            Stock stock = stockRepository.findByTicker(stockOrderSell.getTicker()).get();  //uzimao stock iz baze koji kupujemo
+            double currentPrice = stock.getBid();   //trenutna cena po kojoj prodajemo
             int amountToSell = rand.nextInt(stockOrderSell.getAmountLeft()) + 1;
 
             if (stockOrderSell.isAon()) {

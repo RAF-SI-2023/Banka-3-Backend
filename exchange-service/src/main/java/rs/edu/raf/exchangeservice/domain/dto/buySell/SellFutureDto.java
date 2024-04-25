@@ -1,4 +1,4 @@
-package rs.edu.raf.exchangeservice.domain.dto;
+package rs.edu.raf.exchangeservice.domain.dto.buySell;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,16 +9,17 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class BuyFutureDto {
-
-    private Long futureId;    //mora da stigne
-    private Long employeeId; //mora da stigne
+public class SellFutureDto {
+    private Long futureId;
+    private Long employeeId;
+    private double price;
 
     @Override
     public String toString() {
-        return "BuyStockDto{" +
+        return "SellStockDto{" +
                 "futureId=" + futureId +
                 "employeeId=" + employeeId +
+                ", price='" + price +
                 '}';
     }
 }

@@ -116,7 +116,7 @@ public class StockOrderService {
     @Scheduled(fixedRate = 10000)
     public void executeTask() {
         if (ordersToBuy.isEmpty()) {
-            System.out.println("Executing buy-task every 15 seconds, but list to buy is empty");
+            System.out.println("Executing buy-task every 10 seconds");
         } else {
             Random rand = new Random();
             int stockNumber = rand.nextInt(ordersToBuy.size());
