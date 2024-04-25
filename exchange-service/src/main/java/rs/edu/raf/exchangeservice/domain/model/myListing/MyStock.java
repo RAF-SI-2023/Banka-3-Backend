@@ -18,6 +18,7 @@ public class MyStock implements Serializable {
     private Long myStockId;
     private String ticker;
     private Integer amount;
+    private String currencyMark;
     @Version
     private Integer version;
 }

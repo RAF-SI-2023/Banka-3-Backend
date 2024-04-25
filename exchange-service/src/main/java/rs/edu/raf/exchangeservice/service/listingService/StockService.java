@@ -7,7 +7,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import rs.edu.raf.exchangeservice.domain.dto.StockDto;
+import rs.edu.raf.exchangeservice.domain.dto.listing.StockDto;
 import rs.edu.raf.exchangeservice.domain.mappers.StockMapper;
 import rs.edu.raf.exchangeservice.domain.model.listing.Stock;
 import rs.edu.raf.exchangeservice.domain.model.listing.Ticker;
@@ -42,6 +42,7 @@ public class StockService {
             response.getBody().getStock().setName(ticker.getName());
             response.getBody().getStock().setTicker(ticker.getTicker());
             response.getBody().getStock().setExchange(ticker.getPrimaryExchange());
+            response.getBody().getStock().setCurrencyMark(ticker.getCurrencyName());
             response.getBody().getStock().setLastRefresh(System.currentTimeMillis());
 
             stockRepository.save(response.getBody().getStock());

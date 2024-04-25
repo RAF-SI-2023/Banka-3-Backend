@@ -23,11 +23,12 @@ import java.util.Map;
 public class ForexService {
     private final ForexRepository forexRepository;
     private final String exchangeApiKey = "96aa86545baf8162d6ecbe21";
+    private final String currencyMark = "RSD";
 
-    @PostConstruct
+//    @PostConstruct
     public void loadData() throws JsonProcessingException {
         RestTemplate restTemplate = new RestTemplate();
-        String url = "https://v6.exchangerate-api.com/v6/"+exchangeApiKey+"/latest/RSD";
+        String url = "https://v6.exchangerate-api.com/v6/"+exchangeApiKey+"/latest/"+currencyMark;
         ResponseEntity<String> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,

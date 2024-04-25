@@ -20,8 +20,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/v1/history")
 public class HistoryController {
-    private final StockDailyService stockDailyService;
     private final StockIntradayService stockIntradayService;
+    private final StockDailyService stockDailyService;
     private final StockWeeklyService stockWeeklyService;
     private final StockMonthlyService stockMonthlyService;
 

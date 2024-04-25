@@ -15,4 +15,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     Optional<List<Transaction>> findAllByTransactionStatus(TransactionStatus transactionStatus);
 
     Optional<List<Transaction>> findAllByType(TransactionType transactionType);
+
+    Optional<List<Transaction>> findByAccountFromOrAccountToAndType(String accountFrom, String accountTo, TransactionType transactionType);
+
 }

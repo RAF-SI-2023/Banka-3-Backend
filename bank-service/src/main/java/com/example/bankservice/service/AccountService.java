@@ -36,6 +36,10 @@ public class AccountService {
     private static final String bankAccountCHF = "6666666666666666";
     private static final String bankAccountGBP = "7777777777777777";
     private static final String bankAccountJPY = "8888888888888888";
+    private static final String exchangeAccountRSD = "1234567891231231";
+    private static final String exchangeAccountEUR = "9876543219876543";
+    private static final String exchangeAccountUSD = "1098765432101234";
+    private static final String exchangeAccountGBP = "9988776655443322";
 
     private final AccountRepository accountRepository;
     private final UserAccountMapper userAccountMapper;
@@ -127,6 +131,13 @@ public class AccountService {
         }
     }
 
+    public void transferStockFunds(Account accountFrom, Account accountTo, BigDecimal amount) {
+        accountFrom.setAvailableBalance(accountFrom.getAvailableBalance().subtract(amount));
+        accountTo.setAvailableBalance(accountTo.getAvailableBalance().add(amount));
+        accountRepository.save(accountFrom);
+        accountRepository.save(accountTo);
+    }
+
     public void deleteAccount(Long id) {
         Account account = accountRepository.findById(id).orElseThrow(() -> new RuntimeException("Account not found"));
         account.setActive(false);
@@ -164,6 +175,25 @@ public class AccountService {
                         .orElseThrow(() -> new RuntimeException("Bank account not found"));
             default:
                 throw new RuntimeException("Bank account not found");
+        }
+    }
+
+    public Account findExchangeAccountForGivenCurrency(String currencyMark) {
+        switch (currencyMark) {
+            case "RSD":
+                return accountRepository.findByAccountNumber(exchangeAccountRSD)
+                        .orElseThrow(() -> new RuntimeException("Exchange account not found"));
+            case "EUR":
+                return accountRepository.findByAccountNumber(exchangeAccountEUR)
+                        .orElseThrow(() -> new RuntimeException("Exchange account not found"));
+            case "USD":
+                return accountRepository.findByAccountNumber(exchangeAccountUSD)
+                        .orElseThrow(() -> new RuntimeException("Exchange account not found"));
+            case "GBP":
+                return accountRepository.findByAccountNumber(exchangeAccountGBP)
+                        .orElseThrow(() -> new RuntimeException("Exchange account not found"));
+            default:
+                throw new RuntimeException("Exchange account not found");
         }
     }
 

@@ -20,6 +20,7 @@ import rs.edu.raf.userservice.domain.model.Permission;
 import rs.edu.raf.userservice.domain.model.enums.RoleName;
 import rs.edu.raf.userservice.repository.EmployeeRepository;
 import rs.edu.raf.userservice.util.client.EmailServiceClient;
+import rs.edu.raf.userservice.util.client.ExchangeServiceClient;
 
 import javax.validation.ValidationException;
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ public class EmployeeService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final EmployeeRepository employeeRepository;
     private final EmailServiceClient emailServiceClient;
+    private final ExchangeServiceClient exchangeServiceClient;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -76,8 +78,20 @@ public class EmployeeService implements UserDetailsService {
         }
         Employee employee = EmployeeMapper.INSTANCE.employeeCreateDtoToEmployee(employeeCreateDto);
         employee.setIsActive(true);
-        emailServiceClient.sendEmailToEmailService(employee.getEmail());    //slanje mail-a za aktivaciju
-        return EmployeeMapper.INSTANCE.employeeToEmployeeDto(employeeRepository.save(employee));
+        Employee addedEmployee = employeeRepository.save(employee);
+
+        emailServiceClient.sendEmailToEmailService(addedEmployee.getEmail());    //slanje mail-a za aktivaciju
+
+        //kad se doda zapolsnei, da se posalje Exchange Servicu
+        if (employee.getRole().getRoleName().equals(RoleName.ROLE_AGENT) || employee.getRole().getRoleName().equals(RoleName.ROLE_SUPERVISOR)){
+            ExchangeEmployeeDto exchangeEmployeeDto = new ExchangeEmployeeDto();
+            exchangeEmployeeDto.setEmployeeId(addedEmployee.getEmployeeId());
+            exchangeEmployeeDto.setEmail(addedEmployee.getEmail());
+            exchangeEmployeeDto.setRole(addedEmployee.getRole().getRoleName().toString());
+            exchangeServiceClient.addActuary(exchangeEmployeeDto);
+        }
+
+        return EmployeeMapper.INSTANCE.employeeToEmployeeDto(addedEmployee);
     }
 
     public EmployeeDto updateEmployee(EmployeeUpdateDto employeeUpdateDto, Long id) {
@@ -126,18 +140,18 @@ public class EmployeeService implements UserDetailsService {
     }
 
     //da se posalje spisak zaposlenih exchaneg servicu
-    public List<ExchangeEmployeeDto> findSupervisorsAndAgents() {
+    public List<ExchangeEmployeeDto> getExchangeEmployees() {
         Optional<List<Employee>> employees = employeeRepository.findSupervisorsAndAgents();
-        List<ExchangeEmployeeDto> exchangeEmployeeDtos = new ArrayList<>();
+        List<ExchangeEmployeeDto> employeeDtos = new ArrayList<>();
 
         for(Employee employee : employees.get()){
             ExchangeEmployeeDto exchangeEmployeeDTO = new ExchangeEmployeeDto();
             exchangeEmployeeDTO.setEmployeeId(employee.getEmployeeId());
             exchangeEmployeeDTO.setEmail(employee.getEmail());
             exchangeEmployeeDTO.setRole(String.valueOf(employee.getRole().getRoleName()));
-            exchangeEmployeeDtos.add(exchangeEmployeeDTO);
+            employeeDtos.add(exchangeEmployeeDTO);
         }
 
-        return exchangeEmployeeDtos;
+        return employeeDtos;
     }
 }

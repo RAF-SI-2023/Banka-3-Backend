@@ -1,4 +1,4 @@
-package rs.edu.raf.exchangeservice.domain.dto;
+package rs.edu.raf.exchangeservice.domain.dto.buySell;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,7 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SellFutureDto {
-
     private Long futureId;
     private Long employeeId;
     private double price;

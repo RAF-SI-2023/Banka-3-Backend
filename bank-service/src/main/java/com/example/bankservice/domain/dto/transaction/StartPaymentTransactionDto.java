@@ -3,13 +3,12 @@ package com.example.bankservice.domain.dto.transaction;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+
+import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
 @RequiredArgsConstructor
-@ToString
-public class ConfirmPaymentTransactionDto {
+public class StartPaymentTransactionDto implements Serializable {
     private Long transactionId;
-    private int code;
 }

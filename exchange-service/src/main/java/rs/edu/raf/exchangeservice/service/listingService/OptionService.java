@@ -74,6 +74,7 @@ public class OptionService {
                 options.setOptionType(type);
                 options.setLastRefresh(System.currentTimeMillis());
                 options.setStockListing(stockListing);
+                options.setCurrencyMark("USD");
                 this.optionsRepository.save(options);
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);

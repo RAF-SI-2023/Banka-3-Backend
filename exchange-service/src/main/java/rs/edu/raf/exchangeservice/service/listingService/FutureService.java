@@ -3,17 +3,13 @@ package rs.edu.raf.exchangeservice.service.listingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
-import rs.edu.raf.exchangeservice.domain.dto.FutureDto;
-import rs.edu.raf.exchangeservice.domain.dto.StockDto;
+import rs.edu.raf.exchangeservice.domain.dto.listing.FutureDto;
 import rs.edu.raf.exchangeservice.domain.mappers.FutureMapper;
-import rs.edu.raf.exchangeservice.domain.mappers.StockMapper;
 import rs.edu.raf.exchangeservice.domain.model.listing.Future;
-import rs.edu.raf.exchangeservice.domain.model.listing.Stock;
 import rs.edu.raf.exchangeservice.repository.listingRepository.FutureRepository;
 
 import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
@@ -26,7 +22,7 @@ public class FutureService {
 //    private final String pathToFile = "exchange-service/src/main/resources/data/future_data.csv";
     @PostConstruct
     public void loadData(){
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(new ClassPathResource("data/future_data.csv").getInputStream()))) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new ClassPathResource("future_data.csv").getInputStream()))) {
             String line;
             // Skip the header line
             br.readLine();
@@ -38,6 +34,7 @@ public class FutureService {
                 future.setContractUnit(parts[2]);
                 future.setMaintenanceMargin(Integer.parseInt(parts[3]));
                 future.setType(parts[4]);
+                future.setCurrencyMark("USD");
 
                 this.futureRepository.save(future); //save in DB
             }
