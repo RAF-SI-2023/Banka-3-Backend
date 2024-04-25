@@ -1,6 +1,7 @@
 package com.example.bankservice.domain.mapper;
 
 import com.example.bankservice.domain.dto.transaction.CreditTransactionDto;
+import com.example.bankservice.domain.dto.transaction.FinishedPaymentTransactionDto;
 import com.example.bankservice.domain.dto.transaction.PaymentTransactionDto;
 import com.example.bankservice.domain.model.Transaction;
 import org.mapstruct.Mapper;
@@ -15,4 +16,6 @@ public abstract class TransactionMapper {
     public abstract CreditTransactionDto transactionToCreditTransactionDto(Transaction transaction);
 
     public abstract PaymentTransactionDto transactionToPaymentTransactionDto(Transaction transaction);
+
+    public abstract FinishedPaymentTransactionDto transactionToFinishedPaymentTransactionDto(Transaction transaction);
 }

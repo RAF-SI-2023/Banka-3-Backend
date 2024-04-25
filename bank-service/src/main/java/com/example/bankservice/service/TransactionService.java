@@ -129,11 +129,11 @@ public class TransactionService {
         return transactions.stream().map(transactionMapper::transactionToCreditTransactionDto).toList();
     }
 
-    public List<PaymentTransactionDto> getAllPaymentTransactions() {
-        List<Transaction> transactions = transactionRepository.findAllByType(TransactionType.CREDIT_APPROVE_TRANSACTION)
+    public List<FinishedPaymentTransactionDto> getAllPaymentTransactions(String accountNumber) {
+        List<Transaction> transactions = transactionRepository.findByAccountFromOrAccountToAndType(accountNumber, accountNumber, TransactionType.CREDIT_APPROVE_TRANSACTION)
                 .orElseThrow(() -> new RuntimeException("Transactions not found"));
 
-        return transactions.stream().map(transactionMapper::transactionToPaymentTransactionDto).toList();
+        return transactions.stream().map(transactionMapper::transactionToFinishedPaymentTransactionDto).toList();
     }
 
     private void startSameCurrencyPaymentTransaction(PaymentTransactionDto paymentTransactionDto,
