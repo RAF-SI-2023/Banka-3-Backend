@@ -9,7 +9,7 @@ import java.util.Optional;
 @Repository
 public interface TransactionActivationRepository extends JpaRepository<TransactionActivation, Long> {
 
-    Optional<TransactionActivation> findByIdAndActiveIsTrue(Long transactionId);
+    Optional<TransactionActivation> findByCodeAndActiveIsTrue(int code);
 
     Optional<TransactionActivation> findById(Long transactionId);
 }

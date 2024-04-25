@@ -60,7 +60,7 @@ public class TransactionService {
     //validate transaction,return ResponseEntity with message
     public void confirmTransaction(ConfirmTransactionDto dto) {
         Optional<TransactionActivation> optional =
-                transactionActivationRepository.findByIdAndActiveIsTrue(dto.getTransactionId());
+                transactionActivationRepository.findByCodeAndActiveIsTrue(dto.getCode());
         if (optional.isPresent()) {
             TransactionActivation transactionActivation = optional.get();
             if (transactionActivation.getCode() == (dto.getCode())) {
