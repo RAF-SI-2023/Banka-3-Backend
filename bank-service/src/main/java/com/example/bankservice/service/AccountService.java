@@ -99,7 +99,6 @@ public class AccountService {
         account.setExpireDate(System.currentTimeMillis() + 31556952000L);
         account.setReservedAmount(new BigDecimal(0));
         account.setActive(true);
-        account.setCurrency(currencyRepository.findByMark(companyAccountCreateDto.getCurrencyMark()).orElseThrow(() -> new RuntimeException("Currency not found")));
 
         createCard(account);
         return companyAccountMapper.companyAccountToCompanyAccountDto(accountRepository.save(account));
