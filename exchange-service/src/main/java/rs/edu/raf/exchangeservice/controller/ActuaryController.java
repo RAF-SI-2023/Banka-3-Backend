@@ -21,13 +21,13 @@ public class ActuaryController {
         return ResponseEntity.ok(actuaryService.findAllAgents());
     }
 
-    @PostMapping("/restartLimitUsed/{id}")
-    @Operation(description = "kada hocemo da zaposlenom restartujemo Limit, posaljemo njegov actuaryId")
+    @GetMapping("/restartLimitUsed/{id}")
+    @Operation(description = "kada hocemo da zaposlenom restartujemo Limit, posaljemo njegov employeeId")
     public ResponseEntity<?> restartLimitUsed(@PathVariable Long id){
         return ResponseEntity.ok(actuaryService.restartLimitUsed(id));
     }
 
-    @PostMapping("/setLimit/{id}")
+    @GetMapping("/setLimit/{id}")
     @Operation(description = "setovanje novog limita zaposlenom, salje se actuaryId, a novi limit je parametar")
     public ResponseEntity<?> setLimit(@PathVariable Long id, @Param("limit") Double limit){
         return ResponseEntity.ok(actuaryService.setLimit(id, limit));

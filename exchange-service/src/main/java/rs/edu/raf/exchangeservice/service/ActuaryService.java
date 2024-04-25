@@ -46,7 +46,7 @@ public class ActuaryService {
 
     //restartovanje limita Agentu
     public Actuary restartLimitUsed(Long id){
-        Actuary actuary = this.actuaryRepository.findById(id).get();
+        Actuary actuary = this.actuaryRepository.findByEmployeeId(id);
         actuary.setLimitUsed(0.0);
         return this.actuaryRepository.save(actuary);
     }
