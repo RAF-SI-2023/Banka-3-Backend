@@ -1,48 +1,48 @@
-#postsubmits:
-#  - name: post-banka-3-backend-build
-#    always_run: true
-#    decorate: true
-#    max_concurrency: 1
-#    labels:
-#      preset-harbor-robot-push: "true"
-#    spec:
-#      containers:
-#        - image: harbor.k8s.elab.rs/base-images/base:java-17-node-18-docker
-#          command:
-#            - /bin/bash
-#            - -c
-#            - |
-#              set -euo pipefail
-#
-#              cd ..
-#
-#              git clone https://github.com/RAF-SI-2023/Banka-3-Infrastructure.git ./Banka-3-Infrastructure
-#
-#              cd ./Banka-3-Infrastructure
-#
-#
-#              echo "BACKEND_REPO_ABSOLUTE_PATH=/home/prow/go/src/github.com/RAF-SI-2023/Banka-3-Backend" > .env
-#              echo "INFRA_REPO_ABSOLUTE_PATH=/home/prow/go/src/github.com/RAF-SI-2023/Banka-3-Infrastructure" >> .env
-#              echo "FRONTEND_REPO_ABSOLUTE_PATH=/home/prow/go/src/github.com/RAF-SI-2023/Banka-3-Frontend" >> .env
-#
-#              cd ../Banka-3-Backend
-#
-#              TEAM_NAME="banka-3"
-#
-#              start-docker.sh
-#
-#              docker login -u $HARBOR_USERNAME -p $HARBOR_PASSWORD harbor.k8s.elab.rs
-#
-#              commit_hash=$(git rev-parse HEAD)
-#
-#              for serviceName in user-service email-service bank-service exchange-service; do
-#                docker build -f "../Banka-3-Infrastructure/images/${serviceName}.Dockerfile" -t harbor.k8s.elab.rs/${TEAM_NAME}/${serviceName}:latest "$serviceName"
-#
-#                docker tag harbor.k8s.elab.rs/${TEAM_NAME}/${serviceName}:latest harbor.k8s.elab.rs/${TEAM_NAME}/${serviceName}:${commit_hash}
-#
-#                docker push harbor.k8s.elab.rs/${TEAM_NAME}/${serviceName}:latest
-#                docker push harbor.k8s.elab.rs/${TEAM_NAME}/${serviceName}:${commit_hash}
-#              done
-#          securityContext:
-#            privileged: true
-#          imagePullPolicy: Always
+postsubmits:
+  - name: post-banka-3-backend-build
+    always_run: true
+    decorate: true
+    max_concurrency: 1
+    labels:
+      preset-harbor-robot-push: "true"
+    spec:
+      containers:
+        - image: harbor.k8s.elab.rs/base-images/base:java-17-node-18-docker
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -euo pipefail
+
+              cd ..
+
+              git clone https://github.com/RAF-SI-2023/Banka-3-Infrastructure.git ./Banka-3-Infrastructure
+
+              cd ./Banka-3-Infrastructure
+
+
+              echo "BACKEND_REPO_ABSOLUTE_PATH=/home/prow/go/src/github.com/RAF-SI-2023/Banka-3-Backend" > .env
+              echo "INFRA_REPO_ABSOLUTE_PATH=/home/prow/go/src/github.com/RAF-SI-2023/Banka-3-Infrastructure" >> .env
+              echo "FRONTEND_REPO_ABSOLUTE_PATH=/home/prow/go/src/github.com/RAF-SI-2023/Banka-3-Frontend" >> .env
+
+              cd ../Banka-3-Backend
+
+              TEAM_NAME="banka-3"
+
+              start-docker.sh
+
+              docker login -u $HARBOR_USERNAME -p $HARBOR_PASSWORD harbor.k8s.elab.rs
+
+              commit_hash=$(git rev-parse HEAD)
+
+              for serviceName in user-service email-service bank-service exchange-service; do
+                docker build -f "../Banka-3-Infrastructure/images/${serviceName}.Dockerfile" -t harbor.k8s.elab.rs/${TEAM_NAME}/${serviceName}:latest "$serviceName"
+
+                docker tag harbor.k8s.elab.rs/${TEAM_NAME}/${serviceName}:latest harbor.k8s.elab.rs/${TEAM_NAME}/${serviceName}:${commit_hash}
+
+                docker push harbor.k8s.elab.rs/${TEAM_NAME}/${serviceName}:latest
+                docker push harbor.k8s.elab.rs/${TEAM_NAME}/${serviceName}:${commit_hash}
+              done
+          securityContext:
+            privileged: true
+          imagePullPolicy: Always

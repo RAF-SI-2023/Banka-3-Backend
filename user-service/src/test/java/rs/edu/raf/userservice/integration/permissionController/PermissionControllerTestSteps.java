@@ -91,7 +91,7 @@ public class PermissionControllerTestSteps extends PermissionControllerTestsConf
     public void sistemPrikazujePermisijeSaZadatimImenom(String permissionName) {
         try {
             ResultActions perform = mockMvc.perform(
-                    get("/api/v1/permission/findByPermissionName")
+                    get("/api/v1/permission/findByName")
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)
                             .header("Authorization", "Bearer " + employeeControllerTestsState.getJwtToken())

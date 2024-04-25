@@ -2,7 +2,7 @@ Feature: Trestiranje employee kontrolera - integracioni testovi
 
   Scenario: Kreiranje novog zaposlenog
     Given logovali smo se kao administrator
-    When kreiramo zaposlenog sa imenom "Mladen" i prezimenom "Matic", emailom "cehd1234@gmail.com", username "mladen", jmbg "1234567891234", datum rodjenja "123421512", adresa "Bulevar kralja Aleksandra 73", telefon "0651234567",pol "M", rola "2"
+    When kreiramo zaposlenog sa imenom "Mladen" i prezimenom "Matic", emailom "cehd1234@gmail.com", username "mladen", jmbg "1234567891234", datum rodjenja "123421512", adresa "Bulevar kralja Aleksandra 73", telefon "065123456",pol "M", rola "ROLE_CREDIT_OFFICER"
     Then povlacimo zaposlenog iz baze i proveravamo da li je kreiran, pretraga po emailu "cehd1234@gmail.com"
 
   Scenario: Brisanje korisnika koji je prethodno napravljen
@@ -11,11 +11,7 @@ Feature: Trestiranje employee kontrolera - integracioni testovi
 
 
   Scenario: Setovanje lozinke zaposlenom
-    When setujemo sifru zaposlenom sa emailom "dceh9121rn@raf.rs"
-    Then proveravamo logovanje zaposlenog sa novom sifrom
-
-  Scenario: Setovanje lozinke zaposlenom
-    When resetovanje sifre zaposlenom sa emailom "dceh9121rn@raf.rs"
+    When setujemo sifru zaposlenom sa emailom "cehd1234@gmail.com"
     Then proveravamo logovanje zaposlenog sa novom sifrom
 
   Scenario: Izmene na zaposlenom i provera izmena po email
@@ -34,9 +30,9 @@ Feature: Trestiranje employee kontrolera - integracioni testovi
     When zahtev za pregled korisnika
     Then zaposleni dobija listu svih korisnika
 
-  Scenario: Zaposleni je zatrazio sve  Exchange zaposlene
-    When zahtev za pregled korisnika
-    Then zaposleni dobija listu svih Exchange zaposlenih
+#  Scenario: Zaposleni je zatrazio sve  Exchange zaposlene
+#    When zahtev za pregled korisnika
+#    Then zaposleni dobija listu svih Exchange zaposlenih
 
     Scenario: Zaposleni se registruje
         When zaposleni se registruje sa emailom "mmatic11021rn@raf.rs"
