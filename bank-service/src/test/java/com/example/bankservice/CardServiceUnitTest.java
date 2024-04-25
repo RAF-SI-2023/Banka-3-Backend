@@ -1,6 +1,7 @@
 package com.example.bankservice;
 
 import com.example.bankservice.domain.dto.card.*;
+import com.example.bankservice.domain.mapper.CardMapper;
 import com.example.bankservice.domain.model.Card;
 import com.example.bankservice.domain.model.accounts.CompanyAccount;
 import com.example.bankservice.domain.model.accounts.UserAccount;
@@ -23,6 +24,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class CardServiceUnitTest {
@@ -37,6 +39,8 @@ public class CardServiceUnitTest {
     private CompanyAccountRepository companyAccountRepository;
     @Mock
     private AccountRepository accountRepository;
+    @Mock
+    private CardMapper cardMapper;
 
     @Before
     public void setUp() {
@@ -57,6 +61,7 @@ public class CardServiceUnitTest {
 
     private UserAccount createDummyUserAccount(String accountNumber){
         UserAccount userAccount = new UserAccount();
+        //userAccount.setAccountId(1L);
         userAccount.setUserId(1L);
         userAccount.setActive(true);
         userAccount.setEmployeeId(1L);
@@ -70,6 +75,7 @@ public class CardServiceUnitTest {
 
     private CompanyAccount createDummyCompanyAccount(String accountNumber){
         CompanyAccount companyAccount = new CompanyAccount();
+        //companyAccount.setAccountId(1L);
         companyAccount.setCompanyId(1L);
         companyAccount.setActive(true);
         companyAccount.setEmployeeId(1L);
@@ -102,13 +108,26 @@ public class CardServiceUnitTest {
         return withdrawFundsDto;
     }
 
+    private CardDto createDummyCardDto(){
+        CardDto cardDto = new CardDto();
+        cardDto.setCardNumber("12345678");
+        cardDto.setCVV("123");
+        cardDto.setExpireDate(System.currentTimeMillis() + 60 * 60 * 24 * 365 * 10);
+        cardDto.setAccountNumber("1581231231231888");
+        return cardDto;
+    }
+
     @Test
     public void findAllTest(){
         Card card1 = createDummyCard("12345678");
         Card card2 = createDummyCard("87654321");
 
+        CardDto dto2 = createDummyCardDto();
+        dto2.setAccountNumber("87654321");
         List<Card> cards = List.of(card1, card2);
 
+        given(cardMapper.cardToCardDto(card1)).willReturn(createDummyCardDto());
+        given(cardMapper.cardToCardDto(card2)).willReturn(dto2);
         given(cardRepository.findAll()).willReturn(cards);
 
         List<CardDto> dtos = cardService.findAll();
@@ -131,9 +150,12 @@ public class CardServiceUnitTest {
     public void findAllByAccountNumberTest(){
         Card card1 = createDummyCard("12345678");
         Card card2 = createDummyCard("87654321");
+        CardDto dto2 = createDummyCardDto();
+        dto2.setCardNumber("87654321");
 
         List<Card> cards = List.of(card1, card2);
-
+        given(cardMapper.cardToCardDto(card1)).willReturn(createDummyCardDto());
+        given(cardMapper.cardToCardDto(card2)).willReturn(dto2);
         given(cardRepository.findAllByAccountNumber("1581231231231888")).willReturn(Optional.of(cards));
 
         List<CardDto> dtos = cardService.findAllByAccountNumber("1581231231231888");
@@ -166,12 +188,15 @@ public class CardServiceUnitTest {
         Card card1 = createDummyCard("12345678");
         Card card2 = createDummyCard("87654321");
         UserAccount user = createDummyUserAccount("1581231231231888");
+        CardDto dto2 = createDummyCardDto();
+        dto2.setAccountNumber("87654321");
+        given(cardMapper.cardToCardDto(card1)).willReturn(createDummyCardDto());
 
         List<Card> cards = List.of(card1, card2);
         List<UserAccount> users = List.of(user);
 
         given(userAccountRepository.findAllByUserId(1L)).willReturn(Optional.of(users));
-        given(cardRepository.findAllByAccountNumber("1581231231231888")).willReturn(Optional.of(cards));
+        given(cardRepository.findByAccountNumber("1581231231231888")).willReturn(Optional.of(card1));
 
         List<CardDto> dtos = cardService.findAllByUserId(1L);
         for(CardDto dto : dtos){
@@ -192,13 +217,12 @@ public class CardServiceUnitTest {
     public void findAllByUserId_UserNotFoundTest(){
         Card card1 = createDummyCard("12345678");
         Card card2 = createDummyCard("87654321");
-        UserAccount user = createDummyUserAccount("1581231231231888");
+        //UserAccount user = createDummyUserAccount("1581231231231888");
 
         List<Card> cards = List.of(card1, card2);
-        List<UserAccount> users = List.of(user);
 
         given(userAccountRepository.findAllByUserId(1L)).willReturn(Optional.empty());
-        given(cardRepository.findAllByAccountNumber("1581231231231888")).willReturn(Optional.of(cards));
+        //given(cardRepository.findAllByAccountNumber("1581231231231888")).willReturn(Optional.of(cards));
 
         //List<CardDto> dtos = cardService.findAllByUserId(1L);
         assertThrows(RuntimeException.class, () -> cardService.findAllByUserId(1L));
@@ -214,7 +238,7 @@ public class CardServiceUnitTest {
         List<UserAccount> users = List.of(user);
 
         given(userAccountRepository.findAllByUserId(1L)).willReturn(Optional.of(users));
-        given(cardRepository.findAllByAccountNumber("1581231231231888")).willReturn(Optional.empty());
+        //given(cardRepository.findAllByAccountNumber("1581231231231888")).willReturn(Optional.empty());
 
         //List<CardDto> dtos = cardService.findAllByUserId(1L);
         assertThrows(RuntimeException.class, () -> cardService.findAllByUserId(1L));
@@ -228,9 +252,10 @@ public class CardServiceUnitTest {
 
         List<Card> cards = List.of(card1, card2);
         List<CompanyAccount> companies = List.of(company);
+        given(cardMapper.cardToCardDto(card1)).willReturn(createDummyCardDto());
 
         given(companyAccountRepository.findAllByCompanyId(1L)).willReturn(Optional.of(companies));
-        given(cardRepository.findAllByAccountNumber("1581231231231888")).willReturn(Optional.of(cards));
+        given(cardRepository.findByAccountNumber("1581231231231888")).willReturn(Optional.of(card1));
 
         List<CardDto> dtos = cardService.findAllByCompanyId(1L);
         for(CardDto dto : dtos){
@@ -256,8 +281,8 @@ public class CardServiceUnitTest {
         List<Card> cards = List.of(card1, card2);
         List<CompanyAccount> companies = List.of(company);
 
-        given(companyAccountRepository.findAllByCompanyId(1L)).willReturn(Optional.empty());
-        given(cardRepository.findAllByAccountNumber("1581231231231888")).willReturn(Optional.of(cards));
+        //given(companyAccountRepository.findAllByCompanyId(1L)).willReturn(Optional.empty());
+        //given(cardRepository.findAllByAccountNumber("1581231231231888")).willReturn(Optional.of(cards));
 
         //List<CardDto> dtos = cardService.findAllByUserId(1L);
         assertThrows(RuntimeException.class, () -> cardService.findAllByUserId(1L));
@@ -272,8 +297,8 @@ public class CardServiceUnitTest {
         List<Card> cards = List.of(card1, card2);
         List<CompanyAccount> companies = List.of(company);
 
-        given(companyAccountRepository.findAllByCompanyId(1L)).willReturn(Optional.of(companies));
-        given(cardRepository.findAllByAccountNumber("1581231231231888")).willReturn(Optional.empty());
+        //given(companyAccountRepository.findAllByCompanyId(1L)).willReturn(Optional.of(companies));
+        //given(cardRepository.findAllByAccountNumber("1581231231231888")).willReturn(Optional.empty());
 
         //List<CardDto> dtos = cardService.findAllByUserId(1L);
         assertThrows(RuntimeException.class, () -> cardService.findAllByUserId(1L));
@@ -330,7 +355,7 @@ public class CardServiceUnitTest {
         given(accountRepository.findByAccountNumber("1581231231231888")).willReturn(Optional.of(user));
 
         cardService.deposit(depositFundsDto);
-        assertEquals(user.getAvailableBalance(), BigDecimal.valueOf(1100));
+        assertEquals(user.getAvailableBalance(), BigDecimal.valueOf(1100.0));
     }
 
     @Test
@@ -363,8 +388,8 @@ public class CardServiceUnitTest {
 
         given(accountRepository.findByAccountNumber("1581231231231888")).willReturn(Optional.of(user));
 
-        //cardService.withdraw(withdrawFundsDto);
-        assertEquals(user.getAvailableBalance(), BigDecimal.valueOf(900));
+        cardService.withdraw(withdrawFundsDto);
+        assertEquals(user.getAvailableBalance(), BigDecimal.valueOf(900.0));
     }
 
     @Test

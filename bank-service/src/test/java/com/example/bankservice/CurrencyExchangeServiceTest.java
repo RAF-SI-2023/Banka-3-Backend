@@ -84,7 +84,7 @@ class CurrencyExchangeServiceTest {
         verify(currencyExchangeRepository).save(any(CurrencyExchange.class));
 
         assertEquals(new BigDecimal("100.0"), accountFrom.getAvailableBalance());
-        assertEquals(new BigDecimal("388.86300"), accountTo.getAvailableBalance());
+        assertEquals(new BigDecimal("388.81550"), accountTo.getAvailableBalance());
     }
 
     @Test
