@@ -45,7 +45,7 @@ public class TransactionService {
 
         Long transactionId = 0L;
         if (accountFrom.getCurrency().getMark().equals(accountTo.getCurrency().getMark())) {
-           transactionId = startSameCurrencyPaymentTransaction(paymentTransactionDto, accountFrom, accountTo);
+            transactionId = startSameCurrencyPaymentTransaction(paymentTransactionDto, accountFrom, accountTo);
         } else {
             throw new RuntimeException("Different currency transactions are not supported");
         }
@@ -136,7 +136,7 @@ public class TransactionService {
         List<Transaction> transactions = transactionRepository.findByAccountFromOrAccountToAndType(accountNumber, accountNumber, TransactionType.CREDIT_APPROVE_TRANSACTION)
                 .orElseThrow(() -> new RuntimeException("Transactions not found"));
 
-        return transactions.stream().map(transactionMapper::transactionToFinishedPaymentTransactionDto).toList();
+        return transactions.stream().filter(transaction -> transaction.getTransactionStatus() == TransactionStatus.FINISHED).map(transactionMapper::transactionToFinishedPaymentTransactionDto).toList();
     }
 
     private Long startSameCurrencyPaymentTransaction(PaymentTransactionDto paymentTransactionDto,
