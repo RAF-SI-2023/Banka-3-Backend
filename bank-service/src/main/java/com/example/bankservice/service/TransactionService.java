@@ -35,7 +35,7 @@ public class TransactionService {
     private AccountService accountService;
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void startPaymentTransaction(PaymentTransactionDto paymentTransactionDto) {
+    public StartPaymentTransactionDto startPaymentTransaction(PaymentTransactionDto paymentTransactionDto) {
         Account accountFrom = accountService.extractAccountForAccountNumber(paymentTransactionDto.getAccountFrom());
         Account accountTo = accountService.extractAccountForAccountNumber(paymentTransactionDto.getAccountTo());
 
@@ -43,11 +43,14 @@ public class TransactionService {
             throw new RuntimeException("Insufficient funds");
         }
 
+        Long transactionId = 0L;
         if (accountFrom.getCurrency().getMark().equals(accountTo.getCurrency().getMark())) {
-            startSameCurrencyPaymentTransaction(paymentTransactionDto, accountFrom, accountTo);
+           transactionId = startSameCurrencyPaymentTransaction(paymentTransactionDto, accountFrom, accountTo);
         } else {
             throw new RuntimeException("Different currency transactions are not supported");
         }
+
+        return new StartPaymentTransactionDto(transactionId);
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
@@ -136,7 +139,7 @@ public class TransactionService {
         return transactions.stream().map(transactionMapper::transactionToFinishedPaymentTransactionDto).toList();
     }
 
-    private void startSameCurrencyPaymentTransaction(PaymentTransactionDto paymentTransactionDto,
+    private Long startSameCurrencyPaymentTransaction(PaymentTransactionDto paymentTransactionDto,
                                                      Account accountFrom,
                                                      Account accountTo) {
         Transaction transaction = transactionMapper.paymentTransactionDtoToTransaction(paymentTransactionDto);
@@ -151,6 +154,8 @@ public class TransactionService {
 
         emailServiceClient.sendTransactionActivationEmailToEmailService(new PaymentTransactionActivationDto(email,
                 transaction.getTransactionId()));
+
+        return transaction.getTransactionId();
     }
 
     @Scheduled(fixedRate = 30000) // Postavljanje cron izraza da se metoda izvrsava svakih 5 minuta
