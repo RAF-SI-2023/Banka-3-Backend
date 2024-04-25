@@ -58,7 +58,6 @@ public class TransactionController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
     @PostMapping(value = "/stockBuyTransaction",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
