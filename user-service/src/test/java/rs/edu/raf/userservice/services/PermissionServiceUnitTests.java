@@ -7,14 +7,17 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import rs.edu.raf.userservice.domain.model.Permission;
 import rs.edu.raf.userservice.domain.model.enums.PermissionName;
-import rs.edu.raf.userservice.repositories.PermissionRepository;
-import rs.edu.raf.userservice.services.PermissionService;
+import rs.edu.raf.userservice.repository.PermissionRepository;
+import rs.edu.raf.userservice.service.PermissionService;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class PermissionServiceUnitTests {
@@ -46,15 +49,31 @@ public class PermissionServiceUnitTests {
     }
 
     @Test
-    public void testGetPermissionByName(){
+    public void testGetPermissionByName() {
         Permission canBuyPermission = new Permission();
         canBuyPermission.setPermissionName(PermissionName.CAN_BUY);
 
-        given(permissionRepository.findByPermissionName("CAN_BUY")).willReturn(canBuyPermission);
+        given(permissionRepository.findByPermissionName(PermissionName.valueOf("CAN_BUY"))).willReturn(Optional.of(canBuyPermission));
 
         Permission permission = permissionService.getPermissionByName("CAN_BUY");
 
         assertEquals(permission.getPermissionName(), canBuyPermission.getPermissionName());
+    }
+
+    @Test
+    void getRoleByName_WhenRoleNotFound_ShouldThrowRuntimeException() {
+        // Arrange
+        String permissionName = "CAN_BUY";
+
+        given(permissionRepository.findByPermissionName(PermissionName.valueOf(permissionName))).willReturn(Optional.empty());
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            permissionService.getPermissionByName(permissionName);
+        });
+
+        assertEquals("Permission not found", exception.getMessage());
+        verify(permissionRepository, times(1)).findByPermissionName(PermissionName.valueOf(permissionName));
     }
 
 }

@@ -1,10 +1,10 @@
 package com.example.emailservice.service.impl;
 
 import com.example.emailservice.client.UserServiceClient;
-import com.example.emailservice.dto.ResetUserPasswordDto;
 import com.example.emailservice.domain.dto.password.SetPasswordDto;
 import com.example.emailservice.domain.dto.password.SetUserPasswordCodeDto;
 import com.example.emailservice.domain.dto.password.TryPasswordResetDto;
+import com.example.emailservice.domain.model.CompanyActivation;
 import com.example.emailservice.domain.model.PasswordReset;
 import com.example.emailservice.domain.model.UserActivation;
 import com.example.emailservice.repository.PasswordResetRepository;
@@ -18,10 +18,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.SchedulingConfigurer;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.web.server.ResponseStatusException;
 import org.webjars.NotFoundException;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
@@ -30,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class UserServiceTest {
+public class UserServiceTest implements SchedulingConfigurer {
 
     @Mock
     private SetPasswordDto setPasswordDTO;
@@ -146,12 +149,12 @@ public class UserServiceTest {
         when(passwordResetRepository.findByIdentifier("testIdentifier")).thenReturn(Optional.of(passwordReset));
 
         ResponseEntity<String> successResponse = new ResponseEntity<>("Success", HttpStatus.OK);
-        when(userServiceClient.resetUserPassword(any(ResetUserPasswordDto.class))).thenReturn(successResponse);
+        when(userServiceClient.setUserPassword(any(SetPasswordDto.class))).thenReturn(successResponse);
 
         String result = userService.tryChangePassword(tryPasswordResetDTO);
 
         assertEquals("Password successfully changed", result);
-        verify(userServiceClient, times(1)).resetUserPassword(any(ResetUserPasswordDto.class));
+        verify(userServiceClient, times(1)).setUserPassword(any(SetPasswordDto.class));
     }
 
     @Test
@@ -162,7 +165,7 @@ public class UserServiceTest {
         when(passwordResetRepository.findByIdentifier("nonExistentIdentifier")).thenReturn(Optional.empty());
 
         assertThrows(ResponseStatusException.class, () -> userService.tryChangePassword(tryPasswordResetDTO));
-        verify(userServiceClient, never()).resetUserPassword(any(ResetUserPasswordDto.class));
+        verify(userServiceClient, never()).setUserPassword(any(SetPasswordDto.class));
     }
 
     @Test
@@ -178,7 +181,43 @@ public class UserServiceTest {
         String result = userService.tryChangePassword(tryPasswordResetDTO);
 
         assertEquals("Password reset failed", result);
-        verify(userServiceClient, never()).resetUserPassword(any(ResetUserPasswordDto.class));
+        verify(userServiceClient, never()).setUserPassword(any(SetPasswordDto.class));
+    }
+
+
+    @Override
+    public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+        taskRegistrar.addFixedRateTask(userService::cleanupInactiveEntities, 900000);
+    }
+
+
+    @Test
+    void testCleanupInactiveEntities() {
+        // Priprema testnih podataka
+        UserActivation inactiveEntity = new UserActivation();
+        inactiveEntity.setActivationPossible(false);
+
+        // Postavljanje ponašanja mock-a za repository
+        when(userActivationRepository.findAllByActivationPossible(false))
+                .thenReturn(Optional.of(Collections.singletonList(inactiveEntity)));
+        // Poziv metode za čišćenje neaktivnih entiteta
+        userService.cleanupInactiveEntities();
+
+        // Provera da li je metoda deleteAll pozvana nad repository-em
+        verify(userActivationRepository).deleteAll(Collections.singletonList(inactiveEntity));
+    }
+
+    @Test
+    public void testCleanupInactiveEntities_Exception() {
+        // Priprema testnih podataka
+
+        // Mock-ovanje repozitorijuma da izbaci grešku prilikom poziva metode findAllByActivationPossible(false)
+        when(userActivationRepository.findAllByActivationPossible(false)).thenThrow(new RuntimeException("Simulated error"));
+
+        // Poziv metode koja treba da se testira
+        userService.cleanupInactiveEntities();
+
+        // Provera da li je greška uhvaćena i ispisana
+        verify(userActivationRepository, times(1)).findAllByActivationPossible(false);
     }
 }
-

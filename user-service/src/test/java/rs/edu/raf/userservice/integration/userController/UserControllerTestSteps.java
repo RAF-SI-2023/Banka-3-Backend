@@ -23,10 +23,10 @@ public class UserControllerTestSteps extends UserControllerTestsConfig{
 
     @Autowired
     private ObjectMapper objectMapper;
-    
+
     @Autowired
     private UserControllerTestState userControllerTestState;
-    
+
     @Given("logovali smo se kao admin da bi kreirali korisnika")
     public void logovaliSmoSeKaoAdminDaBiKreiraliKorisnika() {
         LoginRequest loginRequest = new LoginRequest();
@@ -61,16 +61,16 @@ public class UserControllerTestSteps extends UserControllerTestsConfig{
         userPostPutDto.setEmail(email);
         userPostPutDto.setJmbg(jmbg);
         userPostPutDto.setAddress("Adresa 1");
-        userPostPutDto.setDateOfBirth("123124124213");
+        userPostPutDto.setDateOfBirth("124124123");
         userPostPutDto.setGender("M");
-        userPostPutDto.setPhoneNumber("1231241512");
+        userPostPutDto.setPhoneNumber("061445108");
 
         try {
             String createUserDtoJson = objectMapper.writeValueAsString(userPostPutDto);
             ResultActions resultActions = mockMvc.perform(
-                    post("/api/v1/user/register")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .accept(MediaType.APPLICATION_JSON)
+                    post("/api/v1/user")
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .accept(MediaType.APPLICATION_JSON_VALUE)
                             .header("Authorization", "Bearer " + userControllerTestState.getJwtTokenEmpoyee())
                             .content(createUserDtoJson)
 
@@ -99,15 +99,15 @@ public class UserControllerTestSteps extends UserControllerTestsConfig{
 
     @When("zaposleni banke brise korisnika sa id-em {string}")
     public void zaposleniBankeBriseKorisnikaSaIdEm(String id) {
-       try {
-           ResultActions resultActions = mockMvc.perform(
-                   delete("/api/v1/user/" +  id)
-                           .header("Authorization", "Bearer " + userControllerTestState.getJwtTokenEmpoyee())
-           ).andExpect(status().isOk());
-       } catch (Exception e) {
-           fail(e.getMessage());
-       }
-        
+        try {
+            ResultActions resultActions = mockMvc.perform(
+                    delete("/api/v1/user/" +  id)
+                            .header("Authorization", "Bearer " + userControllerTestState.getJwtTokenEmpoyee())
+            ).andExpect(status().isOk());
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+
     }
 
     @Then("korisnik sa id-em {string} nije aktivan")
@@ -127,7 +127,6 @@ public class UserControllerTestSteps extends UserControllerTestsConfig{
             UserDto userDto = objectMapper.readValue(response, UserDto.class);
 
 
-            //TODO: odkomentarisati kada se opsosobi email service
             ResultActions resultActions1 = mockMvc.perform(
                     get("/api/v1/user/isUserActive/" + userDto.getEmail())
                             .contentType(MediaType.APPLICATION_JSON)
@@ -153,7 +152,9 @@ public class UserControllerTestSteps extends UserControllerTestsConfig{
             loginRequest.setEmail(email);
             loginRequest.setPassword(password);
 
+
             String loginRequestJson = objectMapper.writeValueAsString(loginRequest);
+            System.out.println(loginRequestJson);
 
             ResultActions resultActions = mockMvc.perform(
                     post("/api/v1/user/auth/login")
@@ -188,30 +189,6 @@ public class UserControllerTestSteps extends UserControllerTestsConfig{
         }
     }
 
-
-    @When("korisnik resetuje sifru {string} i email {string}")
-    public void korisnikResetujeSifruIEmail(String sifra, String email) {
-        ResetUserPasswordDTO resetPasswordDTO = new ResetUserPasswordDTO();
-        resetPasswordDTO.setPassword(sifra);
-        resetPasswordDTO.setEmail(email);
-
-        try {
-            String resetPasswordDTOJson = objectMapper.writeValueAsString(resetPasswordDTO);
-            ResultActions resultActions = mockMvc.perform(
-                    post("/api/v1/user/resetPassword")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .accept(MediaType.APPLICATION_JSON)
-                            .header("Authorization", "Bearer " + userControllerTestState.getJwtTokenEmpoyee())
-                            .content(resetPasswordDTOJson)
-
-            ).andExpect(status().isOk());
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
-
-    }
-
-
     @Then("korisnik se opet loguje {string} i lozinkom {string}")
     public void korisnikSeOpetLogujeILozinkom(String email, String sifra) {
         try{
@@ -236,7 +213,7 @@ public class UserControllerTestSteps extends UserControllerTestsConfig{
 
     @When("promena adrese korisniku sa id-em {string} u {string}")
     public void promenaAdreseKorisnikuSaIdEmU(String id, String address) {
-        UserUpdateDto userUpdateDto = new UserUpdateDto();
+        UserPostPutDto userUpdateDto = new UserPostPutDto();
         userUpdateDto.setAddress(address);
         try {
             String updateUserDtoJSON = objectMapper.writeValueAsString(userUpdateDto);
@@ -250,7 +227,7 @@ public class UserControllerTestSteps extends UserControllerTestsConfig{
         } catch (Exception e) {
             fail(e.getMessage());
         }
-        
+
     }
 
     @Then("korisnik sa id-em {string} ima adresu {string}")
@@ -346,38 +323,25 @@ public class UserControllerTestSteps extends UserControllerTestsConfig{
 
             String response = result.getResponse().getContentAsString();
             UserDto[] userDtos = objectMapper.readValue(response, UserDto[].class);
-
             assertTrue(userDtos.length > 0);
         }catch (Exception e) {
             fail(e.getMessage());
         }
     }
 
-    @When("korisnik se registruje sa emailom {string}")
-    public void korisnikSeRegistrujeSaEmailom(String email) {
-        UserPostPutDto userPostPutDto = new UserPostPutDto();
-        userPostPutDto.setFirstName("Pera");
-        userPostPutDto.setLastName("Peric");
-        userPostPutDto.setEmail(email);
-        userPostPutDto.setJmbg("1234567891234");
-        userPostPutDto.setAddress("Adresa 1");
-        userPostPutDto.setDateOfBirth("123124124213");
-        userPostPutDto.setGender("M");
-        userPostPutDto.setPhoneNumber("1231241512");
-
+    @When("pregraga korisnika sa id-em {string} da se vrati mejl")
+    public void pregragaKorisnikaSaDaSeVratiMejl(String id) {
         try {
-            String createUserDtoJson = objectMapper.writeValueAsString(userPostPutDto);
             ResultActions resultActions = mockMvc.perform(
-                    post("/api/v1/user")
+                    get("/api/v1/user/findEmailById/" + id)
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)
-                            .content(createUserDtoJson)
                             .header("Authorization", "Bearer " + userControllerTestState.getJwtTokenEmpoyee())
+
             ).andExpect(status().isOk());
-        } catch (Exception e) {
+        }catch (Exception e) {
             fail(e.getMessage());
         }
-
     }
 
     @Then("neuspesno logovanje korisika")

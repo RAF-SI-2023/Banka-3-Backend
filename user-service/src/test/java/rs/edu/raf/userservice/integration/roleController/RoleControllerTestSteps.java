@@ -90,7 +90,7 @@ public class RoleControllerTestSteps extends RoleControllerTestsConfig{
     public void sistemPrikazujeRoleSaZadatimImenom(String roleName) {
         try {
             ResultActions perform = mockMvc.perform(
-                    get("/api/v1/role/findByRoleName")
+                    get("/api/v1/role/findByName")
                             .param("roleName", roleName)
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)
@@ -102,7 +102,7 @@ public class RoleControllerTestSteps extends RoleControllerTestsConfig{
             MvcResult mvcResult = perform.andReturn();
             String contentAsString = mvcResult.getResponse().getContentAsString();
             Role role = objectMapper.readValue(contentAsString, Role.class);
-            assertTrue(role.getRoleName().equals(roleName));
+            assertTrue(role.getRoleName().toString().equals(roleName));
 
         } catch (Exception e) {
             e.printStackTrace();

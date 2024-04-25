@@ -7,13 +7,17 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import rs.edu.raf.userservice.domain.model.Role;
 import rs.edu.raf.userservice.domain.model.enums.RoleName;
-import rs.edu.raf.userservice.repositories.RoleRepository;
-import rs.edu.raf.userservice.services.RoleService;
+import rs.edu.raf.userservice.repository.RoleRepository;
+import rs.edu.raf.userservice.service.RoleService;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class RoleServiceUnitTests {
@@ -30,9 +34,6 @@ public class RoleServiceUnitTests {
         Role adminRole = new Role();
         adminRole.setRoleName(RoleName.ROLE_ADMIN);
 
-        Role loanOfficierRole = new Role();
-        loanOfficierRole.setRoleName(RoleName.ROLE_LOAN_OFFICIER);
-
         Role clientAdvisorRole = new Role();
         clientAdvisorRole.setRoleName(RoleName.ROLE_CLIENT_ADVISOR);
 
@@ -42,7 +43,7 @@ public class RoleServiceUnitTests {
         Role creditOfficierRole = new Role();
         creditOfficierRole.setRoleName(RoleName.ROLE_CREDIT_OFFICER);
 
-        List<Role> rolesList = List.of(adminRole, loanOfficierRole, clientAdvisorRole, bankingOfficerRole, creditOfficierRole);
+        List<Role> rolesList = List.of(adminRole, clientAdvisorRole, bankingOfficerRole, creditOfficierRole);
 
         given(roleRepository.findAll()).willReturn(rolesList);
 
@@ -51,15 +52,31 @@ public class RoleServiceUnitTests {
     }
 
     @Test
-    public void testGetRoleByName(){
+    public void testGetRoleByName() {
         Role adminRole = new Role();
         adminRole.setRoleName(RoleName.ROLE_ADMIN);
 
-        given(roleRepository.findByRoleName("ROLE_ADMIN")).willReturn(adminRole);
+        given(roleRepository.findByRoleName(RoleName.valueOf("ROLE_ADMIN"))).willReturn(Optional.of(adminRole));
 
         Role role = roleService.getRoleByName("ROLE_ADMIN");
 
         assertEquals(adminRole.getRoleName(), role.getRoleName());
+    }
+
+    @Test
+    void getRoleByName_WhenRoleNotFound_ShouldThrowRuntimeException() {
+        // Arrange
+        String roleName = "ROLE_ADMIN";
+
+        given(roleRepository.findByRoleName(RoleName.valueOf(roleName))).willReturn(Optional.empty());
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            roleService.getRoleByName(roleName);
+        });
+
+        assertEquals("Role not found", exception.getMessage());
+        verify(roleRepository, times(1)).findByRoleName(RoleName.valueOf(roleName));
     }
 
 }

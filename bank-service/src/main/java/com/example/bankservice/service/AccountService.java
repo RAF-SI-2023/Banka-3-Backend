@@ -13,10 +13,7 @@ import com.example.bankservice.domain.model.Card;
 import com.example.bankservice.domain.model.accounts.Account;
 import com.example.bankservice.domain.model.accounts.CompanyAccount;
 import com.example.bankservice.domain.model.accounts.UserAccount;
-import com.example.bankservice.repository.AccountRepository;
-import com.example.bankservice.repository.CardRepository;
-import com.example.bankservice.repository.CompanyAccountRepository;
-import com.example.bankservice.repository.UserAccountRepository;
+import com.example.bankservice.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +46,7 @@ public class AccountService {
     private final CompanyAccountMapper companyAccountMapper;
     private final EmailServiceClient emailServiceClient;
     private final UserServiceClient userServiceClient;
+    private final CurrencyRepository currencyRepository;
 
     public List<UserAccountDto> findAllUserAccounts() {
         return userAccountRepository.findAll().stream().filter(Account::isActive)
@@ -89,7 +87,8 @@ public class AccountService {
         userAccount.setActive(true);
 
         createCard(userAccount);
-        return userAccountMapper.userAccountToUserAccountDto(accountRepository.save(userAccount));
+        accountRepository.save(userAccount);
+        return userAccountMapper.userAccountToUserAccountDto(userAccount);
     }
 
     public CompanyAccountDto createCompanyAccount(CompanyAccountCreateDto companyAccountCreateDto) {
@@ -198,9 +197,17 @@ public class AccountService {
     }
 
     private void createCard(Account userAccount) {
+
+        Random random = new Random();
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < 8; i++) {
+            int digit = random.nextInt(10); // Generates a random number from 0 to 9
+            stringBuilder.append(digit);
+        }
+        String randomNumbers = stringBuilder.toString();
         Card card = new Card();
         card.setAccountNumber(userAccount.getAccountNumber());
-        card.setCardNumber(String.valueOf(new BigInteger(53, new Random())));
+        card.setCardNumber(randomNumbers);
         card.setCardName("VISA");
         card.setCVV(String.valueOf(new Random().nextInt(999)));
         card.setCreationDate(System.currentTimeMillis());

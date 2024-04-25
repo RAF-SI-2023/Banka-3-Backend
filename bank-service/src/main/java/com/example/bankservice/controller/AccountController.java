@@ -38,6 +38,7 @@ public class AccountController {
             UserAccountDto userAccountDto = accountService.createUserAccount(userAccountCreateDto);
             return ResponseEntity.ok(userAccountDto);
         } catch (RuntimeException e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().body("Unable to create account");
         }
     }

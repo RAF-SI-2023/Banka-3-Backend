@@ -12,4 +12,5 @@ import org.springframework.stereotype.Component;
 public class ContactControllerTestsState {
 
     String jwtToken;
+    Long contactId;
 }
