@@ -23,7 +23,7 @@ public class Card implements Serializable {
     private Long cardId;
 
     @NotNull
-    @Size(min = 8, max = 8, message = "Currency mark must be exactly 3 characters long")
+    @Size(min = 8, max = 8, message = "Card number must be exactly 8 characters long")
     private String cardNumber;
 
     @NotNull
