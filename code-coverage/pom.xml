@@ -70,15 +70,36 @@
                         <exclude>**/exception/**</exclude>
                         <exclude>**/model/**</exclude>
                         <exclude>**/repository/**</exclude>
-                        <exclude>**/utils/**</exclude>
+                        <exclude>**/util/**</exclude>
                         <exclude>**/filters/**</exclude>
-                        <exclude>**/mappers/**</exclude>
+                        <exclude>**/mapper/**</exclude>
                         <exclude>**/bootstrap/**</exclude>
                         <exclude>**/configuration/**</exclude>
                         <exclude>**/exceptions/**</exclude>
+                        <exclude>**/controller/**</exclude>
                         <exclude>**/UserServiceApplication.class</exclude>
-                        <exclude>**/EmailServiceApplication.class</exclude>
+                        <exclude>**/client/**</exclude>
+                        <exclude>**/configuration/**</exclude>
+                        <exclude>**/controller/**</exclude>
+                        <exclude>**/domain/**</exclude>
+                        <exclude>**/repository/**</exclude>
+                        <exclude>**/service/historyService/**</exclude>
+                        <exclude>**/service/listingService/ForexService.class</exclude>
+                        <exclude>**/service/listingService/FutureService.class</exclude>
+                        <exclude>**/service/ExchangeService.class</exclude>
                         <exclude>**/ExchangeServiceApplication.class</exclude>
+                        <exclude>**/client/**</exclude>
+                        <exclude>**/configuration/**</exclude>
+                        <exclude>**/controller/**</exclude>
+                        <exclude>**/domain/**</exclude>
+                        <exclude>**/repository/**</exclude>
+                        <exclude>**/EmailServiceApplication.class</exclude>
+                        <exclude>**/bootstrap/**</exclude>
+                        <exclude>**/client/**</exclude>
+                        <exclude>**/configuration/**</exclude>
+                        <exclude>**/controller/**</exclude>
+                        <exclude>**/domain/**</exclude>
+                        <exclude>**/repository/**</exclude>
                         <exclude>**/BankServiceApplication.class</exclude>
                     </excludes>
                 </configuration>
