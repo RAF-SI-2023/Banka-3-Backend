@@ -17,8 +17,15 @@ public class MyStock implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long myStockId;
     private String ticker;
+    private Long userId;
+    private Long companyId;
     private Integer amount;
     private String currencyMark;
+    private Integer privateAmount;
+    // getAll ali samo public za korisnike  i kompanije > 0
+    // mora da se razlikuje i da li je kompanija ili korisnik ulogovan
+    // na osnovu toga se vracaju public stockovi
+    private Integer publicAmount;
     @Version
     private Integer version;
 }
