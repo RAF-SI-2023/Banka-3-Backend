@@ -35,9 +35,14 @@ public class JwtUtil {
     public String generateToken(AuthenticationDetails authenticationDetails) {
         Map<String, Object> claims = new HashMap<>();
 
-        if (authenticationDetails instanceof UserDto || authenticationDetails instanceof CompanyDto) {
+        if (authenticationDetails instanceof UserDto) {
             claims.put("id", authenticationDetails.getId());
-        } else {
+        }
+        else if (authenticationDetails instanceof CompanyDto) {
+            claims.put("id", authenticationDetails.getId());
+            claims.put("role", "ROLE_COMPANY");
+        }
+        else {
             List<String> permissions = authenticationDetails.getPermissions().stream()
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.toList());
