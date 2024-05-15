@@ -190,11 +190,12 @@
 					<excludes>
 						<exclude>**/client/**</exclude>
 						<exclude>**/configuration/**</exclude>
+						<exclude>**/controller/**</exclude>
 						<exclude>**/domain/**</exclude>
 						<exclude>**/repository/**</exclude>
 						<exclude>**/service/historyService/**</exclude>
-						<exclude>**/service/listingService/Forex.class</exclude>
-						<exclude>**/service/listingService/Future.class</exclude>
+						<exclude>**/service/listingService/ForexService.class</exclude>
+						<exclude>**/service/listingService/FutureService.class</exclude>
 						<exclude>**/service/ExchangeService.class</exclude>
 						<exclude>**/ExchangeServiceApplication.class</exclude>
 					</excludes>

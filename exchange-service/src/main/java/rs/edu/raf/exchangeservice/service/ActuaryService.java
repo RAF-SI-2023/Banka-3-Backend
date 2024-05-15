@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import rs.edu.raf.exchangeservice.client.UserServiceClient;
 import rs.edu.raf.exchangeservice.domain.dto.ActuaryDto;
 import rs.edu.raf.exchangeservice.domain.model.Actuary;
+import rs.edu.raf.exchangeservice.jacoco.ExcludeFromJacocoGeneratedReport;
 import rs.edu.raf.exchangeservice.repository.ActuaryRepository;
 
 import javax.annotation.PostConstruct;
@@ -18,6 +19,7 @@ public class ActuaryService {
     private final ActuaryRepository actuaryRepository;
 
     @PostConstruct
+    @ExcludeFromJacocoGeneratedReport
     public void loadActuary() throws InterruptedException {
         Thread.sleep(5000);
         List<ActuaryDto> actuaryDtoList = userServiceClient.getEmployees().getBody();
@@ -45,6 +47,7 @@ public class ActuaryService {
     }
 
     //restartovanje limita Agentu
+    @ExcludeFromJacocoGeneratedReport
     public Actuary restartLimitUsed(Long id){
         Actuary actuary = this.actuaryRepository.findByEmployeeId(id);
         actuary.setLimitUsed(0.0);
@@ -85,7 +88,8 @@ public class ActuaryService {
     }
 
     //scheduler za restartovanje limitUsed zaposlenog
-    @Scheduled(cron = "0 59 23 * * *") // Execute at 23:59 every day
+    @Scheduled(cron = "0 59 23 * * *")
+    @ExcludeFromJacocoGeneratedReport// Execute at 23:59 every day
     public void myScheduledFunction() {
         actuaryRepository.updateLimitToZeroForAllEmployees();
         System.out.println("Executing function for limitUsed restart");
