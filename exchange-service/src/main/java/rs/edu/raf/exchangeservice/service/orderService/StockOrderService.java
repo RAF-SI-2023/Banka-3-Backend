@@ -15,6 +15,7 @@ import rs.edu.raf.exchangeservice.domain.model.enums.OrderStatus;
 import rs.edu.raf.exchangeservice.domain.model.enums.OrderType;
 import rs.edu.raf.exchangeservice.domain.model.listing.Stock;
 import rs.edu.raf.exchangeservice.domain.model.order.StockOrder;
+import rs.edu.raf.exchangeservice.jacoco.ExcludeFromJacocoGeneratedReport;
 import rs.edu.raf.exchangeservice.repository.ActuaryRepository;
 import rs.edu.raf.exchangeservice.repository.listingRepository.StockRepository;
 import rs.edu.raf.exchangeservice.repository.orderRepository.StockOrderRepository;
@@ -114,6 +115,7 @@ public class StockOrderService {
     }
 
     @Scheduled(fixedRate = 10000)
+    @ExcludeFromJacocoGeneratedReport
     public void executeTask() {
         if (ordersToBuy.isEmpty()) {
             System.out.println("Executing buy-task every 10 seconds");
