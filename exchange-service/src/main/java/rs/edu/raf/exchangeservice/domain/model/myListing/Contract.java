@@ -1,8 +1,6 @@
 package rs.edu.raf.exchangeservice.domain.model.myListing;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import rs.edu.raf.exchangeservice.domain.model.enums.BankCertificate;
 import rs.edu.raf.exchangeservice.domain.model.enums.SellerCertificate;
 
@@ -14,6 +12,8 @@ import java.math.BigDecimal;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Setter
+@Getter
 public class Contract implements Serializable {
 
     @Id
