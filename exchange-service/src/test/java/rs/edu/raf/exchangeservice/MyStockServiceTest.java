@@ -1,10 +1,12 @@
 package rs.edu.raf.exchangeservice;
 
+import org.apache.catalina.core.ApplicationPushBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.context.ApplicationEventPublisher;
 import rs.edu.raf.exchangeservice.client.BankServiceClient;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuySellStockDto;
 import rs.edu.raf.exchangeservice.domain.model.enums.OrderStatus;
@@ -38,6 +40,9 @@ public class MyStockServiceTest {
 
     @Mock
     private TickerRepository tickerRepository;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private MyStockService myStockService;
