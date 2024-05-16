@@ -45,7 +45,6 @@ public class MyStockService {
             myStock.setAmount(0);
             myStock.setCurrencyMark(ticker.getCurrencyName());
             myStockRepository.save(myStock);
-            eventPublisher.publishEvent(new StockUpdateEvent(this, myStock));
 
         }
     }
@@ -57,6 +56,7 @@ public class MyStockService {
         MyStock myStock = myStockRepository.findByTicker(ticker);
         myStock.setAmount(myStock.getAmount() + amount);
         myStockRepository.save(myStock);
+        eventPublisher.publishEvent(new StockUpdateEvent(this, myStock));
     }
 
     //vracamo sve deonice koje su u vlasnistvu banke
