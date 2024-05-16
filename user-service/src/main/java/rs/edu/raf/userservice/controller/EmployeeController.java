@@ -96,6 +96,7 @@ public class EmployeeController {
         }
     }
 
+
     @GetMapping(value = "/findByUsername/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> findEmployeeByUsername(@PathVariable String username) {
         try {
