@@ -2,6 +2,7 @@ package rs.edu.raf.userservice.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -60,6 +61,7 @@ public class EmployeeService implements UserDetailsService {
 
         return new User(employee.getEmail(), employee.getPassword(), authorities);
     }
+
 
     public EmployeeDto findById(Long id) {
         Optional<Employee> employee = employeeRepository.findById(id);

@@ -19,6 +19,7 @@ import rs.edu.raf.userservice.domain.mapper.CompanyMapper;
 import rs.edu.raf.userservice.domain.model.Company;
 import rs.edu.raf.userservice.repository.CompanyRepository;
 import rs.edu.raf.userservice.util.client.EmailServiceClient;
+import rs.edu.raf.userservice.util.client.ExchangeServiceClient;
 
 import javax.validation.ValidationException;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class CompanyService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final CompanyRepository companyRepository;
     private final EmailServiceClient emailServiceClient;
+    private final ExchangeServiceClient exchangeServiceClient;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

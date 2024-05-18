@@ -9,11 +9,19 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import rs.edu.raf.exchangeservice.client.BankServiceClient;
+import rs.edu.raf.exchangeservice.domain.dto.CompanyAccountDto;
+import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyStockCompanyDto;
+import rs.edu.raf.exchangeservice.domain.model.enums.BankCertificate;
+import rs.edu.raf.exchangeservice.domain.model.enums.SellerCertificate;
 import rs.edu.raf.exchangeservice.domain.model.listing.Option;
 import rs.edu.raf.exchangeservice.domain.model.listing.Ticker;
+import rs.edu.raf.exchangeservice.domain.model.myListing.Contract;
+import rs.edu.raf.exchangeservice.repository.ContractRepository;
 import rs.edu.raf.exchangeservice.repository.listingRepository.OptionRepository;
 import rs.edu.raf.exchangeservice.repository.listingRepository.TickerRepository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -21,7 +29,10 @@ import java.util.List;
 public class OptionService {
     private final OptionRepository optionsRepository;
     private final TickerRepository tickerRepository;
+    private final ContractRepository contractRepository;
     private final String apiCall = "https://query1.finance.yahoo.com/v6/finance/options/";
+    private final BankServiceClient bankServiceClient;
+
 
     public void loadData() throws JsonProcessingException {
         List<Ticker> tickersList = tickerRepository.findAll();
@@ -65,6 +76,34 @@ public class OptionService {
             }
         }
     }
+
+    //Kompanija salje zahtev za kupovinu. Pravi se ugovor.Druga firma ima pregled pristiglih ugovora i moze da ih prihvati ili odbije.
+    public boolean requestToBuyOptionByCompany(BuyStockCompanyDto buyStockCompanyDto){
+
+        ResponseEntity<?>entity=  bankServiceClient.getByCompanyId(buyStockCompanyDto.getBuyerId());
+        CompanyAccountDto companyAccountDto = (CompanyAccountDto) entity.getBody();
+
+        BigDecimal price = buyStockCompanyDto.getPrice();
+        Integer amount = buyStockCompanyDto.getAmount();
+
+        if(companyAccountDto.getAvailableBalance().compareTo(price.multiply(BigDecimal.valueOf(amount)))<0){
+            return false; //Firma nema dovoljno sredstava
+        }
+
+        Contract contract = new Contract();
+        contract.setCompanyBuyerId(buyStockCompanyDto.getBuyerId());
+        contract.setCompanySellerId(buyStockCompanyDto.getSellerId());
+        contract.setTicker(buyStockCompanyDto.getTicker());
+        contract.setPrice(buyStockCompanyDto.getPrice());
+        contract.setAmount(buyStockCompanyDto.getAmount());
+        contract.setBankCertificate(BankCertificate.PROCESSING);
+        contract.setSellerCertificate(SellerCertificate.PROCESSING);
+        contractRepository.save(contract);
+        return true;
+    }
+
+
+
 
     private void saveOptions(JsonNode jsonNode, String type, String stockListing) {
         ObjectMapper objectMapper = new ObjectMapper();

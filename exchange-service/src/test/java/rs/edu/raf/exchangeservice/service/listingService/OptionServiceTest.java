@@ -6,18 +6,29 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
+import rs.edu.raf.exchangeservice.client.BankServiceClient;
+import rs.edu.raf.exchangeservice.domain.dto.CompanyAccountDto;
+import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyStockCompanyDto;
 import rs.edu.raf.exchangeservice.domain.model.listing.Option;
 import rs.edu.raf.exchangeservice.domain.model.listing.Ticker;
+import rs.edu.raf.exchangeservice.domain.model.myListing.Contract;
+import rs.edu.raf.exchangeservice.repository.ContractRepository;
 import rs.edu.raf.exchangeservice.repository.listingRepository.OptionRepository;
 import rs.edu.raf.exchangeservice.repository.listingRepository.TickerRepository;
+import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class OptionServiceTest {
@@ -25,8 +36,14 @@ class OptionServiceTest {
     TickerRepository tickerRepository;
     @Mock
     private OptionRepository optionRepository;
+    @Mock
+    private ContractRepository contractRepository;
+
     @InjectMocks
     private OptionService optionService;
+    @Mock
+    BankServiceClient bankServiceClient;
+
 
 
     @Test
@@ -71,6 +88,31 @@ class OptionServiceTest {
             }
         }
     }
+
+    @Test
+    void requestToBuyOptionByCompany_WhenSufficientBalance_ShouldReturnTrue() {
+
+        BuyStockCompanyDto buyStockCompanyDto = new BuyStockCompanyDto();
+        buyStockCompanyDto.setBuyerId(1L);
+        buyStockCompanyDto.setSellerId(2L);
+        buyStockCompanyDto.setTicker("AAPL");
+        buyStockCompanyDto.setPrice(BigDecimal.valueOf(100));
+        buyStockCompanyDto.setAmount(10);
+
+        CompanyAccountDto companyAccountDto = new CompanyAccountDto();
+        companyAccountDto.setAvailableBalance(BigDecimal.valueOf(2000));
+
+        ResponseEntity responseEntity = ResponseEntity.ok(companyAccountDto);
+
+        given(bankServiceClient.getByCompanyId(any(Long.class))).willReturn(responseEntity);
+
+        boolean result = optionService.requestToBuyOptionByCompany(buyStockCompanyDto);
+
+        assertTrue(result);
+        verify(contractRepository, times(1)).save(any(Contract.class));
+    }
+
+
 
     @Test
     public void testFindPuts() {
