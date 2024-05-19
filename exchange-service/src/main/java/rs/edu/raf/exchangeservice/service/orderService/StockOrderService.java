@@ -1,26 +1,35 @@
 package rs.edu.raf.exchangeservice.service.orderService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cloud.client.loadbalancer.Response;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import rs.edu.raf.exchangeservice.client.BankServiceClient;
+import rs.edu.raf.exchangeservice.domain.dto.CompanyAccountDto;
 import rs.edu.raf.exchangeservice.domain.dto.StockOrderDto;
 import rs.edu.raf.exchangeservice.domain.dto.bank.BankTransactionDto;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuySellStockDto;
+import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyStockCompanyDto;
 import rs.edu.raf.exchangeservice.domain.mappers.StockMapper;
 import rs.edu.raf.exchangeservice.domain.model.Actuary;
+import rs.edu.raf.exchangeservice.domain.model.enums.BankCertificate;
 import rs.edu.raf.exchangeservice.domain.model.enums.OrderStatus;
 import rs.edu.raf.exchangeservice.domain.model.enums.OrderType;
+import rs.edu.raf.exchangeservice.domain.model.enums.SellerCertificate;
 import rs.edu.raf.exchangeservice.domain.model.listing.Stock;
+import rs.edu.raf.exchangeservice.domain.model.myListing.Contract;
 import rs.edu.raf.exchangeservice.domain.model.order.StockOrder;
 import rs.edu.raf.exchangeservice.jacoco.ExcludeFromJacocoGeneratedReport;
 import rs.edu.raf.exchangeservice.repository.ActuaryRepository;
+import rs.edu.raf.exchangeservice.repository.ContractRepository;
 import rs.edu.raf.exchangeservice.repository.listingRepository.StockRepository;
 import rs.edu.raf.exchangeservice.repository.orderRepository.StockOrderRepository;
 import rs.edu.raf.exchangeservice.service.myListingService.MyStockService;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -32,6 +41,7 @@ public class StockOrderService {
     private final StockOrderRepository stockOrderRepository;
     private final StockRepository stockRepository;
     private final ActuaryRepository actuaryRepository;
+    private final ContractRepository contractRepository;
     private final MyStockService myStockService;
     private final BankServiceClient bankServiceClient;
     public CopyOnWriteArrayList<StockOrder> ordersToBuy = new CopyOnWriteArrayList<>();
@@ -112,6 +122,31 @@ public class StockOrderService {
         }
 
         return StockMapper.INSTANCE.stockOrderToStockOrderDto(stockOrder);
+    }
+
+    //Kompanija salje zahtev za kupovinu. Pravi se ugovor.Druga firma ima pregled pristiglih ugovora i moze da ih prihvati ili odbije.
+    public boolean buyCompanyStockOtc(BuyStockCompanyDto buyStockCompanyDto) {
+
+        ResponseEntity<?> entity = bankServiceClient.getByCompanyId(buyStockCompanyDto.getBuyerId());
+        CompanyAccountDto companyAccountDto = (CompanyAccountDto) entity.getBody();
+
+        BigDecimal price = buyStockCompanyDto.getPrice();
+        Integer amount = buyStockCompanyDto.getAmount();
+
+        if(companyAccountDto != null && companyAccountDto.getAvailableBalance().compareTo(price.multiply(BigDecimal.valueOf(amount)))<0) {
+            return false; //Firma nema dovoljno sredstava
+        }
+
+        Contract contract = new Contract();
+        contract.setCompanyBuyerId(buyStockCompanyDto.getBuyerId());
+        contract.setCompanySellerId(buyStockCompanyDto.getSellerId());
+        contract.setTicker(buyStockCompanyDto.getTicker());
+        contract.setPrice(buyStockCompanyDto.getPrice());
+        contract.setAmount(buyStockCompanyDto.getAmount());
+        contract.setBankCertificate(BankCertificate.PROCESSING);
+        contract.setSellerCertificate(SellerCertificate.PROCESSING);
+        contractRepository.save(contract);
+        return true;
     }
 
     @Scheduled(fixedRate = 10000)
