@@ -22,4 +22,5 @@ public class Future implements Serializable {
     private int maintenanceMargin;
     private String type;
     private String currencyMark;
+    private double price;
 }
