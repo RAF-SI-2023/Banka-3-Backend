@@ -4,9 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import feign.Param;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuySellStockDto;
+import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyStockCompanyDto;
 import rs.edu.raf.exchangeservice.domain.dto.listing.StockDto;
 import rs.edu.raf.exchangeservice.domain.dto.StockOrderDto;
 import rs.edu.raf.exchangeservice.domain.model.listing.Stock;
@@ -83,6 +85,17 @@ public class StockController {
     @Operation(description = "ruta koja se gadja prilikom kupovine Stocks")
     public ResponseEntity<StockOrderDto> buyStock(@RequestBody BuySellStockDto buySellStockDto){
         return ResponseEntity.ok(stockOrderService.buyStock(buySellStockDto));
+    }
+
+    @PostMapping("/buyCompanyStockOtc")
+    @Operation(description = "Firma salje zahtev drugoj firmi za kupovinu stock-a")
+    public ResponseEntity<?> buyCompanyStockOtc(@RequestBody BuyStockCompanyDto buyStockCompanyDto) {
+        if(this.stockOrderService.buyCompanyStockOtc(buyStockCompanyDto)){
+            return ResponseEntity.ok().build();
+        }else{
+            //nema para
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
+        }
     }
 
     @PostMapping("/sellStock")
