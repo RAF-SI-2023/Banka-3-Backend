@@ -1,19 +1,18 @@
 package com.example.bankservice.bootstrap;
 
-import com.example.bankservice.domain.model.*;
+import com.example.bankservice.domain.model.Card;
+import com.example.bankservice.domain.model.CreditRequest;
+import com.example.bankservice.domain.model.Currency;
 import com.example.bankservice.domain.model.accounts.CompanyAccount;
 import com.example.bankservice.domain.model.accounts.UserAccount;
 import com.example.bankservice.domain.model.enums.CreditRequestStatus;
 import com.example.bankservice.domain.model.enums.CurrencyName;
-import com.example.bankservice.domain.model.enums.TransactionStatus;
-import com.example.bankservice.domain.model.enums.TransactionType;
 import com.example.bankservice.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 
 @Component
@@ -23,7 +22,6 @@ public class BootstrapData implements CommandLineRunner {
     private final AccountRepository accountRepository;
     private final CompanyAccountRepository companyAccountRepository;
     private final CurrencyRepository currencyRepository;
-    private final CurrencyExchangeRepository currencyExchangeRepository;
     private final TransactionRepository transactionRepository;
     private final CreditRepository creditRepository;
     private final CreditRequestRepository creditRequestRepository;
@@ -58,24 +56,6 @@ public class BootstrapData implements CommandLineRunner {
 
         if (currencyRepository.count() == 0) {
             loadCurrencyData(List.of(rsd, eur, usd, chf, gbp, jpy));
-        }
-
-        CurrencyExchange currencyExchange1 = new CurrencyExchange();
-        currencyExchange1.setAccountFrom("1111111111111111");
-        currencyExchange1.setAccountTo("1231231231231231");
-        currencyExchange1.setAmount(new BigDecimal("100,00"));
-        currencyExchange1.setCommission(new BigDecimal("2.00"));
-        currencyExchange1.setCurrencyMark("EUR");
-
-        CurrencyExchange currencyExchange2 = new CurrencyExchange();
-        currencyExchange2.setAccountFrom("4444444444444444");
-        currencyExchange2.setAccountTo("123444445555555");
-        currencyExchange2.setAmount(new BigDecimal("50000,00"));
-        currencyExchange2.setCommission(new BigDecimal("7.00"));
-        currencyExchange2.setCurrencyMark("RSD");
-
-        if (currencyRepository.count() == 0) {
-            loadCurrencyExchangeData(List.of(currencyExchange1, currencyExchange2));
         }
 
         UserAccount jankoRacunDinarski = new UserAccount();
@@ -309,66 +289,9 @@ public class BootstrapData implements CommandLineRunner {
         if (creditRequestRepository.count() == 0) {
             loadCreditRequestData(List.of(creditRequest));
         }
-
-        Credit creditGotovinski = new Credit();
-        creditGotovinski.setUserId(1L);
-        creditGotovinski.setEmployeeId(1l);
-        creditGotovinski.setName("Gotovinski");
-        creditGotovinski.setAccountNumber("22200022222222222");
-        creditGotovinski.setAmount(new BigDecimal("3000,1"));
-        creditGotovinski.setPaymentPeriod(24);
-        creditGotovinski.setFee(new BigDecimal("10,24"));
-        creditGotovinski.setStartDate(System.currentTimeMillis());
-        creditGotovinski.setEndDate(System.currentTimeMillis());
-        creditGotovinski.setMonthlyFee(new BigDecimal("6000,0"));
-        creditGotovinski.setRemainingAmount(new BigDecimal("55040,50"));
-        creditGotovinski.setCurrencyMark("RSD");
-
-        Credit creditStambeni = new Credit();
-        creditStambeni.setUserId(1L);
-        creditStambeni.setEmployeeId(1l);
-        creditStambeni.setName("Stambeni");
-        creditStambeni.setAccountNumber("22200022222233333");
-        creditStambeni.setAmount(new BigDecimal("505500,35"));
-        creditStambeni.setPaymentPeriod(30);
-        creditStambeni.setFee(new BigDecimal("4000"));
-        creditStambeni.setStartDate(System.currentTimeMillis());
-        creditStambeni.setEndDate(System.currentTimeMillis());
-        creditStambeni.setMonthlyFee(new BigDecimal("12000,0"));
-        creditStambeni.setRemainingAmount(new BigDecimal("40050,00"));
-        creditStambeni.setCurrencyMark("RSD");
-
-        if (creditRepository.count() == 0) {
-            loadCreditData(List.of(creditGotovinski,creditStambeni));
-        }
-
-        Transaction transaction123 = new Transaction();
-        transaction123.setAccountFrom("2222222222222222");
-        transaction123.setAccountTo("3213213213213213");
-        transaction123.setAmount(new BigDecimal("4000,00"));
-        transaction123.setSifraPlacanja(258);
-        transaction123.setPozivNaBroj("1289");
-        transaction123.setType(TransactionType.PAYMENT_TRANSACTION);
-        transaction123.setTransactionStatus(TransactionStatus.SUCCESSFUL);
-        transaction123.setDate(System.currentTimeMillis());
-
-        Transaction transaction321 = new Transaction();
-        transaction321.setAccountFrom("7777777777777777");
-        transaction321.setAccountTo("8888888888888888");
-        transaction321.setAmount(new BigDecimal("500000,00"));
-        transaction321.setSifraPlacanja(256);
-        transaction321.setPozivNaBroj("1290");
-        transaction321.setType(TransactionType.CREDIT_APPROVE_TRANSACTION);
-        transaction321.setTransactionStatus(TransactionStatus.PENDING);
-        transaction321.setDate(System.currentTimeMillis());
-
-        if (transactionRepository.count() == 0) {
-            loadTransactiontData(List.of(transaction321,transaction123));
-        }
     }
 
     private void loadUserAccountData(List<UserAccount> userAccounts) {
-
         accountRepository.saveAll(userAccounts);
     }
 
@@ -386,14 +309,5 @@ public class BootstrapData implements CommandLineRunner {
 
     private void loadCreditRequestData(List<CreditRequest> creditRequests) {
         creditRequestRepository.saveAll(creditRequests);
-    }
-    private void loadCreditData(List<Credit> credits) {
-        creditRepository.saveAll(credits);
-    }
-    private void loadTransactiontData(List<Transaction> transactions) {
-        transactionRepository.saveAll(transactions);
-    }
-    private void loadCurrencyExchangeData(List<CurrencyExchange> currencyExchanges) {
-        currencyExchangeRepository.saveAll(currencyExchanges);
     }
 }
