@@ -5,22 +5,29 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
 import rs.edu.raf.exchangeservice.client.BankServiceClient;
+import rs.edu.raf.exchangeservice.domain.dto.CompanyAccountDto;
 import rs.edu.raf.exchangeservice.domain.dto.StockOrderDto;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuySellStockDto;
+import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyStockCompanyDto;
 import rs.edu.raf.exchangeservice.domain.model.Actuary;
 import rs.edu.raf.exchangeservice.domain.model.enums.OrderStatus;
 import rs.edu.raf.exchangeservice.domain.model.enums.OrderType;
 import rs.edu.raf.exchangeservice.domain.model.listing.Stock;
+import rs.edu.raf.exchangeservice.domain.model.myListing.Contract;
 import rs.edu.raf.exchangeservice.domain.model.order.StockOrder;
 import rs.edu.raf.exchangeservice.repository.ActuaryRepository;
+import rs.edu.raf.exchangeservice.repository.ContractRepository;
 import rs.edu.raf.exchangeservice.repository.listingRepository.StockRepository;
 import rs.edu.raf.exchangeservice.repository.orderRepository.StockOrderRepository;
 import rs.edu.raf.exchangeservice.service.myListingService.MyStockService;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -41,6 +48,8 @@ class StockOrderServiceTest {
     MyStockService myStockService;
     @Mock
     BankServiceClient bankServiceClient;
+    @Mock
+    private ContractRepository contractRepository;
 
     @InjectMocks
     StockOrderService stockOrderService;
@@ -559,6 +568,29 @@ class StockOrderServiceTest {
         stockOrderDto = stockOrderService.buyStock(buySellStockDto);
         assertEquals(stockOrderDto.getType(), OrderType.STOP_LIMIT.toString());
 
+    }
+
+    @Test
+    public void testBuyCompanyStockOtc() {
+
+        BuyStockCompanyDto buyStockCompanyDto = new BuyStockCompanyDto();
+        buyStockCompanyDto.setBuyerId(1L);
+        buyStockCompanyDto.setSellerId(2L);
+        buyStockCompanyDto.setTicker("AAPL");
+        buyStockCompanyDto.setPrice(BigDecimal.valueOf(100));
+        buyStockCompanyDto.setAmount(10);
+
+        CompanyAccountDto companyAccountDto = new CompanyAccountDto();
+        companyAccountDto.setAvailableBalance(BigDecimal.valueOf(2000));
+
+        ResponseEntity responseEntity = ResponseEntity.ok(companyAccountDto);
+
+        given(bankServiceClient.getByCompanyId(any(Long.class))).willReturn(responseEntity);
+
+        boolean result = stockOrderService.buyCompanyStockOtc(buyStockCompanyDto);
+
+        assertTrue(result);
+        verify(contractRepository, times(1)).save(any(Contract.class));
     }
 
     public StockOrder createDummyStockOrder() {
