@@ -102,7 +102,12 @@ public class OptionService {
         return true;
     }
 
-
+    public ResponseEntity setPublic(Long id, boolean isPublic) {
+        Option option = optionsRepository.findById(id).orElseThrow(() -> new RuntimeException("Option not found"));
+        option.setPublic(isPublic);
+        optionsRepository.save(option);
+        return ResponseEntity.ok("Option privacy updated successfully");
+    }
 
 
     private void saveOptions(JsonNode jsonNode, String type, String stockListing) {

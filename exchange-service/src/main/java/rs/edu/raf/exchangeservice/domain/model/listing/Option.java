@@ -45,4 +45,5 @@ public class Option implements Serializable {
     @JsonProperty("volume")
     private double volume;
     private String currencyMark;
+    private boolean isPublic; //Ukoliko je public,druge firme mogu da ga kupuju
 }

@@ -48,4 +48,8 @@ public class Stock implements Serializable {
 
     @Column(name = "currencyMark")
     private String currencyMark;
+
+    private boolean isPublic; //Ukoliko je public,druge firme mogu da ga kupuju
+
+
 }

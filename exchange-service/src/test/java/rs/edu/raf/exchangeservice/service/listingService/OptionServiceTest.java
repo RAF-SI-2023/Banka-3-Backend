@@ -16,6 +16,9 @@ import rs.edu.raf.exchangeservice.domain.model.myListing.Contract;
 import rs.edu.raf.exchangeservice.repository.ContractRepository;
 import rs.edu.raf.exchangeservice.repository.listingRepository.OptionRepository;
 import rs.edu.raf.exchangeservice.repository.listingRepository.TickerRepository;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,9 +29,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 class OptionServiceTest {
@@ -86,6 +87,42 @@ class OptionServiceTest {
             if(!found) {
                 fail("Option not found!");
             }
+        }
+    }
+
+    @Test
+    void setPublic_ShouldUpdateOptionPrivacy_WhenOptionExists() {
+        // Given
+        Long id = 1L;
+        boolean isPublic = true;
+        Option option = new Option();
+        option.setPublic(false);
+
+        when(optionRepository.findById(id)).thenReturn(Optional.of(option));
+
+        // When
+        ResponseEntity responseEntity = optionService.setPublic(id, isPublic);
+
+        // Then
+        verify(optionRepository, times(1)).save(option);
+        assertEquals("Option privacy updated successfully", responseEntity.getBody());
+        assertEquals(isPublic, option.isPublic());
+    }
+
+    @Test
+    void setPublic_ShouldThrowException_WhenOptionDoesNotExist() {
+        // Given
+        Long id = 1L;
+        boolean isPublic = true;
+
+        when(optionRepository.findById(id)).thenReturn(Optional.empty());
+
+        // When
+        try {
+            optionService.setPublic(id, isPublic);
+        } catch (RuntimeException ex) {
+            // Then
+            assertEquals("Option not found", ex.getMessage());
         }
     }
 

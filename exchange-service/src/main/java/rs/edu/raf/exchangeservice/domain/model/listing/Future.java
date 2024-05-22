@@ -23,4 +23,5 @@ public class Future implements Serializable {
     private String type;
     private String currencyMark;
     private double price;
+    private boolean isPublic; //Ukoliko je public,druge firme mogu da ga kupuju
 }

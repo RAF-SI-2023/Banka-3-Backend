@@ -97,6 +97,14 @@ public class StockController {
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
         }
     }
+    @PostMapping("/setPublic/{id}")
+    @Operation(description = "Podesavanje privatnosti Stock-a")
+    public ResponseEntity<?> setPublic(@PathVariable("id") Long id, @RequestParam("public") boolean isPublic) {
+
+        return stockOrderService.setPublic(id, isPublic);
+
+    }
+
 
     @PostMapping("/sellStock")
     @Operation(description = "ruta koja se gadja prilikom prodaje Stocks")

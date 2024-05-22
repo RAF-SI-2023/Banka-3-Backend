@@ -11,6 +11,7 @@ import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyStockUserDto;
 import rs.edu.raf.exchangeservice.domain.model.listing.Option;
 import rs.edu.raf.exchangeservice.service.listingService.OptionService;
 
+import javax.websocket.server.PathParam;
 import java.util.List;
 
 @RestController
@@ -48,6 +49,13 @@ public class OptionController {
             //nema para
             return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
         }
+    }
+    @PostMapping("/setPublic/{id}")
+    @Operation(description = "Podesavanje privatnosti Option stock-a")
+    public ResponseEntity<?> setPublic(@PathVariable("id") Long id, @RequestParam("public") boolean isPublic) {
+
+        return optionService.setPublic(id, isPublic);
+
 
     }
 

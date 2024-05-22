@@ -63,6 +63,12 @@ public class ContractService {
 
         //TODO ostalo je da se skine novac sa racuna jedne firme i doda na racun druge firme,kaze ogi da ostavimo straletu to
 
+        //Oduzmi drugoj firmi kolicinu stocka
+
+
+        //Dodaj prvoj firmi
+
+
         //Tek kada supervizor odobri, treba da se kreira novi MyStock
         MyStock myStock = new MyStock();
         myStock.setTicker(contract.getTicker());

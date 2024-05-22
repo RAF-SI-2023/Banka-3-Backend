@@ -12,6 +12,7 @@ import rs.edu.raf.exchangeservice.domain.mappers.FutureMapper;
 import rs.edu.raf.exchangeservice.domain.model.enums.BankCertificate;
 import rs.edu.raf.exchangeservice.domain.model.enums.SellerCertificate;
 import rs.edu.raf.exchangeservice.domain.model.listing.Future;
+import rs.edu.raf.exchangeservice.domain.model.listing.Option;
 import rs.edu.raf.exchangeservice.domain.model.myListing.FutureContract;
 import rs.edu.raf.exchangeservice.repository.FutureContractRepository;
 import rs.edu.raf.exchangeservice.repository.listingRepository.FutureRepository;
@@ -74,6 +75,12 @@ public class FutureService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+    public ResponseEntity setPublic(Long id, boolean isPublic) {
+        Future future = futureRepository.findById(id).orElseThrow(() -> new RuntimeException("Option not found"));
+        future.setPublic(isPublic);
+        futureRepository.save(future);
+        return ResponseEntity.ok("Future privacy updated successfully");
     }
 
     public List<Future> findAll(){

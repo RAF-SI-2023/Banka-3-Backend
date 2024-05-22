@@ -18,6 +18,7 @@ import rs.edu.raf.exchangeservice.domain.model.enums.BankCertificate;
 import rs.edu.raf.exchangeservice.domain.model.enums.OrderStatus;
 import rs.edu.raf.exchangeservice.domain.model.enums.OrderType;
 import rs.edu.raf.exchangeservice.domain.model.enums.SellerCertificate;
+import rs.edu.raf.exchangeservice.domain.model.listing.Option;
 import rs.edu.raf.exchangeservice.domain.model.listing.Stock;
 import rs.edu.raf.exchangeservice.domain.model.myListing.Contract;
 import rs.edu.raf.exchangeservice.domain.model.order.StockOrder;
@@ -146,6 +147,12 @@ public class StockOrderService {
         contract.setSellerCertificate(SellerCertificate.PROCESSING);
         contractRepository.save(contract);
         return true;
+    }
+    public ResponseEntity setPublic(Long id, boolean isPublic) {
+        Stock stock = stockRepository.findById(id).orElseThrow(() -> new RuntimeException("Option not found"));
+        stock.setPublic(isPublic);
+        stockRepository.save(stock);
+        return ResponseEntity.ok("Stock privacy updated successfully");
     }
 
     @Scheduled(fixedRate = 10000)

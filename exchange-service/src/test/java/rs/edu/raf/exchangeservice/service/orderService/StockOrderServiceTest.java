@@ -142,6 +142,35 @@ class StockOrderServiceTest {
         // Provjera očekivanog rezultata
         assertEquals(OrderStatus.PROCESSING.toString(), result.getStatus());
     }
+    @Test
+    void setPublic_ShouldUpdateStockPrivacy_WhenStockExists() {
+        Long id = 1L;
+        boolean isPublic = true;
+        Stock stock = new Stock();
+        stock.setPublic(false);
+
+        when(stockRepository.findById(id)).thenReturn(Optional.of(stock));
+
+        ResponseEntity responseEntity = stockOrderService.setPublic(id, isPublic);
+
+        verify(stockRepository, times(1)).save(stock);
+        assertEquals("Stock privacy updated successfully", responseEntity.getBody());
+        assertEquals(isPublic, stock.isPublic());
+    }
+
+    @Test
+    void setPublic_ShouldThrowException_WhenStockDoesNotExist() {
+        Long id = 1L;
+        boolean isPublic = true;
+
+        when(stockRepository.findById(id)).thenReturn(Optional.empty());
+
+        try {
+            stockOrderService.setPublic(id, isPublic);
+        } catch (RuntimeException ex) {
+            assertEquals("Option not found", ex.getMessage());
+        }
+    }
 //    @Test
 //    void executeTaskTest() {
 //        // Simulacija podataka

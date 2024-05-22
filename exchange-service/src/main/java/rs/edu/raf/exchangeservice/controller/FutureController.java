@@ -2,8 +2,11 @@ package rs.edu.raf.exchangeservice.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyFutureCompanyDto;
+import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyStockCompanyDto;
 import rs.edu.raf.exchangeservice.domain.dto.listing.FutureDto;
 import rs.edu.raf.exchangeservice.domain.model.listing.Future;
 import rs.edu.raf.exchangeservice.service.listingService.FutureService;
@@ -30,6 +33,24 @@ public class FutureController {
     public ResponseEntity<FutureDto> getByContractName(@PathVariable String contractName){
         return ResponseEntity.ok(this.futureService.findByContractName(contractName));
     }
+    @PostMapping("/setPublic/{id}")
+    @Operation(description = "Podesavanje privatnosti Future stock-a")
+    public ResponseEntity<?> setPublic(@PathVariable("id") Long id, @RequestParam("public") boolean isPublic) {
+
+        return futureService.setPublic(id, isPublic);
+    }
+    //Firma kupuje od firme
+    @PostMapping("/companyBuy")
+    @Operation(description = "Firma salje zahtev drugoj firmi za kupovinu options")
+    public ResponseEntity requestToBuyOptionByCompany(@RequestBody BuyFutureCompanyDto buyFutureCompanyDto){
+        if(this.futureService.requestToBuyFutureByCompany(buyFutureCompanyDto)){
+            return ResponseEntity.ok().build();
+        }else{
+            //nema para
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
+        }
+    }
+
 
 //    @GetMapping("/myFuture/getAll")
 //    @Operation(description = "ova ruta se gadja ako hoces da vidis sve future koje ima Banka u svom vlasnistu")
