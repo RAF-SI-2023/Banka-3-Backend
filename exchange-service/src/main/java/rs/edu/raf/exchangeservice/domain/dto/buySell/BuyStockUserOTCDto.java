@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class BuyStockUserDto {
+public class BuyStockUserOTCDto {
     // OTC: User kupuje od usera
     private Long userSellerId;
     private Long userBuyerId;
