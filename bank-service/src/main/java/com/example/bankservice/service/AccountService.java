@@ -137,6 +137,13 @@ public class AccountService {
         accountRepository.save(accountTo);
     }
 
+    public void transferOptionFunds(Account accountFrom, Account accountTo, BigDecimal amount) {
+        accountFrom.setAvailableBalance(accountFrom.getAvailableBalance().subtract(amount));
+        accountTo.setAvailableBalance(accountTo.getAvailableBalance().add(amount));
+        accountRepository.save(accountFrom);
+        accountRepository.save(accountTo);
+    }
+
     public void deleteAccount(Long id) {
         Account account = accountRepository.findById(id).orElseThrow(() -> new RuntimeException("Account not found"));
         account.setActive(false);

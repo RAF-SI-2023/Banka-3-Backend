@@ -12,6 +12,7 @@ import com.example.bankservice.domain.model.accounts.UserAccount;
 import com.example.bankservice.domain.model.enums.TransactionStatus;
 import com.example.bankservice.domain.model.enums.TransactionType;
 import com.example.bankservice.repository.AccountRepository;
+import com.example.bankservice.repository.CompanyAccountRepository;
 import com.example.bankservice.repository.TransactionRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -30,6 +31,7 @@ public class TransactionService {
     private final UserServiceClient userServiceClient;
     private final EmailServiceClient emailServiceClient;
     private final AccountRepository accountRepository;
+    private final CompanyAccountRepository companyAccountRepository;
     private final TransactionMapper transactionMapper;
     private TransactionRepository transactionRepository;
     private AccountService accountService;
@@ -125,6 +127,25 @@ public class TransactionService {
         transactionRepository.save(transaction);
     }
 
+    public void optionBuyTransaction(OptionTransactionDto optionTransactionDto) {
+        Optional<CompanyAccount> optionalCompanyAccount = companyAccountRepository.findById(optionTransactionDto.getCompanyAccountId());
+        if(optionalCompanyAccount.isEmpty()) {
+            throw new RuntimeException("Company account with id "+optionTransactionDto.getCompanyAccountId()+" not found");
+        }
+
+        CompanyAccount companyAccount = optionalCompanyAccount.get();
+        Transaction transaction = new Transaction();
+        transaction.setAccountFrom(companyAccount.getAccountNumber());
+        //racun berze za RSD currency
+        transaction.setAccountTo(accountService.findExchangeAccountForGivenCurrency("RSD").getAccountNumber());
+        transaction.setAmount(BigDecimal.valueOf(optionTransactionDto.getOptionPrice()));
+        transaction.setType(TransactionType.OPTION_TRANSACTION);
+        transaction.setTransactionStatus(TransactionStatus.ACCEPTED);
+        transaction.setDate(System.currentTimeMillis());
+
+        transactionRepository.save(transaction);
+    }
+
     public List<CreditTransactionDto> getAllCreditTransactions() {
         List<Transaction> transactions = transactionRepository.findAllByType(TransactionType.CREDIT_APPROVE_TRANSACTION)
                 .orElseThrow(() -> new RuntimeException("Transactions not found"));
@@ -172,6 +193,8 @@ public class TransactionService {
                 finishTransaction(transaction);
             } else if (transaction.getType().equals(TransactionType.STOCK_TRANSACTION)) {
                 finishStockTransaction(transaction);
+            } else if (transaction.getType().equals(TransactionType.OPTION_TRANSACTION)) {
+                finishOptionTransaction(transaction);
             }
         }
     }
@@ -205,6 +228,25 @@ public class TransactionService {
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
         accountService.transferStockFunds(accountFrom, accountTo, transaction.getAmount());
+        transaction.setTransactionStatus(TransactionStatus.FINISHED);
+        transactionRepository.save(transaction);
+    }
+
+    private void finishOptionTransaction(Transaction transaction) {
+        Optional<CompanyAccount> optionalCompanyAccount = companyAccountRepository.findByCompanyAccountNumber(transaction.getAccountFrom());
+        if(optionalCompanyAccount.isEmpty()) {
+            throw new RuntimeException("Company account with account number "+transaction.getAccountFrom()+" not found");
+        }
+
+        Optional<Account> optionalExchangeAccount = accountRepository.findByAccountNumber(transaction.getAccountFrom());
+        if(optionalExchangeAccount.isEmpty()) {
+            throw new RuntimeException("Exchange account with account number "+transaction.getAccountTo()+" not found");
+        }
+
+        CompanyAccount companyAccount = optionalCompanyAccount.get();
+        Account exchangeAccount = optionalExchangeAccount.get();
+
+        accountService.transferOptionFunds(companyAccount, exchangeAccount, transaction.getAmount());
         transaction.setTransactionStatus(TransactionStatus.FINISHED);
         transactionRepository.save(transaction);
     }

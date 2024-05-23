@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import rs.edu.raf.exchangeservice.domain.dto.bank.BankTransactionDto;
+import rs.edu.raf.exchangeservice.domain.dto.bank.OptionTransactionDto;
 
 @FeignClient(name = "bankServiceClient", url = "${bankServiceLocation}")
 public interface BankServiceClient {
@@ -30,5 +31,9 @@ public interface BankServiceClient {
     @Operation(description = "Uzimamo firmu po id")
     ResponseEntity<?> getByCompanyId(@PathVariable Long companyId);
 
+    @PostMapping(value = "/transaction/optionBuyTransaction",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<?> optionBuyTransaction (@RequestBody OptionTransactionDto optionTransactionDto);
 
 }

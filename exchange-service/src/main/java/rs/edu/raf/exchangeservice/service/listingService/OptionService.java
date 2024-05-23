@@ -11,23 +11,31 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import rs.edu.raf.exchangeservice.client.BankServiceClient;
 import rs.edu.raf.exchangeservice.domain.dto.CompanyAccountDto;
+import rs.edu.raf.exchangeservice.domain.dto.bank.OptionTransactionDto;
+import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyOptionDto;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyStockCompanyDto;
+import rs.edu.raf.exchangeservice.domain.dto.myListing.MyOptionDto;
+import rs.edu.raf.exchangeservice.domain.mappers.MyOptionMapper;
 import rs.edu.raf.exchangeservice.domain.model.enums.BankCertificate;
 import rs.edu.raf.exchangeservice.domain.model.enums.SellerCertificate;
 import rs.edu.raf.exchangeservice.domain.model.listing.Option;
 import rs.edu.raf.exchangeservice.domain.model.listing.Ticker;
 import rs.edu.raf.exchangeservice.domain.model.myListing.Contract;
+import rs.edu.raf.exchangeservice.domain.model.myListing.MyOption;
 import rs.edu.raf.exchangeservice.repository.ContractRepository;
 import rs.edu.raf.exchangeservice.repository.listingRepository.OptionRepository;
 import rs.edu.raf.exchangeservice.repository.listingRepository.TickerRepository;
+import rs.edu.raf.exchangeservice.repository.myListingRepository.MyOptionRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class OptionService {
     private final OptionRepository optionsRepository;
+    private final MyOptionRepository myOptionRepository;
     private final TickerRepository tickerRepository;
     private final ContractRepository contractRepository;
     private final String apiCall = "https://query1.finance.yahoo.com/v6/finance/options/";
@@ -102,7 +110,39 @@ public class OptionService {
         return true;
     }
 
+    public MyOptionDto buyOptionFromExchange(BuyOptionDto buyOptionDto) {
 
+        Optional<Option> optionalOption = optionsRepository.findById(buyOptionDto.getOptionId());
+        if(optionalOption.isEmpty()) {
+            throw new RuntimeException("Option with id "+buyOptionDto.getOptionId()+" not found");
+        }
+
+        Option option = optionalOption.get();
+
+        ResponseEntity<?>entity = bankServiceClient.getByCompanyId(buyOptionDto.getBuyerId());
+        CompanyAccountDto companyAccountDto = (CompanyAccountDto) entity.getBody();
+
+        if(companyAccountDto == null)
+            throw new RuntimeException("Company account not found");
+
+        //proveravamo da li firma ima dovljno sredstava
+        BigDecimal price = BigDecimal.valueOf(option.getPrice());
+        if(companyAccountDto.getAvailableBalance().compareTo(price) < 0) {
+            throw new RuntimeException("Company insufficient funds");
+        }
+
+        bankServiceClient.optionBuyTransaction(new OptionTransactionDto(companyAccountDto.getAccountId(), option.getPrice()));
+
+        MyOption myOption = new MyOption();
+        myOption.setOwnerId(buyOptionDto.getBuyerId());
+        myOption.setStockListing(buyOptionDto.getStockListing());
+        myOption.setOptionType(buyOptionDto.getOptionType());
+        myOption.setStrikePrice(option.getStrikePrice());
+        myOption.setSettlementDate(option.getSettlementDate());
+        myOptionRepository.save(myOption);
+
+        return MyOptionMapper.INSTANCE.myOptionToMyOptionDto(myOption);
+    }
 
 
     private void saveOptions(JsonNode jsonNode, String type, String stockListing) {
