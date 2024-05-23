@@ -86,15 +86,14 @@ public class FutureService {
     }
 
     public boolean requestToBuyFutureByCompany(BuyFutureCompanyDto dto){
-        ResponseEntity<?> entity = bankServiceClient.getByCompanyId(dto.getBuyerId());
-        CompanyAccountDto acc = (CompanyAccountDto) entity.getBody();
-
-        BigDecimal price = dto.getPrice();
-
-        if(acc.getAvailableBalance().compareTo(price) < 0){
-            return false;
-        }
-
+//        ResponseEntity<?> entity = bankServiceClient.getByCompanyId(dto.getBuyerId());
+//        CompanyAccountDto acc = (CompanyAccountDto) entity.getBody();
+//
+//
+//        if(acc.getAvailableBalance().compareTo(dto.getPrice()) < 0){
+//            return false;
+//        }
+        //TODO: proveriti na bank servisu da li ima dovoljno novca
         FutureContract contract = new FutureContract();
         contract.setCompanyBuyerId(dto.getBuyerId());
         contract.setCompanySellerId(dto.getSellerId());
@@ -102,6 +101,7 @@ public class FutureService {
         contract.setPrice(dto.getPrice());
         contract.setBankCertificate(BankCertificate.PROCESSING);
         contract.setSellerCertificate(SellerCertificate.PROCESSING);
+        contract.setDateCreated(System.currentTimeMillis());
         futureContractRepository.save(contract);
         return true;
     }

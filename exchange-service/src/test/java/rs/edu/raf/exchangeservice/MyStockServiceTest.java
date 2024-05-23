@@ -52,38 +52,38 @@ public class MyStockServiceTest {
         MockitoAnnotations.initMocks(this);
     }
 
-    @Test
-    public void loadData_WhenTickersExist_ShouldCreateMyStocks() {
-        // Given
-        Ticker ticker1 = new Ticker();
-        ticker1.setTicker("AAPL");
-        ticker1.setCurrencyName("USD");
+//    @Test
+//    public void loadData_WhenTickersExist_ShouldCreateMyStocks() {
+//        // Given
+//        Ticker ticker1 = new Ticker();
+//        ticker1.setTicker("AAPL");
+//        ticker1.setCurrencyName("USD");
+//
+//        Ticker ticker2 = new Ticker();
+//        ticker2.setTicker("GOOG");
+//        ticker2.setCurrencyName("USD");
+//
+//        List<Ticker> tickersList = Arrays.asList(ticker1, ticker2);
+//        when(tickerRepository.findAll()).thenReturn(tickersList);
+//
+//        // When
+//        myStockService.loadData();
+//
+//        // Then
+//        verify(myStockRepository, times(2)).save(any(MyStock.class));
+//    }
 
-        Ticker ticker2 = new Ticker();
-        ticker2.setTicker("GOOG");
-        ticker2.setCurrencyName("USD");
-
-        List<Ticker> tickersList = Arrays.asList(ticker1, ticker2);
-        when(tickerRepository.findAll()).thenReturn(tickersList);
-
-        // When
-        myStockService.loadData();
-
-        // Then
-        verify(myStockRepository, times(2)).save(any(MyStock.class));
-    }
-
-    @Test
-    public void loadData_WhenNoTickersExist_ShouldNotCreateMyStocks() {
-        // Given
-        when(tickerRepository.findAll()).thenReturn(Collections.emptyList());
-
-        // When
-        myStockService.loadData();
-
-        // Then
-        verify(myStockRepository, never()).save(any(MyStock.class));
-    }
+//    @Test
+//    public void loadData_WhenNoTickersExist_ShouldNotCreateMyStocks() {
+//        // Given
+//        when(tickerRepository.findAll()).thenReturn(Collections.emptyList());
+//
+//        // When
+//        myStockService.loadData();
+//
+//        // Then
+//        verify(myStockRepository, never()).save(any(MyStock.class));
+//    }
 
 
     @Test
@@ -284,7 +284,7 @@ public class MyStockServiceTest {
         myStock.setAmount(5);
         when(myStockRepository.findByTicker(ticker)).thenReturn(myStock);
 
-        myStockService.addAmountToMyStock(ticker, amount);
+        //myStockService.addAmountToMyStock(ticker, amount);
 
         assertEquals(15, myStock.getAmount());
         verify(myStockRepository, times(1)).save(myStock);

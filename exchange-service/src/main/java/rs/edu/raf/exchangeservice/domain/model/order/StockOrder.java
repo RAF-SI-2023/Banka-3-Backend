@@ -18,8 +18,11 @@ public class StockOrder implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long stockOrderId;
-    private Long employeeId;
+    private Long userId; // stize ako user pravi order
+    private Long companyId; // stize ako kompanija ili banka(u ovom slucaju stize 1) pravi order
+    private Long employeeId; // stize kada zaposleni pravi order za banku
     private String ticker;
+    @Enumerated(EnumType.STRING)
     private OrderStatus status;  //PROCESSING, WAITING, FAILED, FINISHED
     private OrderType type;    //MARKET, STOP, LIMIT, STOP-LIMIT
     private Double limitValue;

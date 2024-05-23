@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class StockTransactionDto {
+    private Long userId;
+    private Long companyId;
+    private Long employeeId;
     private Double amount;
     private String currencyMark;
 }

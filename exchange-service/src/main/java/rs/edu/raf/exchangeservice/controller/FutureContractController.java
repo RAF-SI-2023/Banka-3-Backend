@@ -17,7 +17,6 @@ public class FutureContractController {
     private final FutureContractService futureContractService;
 
     @GetMapping("/getAllSupervisor")
-    @PreAuthorize("hasRole('ROLE_SUPERVISOR')")
     @Operation(description = "Supervizor dohvata sve ugovore")
     public ResponseEntity<?> getAllContracts(){
         return ResponseEntity.ok(futureContractService.getAllUnresolvedContracts());
@@ -63,7 +62,7 @@ public class FutureContractController {
     @PostMapping("/supervisorDecline")
     @Operation(description = "Supervizor odbija future ugovor")
     public ResponseEntity<?> supervisorDecline(@RequestBody ContractAnswerDto dto){
-        if(futureContractService.supervisorAccept(dto)){
+        if(futureContractService.supervisorDecline(dto)){
             return new ResponseEntity<>(HttpStatus.OK);
         }else{
             return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);

@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface CompanyAccountRepository extends JpaRepository<CompanyAccount, Long> {
 
     Optional<List<CompanyAccount>> findAllByCompanyId(Long companyId);
+
+    CompanyAccount findByCompanyIdAndCurrency(Long companyId, Long currencyId);
 }

@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyStockCompanyDto;
-import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyStockUserDto;
 import rs.edu.raf.exchangeservice.domain.model.listing.Option;
 import rs.edu.raf.exchangeservice.service.listingService.OptionService;
 
