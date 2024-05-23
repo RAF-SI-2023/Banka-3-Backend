@@ -12,7 +12,9 @@ import lombok.Setter;
 public class BuySellStockDto {
     //kada zelimo da kupimo Stock
     //kada zelimo da prodamo Stock
-    private Long employeeId;    //mora da stigne
+    private Long employeeId;    //ako kupuje zaposleni banke mora da stigne
+    private Long userId;    //ako kupuje korisnik mora da stigne
+    private Long companyId;    //ako kupuje kompanija ili banka(ako banka mora i empoloyee) mora da stigne
     private String ticker;  //mora da stigne
     private Integer amount; //mora da stigne
     private Double limitValue;

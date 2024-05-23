@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import rs.edu.raf.exchangeservice.domain.dto.contract.ContractAnswerDto;
 import rs.edu.raf.exchangeservice.domain.model.enums.BankCertificate;
+import rs.edu.raf.exchangeservice.domain.model.enums.SellerCertificate;
 import rs.edu.raf.exchangeservice.domain.model.listing.Future;
 import rs.edu.raf.exchangeservice.domain.model.myListing.FutureContract;
 import rs.edu.raf.exchangeservice.domain.model.myListing.MyFuture;
@@ -17,7 +18,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FutureContractService {
     private final FutureContractRepository futureContractRepository;
-    private final FutureRepository futureRepository;
     private final MyFutureRepository myFutureRepository;
 
     public FutureContract findByFutureContractName(String contractName){
@@ -25,8 +25,9 @@ public class FutureContractService {
     }
 
     //ugovori koje supervizor nije obradio
+    //TODO ovo treba da vrati sve ugovore koje supervisor nije obradio i koji su prihvaceni od strane kompanija
     public List<FutureContract> getAllUnresolvedContracts(){
-        return this.futureContractRepository.findByBankCertificate(BankCertificate.PROCESSING);
+        return this.futureContractRepository.findBySellerCertificateAndBankCertificate(SellerCertificate.ACCEPTED, BankCertificate.PROCESSING);
     }
 
     public List<FutureContract> getAllSentFutureContractsByCompanyId(Long companyId){
@@ -36,19 +37,19 @@ public class FutureContractService {
         return this.futureContractRepository.findByCompanySellerId(companyId);
     }
     public List<FutureContract> getAllByCompanyId(Long companyId){
-        return this.futureContractRepository.findByCompanySellerIdOrCompanyBuyerId(companyId);
+        return this.futureContractRepository.findByCompanySellerIdOrCompanyBuyerId(companyId, companyId);
     }
 
     public boolean companyAccept(ContractAnswerDto dto){
         FutureContract contract = futureContractRepository.findByFutureContractId(dto.getContractId());
-        contract.setBankCertificate(BankCertificate.ACCEPTED);
+        contract.setSellerCertificate(SellerCertificate.ACCEPTED);
         futureContractRepository.save(contract);
         return true;
     }
 
     public boolean companyDecline(ContractAnswerDto dto){
         FutureContract contract = futureContractRepository.findByFutureContractId(dto.getContractId());
-        contract.setBankCertificate(BankCertificate.DECLINED);
+        contract.setSellerCertificate(SellerCertificate.DECLINED);
         futureContractRepository.save(contract);
         return true;
     }
@@ -60,13 +61,22 @@ public class FutureContractService {
             return true;
         }
 
+        //todo odratiti transakciju na bank service-u, proveriti dal ove tranasakcije treba da idu na rsd
 
-        MyFuture future = new MyFuture();
-        future.setContractName(contract.getContractName());
+//        MyFuture future = new MyFuture();
+//        future.setContractName(contract.getContractName());
+//        future.setCompanyId(contract.getCompanyBuyerId());
+//        future.setPublicAmount(0);
+//        future.setPrivateAmount(1);
+//        future.setCurrencyMark("RSD");
+
+        MyFuture future = myFutureRepository.findByContractName(contract.getContractName());
+        future.setIsPublic(false);
         future.setCompanyId(contract.getCompanyBuyerId());
-        future.setPublicAmount(0);
-        future.setPrivateAmount(1);
-        future.setCurrencyMark("RSD");
+        future.setPrice(contract.getPrice());
+
+        contract.setDateFinished(System.currentTimeMillis());
+        contract.setBankCertificate(BankCertificate.ACCEPTED);
 
         myFutureRepository.save(future);
         futureContractRepository.save(contract);
@@ -85,6 +95,7 @@ public class FutureContractService {
         }
         contract.setBankCertificate(BankCertificate.DECLINED);
         contract.setComment(dto.getComment());
+        contract.setDateFinished(System.currentTimeMillis());
         futureContractRepository.save(contract);
         return true;
     }

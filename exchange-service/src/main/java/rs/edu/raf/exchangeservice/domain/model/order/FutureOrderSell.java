@@ -3,6 +3,7 @@ package rs.edu.raf.exchangeservice.domain.model.order;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import rs.edu.raf.exchangeservice.domain.model.enums.OrderStatus;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -16,7 +17,9 @@ public class FutureOrderSell implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long futureOrderSellId;
-    private Long futureId;
-    private Long employeeId;
+    private String contractName;
+    private Long companyId;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status; //PROCESSING, WAITING, FAILED, FINISHED
     private double price;
 }

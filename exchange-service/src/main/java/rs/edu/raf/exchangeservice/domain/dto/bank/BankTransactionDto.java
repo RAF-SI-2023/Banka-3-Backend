@@ -12,6 +12,9 @@ import lombok.ToString;
 public class BankTransactionDto {
     //kada banka nesto kupuje sa BErze
     //kada banka nesto prodaje Berzi
+    private Long userId;
+    private Long companyId;
+    private Long employeeId;
     private Double amount;
     private String currencyMark;
 }

@@ -87,7 +87,15 @@ public class TransactionService {
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void stockBuyTransaction(StockTransactionDto stockTransactionDto) {
-        Account accountFrom = accountService.findBankAccountForGivenCurrency(stockTransactionDto.getCurrencyMark());
+        //TODO: ovde umesto da trazi bank account, stavimo proveru da li StokcTransactionDto ima userId ili companyId
+        //TODO: i na osnovu njihovog id-a i marka nadjemo account
+
+        Account accountFrom = null;
+        if (stockTransactionDto.getEmployeeId() != null) {
+            accountFrom = accountService.findBankAccountForGivenCurrency(stockTransactionDto.getCurrencyMark());
+        }else {
+            accountFrom = accountService.findAccount(stockTransactionDto);
+        }
         Account accountTo = accountService.findExchangeAccountForGivenCurrency(stockTransactionDto.getCurrencyMark());
 
         if (accountFrom.getAvailableBalance().compareTo(BigDecimal.valueOf(stockTransactionDto.getAmount())) < 0) {
@@ -108,7 +116,16 @@ public class TransactionService {
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void stockSellTransaction(StockTransactionDto stockTransactionDto) {
         Account accountFrom = accountService.findExchangeAccountForGivenCurrency(stockTransactionDto.getCurrencyMark());
-        Account accountTo = accountService.findBankAccountForGivenCurrency(stockTransactionDto.getCurrencyMark());
+        //TODO: ovde umesto da trazi bank account, stavimo proveru da li StokcTransactionDto ima userId ili companyId
+        //TODO: i na osnovu njihovog id-a i marka nadjemo account
+        //TODO: u bootstrapu da se doda korisniku dolarski racun
+        Account accountTo = null;
+        if(stockTransactionDto.getEmployeeId() != null){
+            accountTo = accountService.findBankAccountForGivenCurrency(stockTransactionDto.getCurrencyMark());
+        } else {
+            accountTo = accountService.findAccount(stockTransactionDto);
+        }
+
 
         if (accountFrom.getAvailableBalance().compareTo(BigDecimal.valueOf(stockTransactionDto.getAmount())) < 0) {
             throw new RuntimeException("Insufficient funds");

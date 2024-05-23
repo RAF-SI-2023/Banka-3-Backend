@@ -9,4 +9,6 @@ import java.util.Optional;
 
 public interface FutureRepository extends JpaRepository<Future, Long> {
     Optional<Future> findByContractName(String contractName);
+
+    Future findByFutureId(Long futureId);
 }

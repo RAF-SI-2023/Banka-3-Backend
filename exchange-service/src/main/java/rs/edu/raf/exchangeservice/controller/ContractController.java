@@ -20,7 +20,6 @@ public class ContractController {
 
 
     @GetMapping("/getAllSupervisor")
-    @PreAuthorize("hasRole('ROLE_SUPERVISOR')")
     @Operation(description = "Supervizor dohvata sve ugovore")
     public ResponseEntity<?> getAllContracts(){
 
@@ -41,6 +40,19 @@ public class ContractController {
 
         return ResponseEntity.ok(contractService.getAllReceivedContractsByCompanyId(companyId));
     }
+
+    @GetMapping("/getAllSentUser/{userId}")
+    @Operation(description = "Korisnik dohvata sve poslate ugovore")
+    public ResponseEntity<?> getAllSentContractsByUserId(@PathVariable Long userId){
+        return ResponseEntity.ok(contractService.getAllSentContractsByUserId(userId));
+    }
+
+    @GetMapping("/getAllReceivedUser/{userId}")
+    @Operation(description = "Korisnik dohvata sve primljene ugovore")
+    public ResponseEntity<?> getAllReceivedContractsByUserId(@PathVariable Long userId){
+        return ResponseEntity.ok(contractService.getAllReceivedContractsByUserId(userId));
+    }
+
     @GetMapping("/getAll/{companyId}")
     @Operation(description = "firma dohvata sve svoje ugovore")
     public ResponseEntity<?> getAllByCompanyId(@PathVariable Long companyId){

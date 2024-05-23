@@ -16,12 +16,15 @@ public class MyFuture implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long myFutureId;
-    private String contractName;
     private Long companyId;
-    private Integer amount;
+    private String contractName;
+    private Integer contractSize;
+    private String contractUnit;
+    private Integer maintenanceMargin;
+    private String type;
     private String currencyMark;
-    private Integer privateAmount;
-    private Integer publicAmount;
+    private Double price;
+    private Boolean isPublic;
     @Version
     private Integer version;
 }

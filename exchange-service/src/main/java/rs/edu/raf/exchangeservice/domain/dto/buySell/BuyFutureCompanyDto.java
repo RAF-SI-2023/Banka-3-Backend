@@ -15,5 +15,5 @@ public class BuyFutureCompanyDto {
     private Long sellerId;
     private Long buyerId;
     private String contractName;
-    private BigDecimal price;
+    private Double price;
 }
