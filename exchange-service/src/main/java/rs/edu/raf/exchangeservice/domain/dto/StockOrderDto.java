@@ -12,6 +12,8 @@ import lombok.Setter;
 public class StockOrderDto {
 
     private Long stockOrderId;
+    private Long userId;
+    private Long companyId;
     private Long employeeId;
     private String ticker;
     private String status;  //PROCESSING, WAITING, FAILED, FINISHED

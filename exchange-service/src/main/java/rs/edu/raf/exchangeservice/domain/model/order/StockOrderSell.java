@@ -18,6 +18,8 @@ public class StockOrderSell implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long stockOrderSellId;
+    private Long userId;
+    private Long companyId;
     private Long employeeId;
     private String ticker;
     private OrderStatus status;  //PROCESSING, FAILED, FINISHED

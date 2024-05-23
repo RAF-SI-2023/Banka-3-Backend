@@ -21,9 +21,9 @@ public class FutureContract implements Serializable {
     private Long futureContractId;
     private Long companySellerId;
     private Long companyBuyerId;
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private BankCertificate bankCertificate;
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private SellerCertificate sellerCertificate;
     private String comment;
     private Long dateCreated;
@@ -31,5 +31,5 @@ public class FutureContract implements Serializable {
     private String contractNumber;
     private String about;
     private String contractName;
-    private BigDecimal price;
+    private Double price;
 }

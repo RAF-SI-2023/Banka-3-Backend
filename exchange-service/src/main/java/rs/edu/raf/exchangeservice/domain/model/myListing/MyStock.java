@@ -26,6 +26,9 @@ public class MyStock implements Serializable {
     // mora da se razlikuje i da li je kompanija ili korisnik ulogovan
     // na osnovu toga se vracaju public stockovi
     private Integer publicAmount;
+   //TODO: dotati kanije za racunanje proseka
+    // private Double 150* 10+ 300*5 / amount + 5;
+   // private Double averagePrice;
     @Version
     private Integer version;
 }

@@ -65,10 +65,9 @@ public class TickerService {
 
         stockService.loadData();
         optionService.loadData();
-        stockIntradayService.loadData();
-        stockDailyService.loadData();
-        stockWeeklyService.loadData();
-        stockMonthlyService.loadData();
-        myStockService.loadData();
+//        stockIntradayService.loadData();
+//        stockDailyService.loadData();
+//        stockWeeklyService.loadData();
+//        stockMonthlyService.loadData();
     }
 }

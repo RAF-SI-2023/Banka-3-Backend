@@ -12,7 +12,5 @@ import java.util.List;
 @Transactional(isolation = Isolation.SERIALIZABLE)
 public interface FutureOrderRepository extends JpaRepository<FutureOrder, Long> {
 
-    List<FutureOrder> findByEmployeeId (Long employeeId);
-
     FutureOrder findByFutureOrderId (Long id);
 }

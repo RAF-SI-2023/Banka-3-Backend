@@ -7,9 +7,11 @@ import com.example.bankservice.domain.dto.account.UserAccountDto;
 import com.example.bankservice.domain.dto.companyaccount.CompanyAccountCreateDto;
 import com.example.bankservice.domain.dto.companyaccount.CompanyAccountDto;
 import com.example.bankservice.domain.dto.emailService.TransactionFinishedDto;
+import com.example.bankservice.domain.dto.transaction.StockTransactionDto;
 import com.example.bankservice.domain.mapper.CompanyAccountMapper;
 import com.example.bankservice.domain.mapper.UserAccountMapper;
 import com.example.bankservice.domain.model.Card;
+import com.example.bankservice.domain.model.Currency;
 import com.example.bankservice.domain.model.accounts.Account;
 import com.example.bankservice.domain.model.accounts.CompanyAccount;
 import com.example.bankservice.domain.model.accounts.UserAccount;
@@ -182,6 +184,19 @@ public class AccountService {
             default:
                 throw new RuntimeException("Bank account not found");
         }
+    }
+
+    public Account findAccount(StockTransactionDto stockTransactionDto){
+        //TODO: proveriti zsto ne moze da nadje account
+        Currency currency = currencyRepository.findByMark(stockTransactionDto.getCurrencyMark())
+                .orElseThrow(() -> new RuntimeException("Currency not found"));
+        Account account = null;
+        if(stockTransactionDto.getUserId() != null){
+            account = userAccountRepository.findByUserIdAndCurrency(stockTransactionDto.getUserId(), currency.getCurrencyId());
+        }else if (stockTransactionDto.getCompanyId() != null){
+            account = companyAccountRepository.findByCompanyIdAndCurrency(stockTransactionDto.getCompanyId(), currency.getCurrencyId());
+        }
+        return account;
     }
 
     public Account findExchangeAccountForGivenCurrency(String currencyMark) {

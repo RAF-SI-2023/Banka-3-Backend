@@ -12,6 +12,7 @@ import rs.edu.raf.exchangeservice.domain.model.myListing.MyStock;
 import rs.edu.raf.exchangeservice.repository.ContractRepository;
 import rs.edu.raf.exchangeservice.repository.listingRepository.TickerRepository;
 import rs.edu.raf.exchangeservice.repository.myListingRepository.MyStockRepository;
+import rs.edu.raf.exchangeservice.service.myListingService.MyStockService;
 
 import java.util.List;
 
@@ -20,12 +21,12 @@ import java.util.List;
 public class ContractService {
 
     private final ContractRepository contractRepository;
-    private final TickerRepository tickerRepository;
-    private final MyStockRepository myStockRepository;
+    private final MyStockService myStockService;
 
     //ugovori koje supervizor nije obradio
+    //TODO ovo treba da vrati sve ugovore koje supervisor nije obradio i koji su prihvaceni od strane kompanija ili korisnika
     public List<Contract> getAllUnresolvedContracts(){
-        return this.contractRepository.findByBankCertificate(BankCertificate.PROCESSING);
+        return this.contractRepository.findBySellerCertificateAndBankCertificate(SellerCertificate.ACCEPTED, BankCertificate.PROCESSING);
     }
 
 
@@ -61,23 +62,12 @@ public class ContractService {
         contract.setBankCertificate(BankCertificate.ACCEPTED);
         contract.setComment(dto.getComment());
 
-        //TODO ostalo je da se skine novac sa racuna jedne firme i doda na racun druge firme,kaze ogi da ostavimo straletu to
+        //TODO: salje se dto na bank servise sa 2 user id-a i iznosom ili 2 company id-a i iznosom i mark racuna (mislim da je RSD za otc uvek)
 
-        //Tek kada supervizor odobri, treba da se kreira novi MyStock
-        MyStock myStock = new MyStock();
-        myStock.setTicker(contract.getTicker());
-        myStock.setCompanyId(contract.getCompanyBuyerId());
-        myStock.setAmount(contract.getAmount());
-        Ticker ticker = tickerRepository.findByTicker(contract.getTicker());
+        myStockService.addAmountToMyStock(contract.getTicker(), contract.getAmount(),contract.getUserBuyerId(), contract.getCompanyBuyerId());
+        myStockService.removeAmountFromMyStock(contract.getTicker(), contract.getAmount(),contract.getUserSellerId(), contract.getCompanySellerId());
 
-        myStock.setCurrencyMark(ticker.getCurrencyName());
-        myStock.setPrivateAmount(contract.getAmount());
-        myStock.setPublicAmount(contract.getAmount());
-        myStock.setUserId(0L);
-
-        myStockRepository.save(myStock);
         contractRepository.save(contract);
-
         return true;
     }
 
@@ -105,8 +95,16 @@ public class ContractService {
         return this.contractRepository.findByCompanySellerId(id);
     }
 
+    public List<Contract> getAllSentContractsByUserId(Long id){
+        return this.contractRepository.findByUserBuyerId(id);
+    }
+
+    public List<Contract> getAllReceivedContractsByUserId(Long id){
+        return this.contractRepository.findByUserSellerId(id);
+    }
+
     public List<Contract>getAllByCompanyId(Long id){
-        return this.contractRepository.findByCompanySellerIdOrCompanyBuyerId(id);
+        return this.contractRepository.findByCompanySellerIdOrCompanyBuyerId(id, id);
     }
 
 
