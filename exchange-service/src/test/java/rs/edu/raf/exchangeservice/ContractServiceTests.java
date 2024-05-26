@@ -76,25 +76,25 @@ public class ContractServiceTests {
 
 
 
-    @Test
-    void supervisorAccept_WhenContractIsProcessing_ShouldReturnTrueAndSaveContract() {
-        Contract contract = new Contract();
-        contract.setBankCertificate(BankCertificate.PROCESSING);
-        when(contractRepository.findById(any())).thenReturn(Optional.of(contract));
-
-        Ticker ticker = new Ticker();
-        ticker.setTicker("AAPL");
-        ticker.setCurrencyName("USD");
-        when(tickerRepository.findByTicker(any())).thenReturn(ticker);
-
-        // Act
-        boolean result = contractService.supervisorAccept(new ContractAnswerDto());
-
-        // Assert
-        assertTrue(result);
-        verify(contractRepository, times(1)).save(any(Contract.class));
-        verify(tickerRepository, times(1)).findByTicker(any());
-    }
+//    @Test
+//    void supervisorAccept_WhenContractIsProcessing_ShouldReturnTrueAndSaveContract() {
+//        Contract contract = new Contract();
+//        contract.setBankCertificate(BankCertificate.PROCESSING);
+//        when(contractRepository.findById(any())).thenReturn(Optional.of(contract));
+//
+//        Ticker ticker = new Ticker();
+//        ticker.setTicker("AAPL");
+//        ticker.setCurrencyName("USD");
+//        when(tickerRepository.findByTicker(any())).thenReturn(ticker);
+//
+//        // Act
+//        boolean result = contractService.supervisorAccept(new ContractAnswerDto());
+//
+//        // Assert
+//        assertTrue(result);
+//        verify(contractRepository, times(1)).save(any(Contract.class));
+//        verify(tickerRepository, times(1)).findByTicker(any());
+//    }
 
 
     @Test

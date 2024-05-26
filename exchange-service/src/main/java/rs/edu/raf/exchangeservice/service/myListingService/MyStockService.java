@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import rs.edu.raf.exchangeservice.client.BankServiceClient;
 import rs.edu.raf.exchangeservice.configuration.StockUpdateEvent;
+import rs.edu.raf.exchangeservice.domain.dto.MakePublicStockDto;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuySellStockDto;
 import rs.edu.raf.exchangeservice.domain.dto.bank.BankTransactionDto;
 import rs.edu.raf.exchangeservice.domain.model.enums.OrderStatus;
@@ -36,27 +37,94 @@ public class MyStockService {
     private final BankServiceClient bankServiceClient;
     public CopyOnWriteArrayList<StockOrderSell> ordersToSell = new CopyOnWriteArrayList<>();
 
-    public void loadData() {
-        List<Ticker> tickersList = tickerRepository.findAll();
+    public void addAmountToMyStock(String ticker, Integer amount, Long userId, Long companyId) {
+       if(userId != null){
+           MyStock myStock = myStockRepository.findByTickerAndUserId(ticker, userId);
+           if(myStock == null){
+               Ticker ticker1 = tickerRepository.findByTicker(ticker);
+               myStock = new MyStock();
+               myStock.setTicker(ticker);
+               myStock.setUserId(userId);
+               myStock.setAmount(amount);
+               myStock.setCurrencyMark(ticker1.getCurrencyName());
+               myStock.setPrivateAmount(amount);
+               myStock.setPublicAmount(0);
+               myStockRepository.save(myStock);
+               eventPublisher.publishEvent(new StockUpdateEvent(this, myStock));
+           } else {
+               myStock.setAmount(myStock.getAmount() + amount);
+               myStock.setPrivateAmount(myStock.getPrivateAmount() + amount);
+               myStockRepository.save(myStock);
+               eventPublisher.publishEvent(new StockUpdateEvent(this, myStock));
+           }
+       }else if(companyId != null){
+           MyStock myStock = myStockRepository.findByTickerAndCompanyId(ticker, companyId);
+           if(myStock == null){
+               Ticker ticker1 = tickerRepository.findByTicker(ticker);
+               myStock = new MyStock();
+               myStock.setTicker(ticker);
+               myStock.setCompanyId(companyId);
+               myStock.setAmount(amount);
+               myStock.setCurrencyMark(ticker1.getCurrencyName());
+               myStock.setPrivateAmount(amount);
+               myStock.setPublicAmount(0);
+               myStockRepository.save(myStock);
+               eventPublisher.publishEvent(new StockUpdateEvent(this, myStock));
+           }
+           else {
+               myStock.setAmount(myStock.getAmount() + amount);
+               myStock.setPrivateAmount(myStock.getPrivateAmount() + amount);
+               myStockRepository.save(myStock);
+               eventPublisher.publishEvent(new StockUpdateEvent(this, myStock));
+           }
+       }
+    }
 
-        for (Ticker ticker : tickersList) {
-            MyStock myStock = new MyStock();
-            myStock.setTicker(ticker.getTicker());
-            myStock.setAmount(0);
-            myStock.setCurrencyMark(ticker.getCurrencyName());
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public void removeAmountFromMyStock(String ticker, Integer amount, Long userId, Long companyId) {
+        if(userId != null){
+            MyStock myStock = myStockRepository.findByTickerAndUserId(ticker, userId);
+            for(int i = amount; i > 0; i--){
+                if(myStock.getPublicAmount() > 0){
+                    myStock.setPublicAmount(myStock.getPublicAmount() - 1);
+                } else {
+                    myStock.setPrivateAmount(myStock.getPrivateAmount() - 1);
+                }
+                myStock.setAmount(myStock.getAmount() - 1);
+            }
             myStockRepository.save(myStock);
-
+        }else if(companyId != null){
+            MyStock myStock = myStockRepository.findByTickerAndCompanyId(ticker, companyId);
+            for(int i = amount; i > 0; i--){
+                if(myStock.getPublicAmount() > 0){
+                    myStock.setPublicAmount(myStock.getPublicAmount() - 1);
+                } else {
+                    myStock.setPrivateAmount(myStock.getPrivateAmount() - 1);
+                }
+                myStock.setAmount(myStock.getAmount() - 1);
+            }
+            myStockRepository.save(myStock);
         }
     }
 
-    //na osnovu tickera pronalazi MyStock objekat u bazi
-    //i povecava mu kolicinu za prosledjeni amount
-    @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void addAmountToMyStock(String ticker, Integer amount) {
-        MyStock myStock = myStockRepository.findByTicker(ticker);
-        myStock.setAmount(myStock.getAmount() + amount);
-        myStockRepository.save(myStock);
-        eventPublisher.publishEvent(new StockUpdateEvent(this, myStock));
+    public MyStock makeCompanyStockPublic(MakePublicStockDto makePublicStockDto) {
+        MyStock myStock = myStockRepository.findByTickerAndCompanyId(makePublicStockDto.getTicker(), makePublicStockDto.getOwnerId());
+        if(myStock.getAmount() >= makePublicStockDto.getAmount()){
+            myStock.setPublicAmount(makePublicStockDto.getAmount());
+            myStock.setPrivateAmount(myStock.getAmount() - makePublicStockDto.getAmount());
+            myStockRepository.save(myStock);
+        }
+        return myStock;
+    }
+
+    public MyStock makeUserStockPublic(MakePublicStockDto makePublicStockDto) {
+        MyStock myStock = myStockRepository.findByTickerAndUserId(makePublicStockDto.getTicker(), makePublicStockDto.getOwnerId());
+        if(myStock.getAmount() >= makePublicStockDto.getAmount()){
+            myStock.setPublicAmount(makePublicStockDto.getAmount());
+            myStock.setPrivateAmount(myStock.getAmount() - makePublicStockDto.getAmount());
+            myStockRepository.save(myStock);
+        }
+        return myStock;
     }
 
     //vracamo sve deonice koje su u vlasnistvu banke
@@ -64,14 +132,44 @@ public class MyStockService {
         return myStockRepository.findAll();
     }
 
+    public List<MyStock> getAllForCompany(Long companyId) {
+        return myStockRepository.findAllByCompanyId(companyId);
+    }
+
+    public List<MyStock> getAllForUser(Long userId) {
+        return myStockRepository.findAllByUserId(userId);
+    }
+
+    public List<MyStock> getAllForUserOtcBuy(Long userId) {
+        return myStockRepository.findByUserIdIsNotNullAndCompanyIdIsNullAndPublicAmountGreaterThanAndUserIdNot(0, userId);
+    }
+
+    public List<MyStock> getAllForCompanyOtcBuy(Long companyId) {
+        return myStockRepository.findByCompanyIdIsNotNullAndUserIdIsNullAndPublicAmountGreaterThanAndCompanyIdNot(0, companyId);
+    }
+
+
     //funkcija kada prodajemo Stock i dodajemo
     //ga u listu za prodaju
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void sellStock(BuySellStockDto sellStockDto) {
-        MyStock myStock = myStockRepository.findByTicker(sellStockDto.getTicker());
+
+        //TODO: ovde bi pre ovog proverili da li ima BuySellStockDto ima userid ili companiId
+        //TODO: i umesto findbyTicker koristili bi findbyUserIdandTicker ili findbyCompanyIdandTicker
+        //MyStock myStock = myStockRepository.findByTicker(sellStockDto.getTicker());
+
+        MyStock myStock = null;
+        if(sellStockDto.getUserId() != null){
+            myStock = myStockRepository.findByTickerAndUserId(sellStockDto.getTicker(), sellStockDto.getUserId());
+        }else if(sellStockDto.getCompanyId() != null) {
+            myStock = myStockRepository.findByTickerAndCompanyId(sellStockDto.getTicker(), sellStockDto.getCompanyId());
+        }
+
 
         StockOrderSell stockOrderSell = new StockOrderSell();
         stockOrderSell.setEmployeeId(sellStockDto.getEmployeeId());
+        stockOrderSell.setUserId(sellStockDto.getUserId());
+        stockOrderSell.setCompanyId(sellStockDto.getCompanyId());
         stockOrderSell.setTicker(sellStockDto.getTicker());
         stockOrderSell.setAmount(sellStockDto.getAmount());
         stockOrderSell.setAmountLeft(sellStockDto.getAmount());
@@ -137,16 +235,20 @@ public class MyStockService {
                 amountToSell = stockOrderSell.getAmount();
             }
 
+            //TODO: ali ovde onda nastaje problem kada se salje dalje na bank service zbog transakcije
+            //TODO: odnosno u bankTranasactionDto se salje currencyMark i ne zna se id kompanije ili zaposlenog
             //kreirati stockTransactionDto koji sadrzi sracunatu kolicinu novca u zavisnosti od tipa stock-a,
             //broj racuna banke, broj racuna berze.
             BankTransactionDto bankTransactionDto = new BankTransactionDto();
             bankTransactionDto.setCurrencyMark(stock.getCurrencyMark());
 
             if (stockOrderSell.getType().equals(OrderType.MARKET)) {
+                //TODO: izracunaj porez pa setuj amount
                 bankTransactionDto.setAmount(currentPrice * amountToSell);
-                bankServiceClient.stockSellTransaction(bankTransactionDto);
+                //TODO: pozovi bank service
+                //bankServiceClient.stockSellTransaction(bankTransactionDto);
 
-                this.addAmountToMyStock(stockOrderSell.getTicker(), amountToSell * (-1));    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
+                this.removeAmountFromMyStock(stockOrderSell.getTicker(), amountToSell, stockOrderSell.getUserId(), stockOrderSell.getCompanyId());    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
                 stockOrderSell.setAmountLeft(stockOrderSell.getAmountLeft() - amountToSell);
                 if (stockOrderSell.getAmountLeft() <= 0) {
                     stockOrderSell.setStatus(OrderStatus.FINISHED);
@@ -160,9 +262,10 @@ public class MyStockService {
             if (stockOrderSell.getType().equals(OrderType.LIMIT)) {
                 if (currentPrice > stockOrderSell.getLimitValue()) {
                     bankTransactionDto.setAmount(currentPrice * amountToSell);
-                    bankServiceClient.stockSellTransaction(bankTransactionDto);
+                    //TODO: pozovi bank service
+                    //bankServiceClient.stockSellTransaction(bankTransactionDto);
 
-                    this.addAmountToMyStock(stockOrderSell.getTicker(), amountToSell * (-1));    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
+                    this.removeAmountFromMyStock(stockOrderSell.getTicker(), amountToSell, stockOrderSell.getUserId(), stockOrderSell.getCompanyId());    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
                     stockOrderSell.setAmountLeft(stockOrderSell.getAmountLeft() - amountToSell);
                     if (stockOrderSell.getAmountLeft() <= 0) {
                         stockOrderSell.setStatus(OrderStatus.FINISHED);
@@ -193,3 +296,4 @@ public class MyStockService {
         }
     }
 }
+

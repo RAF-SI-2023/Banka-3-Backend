@@ -16,4 +16,5 @@ public class FutureDto {
     private String contractUnit;
     private int maintenanceMargin;
     private String type;
+    private double price;
 }

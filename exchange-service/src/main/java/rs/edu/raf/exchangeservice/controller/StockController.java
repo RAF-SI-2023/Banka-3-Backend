@@ -4,9 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import feign.Param;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import rs.edu.raf.exchangeservice.domain.dto.MakePublicStockDto;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuySellStockDto;
+import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyStockCompanyDto;
+import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyStockUserOTCDto;
 import rs.edu.raf.exchangeservice.domain.dto.listing.StockDto;
 import rs.edu.raf.exchangeservice.domain.dto.StockOrderDto;
 import rs.edu.raf.exchangeservice.domain.model.listing.Stock;
@@ -49,6 +53,42 @@ public class StockController {
         return ResponseEntity.ok(this.myStockService.getAll());
     }
 
+    @GetMapping("/myStock/getAllForUser")
+    @Operation(description = "ova ruta se gadja ako hoces da vidis sve deonice koje ima neki korisnik u svom vlasnistu")
+    public ResponseEntity<?> getAllMyStockForUser(@Param("userId") Long userId){
+        return ResponseEntity.ok(this.myStockService.getAllForUser(userId));
+    }
+
+    @GetMapping("/myStock/getAllForCompany")
+    @Operation(description = "ova ruta se gadja ako hoces da vidis sve deonice koje ima neka kompanija (i banka) u svom vlasnistu")
+    public ResponseEntity<?> getAllMyStockForCompany(@Param("companyId") Long companyId){
+        return ResponseEntity.ok(this.myStockService.getAllForCompany(companyId));
+    }
+
+    @GetMapping("/myStock/getAllForUserOtcBuy/{userId}")
+    @Operation(description = "ova ruta se gadja ako hoces da vidis sve deonice koje mozes da kupis kao korisnik")
+    public ResponseEntity<?> getAllForUserOtcBuy(@PathVariable Long userId){
+        return ResponseEntity.ok(this.myStockService.getAllForUserOtcBuy(userId));
+    }
+
+    @GetMapping("/myStock/getAllForCompanyOtcBuy/{companyId}")
+    @Operation(description = "ova ruta se gadja ako hoces da vidis sve deonice koje mozes da kupis kao kompanija")
+    public ResponseEntity<?> getAllForCompanyOtcBuy(@PathVariable Long companyId){
+        return ResponseEntity.ok(this.myStockService.getAllForCompanyOtcBuy(companyId));
+    }
+
+    @PutMapping("/myStock/makeCompanyStockPublic")
+    @Operation(description = "ova ruta postavlja deo donica kompanije da budu javne, ostala kolicina postaje privatna")
+    public ResponseEntity<?> makeCompanyStockPublic(@RequestBody MakePublicStockDto makePublicStockDto){
+        return ResponseEntity.ok(this.myStockService.makeCompanyStockPublic(makePublicStockDto));
+    }
+
+    @PutMapping("/myStock/makeUserStockPublic")
+    @Operation(description = "ova ruta postavlja deo donica korisnika da budu javne, ostala kolicina postaje privatna")
+    public ResponseEntity<?> makeUserStockPublic(@RequestBody MakePublicStockDto makePublicStockDto){
+        return ResponseEntity.ok(this.myStockService.makeUserStockPublic(makePublicStockDto));
+    }
+
     @GetMapping("/stockOrder/getAll")
     @Operation(description = "odavde dobijas sve StockOrders koji su ikada napravljeni")
     private ResponseEntity<?> getAllStockOrder(){
@@ -84,6 +124,29 @@ public class StockController {
     public ResponseEntity<StockOrderDto> buyStock(@RequestBody BuySellStockDto buySellStockDto){
         return ResponseEntity.ok(stockOrderService.buyStock(buySellStockDto));
     }
+
+    @PostMapping("/buyCompanyStockOtc")
+    @Operation(description = "Firma salje zahtev drugoj firmi za kupovinu stock-a")
+    public ResponseEntity<?> buyCompanyStockOtc(@RequestBody BuyStockCompanyDto buyStockCompanyDto) {
+        if(this.stockOrderService.buyCompanyStockOtc(buyStockCompanyDto)){
+            return ResponseEntity.ok().build();
+        }else{
+            //nema para
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
+        }
+    }
+
+    @PostMapping("/buyUserStockOtc")
+    @Operation(description = "Korisnik salje zahtev drugom korisniku za kupovinu stock-a")
+    public ResponseEntity<?> buyUserStockOtc(@RequestBody BuyStockUserOTCDto buyStockUserOTCDto) {
+        if(this.stockOrderService.buyUserStockOtc(buyStockUserOTCDto)){
+            return ResponseEntity.ok().build();
+        }else{
+            //nema para
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
+        }
+    }
+
 
     @PostMapping("/sellStock")
     @Operation(description = "ruta koja se gadja prilikom prodaje Stocks")

@@ -4,9 +4,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyFutureCompanyDto;
+import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyFutureDto;
 import rs.edu.raf.exchangeservice.domain.dto.listing.FutureDto;
 import rs.edu.raf.exchangeservice.domain.model.listing.Future;
 import rs.edu.raf.exchangeservice.service.listingService.FutureService;
+import rs.edu.raf.exchangeservice.service.myListingService.MyFutureSerivce;
+import rs.edu.raf.exchangeservice.service.orderService.FuturOrderService;
 
 import java.util.List;
 
@@ -16,8 +20,8 @@ import java.util.List;
 @RequestMapping(value = "/api/v1/future")
 public class FutureController {
     private final FutureService futureService;
-//    private final MyFutureService myFutureService;
-//    private final FutureOrderService futureOrderService;
+    private final MyFutureSerivce myFutureService;
+    private final FuturOrderService futureOrderService;
 
     @GetMapping
     @Operation(description = "vracamo sve Future iz baze")
@@ -30,18 +34,53 @@ public class FutureController {
     public ResponseEntity<FutureDto> getByContractName(@PathVariable String contractName){
         return ResponseEntity.ok(this.futureService.findByContractName(contractName));
     }
+    @PostMapping("/buyFuture")
+    @Operation(description = "ruta koja se gadja prilikom kupovine Future-a")
+    public ResponseEntity buyFuture(@RequestBody BuyFutureDto buyFutureDto){
+        return ResponseEntity.ok(this.futureOrderService.buyFuture(buyFutureDto));
+    }
+    @PostMapping("/sellFuture")
+    @Operation(description = "ruta koja se gadja prilikom prodaje Future-a")
+    public ResponseEntity sellFuture(@RequestBody BuyFutureDto sellFutureDto){
+        return ResponseEntity.ok(this.myFutureService.sellMyFuture(sellFutureDto));
+    }
+    @GetMapping("/myFuture/getAllForCompany/{companyId}")
+    @Operation(description = "ova ruta se gadja ako hoces da vidis sve future koje ima neka kompanija u svom vlasnistvu")
+    public ResponseEntity<?> getAllMyFutureForCompany(@PathVariable Long companyId){
+        return ResponseEntity.ok(this.myFutureService.findAllByCompanyId(companyId));
+    }
+    @GetMapping("/myFuture/getAllForOtcBuy/{companyId}")
+    @Operation(description = "ova ruta se gadja ako hoces da vidis sve future koje mozes da kupis")
+    public ResponseEntity<?> getAllForOtcBuy(@PathVariable Long companyId){
+        return ResponseEntity.ok(this.myFutureService.findAllForOtcBuy(companyId));
+    }
+    @PutMapping("/myFuture/makePublic/{myFutureId}")
+    @Operation(description = "ova ruta se gadja ako hoces da postavis svoj future kao public")
+    public ResponseEntity<?> makeFuturePublic(@PathVariable Long myFutureId){
+        return ResponseEntity.ok(this.myFutureService.makeFuturePublic(myFutureId));
+    }
+    @PutMapping("/myFuture/makePrivate/{myFutureId}")
+    @Operation(description = "ova ruta se gadja ako hoces da postavis svoj future kao private")
+    public ResponseEntity<?> makeFuturePrivate(@PathVariable Long myFutureId){
+        return ResponseEntity.ok(this.myFutureService.makeFuturePrivate(myFutureId));
+    }
+    @GetMapping("/futureOrder/getAll")
+    @Operation(description = "odavde dobijas sve FutureOrders koji su ikada napravljeni")
+    private ResponseEntity<?> getAllFutureOrder(){
+        return ResponseEntity.ok(futureOrderService.findAll());
+    }
 
+    @PostMapping("/buyFutureOtc")
+    @Operation(description = "ruta koja se gadja prilikom kreiranja otc ugovora za future")
+    public ResponseEntity buyFutureOtc(@RequestBody BuyFutureCompanyDto buyFutureCompanyDto){
+        return ResponseEntity.ok(this.futureService.requestToBuyFutureByCompany(buyFutureCompanyDto));
+    }
 //    @GetMapping("/myFuture/getAll")
 //    @Operation(description = "ova ruta se gadja ako hoces da vidis sve future koje ima Banka u svom vlasnistu")
 //    public ResponseEntity<?> getAllMyFuture(){
 //        return ResponseEntity.ok(this.myFutureService.getAll());
 //    }
 //
-//    @GetMapping("/futureOrder/getAll")
-//    @Operation(description = "odavde dobijas sve FutureOrders koji su ikada napravljeni")
-//    private ResponseEntity<?> getAllFutureOrder(){
-//        return ResponseEntity.ok(futureOrderService.findAll());
-//    }
 //
 //    @GetMapping("/futureOrder/getAll/{id}")
 //    @Operation(description = "odavde dobijas sve FutureOrders koji je napravio neki employee, saljes employeeId")
@@ -67,16 +106,5 @@ public class FutureController {
 //        return ResponseEntity.badRequest().body("nije dobar boolean");
 //    }
 //
-//    @PostMapping("/buyFuture")
-//    @Operation(description = "ruta koja se gadja prilikom kupovine Future-a")
-//    public ResponseEntity buyFuture(@RequestBody BuyFutureDto buyFutureDto){
-//        return ResponseEntity.ok(futureOrderService.buyFuture(buyFutureDto));
-//    }
-//
-//    @PostMapping("/sellFuture")
-//    @Operation(description = "ruta koja se gadja prilikom prodaje Future-a")
-//    public ResponseEntity sellFuture(@RequestBody SellFutureDto sellFutureDto){
-//        sellFutureDto.toString();
-//        return ResponseEntity.ok(this.myFutureService.sellFuture(sellFutureDto));
-//    }
+
 }

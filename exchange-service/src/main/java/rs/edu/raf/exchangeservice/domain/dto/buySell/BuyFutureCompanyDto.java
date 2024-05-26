@@ -11,13 +11,9 @@ import java.math.BigDecimal;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class BuyStockUserDto {
-    // OTC: User kupuje od usera
-    private Long userSellerId;
-    private Long userBuyerId;
-    private String ticker;
-    private Integer amount;
-    private BigDecimal price;
-
-
+public class BuyFutureCompanyDto {
+    private Long sellerId;
+    private Long buyerId;
+    private String contractName;
+    private Double price;
 }

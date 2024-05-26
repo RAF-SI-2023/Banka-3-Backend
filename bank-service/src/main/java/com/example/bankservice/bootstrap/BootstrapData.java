@@ -106,6 +106,18 @@ public class BootstrapData implements CommandLineRunner {
         strahinjaRacunEuro.setAccountType("DEBIT");
         strahinjaRacunEuro.setActive(true);
 
+        UserAccount strahinjaRacunDolarski = new UserAccount();
+        strahinjaRacunDolarski.setUserId(1L);
+        strahinjaRacunDolarski.setEmployeeId(1L);
+        strahinjaRacunDolarski.setAccountNumber("1212121212121212");
+        strahinjaRacunDolarski.setReservedAmount(new BigDecimal(1000));
+        strahinjaRacunDolarski.setAvailableBalance(new BigDecimal(10000));
+        strahinjaRacunDolarski.setCreationDate(System.currentTimeMillis());
+        strahinjaRacunDolarski.setExpireDate(System.currentTimeMillis() + 60 * 60 * 24 * 365 * 10);
+        strahinjaRacunDolarski.setCurrency(currencyRepository.findById(3L).orElse(null));
+        strahinjaRacunDolarski.setAccountType("DEBIT");
+        strahinjaRacunDolarski.setActive(true);
+
         CompanyAccount companyAccount = new CompanyAccount();
         companyAccount.setCompanyId(1L);
         companyAccount.setEmployeeId(1L);
