@@ -3,6 +3,8 @@ package com.example.emailservice.domain.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -11,9 +13,7 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "employee_activation", indexes = @Index(name = "identifierIx", columnList = "identifier, " +
-        "activation_possible"), schema = "email_service_schema")
+@Document(collection = "employee_activation")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,9 +23,10 @@ public class EmployeeActivation implements Serializable {
     private Long employeeActivationId;
     @NotNull(message = "This field cannot be NULL")
     @Email
+    @Indexed
     private String email;
 
-    @Column(name = "identifier")
+    @Indexed(name = "identifierIx")
     @NotNull(message = "This field cannot be NULL")
     @Size(max = 36, message = "The input is too long")
     private String identifier;
@@ -33,6 +34,5 @@ public class EmployeeActivation implements Serializable {
     @NotNull(message = "This field cannot be NULL")
     private LocalDateTime activationTimestamp;
 
-    @Column(name = "activation_possible")
     private boolean activationPossible = true;
 }
