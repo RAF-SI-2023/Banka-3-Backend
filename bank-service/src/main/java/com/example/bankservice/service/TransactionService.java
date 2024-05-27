@@ -3,7 +3,15 @@ package com.example.bankservice.service;
 import com.example.bankservice.client.EmailServiceClient;
 import com.example.bankservice.client.UserServiceClient;
 import com.example.bankservice.domain.dto.currencyExchange.CurrencyExchangeDto;
-import com.example.bankservice.domain.dto.transaction.*;
+import com.example.bankservice.domain.dto.transaction.CompanyOtcTransactionDto;
+import com.example.bankservice.domain.dto.transaction.ConfirmPaymentTransactionDto;
+import com.example.bankservice.domain.dto.transaction.CreditTransactionDto;
+import com.example.bankservice.domain.dto.transaction.FinishedPaymentTransactionDto;
+import com.example.bankservice.domain.dto.transaction.PaymentTransactionActivationDto;
+import com.example.bankservice.domain.dto.transaction.PaymentTransactionDto;
+import com.example.bankservice.domain.dto.transaction.StartPaymentTransactionDto;
+import com.example.bankservice.domain.dto.transaction.StockTransactionDto;
+import com.example.bankservice.domain.dto.transaction.UserOtcTransactionDto;
 import com.example.bankservice.domain.mapper.TransactionMapper;
 import com.example.bankservice.domain.model.Transaction;
 import com.example.bankservice.domain.model.accounts.Account;
@@ -93,7 +101,7 @@ public class TransactionService {
         Account accountFrom = null;
         if (stockTransactionDto.getEmployeeId() != null) {
             accountFrom = accountService.findBankAccountForGivenCurrency(stockTransactionDto.getCurrencyMark());
-        }else {
+        } else {
             accountFrom = accountService.findAccount(stockTransactionDto);
         }
         Account accountTo = accountService.findExchangeAccountForGivenCurrency(stockTransactionDto.getCurrencyMark());
@@ -150,10 +158,28 @@ public class TransactionService {
     }
 
     public List<FinishedPaymentTransactionDto> getAllPaymentTransactions(String accountNumber) {
-        List<Transaction> transactions = transactionRepository.findByAccountFromOrAccountToAndType(accountNumber, accountNumber, TransactionType.CREDIT_APPROVE_TRANSACTION)
+        List<Transaction> transactions =
+                transactionRepository.findByAccountFromOrAccountToAndType(accountNumber,
+                                accountNumber, TransactionType.PAYMENT_TRANSACTION)
                 .orElseThrow(() -> new RuntimeException("Transactions not found"));
 
         return transactions.stream().filter(transaction -> transaction.getTransactionStatus() == TransactionStatus.FINISHED).map(transactionMapper::transactionToFinishedPaymentTransactionDto).toList();
+    }
+    
+    public void otcUserTransaction(UserOtcTransactionDto userOtcTransactionDto) {
+        Account accountFrom = accountService.findUserAccountForIdAndCurrency(
+                userOtcTransactionDto.getUserFromId(), "RSD");
+        Account accountTo = accountService.findUserAccountForIdAndCurrency(
+                userOtcTransactionDto.getUserToId(), "RSD");
+        startOTCTransaction(accountFrom, accountTo, userOtcTransactionDto.getAmount());
+    }
+    
+    public void otcCompanyTransaction(CompanyOtcTransactionDto companyOtcTransactionDto) {
+        Account accountFrom = accountService.findCompanyAccountForIdAndCurrency(
+                companyOtcTransactionDto.getCompanyFromId(), "RSD");
+        Account accountTo = accountService.findCompanyAccountForIdAndCurrency(
+                companyOtcTransactionDto.getCompanyToId(), "RSD");
+        startOTCTransaction(accountFrom, accountTo, companyOtcTransactionDto.getAmount());
     }
 
     private Long startSameCurrencyPaymentTransaction(PaymentTransactionDto paymentTransactionDto,
@@ -174,6 +200,17 @@ public class TransactionService {
 
         return transaction.getTransactionId();
     }
+    
+    private void startOTCTransaction(Account accountFrom, Account accountTo, Double amount) {
+        Transaction transaction = new Transaction();
+        transaction.setAccountFrom(accountFrom.getAccountNumber());
+        transaction.setAccountTo(accountTo.getAccountNumber());
+        transaction.setAmount(BigDecimal.valueOf(amount));
+        transaction.setType(TransactionType.OTC_TRANSACTION);
+        transaction.setTransactionStatus(TransactionStatus.ACCEPTED);
+        transaction.setDate(System.currentTimeMillis());
+        transactionRepository.save(transaction);
+    }
 
     @Scheduled(fixedRate = 30000) // Postavljanje cron izraza da se metoda izvrsava svakih 5 minuta
     public void processTransactions() {
@@ -189,6 +226,8 @@ public class TransactionService {
                 finishTransaction(transaction);
             } else if (transaction.getType().equals(TransactionType.STOCK_TRANSACTION)) {
                 finishStockTransaction(transaction);
+            } else if (transaction.getType().equals(TransactionType.OTC_TRANSACTION)) {
+                finishOTCTransaction(transaction);
             }
         }
     }
@@ -222,6 +261,17 @@ public class TransactionService {
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
         accountService.transferStockFunds(accountFrom, accountTo, transaction.getAmount());
+        transaction.setTransactionStatus(TransactionStatus.FINISHED);
+        transactionRepository.save(transaction);
+    }
+    
+    private void finishOTCTransaction(Transaction transaction) {
+        Account accountFrom = accountRepository.findByAccountNumber(transaction.getAccountFrom())
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+        Account accountTo = accountRepository.findByAccountNumber(transaction.getAccountTo())
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        accountService.transferOtcFunds(accountFrom, accountTo, transaction.getAmount());
         transaction.setTransactionStatus(TransactionStatus.FINISHED);
         transactionRepository.save(transaction);
     }

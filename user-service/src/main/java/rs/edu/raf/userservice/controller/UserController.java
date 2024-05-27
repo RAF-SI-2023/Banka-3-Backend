@@ -55,7 +55,6 @@ public class UserController {
 
     @Cacheable(value = "userById", key = "#id")
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BANKING_OFFICER')")
     @Operation(description = "vraca korisnika sa odgovarajucim id-om")
     public UserDto getUserById(@PathVariable Long id) {
         try {

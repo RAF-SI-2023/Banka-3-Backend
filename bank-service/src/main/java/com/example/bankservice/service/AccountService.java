@@ -15,7 +15,11 @@ import com.example.bankservice.domain.model.Currency;
 import com.example.bankservice.domain.model.accounts.Account;
 import com.example.bankservice.domain.model.accounts.CompanyAccount;
 import com.example.bankservice.domain.model.accounts.UserAccount;
-import com.example.bankservice.repository.*;
+import com.example.bankservice.repository.AccountRepository;
+import com.example.bankservice.repository.CardRepository;
+import com.example.bankservice.repository.CompanyAccountRepository;
+import com.example.bankservice.repository.CurrencyRepository;
+import com.example.bankservice.repository.UserAccountRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -138,6 +142,13 @@ public class AccountService {
         accountRepository.save(accountFrom);
         accountRepository.save(accountTo);
     }
+    
+    public void transferOtcFunds(Account accountFrom, Account accountTo, BigDecimal amount) {
+        accountFrom.setAvailableBalance(accountFrom.getAvailableBalance().subtract(amount));
+        accountTo.setAvailableBalance(accountTo.getAvailableBalance().add(amount));
+        accountRepository.save(accountFrom);
+        accountRepository.save(accountTo);
+    }
 
     public void deleteAccount(Long id) {
         Account account = accountRepository.findById(id).orElseThrow(() -> new RuntimeException("Account not found"));
@@ -180,18 +191,29 @@ public class AccountService {
     }
 
     public Account findAccount(StockTransactionDto stockTransactionDto){
-        //TODO: proveriti zsto ne moze da nadje account
         Currency currency = currencyRepository.findByMark(stockTransactionDto.getCurrencyMark())
                 .orElseThrow(() -> new RuntimeException("Currency not found"));
         Account account = null;
-        if(stockTransactionDto.getUserId() != null){
-            account = userAccountRepository.findByUserIdAndCurrency(stockTransactionDto.getUserId(), currency.getCurrencyId());
-        }else if (stockTransactionDto.getCompanyId() != null){
-            account = companyAccountRepository.findByCompanyIdAndCurrency(stockTransactionDto.getCompanyId(), currency.getCurrencyId());
+        if (stockTransactionDto.getUserId() != null) {
+            account = userAccountRepository.findByUserIdAndCurrency(stockTransactionDto.getUserId(), currency);
+        } else if (stockTransactionDto.getCompanyId() != null) {
+            account = companyAccountRepository.findByCompanyIdAndCurrency(stockTransactionDto.getCompanyId(), currency);
         }
         return account;
     }
-
+    
+    public Account findUserAccountForIdAndCurrency(Long userId, String currencyMark) {
+        Currency currency = currencyRepository.findByMark(currencyMark)
+                .orElseThrow(() -> new RuntimeException("Currency not found"));
+        return userAccountRepository.findByUserIdAndCurrency(userId, currency);
+    }
+    
+    public Account findCompanyAccountForIdAndCurrency(Long companyId, String currencyMark) {
+        Currency currency = currencyRepository.findByMark(currencyMark)
+                .orElseThrow(() -> new RuntimeException("Currency not found"));
+        return companyAccountRepository.findByCompanyIdAndCurrency(companyId, currency);
+    }
+    
     public Account findExchangeAccountForGivenCurrency(String currencyMark) {
         switch (currencyMark) {
             case "RSD":
