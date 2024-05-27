@@ -14,13 +14,7 @@ public interface UserServiceClient {
 
     @GetMapping(value = "/employee/getExchangeEmployees")
     @Operation(description = "da povucemo sve zaposlene sa ROLE agent ili supervisor")
-    ResponseEntity<List<ActuaryDto>> getEmployees();
-
-
-    @GetMapping("/getByCompany/{id}")
-    @Operation(description = "da povucemo sve zaposlene sa ROLE agent ili supervisor")
-    ResponseEntity<?> getCompanyById(@PathVariable Long id);
-
+    List<ActuaryDto> getEmployees();
 
 
 }
