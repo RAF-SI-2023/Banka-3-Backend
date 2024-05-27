@@ -4,6 +4,8 @@ package com.example.emailservice.domain.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -11,8 +13,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "password_reset", indexes = @Index(name = "identifierII", columnList = "email, identifier, date, active"), schema = "email_service_schema")
+@Document(collection = "password_reset")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,9 +25,10 @@ public class PasswordReset {
 
     @NotNull(message = "This field cannot be NULL")
     @Email
+    @Indexed(name = "identifierII")
     private String email;
 
-    @Column(name = "identifier")
+    @Indexed(name = "identifierII")
     @NotNull(message = "This field cannot be NULL")
     @Size(max = 32, message = "The input is too long")
     private String identifier;
