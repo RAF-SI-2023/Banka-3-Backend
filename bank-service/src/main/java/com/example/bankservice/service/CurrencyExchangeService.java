@@ -1,10 +1,11 @@
 package com.example.bankservice.service;
 
 import com.example.bankservice.domain.dto.currencyExchange.CurrencyExchangeDto;
+import com.example.bankservice.domain.model.CommissionFromCurrencyExchange;
 import com.example.bankservice.domain.model.CurrencyExchange;
 import com.example.bankservice.domain.model.accounts.Account;
-import com.example.bankservice.domain.model.accounts.UserAccount;
 import com.example.bankservice.repository.AccountRepository;
+import com.example.bankservice.repository.CommissionFromCurrencyExhangeRepository;
 import com.example.bankservice.repository.CurrencyExchangeRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,8 @@ public class CurrencyExchangeService {
     private final CurrencyExchangeRepository currencyExchangeRepository;
     private final AccountService accountService;
     private final AccountRepository accountRepository;
-
+    private final CommissionFromCurrencyExhangeRepository commissionFromCurrencyExhangeRepository;
+    
     @Transactional()
     public void startCurrencyExchangeTransaction(CurrencyExchangeDto currencyExchangeDto) {
         Account accountFrom = accountService.extractAccountForAccountNumber(currencyExchangeDto.getAccountFrom());
@@ -71,9 +73,33 @@ public class CurrencyExchangeService {
                 BigDecimal.valueOf(currencyExchangeDto.getAmount()),
                 new BigDecimal("0.05").multiply(BigDecimal.valueOf(currencyExchangeDto.getAmount())),
                 accountFrom.getCurrency().getMark()));
+        
+        BigDecimal commissionInRSD = null;
+        if (!accountFrom.getCurrency().getMark().equals("RSD")) {
+            commissionInRSD = convertCurrency(accountFrom.getCurrency().getMark(), "RSD",
+                    commission.doubleValue());
+        } else {
+            commissionInRSD = commission;
+        }
+        
+        if (commissionFromCurrencyExhangeRepository.findAll().isEmpty()) {
+            commissionFromCurrencyExhangeRepository.save(
+                    new CommissionFromCurrencyExchange(1L, commissionInRSD,
+                            1));
+        } else {
+            int numberOfTransactions = commissionFromCurrencyExhangeRepository.findAll().get(0)
+                    .getNumberOfTransactions();
+            commissionFromCurrencyExhangeRepository.updateCommission(1L, commissionInRSD,
+                    numberOfTransactions + 1);
+        }
     }
-
-
+    
+    public BigDecimal getMoneyMadeOnExchangeTransactions() {
+        if (commissionFromCurrencyExhangeRepository.findAll().isEmpty()) {
+            return BigDecimal.ZERO;
+        }
+        return commissionFromCurrencyExhangeRepository.findAll().get(0).getAmount();
+    }
 
     private BigDecimal convertCurrency(String fromCurrency, String toCurrency, Double amount) {
         fromCurrency = fromCurrency.toUpperCase();
