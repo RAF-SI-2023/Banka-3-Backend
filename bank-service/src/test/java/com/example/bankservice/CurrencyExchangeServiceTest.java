@@ -6,6 +6,7 @@ import com.example.bankservice.domain.model.CurrencyExchange;
 import com.example.bankservice.domain.model.accounts.Account;
 import com.example.bankservice.domain.model.enums.CurrencyName;
 import com.example.bankservice.repository.AccountRepository;
+import com.example.bankservice.repository.CommissionFromCurrencyExhangeRepository;
 import com.example.bankservice.repository.CurrencyExchangeRepository;
 import com.example.bankservice.service.AccountService;
 import com.example.bankservice.service.CurrencyExchangeService;
@@ -32,6 +33,8 @@ class CurrencyExchangeServiceTest {
     private AccountRepository accountRepository;
     @Mock
     private CurrencyExchangeRepository currencyExchangeRepository;
+    @Mock
+    private CommissionFromCurrencyExhangeRepository commissionFromCurrencyExhangeRepository;
     @InjectMocks
     private CurrencyExchangeService currencyExchangeService;
 
