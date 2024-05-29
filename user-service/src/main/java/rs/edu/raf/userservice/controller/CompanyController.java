@@ -51,7 +51,6 @@ public class CompanyController {
 
     @Cacheable(value = "companyById",key = "#id")
     @GetMapping("/getByCompany/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BANKING_OFFICER')")
     @Operation(description = "dohvatanje kompanije po IDu")
     public CompanyDto getCompanyById(@PathVariable Long id) {
         try {
