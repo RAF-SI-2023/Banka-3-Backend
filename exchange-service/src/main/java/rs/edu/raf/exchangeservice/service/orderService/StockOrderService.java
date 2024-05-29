@@ -216,6 +216,7 @@ public class StockOrderService {
                         actuaryRepository.save(actuary);
                         return;
                     } else {
+                        //TODO: sacuvati employeeid i amount u minusu (double) (amountTobuy*currentPrice)
                         actuary.setLimitUsed(actuary.getLimitUsed() + (currentPrice * amountToBuy));
                         actuaryRepository.save(actuary);
                     }
