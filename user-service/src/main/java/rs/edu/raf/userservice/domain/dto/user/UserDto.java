@@ -8,13 +8,14 @@ import rs.edu.raf.userservice.domain.AuthenticationDetails;
 import rs.edu.raf.userservice.domain.model.Permission;
 import rs.edu.raf.userservice.domain.model.Role;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDto implements AuthenticationDetails {
+public class UserDto implements AuthenticationDetails, Serializable {
     //za GetAll ili kada vracamo single User-a
     private Long userId;
     private String firstName;
