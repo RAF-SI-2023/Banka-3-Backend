@@ -2,6 +2,10 @@ package rs.edu.raf.userservice.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,6 +17,8 @@ import rs.edu.raf.userservice.domain.dto.login.LoginRequest;
 import rs.edu.raf.userservice.domain.dto.login.LoginResponse;
 import rs.edu.raf.userservice.service.EmployeeService;
 import rs.edu.raf.userservice.util.jwt.JwtUtil;
+
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -35,89 +41,122 @@ public class EmployeeController {
         return ResponseEntity.ok(new LoginResponse(jwtUtil.generateToken(employeeService.findByEmail(loginRequest.getEmail()))));
     }
 
+    @Cacheable(value = "allEmployees")
     @GetMapping(path = "/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(description = "vracam listu svih zaposlenih")
-    public ResponseEntity<?> getAllEmployees() {
-        return ResponseEntity.ok(employeeService.findAll());
+    public List<EmployeeDto> getAllEmployees() {
+        return employeeService.findAll();
     }
 
+
+    @Cacheable(value = "employeeById", key = "#id")
     @GetMapping(value = "/findById/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(description = "vracam zaposlenog po ID-u")
-    public ResponseEntity<?> findEmployeeById(@PathVariable Long id) {
+    public EmployeeDto findEmployeeById(@PathVariable Long id) {
         try {
-            return ResponseEntity.ok(employeeService.findById(id));
+            return employeeService.findById(id);
         }catch (Exception e){
-            return ResponseEntity.badRequest().body("Couldn't find Employee withd id: " + id);
+            return null;
         }
     }
+
+    @Caching(evict = {
+            @CacheEvict(value = "allEmployees", allEntries = true),
+            @CacheEvict(value = "searchEmployees", allEntries = true),
+            @CacheEvict(value = "exchangeEmployees", allEntries = true),
+    }, put = {
+            @CachePut(value = "employeeByEmail", key = "#createEmployeeDto.email"),
+            @CachePut(value = "employeeByUsername", key = "#createEmployeeDto.username")
+    })
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(description = "pravimo novog zaposlenog")
-    public ResponseEntity<?> createEmployee(@RequestBody EmployeeCreateDto createEmployeeDto) {
+    public EmployeeDto createEmployee(@RequestBody EmployeeCreateDto createEmployeeDto) {
         try {
-            return ResponseEntity.ok(employeeService.addEmployee(createEmployeeDto));
+            return employeeService.addEmployee(createEmployeeDto);
         }catch (Exception e){
-            return ResponseEntity.badRequest().body("Couldn't add Employee");
+            return null;
         }
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "allEmployees", allEntries = true),
+            @CacheEvict(value = "searchEmployees", allEntries = true),
+            @CacheEvict(value = "exchangeEmployees", allEntries = true),
+    }, put = {
+            @CachePut(value = "employeeById", key = "#id"),
+            @CachePut(value = "employeeByEmail", key = "#employeeService.findById(#id).email"),
+            @CachePut(value = "employeeByUsername", key = "#employeeService.findById(#id).username")
+    })
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(description = "izmena postojeceg zapolsenog")
-    public ResponseEntity<?> updateEmployee(@RequestBody EmployeeUpdateDto updatedEmployee, @PathVariable Long id) {
+    public EmployeeDto updateEmployee(@RequestBody EmployeeUpdateDto updatedEmployee, @PathVariable Long id) {
         try {
-            return ResponseEntity.ok(employeeService.updateEmployee(updatedEmployee, id));
+            return employeeService.updateEmployee(updatedEmployee, id);
         }catch (Exception e){
-            return ResponseEntity.badRequest().body("Couldn't update Employee with id: " + id);
+            return null;
         }
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "allEmployees", allEntries = true),
+            @CacheEvict(value = "searchEmployees", allEntries = true),
+            @CacheEvict(value = "exchangeEmployees", allEntries = true),
+            @CacheEvict(value = "employeeById", key = "#id"),
+            @CacheEvict(value = "employeeByEmail", key = "#employeeService.findById(#id).email"),
+            @CacheEvict(value = "employeeByUsername", key = "#employeeService.findById(#id).username")
+    })
     @DeleteMapping(value = "/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(description = "deaktivacija naloga zaposlenog")
-    public ResponseEntity<?> deleteEmployee(@PathVariable Long id) {
+    public EmployeeDto deleteEmployee(@PathVariable Long id) {
         try {
-            return ResponseEntity.ok(employeeService.deactivateEmployee(id));
+            return employeeService.deactivateEmployee(id);
         }catch (Exception e){
-            return ResponseEntity.badRequest().body("Couldn't deactivate Employee id:" + id);
+            return null;
         }
     }
 
+    @Cacheable(value = "employeeByEmail", key = "#email")
     @GetMapping(value = "/findByEmail/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> findEmployeeByEmail(@PathVariable String email) {
+    public EmployeeDto findEmployeeByEmail(@PathVariable String email) {
         try {
-            return ResponseEntity.ok(employeeService.findByEmail(email));
+            return employeeService.findByEmail(email);
         }catch (Exception e){
-            return ResponseEntity.badRequest().body("Couldn't find employee with email: " + email);
+            return null;
         }
     }
 
 
+    @Cacheable(value = "employeeByUsername", key = "#username")
     @GetMapping(value = "/findByUsername/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> findEmployeeByUsername(@PathVariable String username) {
+    public EmployeeDto findEmployeeByUsername(@PathVariable String username) {
         try {
-            return ResponseEntity.ok(employeeService.findByUsername(username));
+            return employeeService.findByUsername(username);
         }catch (Exception e){
-            return ResponseEntity.badRequest().body("Couldn't find Employe with username: " + username);
+            return null;
         }
     }
 
+    @Cacheable(value = "searchEmployees",key = "#firstName + #lastName + #email + #role")
     @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> searchEmployees(@RequestParam(value = "firstName", required = false) String firstName,
+    public List<EmployeeDto> searchEmployees(@RequestParam(value = "firstName", required = false) String firstName,
                                              @RequestParam(value = "lastName", required = false) String lastName,
                                              @RequestParam(value = "email", required = false) String email,
                                              @RequestParam(value = "role", required = false) String role) {
         try {
-            return ResponseEntity.ok(this.employeeService.search(firstName, lastName, email, role));
+            return employeeService.search(firstName, lastName, email, role);
         }catch (Exception e){
-            return ResponseEntity.badRequest().body("Something went wrong");
+            return null;
         }
     }
+
 
     @PostMapping(value = "/setPassword")
     @Operation(description = "kada zaposleni prvi put postavlja sifru, ili da promeni postojecu")
@@ -130,13 +169,14 @@ public class EmployeeController {
         }
     }
 
+    @Cacheable(value = "exchangeEmployees")
     @GetMapping("/getExchangeEmployees")
     @Operation(description = "dohvatamo sve zaposlene potrebne za Exchange Service")
-    public ResponseEntity<?> getExchangeEmployees(){
+    public List<ExchangeEmployeeDto> getExchangeEmployees(){
         try {
-            return ResponseEntity.ok(employeeService.getExchangeEmployees());
+            return employeeService.getExchangeEmployees();
         }catch (Exception e){
-            return ResponseEntity.badRequest().build();
+            return null;
         }
     }
 }

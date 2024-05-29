@@ -22,7 +22,7 @@ public class ActuaryService {
     @ExcludeFromJacocoGeneratedReport
     public void loadActuary() throws InterruptedException {
         Thread.sleep(5000);
-        List<ActuaryDto> actuaryDtoList = userServiceClient.getEmployees().getBody();
+        List<ActuaryDto> actuaryDtoList = userServiceClient.getEmployees();
         for (ActuaryDto actuaryDto : actuaryDtoList){
             Actuary actuary = new Actuary();
             actuary.setEmployeeId(actuaryDto.getEmployeeId());

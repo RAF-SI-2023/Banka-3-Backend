@@ -1,5 +1,6 @@
 package com.example.bankservice.repository;
 
+import com.example.bankservice.domain.model.Currency;
 import com.example.bankservice.domain.model.accounts.CompanyAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -12,5 +13,5 @@ public interface CompanyAccountRepository extends JpaRepository<CompanyAccount, 
 
     Optional<List<CompanyAccount>> findAllByCompanyId(Long companyId);
 
-    CompanyAccount findByCompanyIdAndCurrency(Long companyId, Long currencyId);
+    CompanyAccount findByCompanyIdAndCurrency(Long companyId, Currency currency);
 }

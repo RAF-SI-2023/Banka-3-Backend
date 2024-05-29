@@ -9,13 +9,14 @@ import rs.edu.raf.userservice.domain.AuthenticationDetails;
 import rs.edu.raf.userservice.domain.model.Permission;
 import rs.edu.raf.userservice.domain.model.Role;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @RequiredArgsConstructor
 @ToString
-public class EmployeeDto implements AuthenticationDetails {
+public class EmployeeDto implements AuthenticationDetails, Serializable {
     //kada radimo getAllEmployees ili kad trazimo Single employee
     private Long employeeId;
     private String firstName;

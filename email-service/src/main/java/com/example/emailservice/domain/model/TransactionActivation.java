@@ -4,17 +4,18 @@ package com.example.emailservice.domain.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-@Entity
+@Document(collection = "transaction_activation")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(schema = "email_service_schema")
 public class TransactionActivation {
 
     @Id
@@ -23,6 +24,7 @@ public class TransactionActivation {
 
     @NotNull(message = "This field cannot be NULL")
     @Email
+    @Indexed
     private String email;
 
     @NotNull(message = "This field cannot be NULL")
