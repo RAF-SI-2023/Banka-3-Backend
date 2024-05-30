@@ -78,6 +78,8 @@ public class BootstrapData implements CommandLineRunner {
             myStockRepository.save(stok1);
             myStockRepository.save(stok2);
             myStockRepository.save(stok3);
+            myStockRepository.save(stok4);
+            myStockRepository.save(stok5);
         }
     }
 }
