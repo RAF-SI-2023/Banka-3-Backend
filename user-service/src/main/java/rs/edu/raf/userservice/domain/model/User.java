@@ -44,7 +44,7 @@ public class User implements Serializable {
     private String gender;
 
     @NotNull(message = "phoneNumber field cannot be NULL")
-    @Size(min = 6, max = 9, message = "phone must be between 6 and 9 characters")
+    @Size(min = 6, max = 10, message = "phone must be between 6 and 9 characters")
     private String phoneNumber;
 
     @Size(max = 60)
