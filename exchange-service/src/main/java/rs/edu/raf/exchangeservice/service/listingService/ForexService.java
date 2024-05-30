@@ -25,22 +25,24 @@ public class ForexService {
     private final String exchangeApiKey = "96aa86545baf8162d6ecbe21";
     private final String currencyMark = "RSD";
 
-//    @PostConstruct
+    //@PostConstruct
     public void loadData() throws JsonProcessingException {
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "https://v6.exchangerate-api.com/v6/"+exchangeApiKey+"/latest/"+currencyMark;
-        ResponseEntity<String> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<String>() {
-                });
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonResponse = response.getBody();
-        JsonNode rootNode = objectMapper.readTree(jsonResponse);
-        JsonNode resultNode = rootNode.path("conversion_rates");
-        saveForex(String.valueOf(resultNode));
+            RestTemplate restTemplate = new RestTemplate();
+            String url = "https://v6.exchangerate-api.com/v6/" + exchangeApiKey + "/latest/" + currencyMark;
+            ResponseEntity<String> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<String>() {
+                    });
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String jsonResponse = response.getBody();
+            JsonNode rootNode = objectMapper.readTree(jsonResponse);
+            JsonNode resultNode = rootNode.path("conversion_rates");
+            saveForex(String.valueOf(resultNode));
+
     }
 
     private void saveForex(String jsonNode){
