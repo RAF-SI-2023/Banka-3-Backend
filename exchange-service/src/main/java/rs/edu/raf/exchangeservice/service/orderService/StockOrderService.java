@@ -179,7 +179,6 @@ public class StockOrderService {
     @ExcludeFromJacocoGeneratedReport
     public void executeTask() {
         if (ordersToBuy.isEmpty()) {
-            System.out.println("Executing buy-task every 10 seconds");
         } else {
             Random rand = new Random();
             int stockNumber = rand.nextInt(ordersToBuy.size());

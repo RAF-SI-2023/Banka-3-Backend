@@ -221,7 +221,6 @@ public class MyStockService {
     @Scheduled(fixedRate = 15000)
     public void executeTask() {
         if (ordersToSell.isEmpty()) {
-            System.out.println("Executing sell-task every 15 seconds");
         } else {
             Random rand = new Random();
             int stockNumber = rand.nextInt(ordersToSell.size());
