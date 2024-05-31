@@ -16,7 +16,8 @@ public class Bank4Stock implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long bank4StockId;
+    private Long id;
+            //bank4StockId;
 
     private String ticker;
     private Integer amount;

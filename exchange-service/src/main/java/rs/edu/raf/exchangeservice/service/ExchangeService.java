@@ -31,7 +31,7 @@ public class ExchangeService {
     }
 
     @PostConstruct
-    private void loadData(){
+    public void loadData(){
         try (BufferedReader br = new BufferedReader(new InputStreamReader(new ClassPathResource("exchange_data.csv").getInputStream()))) {
             String line;
             br.readLine();

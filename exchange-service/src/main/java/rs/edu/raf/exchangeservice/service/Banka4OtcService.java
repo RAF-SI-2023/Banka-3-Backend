@@ -26,18 +26,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class Banka4OtcService {
 
-    private OfferRepository offerRepository;
+    private final OfferRepository offerRepository;
 
-    private MyStockRepository myStockRepository;
+    private final MyStockRepository myStockRepository;
 
-    private Bank4StockRepository bank4StockRepository;
+    private final Bank4StockRepository bank4StockRepository;
 
     public List<Offer> findAllOffers(){
         return offerRepository.findAll();
     }
 
     public List<MyStockDto> findAllStocks(){
-        List<MyStock> myStocks =  myStockRepository.findAllByCompanyId(1l);
+        List<MyStock> myStocks =  myStockRepository.findAllByCompanyId(1L);
         List<MyStockDto> dtos = new ArrayList<>();
         for(MyStock myStock: myStocks){
             MyStockDto dto = new MyStockDto();
@@ -54,22 +54,13 @@ public class Banka4OtcService {
         offer.setAmount(offerDto.getAmount());
         offer.setTicker(offerDto.getTicker());
         offer.setPrice(offerDto.getPrice());
-
         offerRepository.save(offer);
+        //ovde treba da zovemo metodu acceptOffer,
+        // kako bismo nakon sto dodmo  bazu, obavestili i banku 4
     }
 
     public void acceptOffer(Long id){
         //poslati id i povecati nase pare i skinuti stock sa naseg stanja
-
-
-
-//        MultiValueMap<String, String> body = new LinkedMultiValueMap<String, String>();
-//
-//        body.add("field", "value");
-
-        // Note the body object as first parameter!
-//        HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
-        //poslati u bodyju id od prihvacene ponude
         RestTemplate restTemplate = new RestTemplate();
         String url = "njihov url/" + id;
         ResponseEntity<String> response = restTemplate.exchange(
@@ -80,9 +71,11 @@ public class Banka4OtcService {
                 });
     }
 
-    public void getBank4Stocks(){
+    //treba da bude void, opet ovo samo za testiranje
+    public List<MyStockDto> getBank4Stocks(){
         RestTemplate restTemplate = new RestTemplate();
-        String url = "njihov url";
+        //ide njihov url, ovo sam stavila samo za testiranje
+        String url = "http://localhost:8083/api/v1/otcTrade/getStocks";
         ResponseEntity<List<MyStockDto>> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
@@ -97,7 +90,7 @@ public class Banka4OtcService {
             stock.setAmount(myStockDto.getAmount());
             bank4StockRepository.save(stock);
         }
+        return dtos;
     }
-
 
 }
