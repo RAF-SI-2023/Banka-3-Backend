@@ -4,4 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import rs.edu.raf.exchangeservice.domain.model.listing.Forex;
 
 public interface ForexRepository extends JpaRepository<Forex, Long> {
+
+        Forex findByForexId(Long forexId);
+
+        Forex findByQuoteCurrency(String quoteCurrency);
 }

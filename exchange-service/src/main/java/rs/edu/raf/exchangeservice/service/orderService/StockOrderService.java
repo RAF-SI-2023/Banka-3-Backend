@@ -215,7 +215,6 @@ public class StockOrderService {
                         actuaryRepository.save(actuary);
                         return;
                     } else {
-                        //TODO: sacuvati employeeid i amount u minusu (double) (amountTobuy*currentPrice)
                         actuary.setLimitUsed(actuary.getLimitUsed() + (currentPrice * amountToBuy));
                         actuaryRepository.save(actuary);
                     }
@@ -235,9 +234,14 @@ public class StockOrderService {
                 bankTransactionDto.setCompanyId(stockOrder.getCompanyId());
                 bankTransactionDto.setEmployeeId(stockOrder.getEmployeeId());
                 //TODO: otkomentarisati naknadno
-                //bankServiceClient.stockBuyTransaction(bankTransactionDto);
+                bankServiceClient.stockBuyTransaction(bankTransactionDto);
 
-                myStockService.addAmountToMyStock(stockOrder.getTicker(), amountToBuy, stockOrder.getUserId(), stockOrder.getCompanyId());    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
+                //dodajemo tranaskciju koju je obavio agent u profitStock
+                if(stockOrder.getEmployeeId() != null){
+                    myStockService.addProfitForEmployee(stockOrder.getEmployeeId(), currentPrice * amountToBuy * (-1));
+                }
+
+                myStockService.addAmountToMyStock(stockOrder.getTicker(), amountToBuy, stockOrder.getUserId(), stockOrder.getCompanyId(), currentPrice);    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
                 stockOrder.setAmountLeft(stockOrder.getAmountLeft() - amountToBuy);
                 if (stockOrder.getAmountLeft() <= 0) {
                     stockOrder.setStatus(OrderStatus.FINISHED);
@@ -255,9 +259,14 @@ public class StockOrderService {
                     bankTransactionDto.setCompanyId(stockOrder.getCompanyId());
                     bankTransactionDto.setEmployeeId(stockOrder.getEmployeeId());
                     //TODO: otkomentarisati naknadno
-                    //bankServiceClient.stockBuyTransaction(bankTransactionDto);
+                    bankServiceClient.stockBuyTransaction(bankTransactionDto);
 
-                    myStockService.addAmountToMyStock(stockOrder.getTicker(), amountToBuy, stockOrder.getUserId(), stockOrder.getCompanyId());    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
+                    //dodajemo tranaskciju koju je obavio agent u profitStock
+                    if(stockOrder.getEmployeeId() != null){
+                        myStockService.addProfitForEmployee(stockOrder.getEmployeeId(), currentPrice * amountToBuy * (-1));
+                    }
+
+                    myStockService.addAmountToMyStock(stockOrder.getTicker(), amountToBuy, stockOrder.getUserId(), stockOrder.getCompanyId(), currentPrice);    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
                     stockOrder.setAmountLeft(stockOrder.getAmountLeft() - amountToBuy);
                     if (stockOrder.getAmountLeft() <= 0) {
                         stockOrder.setStatus(OrderStatus.FINISHED);

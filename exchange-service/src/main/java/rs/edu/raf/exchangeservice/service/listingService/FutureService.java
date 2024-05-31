@@ -68,7 +68,7 @@ public class FutureService {
                     } else {
                         future.setPrice(123.0); // Example price for a metric ton
                     }
-                    future.setCurrencyMark("USD");
+                    future.setCurrencyMark("RSD");
 
                     this.futureRepository.save(future); //save in DB
                 }

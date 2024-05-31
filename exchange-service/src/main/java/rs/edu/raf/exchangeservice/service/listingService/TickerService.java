@@ -25,6 +25,7 @@ public class TickerService {
     private final TickerRepository tickerRepository;
     private final StockService stockService;
     private final OptionService optionService;
+    private final ForexService forexService;
     private final StockIntradayService stockIntradayService;
     private final StockDailyService stockDailyService;
     private final StockWeeklyService stockWeeklyService;
@@ -65,6 +66,7 @@ public class TickerService {
 
         stockService.loadData();
         optionService.loadData();
+        forexService.loadData();
 //        stockIntradayService.loadData();
 //        stockDailyService.loadData();
 //        stockWeeklyService.loadData();

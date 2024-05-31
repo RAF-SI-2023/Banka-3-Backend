@@ -1,5 +1,6 @@
 package rs.edu.raf.exchangeservice.domain.model.myListing;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,9 +27,8 @@ public class MyStock implements Serializable {
     // mora da se razlikuje i da li je kompanija ili korisnik ulogovan
     // na osnovu toga se vracaju public stockovi
     private Integer publicAmount;
-   //TODO: dotati kanije za racunanje proseka
-    // private Double 150* 10+ 300*5 / amount + 5;
-   // private Double averagePrice;
+    @JsonIgnore
+    private Double minimumPrice;
     @Version
     private Integer version;
 }
