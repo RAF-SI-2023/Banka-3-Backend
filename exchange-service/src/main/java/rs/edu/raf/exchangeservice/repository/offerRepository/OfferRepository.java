@@ -10,5 +10,4 @@ import rs.edu.raf.exchangeservice.domain.model.offer.Offer;
 @Transactional(isolation = Isolation.SERIALIZABLE)
 public interface OfferRepository extends JpaRepository<Offer, Long> {
 
-
 }
