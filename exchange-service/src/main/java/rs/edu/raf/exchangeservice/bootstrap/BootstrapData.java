@@ -40,6 +40,7 @@ public class BootstrapData implements CommandLineRunner {
             stok1.setPublicAmount(50);
             stok1.setCompanyId(1L);
             stok1.setUserId(null);
+            stok1.setMinimumPrice(500.0);
             MyStock stok2 = new MyStock();
             stok2.setTicker("NVDA");
             stok2.setAmount(100);
@@ -48,6 +49,7 @@ public class BootstrapData implements CommandLineRunner {
             stok2.setPublicAmount(50);
             stok2.setCompanyId(1L);
             stok2.setUserId(null);
+            stok2.setMinimumPrice(1500.0);
             MyStock stok3 = new MyStock();
             stok3.setTicker("AMZN");
             stok3.setAmount(100);
@@ -56,6 +58,7 @@ public class BootstrapData implements CommandLineRunner {
             stok3.setPublicAmount(50);
             stok3.setCompanyId(1L);
             stok3.setUserId(null);
+            stok3.setMinimumPrice(200.0);
 
             MyStock stok5 = new MyStock();
             stok5.setTicker("NVDA");
@@ -65,6 +68,7 @@ public class BootstrapData implements CommandLineRunner {
             stok5.setPublicAmount(10);
             stok5.setCompanyId(3L);
             stok5.setUserId(null);
+            stok5.setMinimumPrice(1500.0);
 
             MyStock stok4 = new MyStock();
             stok4.setTicker("TSLA");
@@ -74,6 +78,7 @@ public class BootstrapData implements CommandLineRunner {
             stok4.setPublicAmount(10);
             stok4.setCompanyId(4L);
             stok4.setUserId(null);
+            stok4.setMinimumPrice(200.0);
 
             myStockRepository.save(stok1);
             myStockRepository.save(stok2);

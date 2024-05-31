@@ -214,7 +214,7 @@ public class BootstrapData implements CommandLineRunner {
         CompanyAccount goodCompanyAccountDin = new CompanyAccount();
         goodCompanyAccountDin.setCompanyId(3L);
         goodCompanyAccountDin.setEmployeeId(1L);
-        goodCompanyAccountDin.setAccountNumber("1234567891231231");
+        goodCompanyAccountDin.setAccountNumber("2222333344445555");
         goodCompanyAccountDin.setReservedAmount(new BigDecimal(1000));
         goodCompanyAccountDin.setAvailableBalance(new BigDecimal(10000));
         goodCompanyAccountDin.setCreationDate(System.currentTimeMillis());

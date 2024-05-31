@@ -3,6 +3,8 @@ package rs.edu.raf.exchangeservice.service.myListingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import rs.edu.raf.exchangeservice.client.BankServiceClient;
+import rs.edu.raf.exchangeservice.domain.dto.bank.BankTransactionDto;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyFutureDto;
 import rs.edu.raf.exchangeservice.domain.model.enums.OrderStatus;
 import rs.edu.raf.exchangeservice.domain.model.listing.Future;
@@ -25,6 +27,7 @@ public class MyFutureSerivce {
     private final MyFutureRepository myFutureRepository;
     private final FutureRepository futureRepository;
     private final FutureOrderSellRepository futureOrderSellRepository;
+    private final BankServiceClient bankServiceClient;
 
     private static final double BUSHEL=6.5;
     private static final double POUND=1.2;
@@ -110,6 +113,15 @@ public class MyFutureSerivce {
             future.setType(myFuture.getType());
             future.setCurrencyMark(myFuture.getCurrencyMark());
             future.setPrice(futureOrderSell.getPrice());
+
+            BankTransactionDto bankTransactionDto = new BankTransactionDto();
+            bankTransactionDto.setAmount(futureOrderSell.getPrice());
+            bankTransactionDto.setCompanyId(futureOrderSell.getCompanyId());
+            bankTransactionDto.setCurrencyMark(future.getCurrencyMark());
+            bankTransactionDto.setUserId(null);
+            bankTransactionDto.setEmployeeId(null);
+
+            bankServiceClient.stockSellTransaction(bankTransactionDto);
 
             futureOrderSell.setStatus(OrderStatus.FINISHED);
             orderToSell.remove(futureOrderSell);

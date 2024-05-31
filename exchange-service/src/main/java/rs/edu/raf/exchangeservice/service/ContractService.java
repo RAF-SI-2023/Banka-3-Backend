@@ -3,6 +3,9 @@ package rs.edu.raf.exchangeservice.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import rs.edu.raf.exchangeservice.client.BankServiceClient;
+import rs.edu.raf.exchangeservice.domain.dto.bank.CompanyOtcDto;
+import rs.edu.raf.exchangeservice.domain.dto.bank.UserOtcDto;
 import rs.edu.raf.exchangeservice.domain.dto.contract.ContractAnswerDto;
 import rs.edu.raf.exchangeservice.domain.model.enums.BankCertificate;
 import rs.edu.raf.exchangeservice.domain.model.enums.SellerCertificate;
@@ -22,6 +25,7 @@ public class ContractService {
 
     private final ContractRepository contractRepository;
     private final MyStockService myStockService;
+    private final BankServiceClient bankServiceClient;
 
     //ugovori koje supervizor nije obradio
     //TODO ovo treba da vrati sve ugovore koje supervisor nije obradio i koji su prihvaceni od strane kompanija ili korisnika
@@ -64,8 +68,27 @@ public class ContractService {
 
         //TODO: salje se dto na bank servise sa 2 user id-a i iznosom ili 2 company id-a i iznosom i mark racuna (mislim da je RSD za otc uvek)
 
-        myStockService.addAmountToMyStock(contract.getTicker(), contract.getAmount(),contract.getUserBuyerId(), contract.getCompanyBuyerId());
+        Double price =  contract.getPrice().doubleValue() / contract.getAmount();
+
+        myStockService.addAmountToMyStock(contract.getTicker(), contract.getAmount(),contract.getUserBuyerId(), contract.getCompanyBuyerId(), price);
         myStockService.removeAmountFromMyStock(contract.getTicker(), contract.getAmount(),contract.getUserSellerId(), contract.getCompanySellerId());
+
+        //racunamo porez na dobit
+        myStockService.calculateTaxForSellStock(contract.getCompanySellerId(), contract.getUserSellerId(), contract.getTicker(), contract.getAmount(), price);
+
+        if(contract.getCompanySellerId() != null) {
+            CompanyOtcDto companyOtcDto = new CompanyOtcDto();
+            companyOtcDto.setAmount(contract.getPrice().doubleValue());
+            companyOtcDto.setCompanyFromId(contract.getCompanyBuyerId());
+            companyOtcDto.setCompanyToId(contract.getCompanySellerId());
+            bankServiceClient.otcBankTransaction(companyOtcDto);
+        }else if(contract.getUserSellerId() != null){
+            UserOtcDto userOtcDto = new UserOtcDto();
+            userOtcDto.setAmount(contract.getPrice().doubleValue());
+            userOtcDto.setUserFromId(contract.getUserBuyerId());
+            userOtcDto.setUserToId(contract.getUserSellerId());
+            bankServiceClient.otcUserTransaction(userOtcDto);
+        }
 
         contractRepository.save(contract);
         return true;

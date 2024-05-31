@@ -51,4 +51,16 @@ public class ActuaryController {
         actuaryService.addActuary(actuaryDto);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/profit/getAll")
+    @Operation(description = "dohvatamo sve profit stockove")
+    public ResponseEntity<?> getAllProfitStocks(){
+        return ResponseEntity.ok(actuaryService.getAllProfitStocks());
+    }
+
+    @GetMapping("/profit/getById/{id}")
+    @Operation(description = "dohvatamo sav profit za odredjenog zaposlenog")
+    public ResponseEntity<?> getProfitStockById(@PathVariable Long id){
+        return ResponseEntity.ok(actuaryService.getProfitStocksByEmployeeId(id));
+    }
 }

@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import rs.edu.raf.exchangeservice.domain.dto.bank.BankTransactionDto;
+import rs.edu.raf.exchangeservice.domain.dto.bank.CompanyOtcDto;
+import rs.edu.raf.exchangeservice.domain.dto.bank.UserOtcDto;
 
 @FeignClient(name = "bankServiceClient", url = "${bankServiceLocation}")
 public interface BankServiceClient {
@@ -30,5 +32,16 @@ public interface BankServiceClient {
     @Operation(description = "Uzimamo firmu po id")
     ResponseEntity<?> getByCompanyId(@PathVariable Long companyId);
 
+    @PostMapping(value = "/transaction/otcUserTransaction",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "user kupuje ili prodaje od drugog user-a")
+    ResponseEntity<?> otcUserTransaction (@RequestBody UserOtcDto userOtcDto);
 
+
+    @PostMapping(value = "/transaction/otcCompanyTransaction",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "kompanija kupuje ili prodaje od kompanije")
+    ResponseEntity<?> otcBankTransaction (@RequestBody CompanyOtcDto companyOtcDto);
 }

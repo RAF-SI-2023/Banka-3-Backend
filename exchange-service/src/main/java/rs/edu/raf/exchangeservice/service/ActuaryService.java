@@ -6,8 +6,10 @@ import org.springframework.stereotype.Service;
 import rs.edu.raf.exchangeservice.client.UserServiceClient;
 import rs.edu.raf.exchangeservice.domain.dto.ActuaryDto;
 import rs.edu.raf.exchangeservice.domain.model.Actuary;
+import rs.edu.raf.exchangeservice.domain.model.ProfitStock;
 import rs.edu.raf.exchangeservice.jacoco.ExcludeFromJacocoGeneratedReport;
 import rs.edu.raf.exchangeservice.repository.ActuaryRepository;
+import rs.edu.raf.exchangeservice.repository.ProfitStockRepositorty;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.List;
 public class ActuaryService {
     private final UserServiceClient userServiceClient;
     private final ActuaryRepository actuaryRepository;
+    private final ProfitStockRepositorty profitStockRepositorty;
 
     @PostConstruct
     @ExcludeFromJacocoGeneratedReport
@@ -94,4 +97,13 @@ public class ActuaryService {
         actuaryRepository.updateLimitToZeroForAllEmployees();
         System.out.println("Executing function for limitUsed restart");
     }
+
+    public List<ProfitStock> getAllProfitStocks(){
+        return profitStockRepositorty.findAll();
+    }
+
+    public List<ProfitStock> getProfitStocksByEmployeeId(Long employeeId){
+        return profitStockRepositorty.findAllByEmployeeId(employeeId);
+    }
+
 }
