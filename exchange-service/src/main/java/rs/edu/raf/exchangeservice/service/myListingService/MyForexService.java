@@ -5,6 +5,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import rs.edu.raf.exchangeservice.client.BankServiceClient;
 import rs.edu.raf.exchangeservice.domain.dto.bank.BankTransactionDto;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyForexDto;
 import rs.edu.raf.exchangeservice.domain.model.enums.OrderStatus;
@@ -26,6 +27,7 @@ public class MyForexService {
     private final MyForexRepositroy myForexRepository;
     private final ForexRepository forexRepository;
     private final ForexOrderRepository forexOrderRepository;
+    private final BankServiceClient bankServiceClient;
 
     public CopyOnWriteArrayList<ForexOrder> ordersToBuy = new CopyOnWriteArrayList<>();
 
@@ -86,7 +88,8 @@ public class MyForexService {
             bankTransactionDto.setUserId(null);
             bankTransactionDto.setCompanyId(forexOrder.getCompanyId());
             bankTransactionDto.setEmployeeId(null);
-            //todo dodati poziv ka bank servisu
+
+            bankServiceClient.stockBuyTransaction(bankTransactionDto);
 
             forexOrder.setStatus(OrderStatus.FINISHED);
             forexOrderRepository.save(forexOrder);
