@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import rs.edu.raf.exchangeservice.client.BankServiceClient;
+import rs.edu.raf.exchangeservice.domain.dto.bank.BankTransactionDto;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyFutureDto;
 import rs.edu.raf.exchangeservice.domain.model.enums.OrderStatus;
 import rs.edu.raf.exchangeservice.domain.model.listing.Future;
@@ -26,6 +28,7 @@ public class FuturOrderService {
     private final FutureRepository futureRepository;
     private final FutureOrderRepository futureOrderRepository;
     private final MyFutureSerivce myFutureSerivce;
+    private final BankServiceClient bankServiceClient;
 
     private static final double BUSHEL=6.5;
     private static final double POUND=1.2;
@@ -67,6 +70,8 @@ public class FuturOrderService {
             futureOrder.setPrice(METRIC_TON * future.getContractSize());
         }
 
+        futureOrderRepository.save(futureOrder);
+
         ordersToBuy.add(futureOrder);
         return futureOrder;
     }
@@ -94,6 +99,15 @@ public class FuturOrderService {
             myFuture.setIsPublic(false);
 
             myFutureSerivce.addMyFuture(myFuture);
+
+            BankTransactionDto bankTransactionDto = new BankTransactionDto();
+            bankTransactionDto.setAmount(futureOrder.getPrice());
+            bankTransactionDto.setCurrencyMark(future.getCurrencyMark());
+            bankTransactionDto.setCompanyId(futureOrder.getCompanyId());
+            bankTransactionDto.setUserId(null);
+            bankTransactionDto.setEmployeeId(null);
+
+            bankServiceClient.stockBuyTransaction(bankTransactionDto);
 
             futureOrder.setStatus(OrderStatus.FINISHED);
             futureOrderRepository.save(futureOrder);

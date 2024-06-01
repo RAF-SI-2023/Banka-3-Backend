@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import rs.edu.raf.exchangeservice.domain.model.Exchange;
+import rs.edu.raf.exchangeservice.domain.model.listing.Forex;
 import rs.edu.raf.exchangeservice.domain.model.listing.Ticker;
 import rs.edu.raf.exchangeservice.repository.ExchangeRepository;
 import rs.edu.raf.exchangeservice.repository.listingRepository.TickerRepository;
@@ -42,6 +43,8 @@ class TickerServiceTest {
     private  StockMonthlyService stockMonthlyService;
     @Mock
     private  MyStockService myStockService;
+    @Mock
+    private ForexService forexService;
 
     @InjectMocks
     private TickerService tickerService;

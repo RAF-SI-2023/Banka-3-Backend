@@ -32,48 +32,50 @@ public class FutureService {
     private final FutureContractRepository futureContractRepository;
 
     //    private final String pathToFile = "exchange-service/src/main/resources/data/future_data.csv";
-    @PostConstruct
+    //@PostConstruct
     public void loadData(){
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(new ClassPathResource("future_data.csv").getInputStream()))) {
-            String line;
-            // Skip the header line
-            br.readLine();
-            while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
-                Future future = new Future();
-                future.setContractName(parts[0]);
-                future.setContractSize(Integer.parseInt(parts[1]));
-                future.setContractUnit(parts[2]);
-                future.setMaintenanceMargin(Integer.parseInt(parts[3]));
-                future.setType(parts[4]);
-                if (parts[4].equals("bushel")) {
-                    future.setPrice(10.5); // Example price for a bushel
-                } else if (parts[4].equals("pound")) {
-                    future.setPrice(1.2); // Example price for a pound
-                } else if (parts[4].equals("board feet")) {
-                    future.setPrice(2.8); // Example price for board feet
-                } else if (parts[4].equals("barrel")) {
-                    future.setPrice(65.0); // Example price for a barrel
-                } else if (parts[4].equals("MMBtu")) {
-                    future.setPrice(3.1); // Example price for MMBtu
-                } else if (parts[4].equals("gallon")) {
-                    future.setPrice(3.5); // Example price for a gallon
-                } else if (parts[4].equals("ounce")) {
-                    future.setPrice(0.05); // Example price for an ounce
-                } else if (parts[4].equals("troy ounce")) {
-                    future.setPrice(2000.0); // Example price for a troy ounce
-                } else if (parts[4].equals("metric ton")) {
-                    future.setPrice(500.0); // Example price for a metric ton
-                } else {
-                    future.setPrice(123.0); // Example price for a metric ton
-                }
-                future.setCurrencyMark("USD");
 
-                this.futureRepository.save(future); //save in DB
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(new ClassPathResource("future_data.csv").getInputStream()))) {
+                String line;
+                // Skip the header line
+                br.readLine();
+                while ((line = br.readLine()) != null) {
+                    String[] parts = line.split(",");
+                    Future future = new Future();
+                    future.setContractName(parts[0]);
+                    future.setContractSize(Integer.parseInt(parts[1]));
+                    future.setContractUnit(parts[2]);
+                    future.setMaintenanceMargin(Integer.parseInt(parts[3]));
+                    future.setType(parts[4]);
+                    if (parts[4].equals("bushel")) {
+                        future.setPrice(10.5); // Example price for a bushel
+                    } else if (parts[4].equals("pound")) {
+                        future.setPrice(1.2); // Example price for a pound
+                    } else if (parts[4].equals("board feet")) {
+                        future.setPrice(2.8); // Example price for board feet
+                    } else if (parts[4].equals("barrel")) {
+                        future.setPrice(65.0); // Example price for a barrel
+                    } else if (parts[4].equals("MMBtu")) {
+                        future.setPrice(3.1); // Example price for MMBtu
+                    } else if (parts[4].equals("gallon")) {
+                        future.setPrice(3.5); // Example price for a gallon
+                    } else if (parts[4].equals("ounce")) {
+                        future.setPrice(0.05); // Example price for an ounce
+                    } else if (parts[4].equals("troy ounce")) {
+                        future.setPrice(2000.0); // Example price for a troy ounce
+                    } else if (parts[4].equals("metric ton")) {
+                        future.setPrice(500.0); // Example price for a metric ton
+                    } else {
+                        future.setPrice(123.0); // Example price for a metric ton
+                    }
+                    future.setCurrencyMark("RSD");
+
+                    this.futureRepository.save(future); //save in DB
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+
     }
 
     public List<Future> findAll(){

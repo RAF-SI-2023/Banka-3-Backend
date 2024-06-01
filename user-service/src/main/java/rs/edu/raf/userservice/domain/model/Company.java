@@ -29,7 +29,7 @@ public class Company implements Serializable {
     private String title;
 
     @NotNull(message = "number field cannot be NULL")
-    @Size(min = 5, max = 9, message = "The input is too long")
+    @Size(min = 5, max = 10, message = "The input is too long")
     private String number;
 
     @NotNull(message = "PIB field cannot be NULL")

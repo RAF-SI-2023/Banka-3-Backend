@@ -179,7 +179,20 @@ public class BootstrapData implements CommandLineRunner {
                     .codeActive(false)
                     .build();
 
-            userRepository.saveAll(Arrays.asList(user1, user2, user3));
+            User user4 = User.builder()
+                    .firstName("Milos")
+                    .lastName("Krasic")
+                    .email("miloskrasicjuventus@gmail.com")
+                    .jmbg("1808965710191")
+                    .phoneNumber("0668874984")
+                    .isActive(true)
+                    .gender("M")
+                    .dateOfBirth(1710274123787L)
+                    .password(passwordEncoder.encode("user1234"))
+                    .codeActive(true)
+                    .build();
+
+            userRepository.saveAll(Arrays.asList(user1, user2, user3, user4));
 
             //CONTACTS
             Contact contact1 = Contact.builder()
@@ -224,7 +237,31 @@ public class BootstrapData implements CommandLineRunner {
                     .isActive(true)
                     .build();
 
-            companyRepository.saveAll(Arrays.asList(bank, stock));
+            //GOOD COMPANY
+            Company goodCompany = Company.builder()
+                    .title("GoodCompany")
+                    .number("0113161088")
+                    .PIB(456456411)
+                    .maticniBroj(88997711)
+                    .sifraDelatnosti(5533)
+                    .email("goodcompany123321@gmail.com")
+                    .password(passwordEncoder.encode("goodcompany1234"))
+                    .codeActive(true)
+                    .isActive(true)
+                    .build();
+            //BAD COMPANY
+            Company badCompany = Company.builder()
+                    .title("BadCompany")
+                    .number("0113161099")
+                    .PIB(456456441)
+                    .maticniBroj(88997722)
+                    .sifraDelatnosti(5533)
+                    .email("badcompany321123@gmail.com")
+                    .password(passwordEncoder.encode("badcompany1234"))
+                    .codeActive(true)
+                    .isActive(true)
+                    .build();
+            companyRepository.saveAll(Arrays.asList(bank, stock, goodCompany, badCompany));
         }
     }
 }
