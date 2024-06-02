@@ -7,6 +7,7 @@ import com.example.bankservice.domain.dto.account.UserAccountDto;
 import com.example.bankservice.domain.dto.companyaccount.CompanyAccountCreateDto;
 import com.example.bankservice.domain.dto.companyaccount.CompanyAccountDto;
 import com.example.bankservice.domain.dto.emailService.TransactionFinishedDto;
+import com.example.bankservice.domain.dto.transaction.StockTransactionDto;
 import com.example.bankservice.domain.dto.userService.UserEmailDto;
 import com.example.bankservice.domain.mapper.CompanyAccountMapper;
 import com.example.bankservice.domain.mapper.UserAccountMapper;
@@ -15,11 +16,9 @@ import com.example.bankservice.domain.model.accounts.Account;
 import com.example.bankservice.domain.model.accounts.CompanyAccount;
 import com.example.bankservice.domain.model.accounts.UserAccount;
 import com.example.bankservice.domain.model.enums.CurrencyName;
-import com.example.bankservice.repository.AccountRepository;
-import com.example.bankservice.repository.CardRepository;
-import com.example.bankservice.repository.CompanyAccountRepository;
-import com.example.bankservice.repository.UserAccountRepository;
+import com.example.bankservice.repository.*;
 import com.example.bankservice.service.AccountService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -56,8 +55,157 @@ public class AccountServiceUnitTest {
     private EmailServiceClient emailServiceClient;
     @Mock
     private Random mockRandom;
+    @Mock
+    private CurrencyRepository currencyRepository;
     @InjectMocks
     private AccountService accountService;
+
+    private Account accountFrom;
+    private Account accountTo;
+    private BigDecimal amount;
+
+    private StockTransactionDto userStockTransactionDto;
+    private StockTransactionDto companyStockTransactionDto;
+    private Long userId;
+    private Long companyId;
+    private String currencyMark;
+    private Currency currency;
+    private UserAccount userAccount;
+    private CompanyAccount companyAccount;
+
+
+    @BeforeEach
+    void setUp() {
+        accountFrom = new Account();
+        accountFrom.setAccountNumber("123456789");
+        accountFrom.setAvailableBalance(BigDecimal.valueOf(1000));
+
+        accountTo = new Account();
+        accountTo.setAccountNumber("987654321");
+        accountTo.setAvailableBalance(BigDecimal.valueOf(500));
+
+        amount = BigDecimal.valueOf(100);
+
+        userId = 1L;
+        companyId = 1L;
+        currencyMark = "RSD";
+
+        currency = new Currency();
+        currency.setMark(currencyMark);
+
+        userAccount = new UserAccount();
+        companyAccount = new CompanyAccount();
+
+        userStockTransactionDto = new StockTransactionDto();
+        userStockTransactionDto.setUserId(userId);
+        userStockTransactionDto.setCurrencyMark(currencyMark);
+
+        companyStockTransactionDto = new StockTransactionDto();
+        companyStockTransactionDto.setCompanyId(companyId);
+        companyStockTransactionDto.setCurrencyMark(currencyMark);
+
+
+    }
+
+    @Test
+    void testFindAccount_User() {
+        // Mocking currencyRepository.findByMark(...)
+        when(currencyRepository.findByMark(currencyMark)).thenReturn(Optional.of(currency));
+
+        // Mocking userAccountRepository.findByUserIdAndCurrency(...)
+        when(userAccountRepository.findByUserIdAndCurrency(userId, currency)).thenReturn(userAccount);
+
+        // Calling the method under test for user transaction
+        Account result = accountService.findAccount(userStockTransactionDto);
+
+        // Verifying that the methods were called with the correct arguments
+        verify(currencyRepository, times(1)).findByMark(currencyMark);
+        verify(userAccountRepository, times(1)).findByUserIdAndCurrency(userId, currency);
+
+        // Asserting the result
+        assertNotNull(result);
+        // Add additional assertions as needed based on the behavior of your method
+    }
+
+    @Test
+    void testFindAccount_Company() {
+        // Mocking currencyRepository.findByMark(...)
+        when(currencyRepository.findByMark(currencyMark)).thenReturn(Optional.of(currency));
+
+        // Mocking companyAccountRepository.findByCompanyIdAndCurrency(...)
+        when(companyAccountRepository.findByCompanyIdAndCurrency(companyId, currency)).thenReturn(companyAccount);
+
+        // Calling the method under test for company transaction
+        Account result = accountService.findAccount(companyStockTransactionDto);
+
+        // Verifying that the methods were called with the correct arguments
+        verify(currencyRepository, times(1)).findByMark(currencyMark);
+        verify(companyAccountRepository, times(1)).findByCompanyIdAndCurrency(companyId, currency);
+
+        // Asserting the result
+        assertNotNull(result);
+        // Add additional assertions as needed based on the behavior of your method
+    }
+
+    @Test
+    void testFindCompanyAccountForIdAndCurrency() {
+        // Mocking currencyRepository.findByMark(...)
+        when(currencyRepository.findByMark(currencyMark)).thenReturn(Optional.of(currency));
+
+        // Mocking companyAccountRepository.findByCompanyIdAndCurrency(...)
+        when(companyAccountRepository.findByCompanyIdAndCurrency(companyId, currency)).thenReturn(companyAccount);
+
+        // Calling the method under test
+        Account result = accountService.findCompanyAccountForIdAndCurrency(companyId, currencyMark);
+
+        // Verifying that the methods were called with the correct arguments
+        verify(currencyRepository, times(1)).findByMark(currencyMark);
+        verify(companyAccountRepository, times(1)).findByCompanyIdAndCurrency(companyId, currency);
+
+        // Asserting the result
+        assertNotNull(result);
+        // Add additional assertions as needed based on the behavior of your method
+    }
+    @Test
+    void testFindUserAccountForIdAndCurrency() {
+        // Mocking currencyRepository.findByMark(...)
+        when(currencyRepository.findByMark(currencyMark)).thenReturn(Optional.of(currency));
+
+        // Mocking userAccountRepository.findByUserIdAndCurrency(...)
+        when(userAccountRepository.findByUserIdAndCurrency(userId, currency)).thenReturn(userAccount);
+
+        // Calling the method under test
+        Account result = accountService.findUserAccountForIdAndCurrency(userId, currencyMark);
+
+        // Verifying that the methods were called with the correct arguments
+        verify(currencyRepository, times(1)).findByMark(currencyMark);
+        verify(userAccountRepository, times(1)).findByUserIdAndCurrency(userId, currency);
+
+        // Asserting the result
+        assertNotNull(result);
+        // Add additional assertions as needed based on the behavior of your method
+    }
+    @Test
+    void testTransferStockFunds() {
+        accountService.transferStockFunds(accountFrom, accountTo, amount);
+
+        assertEquals(BigDecimal.valueOf(900), accountFrom.getAvailableBalance());
+        assertEquals(BigDecimal.valueOf(600), accountTo.getAvailableBalance());
+
+        verify(accountRepository, times(1)).save(accountFrom);
+        verify(accountRepository, times(1)).save(accountTo);
+    }
+
+    @Test
+    void testTransferOtcFunds() {
+        accountService.transferOtcFunds(accountFrom, accountTo, amount);
+
+        assertEquals(BigDecimal.valueOf(900), accountFrom.getAvailableBalance());
+        assertEquals(BigDecimal.valueOf(600), accountTo.getAvailableBalance());
+
+        verify(accountRepository, times(1)).save(accountFrom);
+        verify(accountRepository, times(1)).save(accountTo);
+    }
 
     private UserAccount createDummyUserAccount(String accountNumber){
         UserAccount userAccount = new UserAccount();
