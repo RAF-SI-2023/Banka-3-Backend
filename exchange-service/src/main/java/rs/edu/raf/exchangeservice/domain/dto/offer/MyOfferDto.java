@@ -12,10 +12,11 @@ import java.io.Serializable;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OfferDto implements Serializable {
+public class MyOfferDto implements Serializable {
 
+
+    private Long myOfferId;
     private String ticker;
     private Integer amount;
     private Integer price;
-    private Long idBank4; // id koji stize od banke 4
 }
