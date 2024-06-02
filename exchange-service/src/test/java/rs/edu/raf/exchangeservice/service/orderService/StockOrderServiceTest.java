@@ -11,6 +11,7 @@ import rs.edu.raf.exchangeservice.domain.dto.CompanyAccountDto;
 import rs.edu.raf.exchangeservice.domain.dto.StockOrderDto;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuySellStockDto;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyStockCompanyDto;
+import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyStockUserOTCDto;
 import rs.edu.raf.exchangeservice.domain.model.Actuary;
 import rs.edu.raf.exchangeservice.domain.model.enums.OrderStatus;
 import rs.edu.raf.exchangeservice.domain.model.enums.OrderType;
@@ -24,12 +25,12 @@ import rs.edu.raf.exchangeservice.repository.orderRepository.StockOrderRepositor
 import rs.edu.raf.exchangeservice.service.myListingService.MyStockService;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static junit.framework.TestCase.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -142,292 +143,65 @@ class StockOrderServiceTest {
         // Provjera očekivanog rezultata
         assertEquals(OrderStatus.PROCESSING.toString(), result.getStatus());
     }
-//    @Test
-//    void executeTaskTest() {
-//        // Simulacija podataka
-//        StockOrder stockOrder = new StockOrder();
-//        stockOrder.setEmployeeId(1l);
-//        stockOrder.setAmount(10);
-//        stockOrder.setAmountLeft(10);
-//        stockOrder.setAon(true);
-//        stockOrder.setMargin(true);
-//        stockOrder.setStatus(OrderStatus.WAITING);
-//        stockOrder.setType(OrderType.MARKET);
-//        stockOrder.setStopValue(0.0);
-//        stockOrder.setLimitValue(0.0);
-//
-//        Stock stock = new Stock();
-//        stock.setTicker("AAPL");
-//        stock.setPrice(100.0);
-//
-//        Actuary actuary = new Actuary();
-//        actuary.setActuaryId(1l);
-//        actuary.setEmployeeId(1l);
-//        actuary.setLimitValue(2.0);
-//        actuary.setLimitUsed(0.0);
-//        actuary.setOrderRequest(true);
-//        actuary.setRole("ROLE_SUPERVISOR");
-//        actuary.setEmail("email");
-//
-//        given(actuaryRepository.findByEmployeeId(any())).willReturn(actuary);
-//        given(stockRepository.findByTicker(any())).willReturn(Optional.of(stock));
-//        stockOrderService.ordersToBuy.add(stockOrder);
-//        stockOrderService.executeTask();
-//
-//        verify(actuaryRepository, atLeastOnce()).findByEmployeeId(any());
-//        verify(actuaryRepository, atLeastOnce()).save(actuary);
-//        verify(stockOrderRepository, times(1)).save(stockOrder);
-//        stockOrderService.ordersToBuy.remove(stockOrder);
-//    }
+    @Test
+    public void testBuyUserStockOtc() {
+        // Postavite scenarij za test
+        BuyStockUserOTCDto buyStockUserOTCDto = new BuyStockUserOTCDto();
+        buyStockUserOTCDto.setUserBuyerId(1L);
+        buyStockUserOTCDto.setUserSellerId(2L);
+        buyStockUserOTCDto.setTicker("AAPL");
+        buyStockUserOTCDto.setPrice(BigDecimal.valueOf(100));
+        buyStockUserOTCDto.setAmount(10);
 
-//    @Test
-//    void testExecuteTask() {
-//        StockOrder stockOrder = new StockOrder();
-//        stockOrder.setTicker("AAPL");
-//        stockOrder.setAmount(10);
-//        stockOrder.setAmountLeft(10);
-//        stockOrder.setType(OrderType.MARKET);
-//        stockOrderService.ordersToBuy.add(stockOrder);
-//
-//        Stock stock = new Stock();
-//        stock.setTicker("AAPL");
-//        stock.setAsk(100.0);
-//        when(stockRepository.findByTicker(anyString())).thenReturn(Optional.of(stock));
-//
-//        Actuary actuary = new Actuary();
-//        actuary.setActuaryId(1l);
-//        actuary.setEmployeeId(1l);
-//        actuary.setLimitValue(2.0);
-//        actuary.setLimitUsed(0.0);
-//        actuary.setOrderRequest(true);
-//        actuary.setRole("ROLE_SUPERVISOR");
-//        actuary.setEmail("email");
-//
-//        given(actuaryRepository.findByEmployeeId(any())).willReturn(actuary);
-//        stockOrderService.executeTask();
-//
-//        verify(stockOrderRepository, times(1)).save(any(StockOrder.class));
-//    }
+        // Pozovite metodu koju testirate
+        boolean result = stockOrderService.buyUserStockOtc(buyStockUserOTCDto);
 
-//    @Test
-//    void testExecuteTaskWithLimitOrder() {
-//        StockOrder stockOrder = new StockOrder();
-//        stockOrder.setTicker("AAPL");
-//        stockOrder.setAmount(10);
-//        stockOrder.setAmountLeft(10);
-//        stockOrder.setLimitValue(90.0); // Set a limit value less than the current price
-//        stockOrder.setType(OrderType.LIMIT);
-//        stockOrderService.ordersToBuy.add(stockOrder);
-//
-//        Stock stock = new Stock();
-//        stock.setTicker("AAPL");
-//        stock.setAsk(100.0);
-//        when(stockRepository.findByTicker(anyString())).thenReturn(Optional.of(stock));
-//
-//        Actuary actuary = new Actuary();
-//        actuary.setActuaryId(1l);
-//        actuary.setEmployeeId(1l);
-//        actuary.setLimitValue(2.0);
-//        actuary.setLimitUsed(0.0);
-//        actuary.setOrderRequest(true);
-//        actuary.setRole("ROLE_SUPERVISOR");
-//        actuary.setEmail("email");
-//
-//        given(actuaryRepository.findByEmployeeId(any())).willReturn(actuary);
-//        stockOrderService.executeTask();
-//
-//        verify(stockOrderRepository, times(1)).save(any(StockOrder.class));
-//        //assertEquals(OrderType.FAILED, stockOrder.getStatus());
-//    }
+        // Proverite rezultat
+        assertTrue(result);
 
-//    @Test
-//    void testExecuteTaskWithStopOrder() {
-//        StockOrder stockOrder = new StockOrder();
-//        stockOrder.setTicker("AAPL");
-//        stockOrder.setAmount(10);
-//        stockOrder.setAmountLeft(10);
-//        stockOrder.setStopValue(110.0); // Set a stop value greater than the current price
-//        stockOrder.setType(OrderType.STOP);
-//        stockOrderService.ordersToBuy.add(stockOrder);
-//
-//        Stock stock = new Stock();
-//        stock.setTicker("AAPL");
-//        stock.setAsk(100.0);
-//        when(stockRepository.findByTicker(anyString())).thenReturn(Optional.of(stock));
-//
-//        Actuary actuary = new Actuary();
-//        actuary.setActuaryId(1l);
-//        actuary.setEmployeeId(1l);
-//        actuary.setLimitValue(2.0);
-//        actuary.setLimitUsed(0.0);
-//        actuary.setOrderRequest(true);
-//        actuary.setRole("ROLE_SUPERVISOR");
-//        actuary.setEmail("email");
-//
-//        given(actuaryRepository.findByEmployeeId(any())).willReturn(actuary);
-//        stockOrderService.executeTask();
-//
-//        verify(stockOrderRepository, times(1)).save(any(StockOrder.class));
-//        assertEquals(OrderType.STOP, stockOrder.getType());
-//    }
+        // Proverite da li je metoda save pozvana na repository-ju
+        verify(contractRepository, times(1)).save(any(Contract.class));
+    }
+    @Test
+    public void testApproveStockOrder() {
+        // Postavite scenarij za test
+        Long orderId = 1L;
+        boolean approved = true;
 
-//    @Test
-//    void testExecuteTaskWithStopLimitOrder() {
-//        StockOrder stockOrder = new StockOrder();
-//        stockOrder.setTicker("AAPL");
-//        stockOrder.setAmount(10);
-//        stockOrder.setAmountLeft(10);
-//        stockOrder.setStopValue(110.0); // Set a stop value greater than the current price
-//        stockOrder.setType(OrderType.STOP_LIMIT);
-//        stockOrderService.ordersToBuy.add(stockOrder);
-//
-//        Stock stock = new Stock();
-//        stock.setTicker("AAPL");
-//        stock.setAsk(100.0);
-//        when(stockRepository.findByTicker(anyString())).thenReturn(Optional.of(stock));
-//
-//        Actuary actuary = new Actuary();
-//        actuary.setActuaryId(1l);
-//        actuary.setEmployeeId(1l);
-//        actuary.setLimitValue(2.0);
-//        actuary.setLimitUsed(0.0);
-//        actuary.setOrderRequest(true);
-//        actuary.setRole("ROLE_SUPERVISOR");
-//        actuary.setEmail("email");
-//
-//        given(actuaryRepository.findByEmployeeId(any())).willReturn(actuary);
-//        stockOrderService.executeTask();
-//
-//        verify(stockOrderRepository, times(1)).save(any(StockOrder.class));
-//        assertEquals(OrderType.STOP_LIMIT, stockOrder.getType());
-//    }
+        StockOrder stockOrder = createDummyStockOrder(); // Kreirajte odgovarajuću dummy narudžbinu
 
-//    @Test
-//    void testExecuteTaskWithLimitOrderAndPriceLessThanLimit() {
-//        StockOrder stockOrder = new StockOrder();
-//        stockOrder.setTicker("AAPL");
-//        stockOrder.setAmount(10);
-//        stockOrder.setAmountLeft(10);
-//        stockOrder.setLimitValue(110.0); // Set a limit value greater than the current price
-//        stockOrder.setType(OrderType.LIMIT);
-//        stockOrderService.ordersToBuy.add(stockOrder);
-//
-//        Stock stock = new Stock();
-//        stock.setTicker("AAPL");
-//        stock.setAsk(100.0);
-//        when(stockRepository.findByTicker(anyString())).thenReturn(Optional.of(stock));
-//
-//        //when(bankServiceClient.stockBuyTransaction(any()).getStatusCode());
-//
-//        Actuary actuary = new Actuary();
-//        actuary.setActuaryId(1l);
-//        actuary.setEmployeeId(1l);
-//        actuary.setLimitValue(2.0);
-//        actuary.setLimitUsed(0.0);
-//        actuary.setOrderRequest(true);
-//        actuary.setRole("ROLE_SUPERVISOR");
-//        actuary.setEmail("email");
-//
-//        given(actuaryRepository.findByEmployeeId(any())).willReturn(actuary);
-//        stockOrderService.executeTask();
-//
-//        verify(stockOrderRepository, times(1)).save(any(StockOrder.class));
-//        //assertEquals(StockOrderStatus.FINISHED, stockOrder.getStatus());
-//    }
+        when(stockOrderRepository.findByStockOrderId(orderId)).thenReturn(stockOrder);
+        when(stockOrderRepository.save(stockOrder)).thenReturn(stockOrder);
 
-//    @Test
-//    void testExecuteTaskWithMarketOrder() {
-//        StockOrder stockOrder = new StockOrder();
-//        stockOrder.setTicker("AAPL");
-//        stockOrder.setAmount(10);
-//        stockOrder.setAmountLeft(10);
-//        stockOrder.setType(OrderType.MARKET);
-//        stockOrderService.ordersToBuy.add(stockOrder);
-//
-//        Stock stock = new Stock();
-//        stock.setTicker("AAPL");
-//        stock.setAsk(100.0);
-//        when(stockRepository.findByTicker(anyString())).thenReturn(Optional.of(stock));
-//
-//        //when(bankServiceClient.stockBuyTransaction(any()).getStatusCode());
-//
-//        Actuary actuary = new Actuary();
-//        actuary.setActuaryId(1l);
-//        actuary.setEmployeeId(1l);
-//        actuary.setLimitValue(2.0);
-//        actuary.setLimitUsed(0.0);
-//        actuary.setOrderRequest(true);
-//        actuary.setRole("ROLE_SUPERVISOR");
-//        actuary.setEmail("email");
-//
-//        given(actuaryRepository.findByEmployeeId(any())).willReturn(actuary);
-//        stockOrderService.executeTask();
-//
-//        verify(stockOrderRepository, times(1)).save(any(StockOrder.class));
-//        //assertEquals(StockOrderStatus.FINISHED, stockOrder.getStatus());
-//    }
+        // Pozovite metodu koju testirate
+        StockOrder result = stockOrderService.approveStockOrder(orderId, approved);
 
-//    @Test
-//    void testExecuteTaskWithStopOrderAndPriceLessThanStopValue() {
-//        StockOrder stockOrder = new StockOrder();
-//        stockOrder.setTicker("AAPL");
-//        stockOrder.setAmount(10);
-//        stockOrder.setAmountLeft(10);
-//        stockOrder.setStopValue(110.0); // Set a stop value greater than the current price
-//        stockOrder.setType(OrderType.STOP);
-//        stockOrderService.ordersToBuy.add(stockOrder);
-//
-//        Stock stock = new Stock();
-//        stock.setTicker("AAPL");
-//        stock.setAsk(100.0);
-//        when(stockRepository.findByTicker(anyString())).thenReturn(Optional.of(stock));
-//
-//        Actuary actuary = new Actuary();
-//        actuary.setActuaryId(1l);
-//        actuary.setEmployeeId(1l);
-//        actuary.setLimitValue(2.0);
-//        actuary.setLimitUsed(0.0);
-//        actuary.setOrderRequest(true);
-//        actuary.setRole("ROLE_SUPERVISOR");
-//        actuary.setEmail("email");
-//
-//        given(actuaryRepository.findByEmployeeId(any())).willReturn(actuary);
-//        stockOrderService.executeTask();
-//
-//        verify(stockOrderRepository, times(1)).save(any(StockOrder.class));
-//        assertEquals(OrderType.STOP, stockOrder.getType());
-//    }
+        // Proverite rezultat
+        assertNotNull(result); // Proverite da li je vraćena narudžbina
+        assertEquals(OrderStatus.PROCESSING, result.getStatus()); // Proverite da li je status promenjen ako je narudžbina odobrena
 
-//    @Test
-//    void testExecuteTaskWithStopLimitOrderAndPriceLessThanStopValue() {
-//        StockOrder stockOrder = new StockOrder();
-//        stockOrder.setTicker("AAPL");
-//        stockOrder.setAmount(10);
-//        stockOrder.setAmountLeft(10);
-//        stockOrder.setStopValue(110.0); // Set a stop value greater than the current price
-//        stockOrder.setType(OrderType.STOP_LIMIT);
-//        stockOrderService.ordersToBuy.add(stockOrder);
-//
-//        Stock stock = new Stock();
-//        stock.setTicker("AAPL");
-//        stock.setAsk(100.0);
-//        when(stockRepository.findByTicker(anyString())).thenReturn(Optional.of(stock));
-//
-//        Actuary actuary = new Actuary();
-//        actuary.setActuaryId(1l);
-//        actuary.setEmployeeId(1l);
-//        actuary.setLimitValue(2.0);
-//        actuary.setLimitUsed(0.0);
-//        actuary.setOrderRequest(true);
-//        actuary.setRole("ROLE_SUPERVISOR");
-//        actuary.setEmail("email");
-//
-//        given(actuaryRepository.findByEmployeeId(any())).willReturn(actuary);
-//        stockOrderService.executeTask();
-//
-//        verify(stockOrderRepository, times(1)).save(any(StockOrder.class));
-//        assertEquals(OrderType.STOP_LIMIT, stockOrder.getType());
-//    }
+        // Proverite da li je narudžbina sačuvana u bazi podataka
+        verify(stockOrderRepository, times(1)).save(stockOrder);
+    }
+    @Test
+    public void testBuyCompanyStockOtc() {
+        // Postavite scenarij za test
+        BuyStockCompanyDto buyStockCompanyDto = new BuyStockCompanyDto();
+        buyStockCompanyDto.setBuyerId(1L);
+        buyStockCompanyDto.setSellerId(2L);
+        buyStockCompanyDto.setTicker("AAPL");
+        buyStockCompanyDto.setPrice(BigDecimal.valueOf(100));
+        buyStockCompanyDto.setAmount(10);
+
+        // Pozovite metodu koju testirate
+        boolean result = stockOrderService.buyCompanyStockOtc(buyStockCompanyDto);
+
+        // Proverite rezultat
+        assertTrue(result);
+
+        // Proverite da li je metoda save pozvana na repository-ju
+        verify(contractRepository, times(1)).save(any(Contract.class));
+    }
 
     @Test
     public void testFindAll() {
@@ -505,23 +279,6 @@ class StockOrderServiceTest {
         }
     }
 
-//    @Test
-//    public void testApproveStocksOrder() {
-//        Long stockOrderId = 0L;
-//
-//        StockOrder stockOrder = createDummyStockOrder();
-//        stockOrder.setStockOrderId(stockOrderId);
-//
-//        given(stockOrderRepository.findByStockOrderId(stockOrderId)).willReturn(stockOrder);
-//        given(stockOrderRepository.save(stockOrder)).willReturn(stockOrder);
-//
-//        stockOrder = stockOrderService.approveStockOrder(stockOrderId, true);
-//        assertEquals(stockOrder.getStatus(), OrderStatus.PROCESSING);
-//
-//        stockOrder = stockOrderService.approveStockOrder(stockOrderId, false);
-//        assertEquals(stockOrder.getStatus(), OrderStatus.REJECTED);
-//    }
-
     @Test
     public void testBuyStock() {
         Long employeeId = 0L;
@@ -570,36 +327,6 @@ class StockOrderServiceTest {
 
     }
 
-//    @Test
-//    public void testBuyCompanyStockOtc() {
-//
-//        BuyStockCompanyDto buyStockCompanyDto = new BuyStockCompanyDto();
-//        buyStockCompanyDto.setBuyerId(1L);
-//        buyStockCompanyDto.setSellerId(2L);
-//        buyStockCompanyDto.setTicker("AAPL");
-//        buyStockCompanyDto.setPrice(BigDecimal.valueOf(100));
-//        buyStockCompanyDto.setAmount(10);
-//
-//        CompanyAccountDto companyAccountDto = new CompanyAccountDto();
-//        companyAccountDto.setAvailableBalance(BigDecimal.valueOf(2000));
-//
-//        ResponseEntity responseEntity = ResponseEntity.ok(companyAccountDto);
-//
-//        given(bankServiceClient.getByCompanyId(any(Long.class))).willReturn(responseEntity);
-//
-//        boolean result = stockOrderService.buyCompanyStockOtc(buyStockCompanyDto);
-//
-//        assertTrue(result);
-//        verify(contractRepository, times(1)).save(any(Contract.class));
-//    }
-//
-//    public StockOrder createDummyStockOrder() {
-//        StockOrder stockOrder = new StockOrder();
-//        stockOrder.setStockOrderId(1L);
-//
-//        return stockOrder;
-//    }
-
     public List<StockOrder> createDummyStockOrders() {
         StockOrder stockOrder1 = new StockOrder();
         stockOrder1.setStockOrderId(1L);
@@ -633,4 +360,24 @@ class StockOrderServiceTest {
 
         return actuary;
     }
+    private StockOrder createDummyStockOrder() {
+        StockOrder stockOrder = new StockOrder();
+        stockOrder.setStockOrderId(1L);
+        stockOrder.setUserId(1L);
+        stockOrder.setCompanyId(1L);
+        stockOrder.setEmployeeId(1L);
+        stockOrder.setTicker("AAPL");
+        stockOrder.setStatus(OrderStatus.WAITING);
+        stockOrder.setType(OrderType.MARKET);
+        stockOrder.setLimitValue(100.0);
+        stockOrder.setStopValue(90.0);
+        stockOrder.setAmount(100);
+        stockOrder.setAmountLeft(100);
+        stockOrder.setAon(true);
+        stockOrder.setMargin(true);
+        stockOrder.setCurrencyMark("USD");
+
+        return stockOrder;
+    }
+
 }

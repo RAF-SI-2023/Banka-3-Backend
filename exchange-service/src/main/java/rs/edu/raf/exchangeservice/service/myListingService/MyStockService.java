@@ -268,7 +268,7 @@ public class MyStockService {
             int stockNumber = rand.nextInt(ordersToSell.size());
             StockOrderSell stockOrderSell = ordersToSell.get(stockNumber);   //StockOrder koji obradjujemo
 
-            Stock stock = stockRepository.findByTicker(stockOrderSell.getTicker()).get();  //uzimao stock iz baze koji kupujemo
+                Stock stock = stockRepository.findByTicker(stockOrderSell.getTicker()).get();  //uzimao stock iz baze koji kupujemo
             double currentPrice = stock.getBid();   //trenutna cena po kojoj prodajemo
             int amountToSell = rand.nextInt(stockOrderSell.getAmountLeft()) + 1;
 
