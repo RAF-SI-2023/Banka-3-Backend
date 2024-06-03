@@ -11,6 +11,7 @@ import rs.edu.raf.exchangeservice.domain.model.listing.Future;
 import rs.edu.raf.exchangeservice.domain.model.myListing.MyFuture;
 import rs.edu.raf.exchangeservice.domain.model.order.FutureOrder;
 import rs.edu.raf.exchangeservice.domain.model.order.FutureOrderSell;
+import rs.edu.raf.exchangeservice.jacoco.ExcludeFromJacocoGeneratedReport;
 import rs.edu.raf.exchangeservice.repository.listingRepository.FutureRepository;
 import rs.edu.raf.exchangeservice.repository.myListingRepository.MyFutureRepository;
 import rs.edu.raf.exchangeservice.repository.orderRepository.FutureOrderSellRepository;
@@ -95,6 +96,7 @@ public class MyFutureSerivce {
     }
 
     @Scheduled(fixedRate = 10000)
+    @ExcludeFromJacocoGeneratedReport
     public void executeOrders(){
         if(!orderToSell.isEmpty()){
             Random random = new Random();

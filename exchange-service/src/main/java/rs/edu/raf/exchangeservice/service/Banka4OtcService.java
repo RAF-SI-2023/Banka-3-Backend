@@ -22,6 +22,7 @@ import rs.edu.raf.exchangeservice.domain.model.myListing.MyStock;
 import rs.edu.raf.exchangeservice.domain.model.offer.MyOffer;
 import rs.edu.raf.exchangeservice.domain.model.offer.Offer;
 import rs.edu.raf.exchangeservice.domain.model.offer.OfferStatus;
+import rs.edu.raf.exchangeservice.jacoco.ExcludeFromJacocoGeneratedReport;
 import rs.edu.raf.exchangeservice.repository.listingRepository.Bank4StockRepository;
 import rs.edu.raf.exchangeservice.repository.myListingRepository.MyStockRepository;
 import rs.edu.raf.exchangeservice.repository.offerRepository.MyOfferRepository;
@@ -106,7 +107,8 @@ public class Banka4OtcService {
     }
 
 //    @Async
-    public List<MyStockDto> getBank4Stocks(){
+@ExcludeFromJacocoGeneratedReport
+public List<MyStockDto> getBank4Stocks(){
         RestTemplate restTemplate = new RestTemplate();
         //ide njihov url, ovo sam stavila samo za testiranje
         String url = "http://localhost:8083/api/v1/otcTrade/getStocks";
@@ -128,6 +130,7 @@ public class Banka4OtcService {
     }
 
     @Scheduled(fixedRate = 10000)
+    @ExcludeFromJacocoGeneratedReport
     private void sendAcceptedOffers(){
         List<Offer> offers = offerRepository.findAllByOfferStatus(OfferStatus.ACCEPTED);
         if(!offers.isEmpty()){
@@ -147,6 +150,7 @@ public class Banka4OtcService {
         }
     }
 
+    @ExcludeFromJacocoGeneratedReport
     public MyOffer makeOffer(FrontendOfferDto frontendOfferDto){
         MyOffer myOffer = new MyOffer();
         myOffer.setAmount(frontendOfferDto.getAmount());

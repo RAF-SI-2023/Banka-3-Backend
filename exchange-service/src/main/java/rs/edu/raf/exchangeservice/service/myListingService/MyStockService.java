@@ -19,6 +19,7 @@ import rs.edu.raf.exchangeservice.domain.model.listing.Stock;
 import rs.edu.raf.exchangeservice.domain.model.listing.Ticker;
 import rs.edu.raf.exchangeservice.domain.model.myListing.MyStock;
 import rs.edu.raf.exchangeservice.domain.model.order.StockOrderSell;
+import rs.edu.raf.exchangeservice.jacoco.ExcludeFromJacocoGeneratedReport;
 import rs.edu.raf.exchangeservice.repository.ProfitStockRepositorty;
 import rs.edu.raf.exchangeservice.repository.TaxStockRepository;
 import rs.edu.raf.exchangeservice.repository.listingRepository.StockRepository;
@@ -261,6 +262,7 @@ public class MyStockService {
     //proveravamo uslove za cenu i limit i stop
     //ako su dobri, prodajemo akciju i azuriramo MyStock u DB
     @Scheduled(fixedRate = 15000)
+    @ExcludeFromJacocoGeneratedReport
     public void executeTask() {
         if (ordersToSell.isEmpty()) {
         } else {

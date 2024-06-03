@@ -73,6 +73,10 @@ public class AccountServiceUnitTest {
     private UserAccount userAccount;
     private CompanyAccount companyAccount;
 
+    private static final String exchangeAccountRSD = "1234567891231231";
+    private static final String exchangeAccountEUR = "9876543219876543";
+    private static final String exchangeAccountUSD = "1098765432101234";
+    private static final String exchangeAccountGBP = "9988776655443322";
 
     @BeforeEach
     void setUp() {
@@ -107,6 +111,60 @@ public class AccountServiceUnitTest {
 
     }
 
+    @Test
+    void testFindExchangeAccountForGivenCurrency_RSD() {
+        // Arrange
+        String currencyMark = "RSD";
+        Account expectedAccount = new Account();
+        when(accountRepository.findByAccountNumber(exchangeAccountRSD)).thenReturn(Optional.of(expectedAccount));
+
+        // Act
+        Account result = accountService.findExchangeAccountForGivenCurrency(currencyMark);
+
+        // Assert
+        assertEquals(expectedAccount, result);
+    }
+
+    @Test
+    void testFindExchangeAccountForGivenCurrency_EUR() {
+        // Arrange
+        String currencyMark = "EUR";
+        Account expectedAccount = new Account();
+        when(accountRepository.findByAccountNumber(exchangeAccountEUR)).thenReturn(Optional.of(expectedAccount));
+
+        // Act
+        Account result = accountService.findExchangeAccountForGivenCurrency(currencyMark);
+
+        // Assert
+        assertEquals(expectedAccount, result);
+    }
+    @Test
+    void testFindExchangeAccountForGivenCurrency_USD() {
+        // Arrange
+        String currencyMark = "USD";
+        Account expectedAccount = new Account();
+        when(accountRepository.findByAccountNumber(exchangeAccountUSD)).thenReturn(Optional.of(expectedAccount));
+
+        // Act
+        Account result = accountService.findExchangeAccountForGivenCurrency(currencyMark);
+
+        // Assert
+        assertEquals(expectedAccount, result);
+    }
+
+    @Test
+    void testFindExchangeAccountForGivenCurrency_GBP() {
+        // Arrange
+        String currencyMark = "GBP";
+        Account expectedAccount = new Account();
+        when(accountRepository.findByAccountNumber(exchangeAccountGBP)).thenReturn(Optional.of(expectedAccount));
+
+        // Act
+        Account result = accountService.findExchangeAccountForGivenCurrency(currencyMark);
+
+        // Assert
+        assertEquals(expectedAccount, result);
+    }
     @Test
     void testFindAccount_User() {
         // Mocking currencyRepository.findByMark(...)
@@ -556,6 +614,15 @@ public class AccountServiceUnitTest {
         boolean result = accountService.checkBalance("1581231231231888", 500.0);
 
         assertEquals(result, true);
+    }
+    @Test
+    void testCheckBalance_AccountNotFound() {
+        // Arrange
+        String accountNumber = "non_existing_account_number";
+        given(accountRepository.findByAccountNumber(accountNumber)).willReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(RuntimeException.class, () -> accountService.checkBalance(accountNumber, 500.0));
     }
 
     @Test

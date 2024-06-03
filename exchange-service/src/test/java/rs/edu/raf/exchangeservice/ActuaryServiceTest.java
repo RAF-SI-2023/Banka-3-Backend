@@ -97,6 +97,16 @@ public class ActuaryServiceTest {
         verify(actuaryRepository, times(1)).save(any(Actuary.class));
     }
     @Test
+    public void addActuary1() {
+        ActuaryDto actuaryDto = new ActuaryDto();
+        actuaryDto.setRole("ROLE_USER");
+        when(actuaryRepository.save(any(Actuary.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        actuaryService.addActuary(actuaryDto);
+
+        verify(actuaryRepository, times(1)).save(any(Actuary.class));
+    }
+    @Test
     public void testGetAllProfitStocks() {
         // Kreirajte dummy podatke za ProfitStock
         ProfitStock profitStock1 = new ProfitStock();
