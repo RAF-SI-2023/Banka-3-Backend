@@ -1,6 +1,7 @@
 package com.example.bankservice;
 
 import com.example.bankservice.domain.dto.currencyExchange.CurrencyExchangeDto;
+import com.example.bankservice.domain.model.CommissionFromCurrencyExchange;
 import com.example.bankservice.domain.model.Currency;
 import com.example.bankservice.domain.model.CurrencyExchange;
 import com.example.bankservice.domain.model.accounts.Account;
@@ -17,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -98,5 +100,31 @@ class CurrencyExchangeServiceTest {
 
         verifyNoInteractions(accountRepository);
         verifyNoInteractions(currencyExchangeRepository);
+    }
+    @Test
+    void testGetMoneyMadeOnExchangeTransactions_NoData() {
+        // Arrange
+        when(commissionFromCurrencyExhangeRepository.findAll()).thenReturn(new ArrayList<>());
+
+        // Act
+        BigDecimal result = currencyExchangeService.getMoneyMadeOnExchangeTransactions();
+
+        // Assert
+        assertEquals(BigDecimal.ZERO, result);
+    }
+
+    @Test
+    void testGetMoneyMadeOnExchangeTransactions_WithData() {
+        // Arrange
+        BigDecimal expectedAmount = new BigDecimal("100.00");
+        List<CommissionFromCurrencyExchange> commissions = new ArrayList<>();
+        commissions.add(new CommissionFromCurrencyExchange(1l,expectedAmount,5));
+        when(commissionFromCurrencyExhangeRepository.findAll()).thenReturn(commissions);
+
+        // Act
+        BigDecimal result = currencyExchangeService.getMoneyMadeOnExchangeTransactions();
+
+        // Assert
+        assertEquals(expectedAmount, result);
     }
 }
