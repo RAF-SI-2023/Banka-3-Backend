@@ -63,7 +63,7 @@ public class TransactionServiceTest {
         dto.setCode(123456); // valid code
 
         TransactionActivation transactionActivation = new TransactionActivation();
-        transactionActivation.setId(123L);
+        transactionActivation.setId("123L");
         transactionActivation.setCode(123456);
         transactionActivation.setActive(true);
 
@@ -84,7 +84,7 @@ public class TransactionServiceTest {
         dto.setCode(654321); // invalid code
 
         TransactionActivation transactionActivation = new TransactionActivation();
-        transactionActivation.setId(123L);
+        transactionActivation.setId("123L");
         transactionActivation.setCode(123456);
         transactionActivation.setActive(true);
 

@@ -20,7 +20,7 @@ public class TransactionActivation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     @NotNull(message = "This field cannot be NULL")
     @Email

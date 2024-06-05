@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 public class EmployeeActivation implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long employeeActivationId;
+    private String employeeActivationId;
     @NotNull(message = "This field cannot be NULL")
     @Email
     @Indexed

@@ -21,7 +21,7 @@ public class PasswordReset {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long passwordResetId;
+    private String passwordResetId;
 
     @NotNull(message = "This field cannot be NULL")
     @Email

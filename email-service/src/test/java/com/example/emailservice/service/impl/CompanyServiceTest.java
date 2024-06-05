@@ -129,7 +129,7 @@ public class CompanyServiceTest  implements SchedulingConfigurer {
     void testCleanupInactiveEntities() {
         // Priprema testnih podataka
         CompanyActivation inactiveEntity = new CompanyActivation();
-        inactiveEntity.setId(1L);
+        inactiveEntity.setId("1L");
         inactiveEntity.setActivationPossible(false);
 
         // Postavljanje ponašanja mock-a za repository
