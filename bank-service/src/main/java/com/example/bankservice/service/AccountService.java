@@ -159,6 +159,28 @@ public class AccountService {
         Account account = accountRepository.findByAccountNumber(accountNumber).orElseThrow(() -> new RuntimeException("Account not found"));
         return account.getAvailableBalance().compareTo(new BigDecimal(amount)) >= 0;
     }
+    
+    public boolean checkBalanceUser(Long userId, Double amount) {
+        List<UserAccount> accounts = accountRepository.findUserAccountByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+        for (UserAccount account : accounts) {
+            if (account.getCurrency().getMark().equalsIgnoreCase("RSD")) {
+                return account.getAvailableBalance().compareTo(new BigDecimal(amount)) >= 0;
+            }
+        }
+        throw new RuntimeException("Account not found");
+    }
+    
+    public boolean checkBalanceCompany(Long companyId, Double amount) {
+        List<CompanyAccount> accounts = accountRepository.findCompanyAccountByCompanyId(companyId)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+        for (CompanyAccount account : accounts) {
+            if (account.getCurrency().getMark().equalsIgnoreCase("RSD")) {
+                return account.getAvailableBalance().compareTo(new BigDecimal(amount)) >= 0;
+            }
+        }
+        throw new RuntimeException("Account not found");
+    }
 
     public Account extractAccountForAccountNumber(String accountNumber) {
         return accountRepository.findByAccountNumber(accountNumber)

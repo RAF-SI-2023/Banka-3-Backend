@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class CompanyActivation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     @NotNull(message = "email field cannot be NULL")
     @Email

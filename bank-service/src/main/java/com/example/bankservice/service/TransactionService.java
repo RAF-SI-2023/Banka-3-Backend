@@ -50,6 +50,8 @@ public class TransactionService {
         if (!accountService.checkBalance(paymentTransactionDto.getAccountFrom(), paymentTransactionDto.getAmount())) {
             throw new RuntimeException("Insufficient funds");
         }
+        
+        checkIfAccountsAreTheSame(accountFrom, accountTo);
 
         Long transactionId = 0L;
         if (accountFrom.getCurrency().getMark().equals(accountTo.getCurrency().getMark())) {
@@ -81,6 +83,8 @@ public class TransactionService {
         Account accountFrom = accountService.extractAccountForAccountNumber(currencyExchangeDto.getAccountFrom());
         Account accountTo = accountService.extractAccountForAccountNumber(currencyExchangeDto.getAccountTo());
 
+        checkIfAccountsAreTheSame(accountFrom, accountTo);
+        
         if (!accountService.checkBalance(currencyExchangeDto.getAccountFrom(), currencyExchangeDto.getAmount())) {
             throw new RuntimeException("Insufficient funds");
         }
@@ -105,7 +109,9 @@ public class TransactionService {
             accountFrom = accountService.findAccount(stockTransactionDto);
         }
         Account accountTo = accountService.findExchangeAccountForGivenCurrency(stockTransactionDto.getCurrencyMark());
-
+        
+        checkIfAccountsAreTheSame(accountFrom, accountTo);
+        
         if (accountFrom.getAvailableBalance().compareTo(BigDecimal.valueOf(stockTransactionDto.getAmount())) < 0) {
             throw new RuntimeException("Insufficient funds");
         }
@@ -133,7 +139,8 @@ public class TransactionService {
         } else {
             accountTo = accountService.findAccount(stockTransactionDto);
         }
-
+        
+        checkIfAccountsAreTheSame(accountFrom, accountTo);
 
         if (accountFrom.getAvailableBalance().compareTo(BigDecimal.valueOf(stockTransactionDto.getAmount())) < 0) {
             throw new RuntimeException("Insufficient funds");
@@ -171,6 +178,9 @@ public class TransactionService {
                 userOtcTransactionDto.getUserFromId(), "RSD");
         Account accountTo = accountService.findUserAccountForIdAndCurrency(
                 userOtcTransactionDto.getUserToId(), "RSD");
+        
+        checkIfAccountsAreTheSame(accountFrom, accountTo);
+        
         startOTCTransaction(accountFrom, accountTo, userOtcTransactionDto.getAmount());
     }
     
@@ -179,6 +189,9 @@ public class TransactionService {
                 companyOtcTransactionDto.getCompanyFromId(), "RSD");
         Account accountTo = accountService.findCompanyAccountForIdAndCurrency(
                 companyOtcTransactionDto.getCompanyToId(), "RSD");
+        
+        checkIfAccountsAreTheSame(accountFrom, accountTo);
+        
         startOTCTransaction(accountFrom, accountTo, companyOtcTransactionDto.getAmount());
     }
 
@@ -279,5 +292,11 @@ public class TransactionService {
     private void acceptTransaction(Transaction transaction) {
         transaction.setTransactionStatus(TransactionStatus.ACCEPTED);
         transactionRepository.save(transaction);
+    }
+    
+    private void checkIfAccountsAreTheSame(Account accountFrom, Account accountTo) {
+        if (accountFrom.getAccountNumber().equals(accountTo.getAccountNumber())) {
+            throw new RuntimeException("Accounts are the same");
+        }
     }
 }
