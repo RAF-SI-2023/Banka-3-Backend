@@ -30,6 +30,10 @@ public class StockWeeklyService {
 
     @ExcludeFromJacocoGeneratedReport
     public void loadData() throws JsonProcessingException {
+        if(stockWeeklyRepository.count() > 0){
+            stockWeeklyRepository.deleteAll();
+        }
+
         List<Ticker> tickerList = tickerRepository.findAll();
 
         for (Ticker ticker : tickerList) {

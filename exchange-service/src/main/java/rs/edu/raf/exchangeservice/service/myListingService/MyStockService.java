@@ -152,7 +152,7 @@ public class MyStockService {
 
     public MyStock makeCompanyStockPublic(MakePublicStockDto makePublicStockDto) {
         MyStock myStock = myStockRepository.findByTickerAndCompanyId(makePublicStockDto.getTicker(), makePublicStockDto.getOwnerId());
-        if(myStock.getAmount() >= makePublicStockDto.getAmount()){
+        if(myStock.getAmount() >= makePublicStockDto.getAmount() && makePublicStockDto.getAmount() >= 0){
             myStock.setPublicAmount(makePublicStockDto.getAmount());
             myStock.setPrivateAmount(myStock.getAmount() - makePublicStockDto.getAmount());
             myStockRepository.save(myStock);
@@ -162,7 +162,7 @@ public class MyStockService {
 
     public MyStock makeUserStockPublic(MakePublicStockDto makePublicStockDto) {
         MyStock myStock = myStockRepository.findByTickerAndUserId(makePublicStockDto.getTicker(), makePublicStockDto.getOwnerId());
-        if(myStock.getAmount() >= makePublicStockDto.getAmount()){
+        if(myStock.getAmount() >= makePublicStockDto.getAmount() && makePublicStockDto.getAmount() >= 0){
             myStock.setPublicAmount(makePublicStockDto.getAmount());
             myStock.setPrivateAmount(myStock.getAmount() - makePublicStockDto.getAmount());
             myStockRepository.save(myStock);

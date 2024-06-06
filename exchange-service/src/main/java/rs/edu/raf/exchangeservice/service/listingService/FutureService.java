@@ -34,7 +34,9 @@ public class FutureService {
     //    private final String pathToFile = "exchange-service/src/main/resources/data/future_data.csv";
     //@PostConstruct
     public void loadData(){
-
+        if(futureRepository.count() > 0){
+            return;
+        }
             try (BufferedReader br = new BufferedReader(new InputStreamReader(new ClassPathResource("future_data.csv").getInputStream()))) {
                 String line;
                 // Skip the header line

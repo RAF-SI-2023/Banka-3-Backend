@@ -45,6 +45,8 @@ class TickerServiceTest {
     private  MyStockService myStockService;
     @Mock
     private ForexService forexService;
+    @Mock
+    private FutureService futureService;
 
     @InjectMocks
     private TickerService tickerService;

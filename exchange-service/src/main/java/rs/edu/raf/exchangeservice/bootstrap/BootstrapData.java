@@ -8,6 +8,7 @@ import rs.edu.raf.exchangeservice.repository.myListingRepository.MyStockReposito
 import rs.edu.raf.exchangeservice.service.ExchangeService;
 import rs.edu.raf.exchangeservice.service.listingService.ForexService;
 import rs.edu.raf.exchangeservice.service.listingService.FutureService;
+import rs.edu.raf.exchangeservice.service.listingService.TickerService;
 
 @AllArgsConstructor
 @Component
@@ -17,17 +18,14 @@ public class BootstrapData implements CommandLineRunner {
     ExchangeService exchangeService;
     FutureService futureService;
     ForexService forexService;
+    TickerService tickerService;
     @Override
     public void run(String... args) throws Exception {
 
         if(exchangeService.findAll().size() == 0) {
             exchangeService.loadData();
-        }
-        if(futureService.findAll().size() == 0){
-            futureService.loadData();
-        }
-        if(forexService.findAll().size() == 0){
-            forexService.loadData();
+        }else {
+            tickerService.loadData();
         }
 
         if(myStockRepository.count() == 0) {

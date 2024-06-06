@@ -27,6 +27,9 @@ public class ForexService {
 
     //@PostConstruct
     public void loadData() throws JsonProcessingException {
+            if(forexRepository.count() > 0){
+                forexRepository.deleteAll();
+            }
 
             RestTemplate restTemplate = new RestTemplate();
             String url = "https://v6.exchangerate-api.com/v6/" + exchangeApiKey + "/latest/" + currencyMark;

@@ -28,6 +28,10 @@ public class StockService {
     private final String apiKey = "&apikey=NMBJV9I1JXOWWEZ6";
 
     public void loadData() {
+        if(stockRepository.count() > 0){
+            stockRepository.deleteAll();
+        }
+
         List<Ticker> tickersList = tickerRepository.findAll();
 
         for (Ticker ticker : tickersList){

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import rs.edu.raf.exchangeservice.domain.dto.bank.BankTransactionDto;
+import rs.edu.raf.exchangeservice.domain.dto.bank.CheckAccountBalanceDto;
 import rs.edu.raf.exchangeservice.domain.dto.bank.CompanyOtcDto;
 import rs.edu.raf.exchangeservice.domain.dto.bank.UserOtcDto;
 
@@ -44,4 +45,16 @@ public interface BankServiceClient {
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "kompanija kupuje ili prodaje od kompanije")
     ResponseEntity<?> otcBankTransaction (@RequestBody CompanyOtcDto companyOtcDto);
+
+    @PostMapping(value = "/account/checkAccountBalanceUser",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "Provera stanja racuna racuna korisnika")
+    ResponseEntity<?> checkAccountBalanceUser (@RequestBody CheckAccountBalanceDto checkAccountBalanceDto);
+
+    @PostMapping(value = "/account/checkAccountBalanceCompany",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "Provera stanja racuna racuna kompanije")
+    ResponseEntity<?> checkAccountBalanceCompany (@RequestBody CheckAccountBalanceDto checkAccountBalanceDto);
 }
