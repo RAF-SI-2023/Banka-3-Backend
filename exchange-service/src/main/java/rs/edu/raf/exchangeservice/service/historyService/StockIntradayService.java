@@ -31,6 +31,10 @@ public class StockIntradayService {
 
     @ExcludeFromJacocoGeneratedReport
     public void loadData() throws JsonProcessingException {
+        if(stockIntradayRepository.count() > 0){
+            stockIntradayRepository.deleteAll();
+        }
+
         List<Ticker> tickerList = tickerRepository.findAll();
 
         for (Ticker ticker : tickerList) {

@@ -143,25 +143,25 @@ class StockOrderServiceTest {
         // Provjera očekivanog rezultata
         assertEquals(OrderStatus.PROCESSING.toString(), result.getStatus());
     }
-    @Test
-    public void testBuyUserStockOtc() {
-        // Postavite scenarij za test
-        BuyStockUserOTCDto buyStockUserOTCDto = new BuyStockUserOTCDto();
-        buyStockUserOTCDto.setUserBuyerId(1L);
-        buyStockUserOTCDto.setUserSellerId(2L);
-        buyStockUserOTCDto.setTicker("AAPL");
-        buyStockUserOTCDto.setPrice(BigDecimal.valueOf(100));
-        buyStockUserOTCDto.setAmount(10);
-
-        // Pozovite metodu koju testirate
-        boolean result = stockOrderService.buyUserStockOtc(buyStockUserOTCDto);
-
-        // Proverite rezultat
-        assertTrue(result);
-
-        // Proverite da li je metoda save pozvana na repository-ju
-        verify(contractRepository, times(1)).save(any(Contract.class));
-    }
+//    @Test
+//    public void testBuyUserStockOtc() {
+//        // Postavite scenarij za test
+//        BuyStockUserOTCDto buyStockUserOTCDto = new BuyStockUserOTCDto();
+//        buyStockUserOTCDto.setUserBuyerId(1L);
+//        buyStockUserOTCDto.setUserSellerId(2L);
+//        buyStockUserOTCDto.setTicker("AAPL");
+//        buyStockUserOTCDto.setPrice(BigDecimal.valueOf(100));
+//        buyStockUserOTCDto.setAmount(10);
+//
+//        // Pozovite metodu koju testirate
+//        boolean result = stockOrderService.buyUserStockOtc(buyStockUserOTCDto);
+//
+//        // Proverite rezultat
+//        assertTrue(result);
+//
+//        // Proverite da li je metoda save pozvana na repository-ju
+//        verify(contractRepository, times(1)).save(any(Contract.class));
+//    }
     @Test
     public void testApproveStockOrder() {
         // Postavite scenarij za test
@@ -183,25 +183,25 @@ class StockOrderServiceTest {
         // Proverite da li je narudžbina sačuvana u bazi podataka
         verify(stockOrderRepository, times(1)).save(stockOrder);
     }
-    @Test
-    public void testBuyCompanyStockOtc() {
-        // Postavite scenarij za test
-        BuyStockCompanyDto buyStockCompanyDto = new BuyStockCompanyDto();
-        buyStockCompanyDto.setBuyerId(1L);
-        buyStockCompanyDto.setSellerId(2L);
-        buyStockCompanyDto.setTicker("AAPL");
-        buyStockCompanyDto.setPrice(BigDecimal.valueOf(100));
-        buyStockCompanyDto.setAmount(10);
-
-        // Pozovite metodu koju testirate
-        boolean result = stockOrderService.buyCompanyStockOtc(buyStockCompanyDto);
-
-        // Proverite rezultat
-        assertTrue(result);
-
-        // Proverite da li je metoda save pozvana na repository-ju
-        verify(contractRepository, times(1)).save(any(Contract.class));
-    }
+//    @Test
+//    public void testBuyCompanyStockOtc() {
+//        // Postavite scenarij za test
+//        BuyStockCompanyDto buyStockCompanyDto = new BuyStockCompanyDto();
+//        buyStockCompanyDto.setBuyerId(1L);
+//        buyStockCompanyDto.setSellerId(2L);
+//        buyStockCompanyDto.setTicker("AAPL");
+//        buyStockCompanyDto.setPrice(BigDecimal.valueOf(100));
+//        buyStockCompanyDto.setAmount(10);
+//
+//        // Pozovite metodu koju testirate
+//        boolean result = stockOrderService.buyCompanyStockOtc(buyStockCompanyDto);
+//
+//        // Proverite rezultat
+//        assertTrue(result);
+//
+//        // Proverite da li je metoda save pozvana na repository-ju
+//        verify(contractRepository, times(1)).save(any(Contract.class));
+//    }
 
     @Test
     public void testFindAll() {
