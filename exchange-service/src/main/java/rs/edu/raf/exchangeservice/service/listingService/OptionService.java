@@ -37,6 +37,10 @@ public class OptionService {
 
 
     public void loadData() throws JsonProcessingException {
+        if(optionsRepository.count() > 0){
+            optionsRepository.deleteAll();
+        }
+
         List<Ticker> tickersList = tickerRepository.findAll();
 
         for (Ticker ticker : tickersList) {
