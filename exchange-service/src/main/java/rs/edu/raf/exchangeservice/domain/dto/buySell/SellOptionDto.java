@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class BuyOptionDto {
+public class SellOptionDto {
 
     private Long companyId;
     private String contractSymbol; //jedinstven

@@ -90,13 +90,6 @@ public class TransactionController {
         }
     }
 
-    @PostMapping(value = "/optionBuyTransaction",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(description = "banka kupuje opcije sa berze")
-    ResponseEntity<?> optionBuyTransaction(@RequestBody BuyOptionDto buyOptionDto) {
-        return null;
-    }
     
     @PostMapping(value = "/otcUserTransaction",
             consumes = MediaType.APPLICATION_JSON_VALUE,
