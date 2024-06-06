@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import rs.edu.raf.exchangeservice.client.BankServiceClient;
 import rs.edu.raf.exchangeservice.configuration.StockUpdateEvent;
@@ -51,7 +52,7 @@ class MyStockServiceTest {
     @Mock
     private BankServiceClient bankServiceClient;
     @Mock
-    private EventPublisher eventPublisher;
+    private ApplicationEventPublisher eventPublisher;
 
 
     @InjectMocks

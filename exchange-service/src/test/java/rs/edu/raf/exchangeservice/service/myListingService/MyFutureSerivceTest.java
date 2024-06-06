@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import rs.edu.raf.exchangeservice.client.BankServiceClient;
 import rs.edu.raf.exchangeservice.domain.dto.bank.BankTransactionDto;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyFutureDto;
@@ -43,7 +44,7 @@ class MyFutureSerivceTest {
     @Mock
     private BankServiceClient bankServiceClient;
     @Mock
-    private EventPublisher eventPublisher;
+    private ApplicationEventPublisher eventPublisher;
 
 
     private static final double BUSHEL = 6.5;
