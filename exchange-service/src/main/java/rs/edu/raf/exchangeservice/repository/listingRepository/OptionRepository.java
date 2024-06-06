@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface OptionRepository extends JpaRepository<Option, Long> {
     List<Option> findByStockListingAndOptionType(String stockListing, String optionType);
+    Option findByContractSymbol(String contractSymbol);
 }

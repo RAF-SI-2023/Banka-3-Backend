@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyOptionDto;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyStockCompanyDto;
 import rs.edu.raf.exchangeservice.domain.model.listing.Option;
 import rs.edu.raf.exchangeservice.service.listingService.OptionService;
@@ -50,7 +51,12 @@ public class OptionController {
 
     }
 
-
+    @PostMapping("/bankBuy")
+    @Operation(description = "Banka kupuje odredjenu kolicinu opcija sa berze")
+    public ResponseEntity buyOptionsFromExchange(@RequestBody BuyOptionDto buyOptionDto) {
+        optionService.buyOptionsFromExchange(buyOptionDto);
+        return null;
+    }
 
 
 }

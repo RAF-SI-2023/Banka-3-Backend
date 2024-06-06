@@ -1,14 +1,8 @@
 package com.example.bankservice.controller;
 
-import com.example.bankservice.domain.dto.transaction.CompanyOtcTransactionDto;
-import com.example.bankservice.domain.dto.transaction.ConfirmPaymentTransactionDto;
-import com.example.bankservice.domain.dto.transaction.CreditTransactionDto;
-import com.example.bankservice.domain.dto.transaction.FinishedPaymentTransactionDto;
-import com.example.bankservice.domain.dto.transaction.PaymentTransactionDto;
-import com.example.bankservice.domain.dto.transaction.StartPaymentTransactionDto;
-import com.example.bankservice.domain.dto.transaction.StockTransactionDto;
-import com.example.bankservice.domain.dto.transaction.UserOtcTransactionDto;
+import com.example.bankservice.domain.dto.transaction.*;
 import com.example.bankservice.service.TransactionService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -94,6 +88,14 @@ public class TransactionController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @PostMapping(value = "/optionBuyTransaction",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "banka kupuje opcije sa berze")
+    ResponseEntity<?> optionBuyTransaction(@RequestBody BuyOptionDto buyOptionDto) {
+        return null;
     }
     
     @PostMapping(value = "/otcUserTransaction",

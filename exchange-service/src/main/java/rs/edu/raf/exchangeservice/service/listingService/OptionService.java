@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import rs.edu.raf.exchangeservice.client.BankServiceClient;
 import rs.edu.raf.exchangeservice.domain.dto.CompanyAccountDto;
+import rs.edu.raf.exchangeservice.domain.dto.bank.BankTransactionDto;
+import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyOptionDto;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyStockCompanyDto;
 import rs.edu.raf.exchangeservice.domain.model.enums.BankCertificate;
 import rs.edu.raf.exchangeservice.domain.model.enums.SellerCertificate;
@@ -102,7 +104,23 @@ public class OptionService {
         return true;
     }
 
+    public void buyOptionsFromExchange(BuyOptionDto buyOptionDto) {
+        Option option = findByContractSymbol(buyOptionDto.getContractSymbol());
+        int quantity = buyOptionDto.getQuantity();
+        double bid = option.getBid();
 
+        //provera da li na berzi ima dovoljno
+        if(quantity > option.getOpenInterest())
+            throw new RuntimeException("Not enough options available for purchase");
+
+        BankTransactionDto bankTransactionDto = new BankTransactionDto();
+        // TODO bankTransactionDto.setId();
+        bankTransactionDto.setAmount(bid * quantity);
+        bankTransactionDto.setCurrencyMark(option.getCurrencyMark());
+        bankServiceClient.stockBuyTransaction(bankTransactionDto);
+
+        //TODO...
+    }
 
 
     private void saveOptions(JsonNode jsonNode, String type, String stockListing) {
@@ -127,6 +145,10 @@ public class OptionService {
 
     public List<Option> findPuts(String ticker){
         return this.optionsRepository.findByStockListingAndOptionType(ticker, "Puts");
+    }
+
+    public Option findByContractSymbol(String contractSymbol) {
+        return this.optionsRepository.findByContractSymbol(contractSymbol);
     }
 
     public List<Option> findAllRefreshed() throws JsonProcessingException {
