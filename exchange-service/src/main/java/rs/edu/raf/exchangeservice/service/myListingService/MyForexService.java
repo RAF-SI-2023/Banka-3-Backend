@@ -1,11 +1,13 @@
 package rs.edu.raf.exchangeservice.service.myListingService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import rs.edu.raf.exchangeservice.client.BankServiceClient;
+import rs.edu.raf.exchangeservice.configuration.forex.ForexUpdateEvent;
 import rs.edu.raf.exchangeservice.domain.dto.bank.BankTransactionDto;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyForexDto;
 import rs.edu.raf.exchangeservice.domain.model.enums.OrderStatus;
@@ -28,6 +30,7 @@ public class MyForexService {
     private final ForexRepository forexRepository;
     private final ForexOrderRepository forexOrderRepository;
     private final BankServiceClient bankServiceClient;
+    private final ApplicationEventPublisher eventPublisher;
 
     public CopyOnWriteArrayList<ForexOrder> ordersToBuy = new CopyOnWriteArrayList<>();
 
@@ -55,6 +58,7 @@ public class MyForexService {
             myForex.setAmount(myForex.getAmount() + amount);
         }
         myForexRepository.save(myForex);
+        eventPublisher.publishEvent(new ForexUpdateEvent(this, myForex));
     }
 
     public ForexOrder buyForex(BuyForexDto buyForexDto){
