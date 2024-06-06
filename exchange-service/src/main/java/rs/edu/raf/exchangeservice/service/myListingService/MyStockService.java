@@ -108,6 +108,7 @@ public class MyStockService {
                 myStock.setAmount(myStock.getAmount() - 1);
             }
             myStockRepository.save(myStock);
+            eventPublisher.publishEvent(new StockUpdateEvent(this, myStock));
         }else if(companyId != null){
             MyStock myStock = myStockRepository.findByTickerAndCompanyId(ticker, companyId);
             for(int i = amount; i > 0; i--){
@@ -119,6 +120,7 @@ public class MyStockService {
                 myStock.setAmount(myStock.getAmount() - 1);
             }
             myStockRepository.save(myStock);
+            eventPublisher.publishEvent(new StockUpdateEvent(this, myStock));
         }
     }
 
@@ -149,23 +151,25 @@ public class MyStockService {
         profitStock.setAmount(amount);
         profitStockRepositorty.save(profitStock);
     }
-
+    //TODO OVDJE TAKODJE
     public MyStock makeCompanyStockPublic(MakePublicStockDto makePublicStockDto) {
         MyStock myStock = myStockRepository.findByTickerAndCompanyId(makePublicStockDto.getTicker(), makePublicStockDto.getOwnerId());
         if(myStock.getAmount() >= makePublicStockDto.getAmount() && makePublicStockDto.getAmount() >= 0){
             myStock.setPublicAmount(makePublicStockDto.getAmount());
             myStock.setPrivateAmount(myStock.getAmount() - makePublicStockDto.getAmount());
             myStockRepository.save(myStock);
+            eventPublisher.publishEvent(new StockUpdateEvent(this, myStock));
         }
         return myStock;
     }
-
+    //TODO OVDJE TAKDJE 2
     public MyStock makeUserStockPublic(MakePublicStockDto makePublicStockDto) {
         MyStock myStock = myStockRepository.findByTickerAndUserId(makePublicStockDto.getTicker(), makePublicStockDto.getOwnerId());
         if(myStock.getAmount() >= makePublicStockDto.getAmount() && makePublicStockDto.getAmount() >= 0){
             myStock.setPublicAmount(makePublicStockDto.getAmount());
             myStock.setPrivateAmount(myStock.getAmount() - makePublicStockDto.getAmount());
             myStockRepository.save(myStock);
+            eventPublisher.publishEvent(new StockUpdateEvent(this, myStock));
         }
         return myStock;
     }

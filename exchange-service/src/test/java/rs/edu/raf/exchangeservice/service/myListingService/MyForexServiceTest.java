@@ -1,10 +1,12 @@
 package rs.edu.raf.exchangeservice.service.myListingService;
 
+import io.cucumber.plugin.event.EventPublisher;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import rs.edu.raf.exchangeservice.client.BankServiceClient;
 import rs.edu.raf.exchangeservice.domain.dto.bank.BankTransactionDto;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyForexDto;
@@ -40,6 +42,9 @@ class MyForexServiceTest {
 
     @Mock
     private BankServiceClient bankServiceClient;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
 
     @Test
