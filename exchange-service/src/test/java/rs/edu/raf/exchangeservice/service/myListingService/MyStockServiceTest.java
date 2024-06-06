@@ -50,6 +50,9 @@ class MyStockServiceTest {
     private StockRepository stockRepository;
     @Mock
     private BankServiceClient bankServiceClient;
+    @Mock
+    private EventPublisher eventPublisher;
+
 
     @InjectMocks
     private MyStockService myStockService;

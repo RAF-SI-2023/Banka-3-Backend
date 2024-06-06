@@ -1,5 +1,6 @@
 package rs.edu.raf.exchangeservice.service.myListingService;
 
+import io.cucumber.plugin.event.EventPublisher;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -40,6 +41,9 @@ class MyForexServiceTest {
 
     @Mock
     private BankServiceClient bankServiceClient;
+
+    @Mock
+    private EventPublisher eventPublisher;
 
 
     @Test

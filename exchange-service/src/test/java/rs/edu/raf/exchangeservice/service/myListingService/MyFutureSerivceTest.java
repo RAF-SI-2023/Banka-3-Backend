@@ -1,5 +1,6 @@
 package rs.edu.raf.exchangeservice.service.myListingService;
 
+import io.cucumber.plugin.event.EventPublisher;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -41,6 +42,9 @@ class MyFutureSerivceTest {
 
     @Mock
     private BankServiceClient bankServiceClient;
+    @Mock
+    private EventPublisher eventPublisher;
+
 
     private static final double BUSHEL = 6.5;
     private static final double POUND = 1.2;
