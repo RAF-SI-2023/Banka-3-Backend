@@ -1,9 +1,11 @@
 package rs.edu.raf.exchangeservice.service.myListingService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import rs.edu.raf.exchangeservice.client.BankServiceClient;
+import rs.edu.raf.exchangeservice.configuration.future.FutureUpdateEvent;
 import rs.edu.raf.exchangeservice.domain.dto.bank.BankTransactionDto;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyFutureDto;
 import rs.edu.raf.exchangeservice.domain.model.enums.OrderStatus;
@@ -29,6 +31,7 @@ public class MyFutureSerivce {
     private final FutureRepository futureRepository;
     private final FutureOrderSellRepository futureOrderSellRepository;
     private final BankServiceClient bankServiceClient;
+    private final ApplicationEventPublisher eventPublisher;
 
     private static final double BUSHEL=6.5;
     private static final double POUND=1.2;
@@ -56,6 +59,7 @@ public class MyFutureSerivce {
         MyFuture myFuture = myFutureRepository.findByMyFutureId(myFutureId);
         myFuture.setIsPublic(true);
         myFutureRepository.save(myFuture);
+        eventPublisher.publishEvent(new FutureUpdateEvent(this, myFuture));
         return myFuture;
     }
 
@@ -63,6 +67,7 @@ public class MyFutureSerivce {
         MyFuture myFuture = myFutureRepository.findByMyFutureId(myFutureId);
         myFuture.setIsPublic(false);
         myFutureRepository.save(myFuture);
+        eventPublisher.publishEvent(new FutureUpdateEvent(this, myFuture));
         return myFuture;
     }
 
@@ -131,6 +136,7 @@ public class MyFutureSerivce {
             myFutureRepository.delete(myFuture);
             futureRepository.save(future);
             futureOrderSellRepository.save(futureOrderSell);
+            eventPublisher.publishEvent(new FutureUpdateEvent(this, myFuture));
         }
     }
 

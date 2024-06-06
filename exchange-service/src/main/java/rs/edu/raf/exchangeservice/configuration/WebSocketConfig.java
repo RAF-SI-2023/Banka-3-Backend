@@ -17,5 +17,9 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(stockWebSocketHandler, "/ws/stocks").setAllowedOrigins("*");
+        registry.addHandler(stockWebSocketHandler, "/ws/futures").setAllowedOrigins("*");
+        registry.addHandler(stockWebSocketHandler, "/ws/forex").setAllowedOrigins("*");
+        registry.addHandler(stockWebSocketHandler, "/ws/contract").setAllowedOrigins("*");
+        registry.addHandler(stockWebSocketHandler, "/ws/option").setAllowedOrigins("*");
     }
 }
