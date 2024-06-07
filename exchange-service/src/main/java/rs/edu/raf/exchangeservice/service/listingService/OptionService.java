@@ -6,20 +6,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import rs.edu.raf.exchangeservice.client.BankServiceClient;
 import rs.edu.raf.exchangeservice.domain.dto.CompanyAccountDto;
+import rs.edu.raf.exchangeservice.domain.dto.bank.BankTransactionDto;
+import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyOptionDto;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyStockCompanyDto;
 import rs.edu.raf.exchangeservice.domain.model.enums.BankCertificate;
 import rs.edu.raf.exchangeservice.domain.model.enums.SellerCertificate;
 import rs.edu.raf.exchangeservice.domain.model.listing.Option;
 import rs.edu.raf.exchangeservice.domain.model.listing.Ticker;
 import rs.edu.raf.exchangeservice.domain.model.myListing.Contract;
+import rs.edu.raf.exchangeservice.domain.model.myListing.MyOption;
 import rs.edu.raf.exchangeservice.repository.ContractRepository;
 import rs.edu.raf.exchangeservice.repository.listingRepository.OptionRepository;
 import rs.edu.raf.exchangeservice.repository.listingRepository.TickerRepository;
+import rs.edu.raf.exchangeservice.repository.myListingRepository.MyOptionRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -28,6 +33,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OptionService {
     private final OptionRepository optionsRepository;
+    private final MyOptionRepository myOptionRepository;
     private final TickerRepository tickerRepository;
     private final ContractRepository contractRepository;
     private final String apiCall = "https://query1.finance.yahoo.com/v6/finance/options/";
@@ -106,7 +112,51 @@ public class OptionService {
         return true;
     }
 
+    public MyOption buyOptionsFromExchange(BuyOptionDto buyOptionDto) {
+        Option option = findByContractSymbol(buyOptionDto.getContractSymbol());
+        if(option == null)
+            throw new RuntimeException("Option not found");
 
+        int openInterest = option.getOpenInterest();
+        int quantity = buyOptionDto.getQuantity();
+        double bid = option.getBid();
+
+        //provera da li na berzi ima dovoljno
+        if(quantity > openInterest)
+            throw new RuntimeException("Not enough options available for purchase");
+
+        BankTransactionDto bankTransactionDto = new BankTransactionDto();
+        bankTransactionDto.setCompanyId(bankTransactionDto.getCompanyId());
+        bankTransactionDto.setUserId(null);
+        bankTransactionDto.setCurrencyMark(option.getCurrencyMark());
+        bankTransactionDto.setAmount(bid * quantity);
+
+        ResponseEntity<?> responseEntity = bankServiceClient.stockBuyTransaction(bankTransactionDto);
+        if(responseEntity.getStatusCode().equals(HttpStatus.OK)) {
+            //oduzeti quantity sa berze
+            option.setOpenInterest(openInterest - quantity);
+            this.optionsRepository.save(option);
+            //dodati quantity u MyOption (po potrebi napraviti MyOption)
+            MyOption myOption = this.myOptionRepository.findByContractSymbol(option.getContractSymbol());
+            if(myOption == null) {
+                myOption = new MyOption();
+                myOption.setContractSymbol(option.getContractSymbol());
+                myOption.setOptionType(option.getOptionType());
+                myOption.setCurrencyMark(option.getCurrencyMark());
+                myOption.setPrice(option.getPrice());
+                myOption.setAsk(option.getAsk());
+                myOption.setBid(option.getBid());
+                myOption.setQuantity(0);
+            }
+
+            myOption.setQuantity(myOption.getQuantity() + quantity);
+            myOptionRepository.save(myOption);
+
+            return myOption;
+        }
+
+        return null;
+    }
 
 
     private void saveOptions(JsonNode jsonNode, String type, String stockListing) {
@@ -131,6 +181,10 @@ public class OptionService {
 
     public List<Option> findPuts(String ticker){
         return this.optionsRepository.findByStockListingAndOptionType(ticker, "Puts");
+    }
+
+    public Option findByContractSymbol(String contractSymbol) {
+        return this.optionsRepository.findByContractSymbol(contractSymbol);
     }
 
     public List<Option> findAllRefreshed() throws JsonProcessingException {
