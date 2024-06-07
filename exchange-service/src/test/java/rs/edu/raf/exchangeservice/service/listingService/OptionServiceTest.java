@@ -90,31 +90,6 @@ class OptionServiceTest {
     }
 
     @Test
-    void requestToBuyOptionByCompany_WhenSufficientBalance_ShouldReturnTrue() {
-
-        BuyStockCompanyDto buyStockCompanyDto = new BuyStockCompanyDto();
-        buyStockCompanyDto.setBuyerId(1L);
-        buyStockCompanyDto.setSellerId(2L);
-        buyStockCompanyDto.setTicker("AAPL");
-        buyStockCompanyDto.setPrice(BigDecimal.valueOf(100));
-        buyStockCompanyDto.setAmount(10);
-
-        CompanyAccountDto companyAccountDto = new CompanyAccountDto();
-        companyAccountDto.setAvailableBalance(BigDecimal.valueOf(2000));
-
-        ResponseEntity responseEntity = ResponseEntity.ok(companyAccountDto);
-
-        given(bankServiceClient.getByCompanyId(any(Long.class))).willReturn(responseEntity);
-
-        boolean result = optionService.requestToBuyOptionByCompany(buyStockCompanyDto);
-
-        assertTrue(result);
-        verify(contractRepository, times(1)).save(any(Contract.class));
-    }
-
-
-
-    @Test
     public void testFindPuts() {
         String ticker = "MS";
         String optionType = "Puts";

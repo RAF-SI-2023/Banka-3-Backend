@@ -107,7 +107,11 @@ public class MyStockService {
                 }
                 myStock.setAmount(myStock.getAmount() - 1);
             }
-            myStockRepository.save(myStock);
+            if(myStock.getAmount() == 0){
+                myStockRepository.delete(myStock);
+            }else {
+                myStockRepository.save(myStock);
+            }
             eventPublisher.publishEvent(new StockUpdateEvent(this, myStock));
         }else if(companyId != null){
             MyStock myStock = myStockRepository.findByTickerAndCompanyId(ticker, companyId);
@@ -119,7 +123,11 @@ public class MyStockService {
                 }
                 myStock.setAmount(myStock.getAmount() - 1);
             }
-            myStockRepository.save(myStock);
+            if(myStock.getAmount() == 0){
+                myStockRepository.delete(myStock);
+            }else {
+                myStockRepository.save(myStock);
+            }
             eventPublisher.publishEvent(new StockUpdateEvent(this, myStock));
         }
     }

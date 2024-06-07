@@ -10,6 +10,8 @@ import rs.edu.raf.exchangeservice.service.listingService.ForexService;
 import rs.edu.raf.exchangeservice.service.listingService.FutureService;
 import rs.edu.raf.exchangeservice.service.listingService.TickerService;
 
+import java.util.List;
+
 @AllArgsConstructor
 @Component
 public class BootstrapData implements CommandLineRunner {
@@ -39,6 +41,7 @@ public class BootstrapData implements CommandLineRunner {
             stok1.setCompanyId(1L);
             stok1.setUserId(null);
             stok1.setMinimumPrice(500.0);
+
             MyStock stok2 = new MyStock();
             stok2.setTicker("NVDA");
             stok2.setAmount(100);
@@ -48,6 +51,7 @@ public class BootstrapData implements CommandLineRunner {
             stok2.setCompanyId(1L);
             stok2.setUserId(null);
             stok2.setMinimumPrice(1500.0);
+
             MyStock stok3 = new MyStock();
             stok3.setTicker("AMZN");
             stok3.setAmount(100);
@@ -57,16 +61,6 @@ public class BootstrapData implements CommandLineRunner {
             stok3.setCompanyId(1L);
             stok3.setUserId(null);
             stok3.setMinimumPrice(200.0);
-
-            MyStock stok5 = new MyStock();
-            stok5.setTicker("NVDA");
-            stok5.setAmount(20);
-            stok5.setCurrencyMark("RSD");
-            stok5.setPrivateAmount(10);
-            stok5.setPublicAmount(10);
-            stok5.setCompanyId(3L);
-            stok5.setUserId(null);
-            stok5.setMinimumPrice(1500.0);
 
             MyStock stok4 = new MyStock();
             stok4.setTicker("TSLA");
@@ -78,11 +72,17 @@ public class BootstrapData implements CommandLineRunner {
             stok4.setUserId(null);
             stok4.setMinimumPrice(200.0);
 
-            myStockRepository.save(stok1);
-            myStockRepository.save(stok2);
-            myStockRepository.save(stok3);
-            myStockRepository.save(stok4);
-            myStockRepository.save(stok5);
+            MyStock stok5 = new MyStock();
+            stok5.setTicker("NVDA");
+            stok5.setAmount(20);
+            stok5.setCurrencyMark("RSD");
+            stok5.setPrivateAmount(10);
+            stok5.setPublicAmount(10);
+            stok5.setCompanyId(3L);
+            stok5.setUserId(null);
+            stok5.setMinimumPrice(1500.0);
+
+            myStockRepository.saveAll(List.of(stok1, stok2, stok3, stok4, stok5));
         }
     }
 }

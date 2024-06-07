@@ -54,7 +54,7 @@ public class ExchangeService {
                     else if (currency.equalsIgnoreCase("Euro")){
                         exchange.setCurrency("EUR");
                     }else if (currency.equalsIgnoreCase("BRITISH POUND STERLING")){
-                        exchange.setCurrency("GBR");
+                        exchange.setCurrency("RSD");
                     }else {
                         exchange.setCurrency("RSD");
                     }

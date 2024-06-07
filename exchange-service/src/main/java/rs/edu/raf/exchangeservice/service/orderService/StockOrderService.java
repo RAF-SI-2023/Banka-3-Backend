@@ -161,7 +161,6 @@ public class StockOrderService {
             contract.setBankCertificate(BankCertificate.DECLINED);
             contract.setSellerCertificate(SellerCertificate.DECLINED);
             contract.setComment("Nema dovoljno sredstava na racunu");
-            System.out.println("Nema dovoljno sredstava na racunu");
             contractRepository.save(contract);
             return false;
         }
@@ -172,7 +171,6 @@ public class StockOrderService {
             contract.setBankCertificate(BankCertificate.DECLINED);
             contract.setSellerCertificate(SellerCertificate.DECLINED);
             contract.setComment("Nema dovoljno deonica na stanju");
-            System.out.println("Nema dovoljno deonica na stanju");
             contractRepository.save(contract);
             return false;
         }
