@@ -182,7 +182,7 @@ public class BootstrapData implements CommandLineRunner {
             User user4 = User.builder()
                     .firstName("Milos")
                     .lastName("Krasic")
-                    .email("miloskrasicjuventus@gmail.com")
+                    .email("jane06.ristic@gmail.com")
                     .jmbg("1808965710191")
                     .phoneNumber("0668874984")
                     .isActive(true)
@@ -209,7 +209,19 @@ public class BootstrapData implements CommandLineRunner {
                     .accountNumber("3213213213213213")
                     .build();
 
-            contactRepository.saveAll(Arrays.asList(contact1, contact2));
+            Contact contact3 = Contact.builder()
+                    .user(user2)
+                    .name("Janko Ristic")
+                    .myName("janko dinarski")
+                    .accountNumber("1111111111111111").build();
+
+            Contact contact4 = Contact.builder()
+                    .user(user2)
+                    .name("Janko Ristic")
+                    .myName("janko eurski")
+                    .accountNumber("1231231231231231").build();
+
+            contactRepository.saveAll(Arrays.asList(contact1, contact2, contact3, contact4));
 
             //BANK
             Company bank = Company.builder()
@@ -244,11 +256,12 @@ public class BootstrapData implements CommandLineRunner {
                     .PIB(456456411)
                     .maticniBroj(88997711)
                     .sifraDelatnosti(5533)
-                    .email("goodcompany123321@gmail.com")
+                    .email("goodcompany@gmail.com")
                     .password(passwordEncoder.encode("goodcompany1234"))
                     .codeActive(true)
                     .isActive(true)
                     .build();
+
             //BAD COMPANY
             Company badCompany = Company.builder()
                     .title("BadCompany")
@@ -256,11 +269,12 @@ public class BootstrapData implements CommandLineRunner {
                     .PIB(456456441)
                     .maticniBroj(88997722)
                     .sifraDelatnosti(5533)
-                    .email("badcompany321123@gmail.com")
+                    .email("badcompany@gmail.com")
                     .password(passwordEncoder.encode("badcompany1234"))
                     .codeActive(true)
                     .isActive(true)
                     .build();
+
             companyRepository.saveAll(Arrays.asList(bank, stock, goodCompany, badCompany));
         }
     }

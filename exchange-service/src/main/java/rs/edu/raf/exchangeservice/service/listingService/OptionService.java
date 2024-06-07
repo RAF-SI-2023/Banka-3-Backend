@@ -87,30 +87,6 @@ public class OptionService {
         }
     }
 
-    //Kompanija salje zahtev za kupovinu. Pravi se ugovor.Druga firma ima pregled pristiglih ugovora i moze da ih prihvati ili odbije.
-    public boolean requestToBuyOptionByCompany(BuyStockCompanyDto buyStockCompanyDto){
-
-        ResponseEntity<?>entity=  bankServiceClient.getByCompanyId(buyStockCompanyDto.getBuyerId());
-        CompanyAccountDto companyAccountDto = (CompanyAccountDto) entity.getBody();
-
-        BigDecimal price = buyStockCompanyDto.getPrice();
-        Integer amount = buyStockCompanyDto.getAmount();
-
-        if(companyAccountDto.getAvailableBalance().compareTo(price.multiply(BigDecimal.valueOf(amount)))<0){
-            return false; //Firma nema dovoljno sredstava
-        }
-
-        Contract contract = new Contract();
-        contract.setCompanyBuyerId(buyStockCompanyDto.getBuyerId());
-        contract.setCompanySellerId(buyStockCompanyDto.getSellerId());
-        contract.setTicker(buyStockCompanyDto.getTicker());
-        contract.setPrice(buyStockCompanyDto.getPrice());
-        contract.setAmount(buyStockCompanyDto.getAmount());
-        contract.setBankCertificate(BankCertificate.PROCESSING);
-        contract.setSellerCertificate(SellerCertificate.PROCESSING);
-        contractRepository.save(contract);
-        return true;
-    }
 
     public MyOption buyOptionsFromExchange(BuyOptionDto buyOptionDto) {
         Option option = findByContractSymbol(buyOptionDto.getContractSymbol());
@@ -126,7 +102,7 @@ public class OptionService {
             throw new RuntimeException("Not enough options available for purchase");
 
         BankTransactionDto bankTransactionDto = new BankTransactionDto();
-        bankTransactionDto.setCompanyId(bankTransactionDto.getCompanyId());
+        bankTransactionDto.setCompanyId(1L);
         bankTransactionDto.setUserId(null);
         bankTransactionDto.setCurrencyMark(option.getCurrencyMark());
         bankTransactionDto.setAmount(bid * quantity);

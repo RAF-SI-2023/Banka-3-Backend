@@ -42,18 +42,6 @@ public class OptionController {
         return ResponseEntity.ok(this.optionService.findAllRefreshed());
     }
 
-    //Firma kupuje od firme
-    @PostMapping("/companyBuy")
-    @Operation(description = "Firma salje zahtev drugoj firmi za kupovinu options")
-    public ResponseEntity requestToBuyOptionByCompany(@RequestBody BuyStockCompanyDto buyStockCompanyDto){
-        if(this.optionService.requestToBuyOptionByCompany(buyStockCompanyDto)){
-            return ResponseEntity.ok().build();
-        }else{
-            //nema para
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
-        }
-
-    }
 
     @PostMapping("/bankBuyOption")
     @Operation(description = "Banka kupuje odredjenu kolicinu opcija sa berze")

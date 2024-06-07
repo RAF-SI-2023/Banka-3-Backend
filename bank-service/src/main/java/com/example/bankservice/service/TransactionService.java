@@ -28,6 +28,8 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -169,6 +171,13 @@ public class TransactionService {
                 transactionRepository.findByAccountFromOrAccountToAndType(accountNumber,
                                 accountNumber, TransactionType.PAYMENT_TRANSACTION)
                 .orElseThrow(() -> new RuntimeException("Transactions not found"));
+
+        Collections.sort(transactions, new Comparator<Transaction>() {
+            @Override
+            public int compare(Transaction t1, Transaction t2) {
+                return t2.getDate().compareTo(t1.getDate());
+            }
+        });
 
         return transactions.stream().filter(transaction -> transaction.getTransactionStatus() == TransactionStatus.FINISHED).map(transactionMapper::transactionToFinishedPaymentTransactionDto).toList();
     }

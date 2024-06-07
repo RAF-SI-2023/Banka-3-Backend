@@ -6,6 +6,7 @@ import com.example.bankservice.domain.dto.creditRequest.ProcessCreditRequestDto;
 import com.example.bankservice.domain.mapper.CreditRequestMapper;
 import com.example.bankservice.domain.model.CreditRequest;
 import com.example.bankservice.domain.model.enums.CreditRequestStatus;
+import com.example.bankservice.repository.AccountRepository;
 import com.example.bankservice.repository.CreditRepository;
 import com.example.bankservice.repository.CreditRequestRepository;
 import com.example.bankservice.service.CreditRequestService;
@@ -36,6 +37,8 @@ class CreditRequestServiceTest {
     private CreditRequestMapper creditRequestMapper;
     @Mock
     private CreditService creditService;
+    @Mock
+    private AccountRepository accountRepository;
     @InjectMocks
     private CreditRequestService creditRequestService;
 
@@ -45,7 +48,7 @@ class CreditRequestServiceTest {
         creditService = mock(CreditService.class);
         creditRequestRepository = mock(CreditRequestRepository.class);
         creditRepository = mock(CreditRepository.class);
-        creditRequestService = new CreditRequestService(creditRequestRepository, creditRequestMapper, creditRepository, creditService);
+        creditRequestService = new CreditRequestService(creditRequestRepository, creditRequestMapper, creditRepository, creditService, accountRepository);
     }
 
     @Test

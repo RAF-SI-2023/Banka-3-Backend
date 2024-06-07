@@ -5,7 +5,9 @@ import org.springframework.stereotype.Service;
 import rs.edu.raf.exchangeservice.client.BankServiceClient;
 import rs.edu.raf.exchangeservice.domain.dto.bank.BankTransactionDto;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.SellOptionDto;
+import rs.edu.raf.exchangeservice.domain.model.listing.Option;
 import rs.edu.raf.exchangeservice.domain.model.myListing.MyOption;
+import rs.edu.raf.exchangeservice.repository.listingRepository.OptionRepository;
 import rs.edu.raf.exchangeservice.repository.myListingRepository.MyOptionRepository;
 
 @Service
@@ -14,6 +16,7 @@ public class MyOptionService {
 
     private final MyOptionRepository myOptionRepository;
     private final BankServiceClient bankServiceClient;
+    private final OptionRepository optionRepository;
 
     public MyOption findByContractSymbol(String contractSymbol) {
         return this.myOptionRepository.findByContractSymbol(contractSymbol);
@@ -24,15 +27,16 @@ public class MyOptionService {
         if(myOption == null)
             throw new RuntimeException("MyOption not found");
 
+        Option option = this.optionRepository.findByContractSymbol(sellOptionDto.getContractSymbol());
         int quantity = sellOptionDto.getQuantity();
-        double ask = myOption.getAsk();
+        double ask = option.getAsk();
 
         //provera da li imamo dovoljno
         if(quantity > myOption.getQuantity())
             throw new RuntimeException("Insufficient options");
 
         BankTransactionDto bankTransactionDto = new BankTransactionDto();
-        bankTransactionDto.setCompanyId(sellOptionDto.getCompanyId());
+        bankTransactionDto.setCompanyId(1L);
         bankTransactionDto.setUserId(null);
         bankTransactionDto.setAmount(quantity * ask);
         bankTransactionDto.setCurrencyMark(myOption.getCurrencyMark());

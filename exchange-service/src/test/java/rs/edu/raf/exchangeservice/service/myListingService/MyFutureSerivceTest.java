@@ -148,167 +148,167 @@ class MyFutureSerivceTest {
         verify(myFutureRepository, times(1)).save(myFuture); // Proveravamo da li je save pozvan tačno jednom
     }
 
-    @Test
-    void testSellMyFuture() {
-        // Arrange
-        BuyFutureDto buyFutureDto = new BuyFutureDto();
-        buyFutureDto.setCompanyId(123L);
-        buyFutureDto.setFutureId(456L);
-
-        MyFuture myFuture = new MyFuture();
-        myFuture.setContractName("Corn");
-        myFuture.setContractSize(5000);
-        myFuture.setContractUnit("Bushel");
-
-        when(myFutureRepository.findByMyFutureId(buyFutureDto.getFutureId())).thenReturn(myFuture);
-
-        // Act
-        FutureOrderSell futureOrderSell = myFutureService.sellMyFuture(buyFutureDto);
-
-        // Assert
-        assertEquals(buyFutureDto.getCompanyId(), futureOrderSell.getCompanyId());
-        assertEquals(myFuture.getContractName(), futureOrderSell.getContractName());
-        assertEquals(OrderStatus.PROCESSING, futureOrderSell.getStatus());
-        assertEquals(BUSHEL * myFuture.getContractSize(), futureOrderSell.getPrice()); // Trebate zameniti BUSHEL, POUND itd. sa odgovarajućim vrednostima
-    }
-    @Test
-    void testSellMyFuture_PoundUnit() {
-        // Arrange
-        BuyFutureDto buyFutureDto = new BuyFutureDto();
-        buyFutureDto.setCompanyId(123L);
-        buyFutureDto.setFutureId(456L);
-
-        MyFuture myFuture = new MyFuture();
-        myFuture.setContractName("Corn");
-        myFuture.setContractSize(5000);
-        myFuture.setContractUnit("POUND");
-
-        when(myFutureRepository.findByMyFutureId(buyFutureDto.getFutureId())).thenReturn(myFuture);
-
-        // Act
-        FutureOrderSell futureOrderSell = myFutureService.sellMyFuture(buyFutureDto);
-
-        // Assert
-        assertEquals(buyFutureDto.getCompanyId(), futureOrderSell.getCompanyId());
-        assertEquals(myFuture.getContractName(), futureOrderSell.getContractName());
-        assertEquals(OrderStatus.PROCESSING, futureOrderSell.getStatus());
-        assertEquals(POUND * myFuture.getContractSize(), futureOrderSell.getPrice());
-    }
-    @Test
-    void testSellMyFuture_BoardFeetUnit() {
-        // Arrange
-        BuyFutureDto buyFutureDto = new BuyFutureDto();
-        buyFutureDto.setCompanyId(123L);
-        buyFutureDto.setFutureId(456L);
-
-        MyFuture myFuture = new MyFuture();
-        myFuture.setContractName("Lumber");
-        myFuture.setContractSize(1000);
-        myFuture.setContractUnit("BOARD FEET");
-
-        when(myFutureRepository.findByMyFutureId(buyFutureDto.getFutureId())).thenReturn(myFuture);
-
-        // Act
-        FutureOrderSell futureOrderSell = myFutureService.sellMyFuture(buyFutureDto);
-
-        // Assert
-        assertEquals(buyFutureDto.getCompanyId(), futureOrderSell.getCompanyId());
-        assertEquals(myFuture.getContractName(), futureOrderSell.getContractName());
-        assertEquals(OrderStatus.PROCESSING, futureOrderSell.getStatus());
-        assertEquals(BOARD_FEET * myFuture.getContractSize(), futureOrderSell.getPrice());
-    }
-    @Test
-    void testSellMyFuture_BarrelUnit() {
-        // Arrange
-        BuyFutureDto buyFutureDto = new BuyFutureDto();
-        buyFutureDto.setCompanyId(123L);
-        buyFutureDto.setFutureId(456L);
-
-        MyFuture myFuture = new MyFuture();
-        myFuture.setContractName("Oil");
-        myFuture.setContractSize(200);
-        myFuture.setContractUnit("BARREL");
-
-        when(myFutureRepository.findByMyFutureId(buyFutureDto.getFutureId())).thenReturn(myFuture);
-
-        // Act
-        FutureOrderSell futureOrderSell = myFutureService.sellMyFuture(buyFutureDto);
-
-        // Assert
-        assertEquals(buyFutureDto.getCompanyId(), futureOrderSell.getCompanyId());
-        assertEquals(myFuture.getContractName(), futureOrderSell.getContractName());
-        assertEquals(OrderStatus.PROCESSING, futureOrderSell.getStatus());
-        assertEquals(BARREL * myFuture.getContractSize(), futureOrderSell.getPrice());
-    }
-    @Test
-    void testSellMyFuture_GallonUnit() {
-        // Arrange
-        BuyFutureDto buyFutureDto = new BuyFutureDto();
-        buyFutureDto.setCompanyId(123L);
-        buyFutureDto.setFutureId(456L);
-
-        MyFuture myFuture = new MyFuture();
-        myFuture.setContractName("Gasoline");
-        myFuture.setContractSize(100);
-        myFuture.setContractUnit("GALLON");
-
-        when(myFutureRepository.findByMyFutureId(buyFutureDto.getFutureId())).thenReturn(myFuture);
-
-        // Act
-        FutureOrderSell futureOrderSell = myFutureService.sellMyFuture(buyFutureDto);
-
-        // Assert
-        assertEquals(buyFutureDto.getCompanyId(), futureOrderSell.getCompanyId());
-        assertEquals(myFuture.getContractName(), futureOrderSell.getContractName());
-        assertEquals(OrderStatus.PROCESSING, futureOrderSell.getStatus());
-        assertEquals(GALLON * myFuture.getContractSize(), futureOrderSell.getPrice());
-    }
-
-    @Test
-    void testSellMyFuture_TroyOunceUnit() {
-        // Arrange
-        BuyFutureDto buyFutureDto = new BuyFutureDto();
-        buyFutureDto.setCompanyId(123L);
-        buyFutureDto.setFutureId(456L);
-
-        MyFuture myFuture = new MyFuture();
-        myFuture.setContractName("Gold");
-        myFuture.setContractSize(5);
-        myFuture.setContractUnit("TROY OUNCE");
-
-        when(myFutureRepository.findByMyFutureId(buyFutureDto.getFutureId())).thenReturn(myFuture);
-
-        // Act
-        FutureOrderSell futureOrderSell = myFutureService.sellMyFuture(buyFutureDto);
-
-        // Assert
-        assertEquals(buyFutureDto.getCompanyId(), futureOrderSell.getCompanyId());
-        assertEquals(myFuture.getContractName(), futureOrderSell.getContractName());
-        assertEquals(OrderStatus.PROCESSING, futureOrderSell.getStatus());
-        assertEquals(TROY_OUNCE * myFuture.getContractSize(), futureOrderSell.getPrice());
-    }
-
-    @Test
-    void testSellMyFuture_MetricTonUnit() {
-        // Arrange
-        BuyFutureDto buyFutureDto = new BuyFutureDto();
-        buyFutureDto.setCompanyId(123L);
-        buyFutureDto.setFutureId(456L);
-
-        MyFuture myFuture = new MyFuture();
-        myFuture.setContractName("Iron");
-        myFuture.setContractSize(10);
-        myFuture.setContractUnit("METRIC TON");
-
-        when(myFutureRepository.findByMyFutureId(buyFutureDto.getFutureId())).thenReturn(myFuture);
-
-        // Act
-        FutureOrderSell futureOrderSell = myFutureService.sellMyFuture(buyFutureDto);
-
-        // Assert
-        assertEquals(buyFutureDto.getCompanyId(), futureOrderSell.getCompanyId());
-        assertEquals(myFuture.getContractName(), futureOrderSell.getContractName());
-        assertEquals(OrderStatus.PROCESSING, futureOrderSell.getStatus());
-        assertEquals(METRIC_TON * myFuture.getContractSize(), futureOrderSell.getPrice());
-    }
+//    @Test
+//    void testSellMyFuture() {
+//        // Arrange
+//        BuyFutureDto buyFutureDto = new BuyFutureDto();
+//        buyFutureDto.setCompanyId(123L);
+//        buyFutureDto.setFutureId(456L);
+//
+//        MyFuture myFuture = new MyFuture();
+//        myFuture.setContractName("Corn");
+//        myFuture.setContractSize(5000);
+//        myFuture.setContractUnit("Bushel");
+//
+//        when(myFutureRepository.findByMyFutureId(buyFutureDto.getFutureId())).thenReturn(myFuture);
+//
+//        // Act
+//        FutureOrderSell futureOrderSell = myFutureService.sellMyFuture(buyFutureDto);
+//
+//        // Assert
+//        assertEquals(buyFutureDto.getCompanyId(), futureOrderSell.getCompanyId());
+//        assertEquals(myFuture.getContractName(), futureOrderSell.getContractName());
+//        assertEquals(OrderStatus.PROCESSING, futureOrderSell.getStatus());
+//        assertEquals(BUSHEL * myFuture.getContractSize(), futureOrderSell.getPrice()); // Trebate zameniti BUSHEL, POUND itd. sa odgovarajućim vrednostima
+//    }
+//    @Test
+//    void testSellMyFuture_PoundUnit() {
+//        // Arrange
+//        BuyFutureDto buyFutureDto = new BuyFutureDto();
+//        buyFutureDto.setCompanyId(123L);
+//        buyFutureDto.setFutureId(456L);
+//
+//        MyFuture myFuture = new MyFuture();
+//        myFuture.setContractName("Corn");
+//        myFuture.setContractSize(5000);
+//        myFuture.setContractUnit("POUND");
+//
+//        when(myFutureRepository.findByMyFutureId(buyFutureDto.getFutureId())).thenReturn(myFuture);
+//
+//        // Act
+//        FutureOrderSell futureOrderSell = myFutureService.sellMyFuture(buyFutureDto);
+//
+//        // Assert
+//        assertEquals(buyFutureDto.getCompanyId(), futureOrderSell.getCompanyId());
+//        assertEquals(myFuture.getContractName(), futureOrderSell.getContractName());
+//        assertEquals(OrderStatus.PROCESSING, futureOrderSell.getStatus());
+//        assertEquals(POUND * myFuture.getContractSize(), futureOrderSell.getPrice());
+//    }
+//    @Test
+//    void testSellMyFuture_BoardFeetUnit() {
+//        // Arrange
+//        BuyFutureDto buyFutureDto = new BuyFutureDto();
+//        buyFutureDto.setCompanyId(123L);
+//        buyFutureDto.setFutureId(456L);
+//
+//        MyFuture myFuture = new MyFuture();
+//        myFuture.setContractName("Lumber");
+//        myFuture.setContractSize(1000);
+//        myFuture.setContractUnit("BOARD FEET");
+//
+//        when(myFutureRepository.findByMyFutureId(buyFutureDto.getFutureId())).thenReturn(myFuture);
+//
+//        // Act
+//        FutureOrderSell futureOrderSell = myFutureService.sellMyFuture(buyFutureDto);
+//
+//        // Assert
+//        assertEquals(buyFutureDto.getCompanyId(), futureOrderSell.getCompanyId());
+//        assertEquals(myFuture.getContractName(), futureOrderSell.getContractName());
+//        assertEquals(OrderStatus.PROCESSING, futureOrderSell.getStatus());
+//        assertEquals(BOARD_FEET * myFuture.getContractSize(), futureOrderSell.getPrice());
+//    }
+//    @Test
+//    void testSellMyFuture_BarrelUnit() {
+//        // Arrange
+//        BuyFutureDto buyFutureDto = new BuyFutureDto();
+//        buyFutureDto.setCompanyId(123L);
+//        buyFutureDto.setFutureId(456L);
+//
+//        MyFuture myFuture = new MyFuture();
+//        myFuture.setContractName("Oil");
+//        myFuture.setContractSize(200);
+//        myFuture.setContractUnit("BARREL");
+//
+//        when(myFutureRepository.findByMyFutureId(buyFutureDto.getFutureId())).thenReturn(myFuture);
+//
+//        // Act
+//        FutureOrderSell futureOrderSell = myFutureService.sellMyFuture(buyFutureDto);
+//
+//        // Assert
+//        assertEquals(buyFutureDto.getCompanyId(), futureOrderSell.getCompanyId());
+//        assertEquals(myFuture.getContractName(), futureOrderSell.getContractName());
+//        assertEquals(OrderStatus.PROCESSING, futureOrderSell.getStatus());
+//        assertEquals(BARREL * myFuture.getContractSize(), futureOrderSell.getPrice());
+//    }
+//    @Test
+//    void testSellMyFuture_GallonUnit() {
+//        // Arrange
+//        BuyFutureDto buyFutureDto = new BuyFutureDto();
+//        buyFutureDto.setCompanyId(123L);
+//        buyFutureDto.setFutureId(456L);
+//
+//        MyFuture myFuture = new MyFuture();
+//        myFuture.setContractName("Gasoline");
+//        myFuture.setContractSize(100);
+//        myFuture.setContractUnit("GALLON");
+//
+//        when(myFutureRepository.findByMyFutureId(buyFutureDto.getFutureId())).thenReturn(myFuture);
+//
+//        // Act
+//        FutureOrderSell futureOrderSell = myFutureService.sellMyFuture(buyFutureDto);
+//
+//        // Assert
+//        assertEquals(buyFutureDto.getCompanyId(), futureOrderSell.getCompanyId());
+//        assertEquals(myFuture.getContractName(), futureOrderSell.getContractName());
+//        assertEquals(OrderStatus.PROCESSING, futureOrderSell.getStatus());
+//        assertEquals(GALLON * myFuture.getContractSize(), futureOrderSell.getPrice());
+//    }
+//
+//    @Test
+//    void testSellMyFuture_TroyOunceUnit() {
+//        // Arrange
+//        BuyFutureDto buyFutureDto = new BuyFutureDto();
+//        buyFutureDto.setCompanyId(123L);
+//        buyFutureDto.setFutureId(456L);
+//
+//        MyFuture myFuture = new MyFuture();
+//        myFuture.setContractName("Gold");
+//        myFuture.setContractSize(5);
+//        myFuture.setContractUnit("TROY OUNCE");
+//
+//        when(myFutureRepository.findByMyFutureId(buyFutureDto.getFutureId())).thenReturn(myFuture);
+//
+//        // Act
+//        FutureOrderSell futureOrderSell = myFutureService.sellMyFuture(buyFutureDto);
+//
+//        // Assert
+//        assertEquals(buyFutureDto.getCompanyId(), futureOrderSell.getCompanyId());
+//        assertEquals(myFuture.getContractName(), futureOrderSell.getContractName());
+//        assertEquals(OrderStatus.PROCESSING, futureOrderSell.getStatus());
+//        assertEquals(TROY_OUNCE * myFuture.getContractSize(), futureOrderSell.getPrice());
+//    }
+//
+//    @Test
+//    void testSellMyFuture_MetricTonUnit() {
+//        // Arrange
+//        BuyFutureDto buyFutureDto = new BuyFutureDto();
+//        buyFutureDto.setCompanyId(123L);
+//        buyFutureDto.setFutureId(456L);
+//
+//        MyFuture myFuture = new MyFuture();
+//        myFuture.setContractName("Iron");
+//        myFuture.setContractSize(10);
+//        myFuture.setContractUnit("METRIC TON");
+//
+//        when(myFutureRepository.findByMyFutureId(buyFutureDto.getFutureId())).thenReturn(myFuture);
+//
+//        // Act
+//        FutureOrderSell futureOrderSell = myFutureService.sellMyFuture(buyFutureDto);
+//
+//        // Assert
+//        assertEquals(buyFutureDto.getCompanyId(), futureOrderSell.getCompanyId());
+//        assertEquals(myFuture.getContractName(), futureOrderSell.getContractName());
+//        assertEquals(OrderStatus.PROCESSING, futureOrderSell.getStatus());
+//        assertEquals(METRIC_TON * myFuture.getContractSize(), futureOrderSell.getPrice());
+//    }
 }

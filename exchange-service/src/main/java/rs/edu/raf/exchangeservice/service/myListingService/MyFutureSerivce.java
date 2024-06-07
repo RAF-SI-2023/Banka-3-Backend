@@ -33,13 +33,6 @@ public class MyFutureSerivce {
     private final BankServiceClient bankServiceClient;
     private final ApplicationEventPublisher eventPublisher;
 
-    private static final double BUSHEL=6.5;
-    private static final double POUND=1.2;
-    private static final double BOARD_FEET=0.5;
-    private static final double BARREL=50.0;
-    private static final double GALLON=3.5;
-    private static final double TROY_OUNCE=500.0;
-    private static final double METRIC_TON=100.0;
     public CopyOnWriteArrayList<FutureOrderSell> orderToSell = new CopyOnWriteArrayList<>();
 
 
@@ -80,21 +73,7 @@ public class MyFutureSerivce {
         futureOrderSell.setContractName(myFuture.getContractName());
         futureOrderSell.setStatus(OrderStatus.PROCESSING);
 
-        if(myFuture.getContractUnit().equalsIgnoreCase("BUSHEL")){
-            futureOrderSell.setPrice(BUSHEL*myFuture.getContractSize());
-        }else if(myFuture.getContractUnit().equalsIgnoreCase("POUND")){
-            futureOrderSell.setPrice(POUND*myFuture.getContractSize());
-        } else if(myFuture.getContractUnit().equalsIgnoreCase("BOARD FEET")){
-            futureOrderSell.setPrice(BOARD_FEET*myFuture.getContractSize());
-        } else if(myFuture.getContractUnit().equalsIgnoreCase("BARREL")){
-            futureOrderSell.setPrice(BARREL*myFuture.getContractSize());
-        } else if(myFuture.getContractUnit().equalsIgnoreCase("GALLON")){
-            futureOrderSell.setPrice(GALLON*myFuture.getContractSize());
-        } else if(myFuture.getContractUnit().equalsIgnoreCase("TROY OUNCE")){
-            futureOrderSell.setPrice(TROY_OUNCE*myFuture.getContractSize());
-        } else if(myFuture.getContractUnit().equalsIgnoreCase("METRIC TON")){
-            futureOrderSell.setPrice(METRIC_TON*myFuture.getContractSize());
-        }
+        futureOrderSell.setPrice(myFuture.getPrice());
 
         orderToSell.add(futureOrderSell);
         return futureOrderSell;
@@ -108,7 +87,6 @@ public class MyFutureSerivce {
             int index = random.nextInt(orderToSell.size());
             FutureOrderSell futureOrderSell = orderToSell.get(index);
 
-            //todo dodati naknadno za bank transakciju
 
             MyFuture myFuture = myFutureRepository.findByContractName(futureOrderSell.getContractName());
 
