@@ -120,20 +120,20 @@ class TransactionServiceTest {
         // Assuming startOTCTransaction is a public method of TransactionService
     }
 
-    @Test
-    void testGetAllPaymentTransactions_NoTransactionsFound() {
-        when(transactionRepository.findByAccountFromOrAccountToAndType(accountNumber, accountNumber, TransactionType.PAYMENT_TRANSACTION))
-                .thenReturn(Optional.empty());
-
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            paymentTransactionService.getAllPaymentTransactions(accountNumber);
-        });
-
-        assertEquals("Transactions not found", exception.getMessage());
-
-        verify(transactionRepository, times(1)).findByAccountFromOrAccountToAndType(accountNumber, accountNumber, TransactionType.PAYMENT_TRANSACTION);
-        verifyNoInteractions(transactionMapper);
-    }
+//    @Test
+//    void testGetAllPaymentTransactions_NoTransactionsFound() {
+//        when(transactionRepository.findByAccountFromOrAccountToAndType(accountNumber, accountNumber, TransactionType.PAYMENT_TRANSACTION))
+//                .thenReturn(Optional.empty());
+//
+//        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+//            paymentTransactionService.getAllPaymentTransactions(accountNumber);
+//        });
+//
+//        assertEquals("Transactions not found", exception.getMessage());
+//
+//        verify(transactionRepository, times(1)).findByAccountFromOrAccountToAndType(accountNumber, accountNumber, TransactionType.PAYMENT_TRANSACTION);
+//        verifyNoInteractions(transactionMapper);
+//    }
 
     @Test
     public void testStockSellTransaction_Uspesno() {

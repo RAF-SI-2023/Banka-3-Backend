@@ -150,7 +150,7 @@ public class MyStockService {
             taxStockRepository.save(taxStock);
         }
 
-        //todo: poziv ka bank service da dodamo tax na racun
+        //todo: propraviti sistem oporezivanja
     }
 
     public void addProfitForEmployee(Long employeeId, Double amount){
@@ -159,7 +159,6 @@ public class MyStockService {
         profitStock.setAmount(amount);
         profitStockRepositorty.save(profitStock);
     }
-    //TODO OVDJE TAKODJE
     public MyStock makeCompanyStockPublic(MakePublicStockDto makePublicStockDto) {
         MyStock myStock = myStockRepository.findByTickerAndCompanyId(makePublicStockDto.getTicker(), makePublicStockDto.getOwnerId());
         if(myStock.getAmount() >= makePublicStockDto.getAmount() && makePublicStockDto.getAmount() >= 0){
@@ -170,7 +169,6 @@ public class MyStockService {
         }
         return myStock;
     }
-    //TODO OVDJE TAKDJE 2
     public MyStock makeUserStockPublic(MakePublicStockDto makePublicStockDto) {
         MyStock myStock = myStockRepository.findByTickerAndUserId(makePublicStockDto.getTicker(), makePublicStockDto.getOwnerId());
         if(myStock.getAmount() >= makePublicStockDto.getAmount() && makePublicStockDto.getAmount() >= 0){
@@ -209,8 +207,7 @@ public class MyStockService {
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void sellStock(BuySellStockDto sellStockDto) {
 
-        //TODO: ovde bi pre ovog proverili da li ima BuySellStockDto ima userid ili companiId
-        //TODO: i umesto findbyTicker koristili bi findbyUserIdandTicker ili findbyCompanyIdandTicker
+
         //MyStock myStock = myStockRepository.findByTicker(sellStockDto.getTicker());
 
         MyStock myStock = null;
@@ -290,8 +287,7 @@ public class MyStockService {
                 amountToSell = stockOrderSell.getAmount();
             }
 
-            //TODO: ali ovde onda nastaje problem kada se salje dalje na bank service zbog transakcije
-            //TODO: odnosno u bankTranasactionDto se salje currencyMark i ne zna se id kompanije ili zaposlenog
+
             //kreirati stockTransactionDto koji sadrzi sracunatu kolicinu novca u zavisnosti od tipa stock-a,
             //broj racuna banke, broj racuna berze.
             BankTransactionDto bankTransactionDto = new BankTransactionDto();
@@ -303,8 +299,6 @@ public class MyStockService {
                 bankTransactionDto.setEmployeeId(stockOrderSell.getEmployeeId());
                 bankTransactionDto.setUserId(stockOrderSell.getUserId());
                 bankTransactionDto.setCompanyId(stockOrderSell.getCompanyId());
-                //TODO: pozovi bank service
-                //todo: izracunati porez, poslati na stockselltransaction oporezivanu cenu,
                 bankServiceClient.stockSellTransaction(bankTransactionDto);
 
                 //dodajemo agentu amount koji je zaradio
@@ -332,7 +326,6 @@ public class MyStockService {
                     bankTransactionDto.setEmployeeId(stockOrderSell.getEmployeeId());
                     bankTransactionDto.setUserId(stockOrderSell.getUserId());
                     bankTransactionDto.setCompanyId(stockOrderSell.getCompanyId());
-                    //TODO: pozovi bank service
                     bankServiceClient.stockSellTransaction(bankTransactionDto);
 
                     //dodajemo agentu amount koji je zaradio

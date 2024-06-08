@@ -18,4 +18,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     Optional<List<Transaction>> findByAccountFromOrAccountToAndType(String accountFrom, String accountTo, TransactionType transactionType);
 
+    Optional<List<Transaction>> findByAccountFromOrAccountTo(String accountFrom, String accountTo);
+
 }

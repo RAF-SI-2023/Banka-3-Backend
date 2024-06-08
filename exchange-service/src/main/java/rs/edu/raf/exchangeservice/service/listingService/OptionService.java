@@ -102,7 +102,8 @@ public class OptionService {
             throw new RuntimeException("Not enough options available for purchase");
 
         BankTransactionDto bankTransactionDto = new BankTransactionDto();
-        bankTransactionDto.setCompanyId(1L);
+        bankTransactionDto.setCompanyId(buyOptionDto.getCompanyId());
+
         bankTransactionDto.setUserId(null);
         bankTransactionDto.setCurrencyMark(option.getCurrencyMark());
         bankTransactionDto.setAmount(bid * quantity);

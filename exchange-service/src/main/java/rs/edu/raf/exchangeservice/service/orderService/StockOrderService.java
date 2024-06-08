@@ -89,8 +89,6 @@ public class StockOrderService {
         stockOrder.setAon(buySellStockDto.isAon());
         stockOrder.setMargin(buySellStockDto.isMargin());
 
-        //TODO: da li staviti ovde jedan if koji proverava da li order ima zaposlenog
-        //TODO: u tom slucaju isto bi bilo za banku, user-a i kompaniju
 
         if(stockOrder.getEmployeeId() != null) {
             if (actuaryRepository.findByEmployeeId(stockOrder.getEmployeeId()).isOrderRequest()) {
@@ -180,7 +178,6 @@ public class StockOrderService {
     }
 
     public boolean buyUserStockOtc(BuyStockUserOTCDto buyStockUserOTCDto){
-        //TODO: dodati poziv ka bank service-u koji proverava da li user ima dovoljno sredstava da kupi deonice
 
         Contract contract = new Contract();
         contract.setUserBuyerId(buyStockUserOTCDto.getUserBuyerId());
@@ -248,10 +245,7 @@ public class StockOrderService {
             }
 
 
-            //TODO: isto provera da li order ima zaposlenog ako nema samo se preskoci
             //dodavanje za limit zaposlenog
-
-            //TODO: dodato
             if(stockOrder.getEmployeeId() != null) {
                 Actuary actuary = actuaryRepository.findByEmployeeId(stockOrder.getEmployeeId());
                 if (actuary.getLimitValue() != 0.0) {
@@ -267,10 +261,7 @@ public class StockOrderService {
                     }
                 }
             }
-            //TODO: ali ovde onda nastaje problem kada se salje dalje na bank service zbog transakcije
-            //TODO: odnosno u bankTranasactionDto se salje currencyMark i ne zna se id kompanije ili zaposlenog
-            //TODO: resenje mozda da se salje mark, amount, userID i companyID, jedan od njih ce biti null
-            //TODO: i u bank service da se proverava koji je null i da se uradi transakcija
+
             //za bank service da skine pare
             BankTransactionDto bankTransactionDto = new BankTransactionDto();
             bankTransactionDto.setCurrencyMark(stock.getCurrencyMark());
@@ -280,7 +271,6 @@ public class StockOrderService {
                 bankTransactionDto.setUserId(stockOrder.getUserId());
                 bankTransactionDto.setCompanyId(stockOrder.getCompanyId());
                 bankTransactionDto.setEmployeeId(stockOrder.getEmployeeId());
-                //TODO: otkomentarisati naknadno
                 bankServiceClient.stockBuyTransaction(bankTransactionDto);
 
                 //dodajemo tranaskciju koju je obavio agent u profitStock
@@ -305,7 +295,6 @@ public class StockOrderService {
                     bankTransactionDto.setUserId(stockOrder.getUserId());
                     bankTransactionDto.setCompanyId(stockOrder.getCompanyId());
                     bankTransactionDto.setEmployeeId(stockOrder.getEmployeeId());
-                    //TODO: otkomentarisati naknadno
                     bankServiceClient.stockBuyTransaction(bankTransactionDto);
 
                     //dodajemo tranaskciju koju je obavio agent u profitStock
