@@ -10,6 +10,7 @@ import rs.edu.raf.exchangeservice.client.BankServiceClient;
 import rs.edu.raf.exchangeservice.domain.dto.CompanyAccountDto;
 import rs.edu.raf.exchangeservice.domain.dto.StockOrderDto;
 import rs.edu.raf.exchangeservice.domain.dto.bank.BankTransactionDto;
+import rs.edu.raf.exchangeservice.domain.dto.bank.CheckAccountBalanceDto;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuySellStockDto;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyStockCompanyDto;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyStockUserOTCDto;
@@ -21,11 +22,13 @@ import rs.edu.raf.exchangeservice.domain.model.enums.OrderType;
 import rs.edu.raf.exchangeservice.domain.model.enums.SellerCertificate;
 import rs.edu.raf.exchangeservice.domain.model.listing.Stock;
 import rs.edu.raf.exchangeservice.domain.model.myListing.Contract;
+import rs.edu.raf.exchangeservice.domain.model.myListing.MyStock;
 import rs.edu.raf.exchangeservice.domain.model.order.StockOrder;
 import rs.edu.raf.exchangeservice.jacoco.ExcludeFromJacocoGeneratedReport;
 import rs.edu.raf.exchangeservice.repository.ActuaryRepository;
 import rs.edu.raf.exchangeservice.repository.ContractRepository;
 import rs.edu.raf.exchangeservice.repository.listingRepository.StockRepository;
+import rs.edu.raf.exchangeservice.repository.myListingRepository.MyStockRepository;
 import rs.edu.raf.exchangeservice.repository.orderRepository.StockOrderRepository;
 import rs.edu.raf.exchangeservice.service.myListingService.MyStockService;
 
@@ -44,6 +47,7 @@ public class StockOrderService {
     private final MyStockService myStockService;
     private final ContractRepository contractRepository;
     private final BankServiceClient bankServiceClient;
+    private final MyStockRepository myStockRepository;
     public CopyOnWriteArrayList<StockOrder> ordersToBuy = new CopyOnWriteArrayList<>();
 
     public List<StockOrder> findAll() {
@@ -85,8 +89,6 @@ public class StockOrderService {
         stockOrder.setAon(buySellStockDto.isAon());
         stockOrder.setMargin(buySellStockDto.isMargin());
 
-        //TODO: da li staviti ovde jedan if koji proverava da li order ima zaposlenog
-        //TODO: u tom slucaju isto bi bilo za banku, user-a i kompaniju
 
         if(stockOrder.getEmployeeId() != null) {
             if (actuaryRepository.findByEmployeeId(stockOrder.getEmployeeId()).isOrderRequest()) {
@@ -135,17 +137,6 @@ public class StockOrderService {
 
     //Kompanija salje zahtev za kupovinu. Pravi se ugovor.Druga firma ima pregled pristiglih ugovora i moze da ih prihvati ili odbije.
     public boolean buyCompanyStockOtc(BuyStockCompanyDto buyStockCompanyDto) {
-        //TODO: dodati poziv ka bank service-u koji proverava da li company ima dovoljno sredstava da kupi deonice
-
-//        ResponseEntity<?> entity = bankServiceClient.getByCompanyId(buyStockCompanyDto.getBuyerId());
-//        CompanyAccountDto companyAccountDto = (CompanyAccountDto) entity.getBody();
-//
-//        BigDecimal price = buyStockCompanyDto.getPrice();
-//        Integer amount = buyStockCompanyDto.getAmount();
-//
-//        if(companyAccountDto != null && companyAccountDto.getAvailableBalance().compareTo(price.multiply(BigDecimal.valueOf(amount)))<0) {
-//            return false; //Firma nema dovoljno sredstava
-//        }
 
         Contract contract = new Contract();
         contract.setCompanyBuyerId(buyStockCompanyDto.getBuyerId());
@@ -155,12 +146,38 @@ public class StockOrderService {
         contract.setAmount(buyStockCompanyDto.getAmount());
         contract.setBankCertificate(BankCertificate.PROCESSING);
         contract.setSellerCertificate(SellerCertificate.PROCESSING);
+        contract.setDateCreated(System.currentTimeMillis());
+
+
+        CheckAccountBalanceDto checkAccountBalanceDto = new CheckAccountBalanceDto();
+        checkAccountBalanceDto.setId(buyStockCompanyDto.getBuyerId());
+        checkAccountBalanceDto.setAmount(contract.getPrice().doubleValue());
+
+        ResponseEntity<?> entity = bankServiceClient.checkAccountBalanceCompany(checkAccountBalanceDto);
+
+        if(entity.getBody().equals(false)){
+            contract.setBankCertificate(BankCertificate.DECLINED);
+            contract.setSellerCertificate(SellerCertificate.DECLINED);
+            contract.setComment("Nema dovoljno sredstava na racunu");
+            contractRepository.save(contract);
+            return false;
+        }
+
+        MyStock myStock = myStockRepository.findByTickerAndCompanyId(contract.getTicker(), contract.getCompanySellerId());
+
+        if(contract.getAmount()>myStock.getPublicAmount()){
+            contract.setBankCertificate(BankCertificate.DECLINED);
+            contract.setSellerCertificate(SellerCertificate.DECLINED);
+            contract.setComment("Nema dovoljno deonica na stanju");
+            contractRepository.save(contract);
+            return false;
+        }
+
         contractRepository.save(contract);
         return true;
     }
 
     public boolean buyUserStockOtc(BuyStockUserOTCDto buyStockUserOTCDto){
-        //TODO: dodati poziv ka bank service-u koji proverava da li user ima dovoljno sredstava da kupi deonice
 
         Contract contract = new Contract();
         contract.setUserBuyerId(buyStockUserOTCDto.getUserBuyerId());
@@ -170,6 +187,33 @@ public class StockOrderService {
         contract.setAmount(buyStockUserOTCDto.getAmount());
         contract.setBankCertificate(BankCertificate.PROCESSING);
         contract.setSellerCertificate(SellerCertificate.PROCESSING);
+        contract.setDateCreated(System.currentTimeMillis());
+
+        CheckAccountBalanceDto checkAccountBalanceDto = new CheckAccountBalanceDto();
+        checkAccountBalanceDto.setId(buyStockUserOTCDto.getUserBuyerId());
+        checkAccountBalanceDto.setAmount(contract.getPrice().doubleValue());
+
+        ResponseEntity<?> entity = bankServiceClient.checkAccountBalanceUser(checkAccountBalanceDto);
+
+        if(entity.getBody().equals(false)){
+            contract.setBankCertificate(BankCertificate.DECLINED);
+            contract.setSellerCertificate(SellerCertificate.DECLINED);
+            contract.setComment("Nema dovoljno sredstava na racunu");
+            contractRepository.save(contract);
+            return false;
+        }
+
+        MyStock myStock = myStockRepository.findByTickerAndUserId(contract.getTicker(), contract.getUserSellerId());
+
+        if(contract.getAmount()>myStock.getPublicAmount()){
+            contract.setBankCertificate(BankCertificate.DECLINED);
+            contract.setSellerCertificate(SellerCertificate.DECLINED);
+            contract.setComment("Nema dovoljno deonica na stanju");
+            contractRepository.save(contract);
+            return false;
+        }
+
+
         contractRepository.save(contract);
         return true;
     }
@@ -201,10 +245,7 @@ public class StockOrderService {
             }
 
 
-            //TODO: isto provera da li order ima zaposlenog ako nema samo se preskoci
             //dodavanje za limit zaposlenog
-
-            //TODO: dodato
             if(stockOrder.getEmployeeId() != null) {
                 Actuary actuary = actuaryRepository.findByEmployeeId(stockOrder.getEmployeeId());
                 if (actuary.getLimitValue() != 0.0) {
@@ -220,10 +261,7 @@ public class StockOrderService {
                     }
                 }
             }
-            //TODO: ali ovde onda nastaje problem kada se salje dalje na bank service zbog transakcije
-            //TODO: odnosno u bankTranasactionDto se salje currencyMark i ne zna se id kompanije ili zaposlenog
-            //TODO: resenje mozda da se salje mark, amount, userID i companyID, jedan od njih ce biti null
-            //TODO: i u bank service da se proverava koji je null i da se uradi transakcija
+
             //za bank service da skine pare
             BankTransactionDto bankTransactionDto = new BankTransactionDto();
             bankTransactionDto.setCurrencyMark(stock.getCurrencyMark());
@@ -233,7 +271,6 @@ public class StockOrderService {
                 bankTransactionDto.setUserId(stockOrder.getUserId());
                 bankTransactionDto.setCompanyId(stockOrder.getCompanyId());
                 bankTransactionDto.setEmployeeId(stockOrder.getEmployeeId());
-                //TODO: otkomentarisati naknadno
                 bankServiceClient.stockBuyTransaction(bankTransactionDto);
 
                 //dodajemo tranaskciju koju je obavio agent u profitStock
@@ -258,7 +295,6 @@ public class StockOrderService {
                     bankTransactionDto.setUserId(stockOrder.getUserId());
                     bankTransactionDto.setCompanyId(stockOrder.getCompanyId());
                     bankTransactionDto.setEmployeeId(stockOrder.getEmployeeId());
-                    //TODO: otkomentarisati naknadno
                     bankServiceClient.stockBuyTransaction(bankTransactionDto);
 
                     //dodajemo tranaskciju koju je obavio agent u profitStock

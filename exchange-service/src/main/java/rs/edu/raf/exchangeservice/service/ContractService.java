@@ -28,7 +28,7 @@ public class ContractService {
     private final BankServiceClient bankServiceClient;
 
     //ugovori koje supervizor nije obradio
-    //TODO ovo treba da vrati sve ugovore koje supervisor nije obradio i koji su prihvaceni od strane kompanija ili korisnika
+    //ovo treba da vrati sve ugovore koje supervisor nije obradio i koji su prihvaceni od strane kompanija ili korisnika
     public List<Contract> getAllUnresolvedContracts(){
         return this.contractRepository.findBySellerCertificateAndBankCertificate(SellerCertificate.ACCEPTED, BankCertificate.PROCESSING);
     }
@@ -66,7 +66,7 @@ public class ContractService {
         contract.setBankCertificate(BankCertificate.ACCEPTED);
         contract.setComment(dto.getComment());
 
-        //TODO: salje se dto na bank servise sa 2 user id-a i iznosom ili 2 company id-a i iznosom i mark racuna (mislim da je RSD za otc uvek)
+        //salje se dto na bank servise sa 2 user id-a i iznosom ili 2 company id-a i iznosom i mark racuna (mislim da je RSD za otc uvek)
 
         Double price =  contract.getPrice().doubleValue() / contract.getAmount();
 
@@ -75,6 +75,10 @@ public class ContractService {
 
         //racunamo porez na dobit
         myStockService.calculateTaxForSellStock(contract.getCompanySellerId(), contract.getUserSellerId(), contract.getTicker(), contract.getAmount(), price);
+
+        //todo: propraviti sistem oporezivanja
+        // salje se taksa sa bank servis
+        // poslati broj racunja korinika/kompanije koja je prodala akcije i skinutu sumu sa racuna
 
         if(contract.getCompanySellerId() != null) {
             CompanyOtcDto companyOtcDto = new CompanyOtcDto();

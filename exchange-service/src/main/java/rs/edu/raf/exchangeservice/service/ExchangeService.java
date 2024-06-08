@@ -32,6 +32,9 @@ public class ExchangeService {
 
     //@PostConstruct
     public void loadData(){
+        if(exchangeRepository.count() > 0){
+            return;
+        }
 
             try (BufferedReader br = new BufferedReader(new InputStreamReader(new ClassPathResource("exchange_data.csv").getInputStream()))) {
                 String line;
@@ -51,7 +54,7 @@ public class ExchangeService {
                     else if (currency.equalsIgnoreCase("Euro")){
                         exchange.setCurrency("EUR");
                     }else if (currency.equalsIgnoreCase("BRITISH POUND STERLING")){
-                        exchange.setCurrency("GBR");
+                        exchange.setCurrency("RSD");
                     }else {
                         exchange.setCurrency("RSD");
                     }

@@ -31,9 +31,14 @@ public class TickerService {
     private final StockWeeklyService stockWeeklyService;
     private final StockMonthlyService stockMonthlyService;
     private final MyStockService myStockService;
+    private final FutureService futureService;
     //private final String TickerURL = "https://api.polygon.io/v3/reference/tickers?active=true&apiKey=RTKplv_CDK1Lh7kx0yPTPEsaqUy14wiT";
 
     public void loadData() throws JsonProcessingException {
+        if(tickerRepository.count() > 0){
+            tickerRepository.deleteAll();
+        }
+
         Map<String, String> tickers = new HashMap<>();
         tickers.put("AAPL", "Apple Inc.");
         tickers.put("AMD", "Advanced Micro Devices");
@@ -67,9 +72,10 @@ public class TickerService {
         stockService.loadData();
         optionService.loadData();
         forexService.loadData();
-//        stockIntradayService.loadData();
-//        stockDailyService.loadData();
-//        stockWeeklyService.loadData();
-//        stockMonthlyService.loadData();
+        stockIntradayService.loadData();
+        stockDailyService.loadData();
+        stockWeeklyService.loadData();
+        stockMonthlyService.loadData();
+        futureService.loadData();
     }
 }

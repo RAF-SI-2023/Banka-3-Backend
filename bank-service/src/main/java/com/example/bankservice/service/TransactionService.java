@@ -28,6 +28,8 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,6 +52,8 @@ public class TransactionService {
         if (!accountService.checkBalance(paymentTransactionDto.getAccountFrom(), paymentTransactionDto.getAmount())) {
             throw new RuntimeException("Insufficient funds");
         }
+        
+        checkIfAccountsAreTheSame(accountFrom, accountTo);
 
         Long transactionId = 0L;
         if (accountFrom.getCurrency().getMark().equals(accountTo.getCurrency().getMark())) {
@@ -81,6 +85,8 @@ public class TransactionService {
         Account accountFrom = accountService.extractAccountForAccountNumber(currencyExchangeDto.getAccountFrom());
         Account accountTo = accountService.extractAccountForAccountNumber(currencyExchangeDto.getAccountTo());
 
+        checkIfAccountsAreTheSame(accountFrom, accountTo);
+        
         if (!accountService.checkBalance(currencyExchangeDto.getAccountFrom(), currencyExchangeDto.getAmount())) {
             throw new RuntimeException("Insufficient funds");
         }
@@ -95,8 +101,8 @@ public class TransactionService {
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void stockBuyTransaction(StockTransactionDto stockTransactionDto) {
-        //TODO: ovde umesto da trazi bank account, stavimo proveru da li StokcTransactionDto ima userId ili companyId
-        //TODO: i na osnovu njihovog id-a i marka nadjemo account
+        // ovde umesto da trazi bank account, stavimo proveru da li StokcTransactionDto ima userId ili companyId
+        // i na osnovu njihovog id-a i marka nadjemo account
 
         Account accountFrom = null;
         if (stockTransactionDto.getEmployeeId() != null) {
@@ -105,7 +111,9 @@ public class TransactionService {
             accountFrom = accountService.findAccount(stockTransactionDto);
         }
         Account accountTo = accountService.findExchangeAccountForGivenCurrency(stockTransactionDto.getCurrencyMark());
-
+        
+        checkIfAccountsAreTheSame(accountFrom, accountTo);
+        
         if (accountFrom.getAvailableBalance().compareTo(BigDecimal.valueOf(stockTransactionDto.getAmount())) < 0) {
             throw new RuntimeException("Insufficient funds");
         }
@@ -124,16 +132,17 @@ public class TransactionService {
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void stockSellTransaction(StockTransactionDto stockTransactionDto) {
         Account accountFrom = accountService.findExchangeAccountForGivenCurrency(stockTransactionDto.getCurrencyMark());
-        //TODO: ovde umesto da trazi bank account, stavimo proveru da li StokcTransactionDto ima userId ili companyId
-        //TODO: i na osnovu njihovog id-a i marka nadjemo account
-        //TODO: u bootstrapu da se doda korisniku dolarski racun
+        //ovde umesto da trazi bank account, stavimo proveru da li StokcTransactionDto ima userId ili companyId
+        // i na osnovu njihovog id-a i marka nadjemo account
+
         Account accountTo = null;
         if(stockTransactionDto.getEmployeeId() != null){
             accountTo = accountService.findBankAccountForGivenCurrency(stockTransactionDto.getCurrencyMark());
         } else {
             accountTo = accountService.findAccount(stockTransactionDto);
         }
-
+        
+        checkIfAccountsAreTheSame(accountFrom, accountTo);
 
         if (accountFrom.getAvailableBalance().compareTo(BigDecimal.valueOf(stockTransactionDto.getAmount())) < 0) {
             throw new RuntimeException("Insufficient funds");
@@ -158,10 +167,29 @@ public class TransactionService {
     }
 
     public List<FinishedPaymentTransactionDto> getAllPaymentTransactions(String accountNumber) {
+//        List<Transaction> transactions =
+//                transactionRepository.findByAccountFromOrAccountToAndType(accountNumber,
+//                                accountNumber, TransactionType.PAYMENT_TRANSACTION)
+//                .orElseThrow(() -> new RuntimeException("Transactions not found"));
+
         List<Transaction> transactions =
-                transactionRepository.findByAccountFromOrAccountToAndType(accountNumber,
-                                accountNumber, TransactionType.PAYMENT_TRANSACTION)
-                .orElseThrow(() -> new RuntimeException("Transactions not found"));
+                transactionRepository.findByAccountFromOrAccountTo(accountNumber,
+                                accountNumber)
+                        .orElseThrow(() -> new RuntimeException("Transactions not found"));
+
+        Collections.sort(transactions, new Comparator<Transaction>() {
+            @Override
+            public int compare(Transaction t1, Transaction t2) {
+                return t2.getDate().compareTo(t1.getDate());
+            }
+        });
+
+        Collections.sort(transactions, new Comparator<Transaction>() {
+            @Override
+            public int compare(Transaction t1, Transaction t2) {
+                return t2.getDate().compareTo(t1.getDate());
+            }
+        });
 
         return transactions.stream().filter(transaction -> transaction.getTransactionStatus() == TransactionStatus.FINISHED).map(transactionMapper::transactionToFinishedPaymentTransactionDto).toList();
     }
@@ -171,6 +199,9 @@ public class TransactionService {
                 userOtcTransactionDto.getUserFromId(), "RSD");
         Account accountTo = accountService.findUserAccountForIdAndCurrency(
                 userOtcTransactionDto.getUserToId(), "RSD");
+        
+        checkIfAccountsAreTheSame(accountFrom, accountTo);
+        
         startOTCTransaction(accountFrom, accountTo, userOtcTransactionDto.getAmount());
     }
     
@@ -179,6 +210,9 @@ public class TransactionService {
                 companyOtcTransactionDto.getCompanyFromId(), "RSD");
         Account accountTo = accountService.findCompanyAccountForIdAndCurrency(
                 companyOtcTransactionDto.getCompanyToId(), "RSD");
+        
+        checkIfAccountsAreTheSame(accountFrom, accountTo);
+        
         startOTCTransaction(accountFrom, accountTo, companyOtcTransactionDto.getAmount());
     }
 
@@ -279,5 +313,11 @@ public class TransactionService {
     private void acceptTransaction(Transaction transaction) {
         transaction.setTransactionStatus(TransactionStatus.ACCEPTED);
         transactionRepository.save(transaction);
+    }
+    
+    private void checkIfAccountsAreTheSame(Account accountFrom, Account accountTo) {
+        if (accountFrom.getAccountNumber().equals(accountTo.getAccountNumber())) {
+            throw new RuntimeException("Accounts are the same");
+        }
     }
 }

@@ -19,6 +19,7 @@ import rs.edu.raf.exchangeservice.domain.model.listing.Stock;
 import rs.edu.raf.exchangeservice.domain.model.listing.Ticker;
 import rs.edu.raf.exchangeservice.domain.model.myListing.MyStock;
 import rs.edu.raf.exchangeservice.domain.model.order.StockOrderSell;
+import rs.edu.raf.exchangeservice.jacoco.ExcludeFromJacocoGeneratedReport;
 import rs.edu.raf.exchangeservice.repository.ProfitStockRepositorty;
 import rs.edu.raf.exchangeservice.repository.TaxStockRepository;
 import rs.edu.raf.exchangeservice.repository.listingRepository.StockRepository;
@@ -106,7 +107,12 @@ public class MyStockService {
                 }
                 myStock.setAmount(myStock.getAmount() - 1);
             }
-            myStockRepository.save(myStock);
+            if(myStock.getAmount() == 0){
+                myStockRepository.delete(myStock);
+            }else {
+                myStockRepository.save(myStock);
+            }
+            eventPublisher.publishEvent(new StockUpdateEvent(this, myStock));
         }else if(companyId != null){
             MyStock myStock = myStockRepository.findByTickerAndCompanyId(ticker, companyId);
             for(int i = amount; i > 0; i--){
@@ -117,7 +123,12 @@ public class MyStockService {
                 }
                 myStock.setAmount(myStock.getAmount() - 1);
             }
-            myStockRepository.save(myStock);
+            if(myStock.getAmount() == 0){
+                myStockRepository.delete(myStock);
+            }else {
+                myStockRepository.save(myStock);
+            }
+            eventPublisher.publishEvent(new StockUpdateEvent(this, myStock));
         }
     }
 
@@ -139,7 +150,7 @@ public class MyStockService {
             taxStockRepository.save(taxStock);
         }
 
-        //todo: poziv ka bank service da dodamo tax na racun
+        //todo: propraviti sistem oporezivanja
     }
 
     public void addProfitForEmployee(Long employeeId, Double amount){
@@ -148,23 +159,23 @@ public class MyStockService {
         profitStock.setAmount(amount);
         profitStockRepositorty.save(profitStock);
     }
-
     public MyStock makeCompanyStockPublic(MakePublicStockDto makePublicStockDto) {
         MyStock myStock = myStockRepository.findByTickerAndCompanyId(makePublicStockDto.getTicker(), makePublicStockDto.getOwnerId());
-        if(myStock.getAmount() >= makePublicStockDto.getAmount()){
+        if(myStock.getAmount() >= makePublicStockDto.getAmount() && makePublicStockDto.getAmount() >= 0){
             myStock.setPublicAmount(makePublicStockDto.getAmount());
             myStock.setPrivateAmount(myStock.getAmount() - makePublicStockDto.getAmount());
             myStockRepository.save(myStock);
+            eventPublisher.publishEvent(new StockUpdateEvent(this, myStock));
         }
         return myStock;
     }
-
     public MyStock makeUserStockPublic(MakePublicStockDto makePublicStockDto) {
         MyStock myStock = myStockRepository.findByTickerAndUserId(makePublicStockDto.getTicker(), makePublicStockDto.getOwnerId());
-        if(myStock.getAmount() >= makePublicStockDto.getAmount()){
+        if(myStock.getAmount() >= makePublicStockDto.getAmount() && makePublicStockDto.getAmount() >= 0){
             myStock.setPublicAmount(makePublicStockDto.getAmount());
             myStock.setPrivateAmount(myStock.getAmount() - makePublicStockDto.getAmount());
             myStockRepository.save(myStock);
+            eventPublisher.publishEvent(new StockUpdateEvent(this, myStock));
         }
         return myStock;
     }
@@ -196,8 +207,7 @@ public class MyStockService {
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void sellStock(BuySellStockDto sellStockDto) {
 
-        //TODO: ovde bi pre ovog proverili da li ima BuySellStockDto ima userid ili companiId
-        //TODO: i umesto findbyTicker koristili bi findbyUserIdandTicker ili findbyCompanyIdandTicker
+
         //MyStock myStock = myStockRepository.findByTicker(sellStockDto.getTicker());
 
         MyStock myStock = null;
@@ -261,6 +271,7 @@ public class MyStockService {
     //proveravamo uslove za cenu i limit i stop
     //ako su dobri, prodajemo akciju i azuriramo MyStock u DB
     @Scheduled(fixedRate = 15000)
+    @ExcludeFromJacocoGeneratedReport
     public void executeTask() {
         if (ordersToSell.isEmpty()) {
         } else {
@@ -268,7 +279,7 @@ public class MyStockService {
             int stockNumber = rand.nextInt(ordersToSell.size());
             StockOrderSell stockOrderSell = ordersToSell.get(stockNumber);   //StockOrder koji obradjujemo
 
-            Stock stock = stockRepository.findByTicker(stockOrderSell.getTicker()).get();  //uzimao stock iz baze koji kupujemo
+                Stock stock = stockRepository.findByTicker(stockOrderSell.getTicker()).get();  //uzimao stock iz baze koji kupujemo
             double currentPrice = stock.getBid();   //trenutna cena po kojoj prodajemo
             int amountToSell = rand.nextInt(stockOrderSell.getAmountLeft()) + 1;
 
@@ -276,8 +287,7 @@ public class MyStockService {
                 amountToSell = stockOrderSell.getAmount();
             }
 
-            //TODO: ali ovde onda nastaje problem kada se salje dalje na bank service zbog transakcije
-            //TODO: odnosno u bankTranasactionDto se salje currencyMark i ne zna se id kompanije ili zaposlenog
+
             //kreirati stockTransactionDto koji sadrzi sracunatu kolicinu novca u zavisnosti od tipa stock-a,
             //broj racuna banke, broj racuna berze.
             BankTransactionDto bankTransactionDto = new BankTransactionDto();
@@ -289,8 +299,6 @@ public class MyStockService {
                 bankTransactionDto.setEmployeeId(stockOrderSell.getEmployeeId());
                 bankTransactionDto.setUserId(stockOrderSell.getUserId());
                 bankTransactionDto.setCompanyId(stockOrderSell.getCompanyId());
-                //TODO: pozovi bank service
-                //todo: izracunati porez, poslati na stockselltransaction oporezivanu cenu,
                 bankServiceClient.stockSellTransaction(bankTransactionDto);
 
                 //dodajemo agentu amount koji je zaradio
@@ -318,7 +326,6 @@ public class MyStockService {
                     bankTransactionDto.setEmployeeId(stockOrderSell.getEmployeeId());
                     bankTransactionDto.setUserId(stockOrderSell.getUserId());
                     bankTransactionDto.setCompanyId(stockOrderSell.getCompanyId());
-                    //TODO: pozovi bank service
                     bankServiceClient.stockSellTransaction(bankTransactionDto);
 
                     //dodajemo agentu amount koji je zaradio

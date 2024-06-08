@@ -6,7 +6,9 @@ import com.example.bankservice.domain.dto.creditRequest.ProcessCreditRequestDto;
 import com.example.bankservice.domain.mapper.CreditRequestMapper;
 import com.example.bankservice.domain.model.Credit;
 import com.example.bankservice.domain.model.CreditRequest;
+import com.example.bankservice.domain.model.accounts.Account;
 import com.example.bankservice.domain.model.enums.CreditRequestStatus;
+import com.example.bankservice.repository.AccountRepository;
 import com.example.bankservice.repository.CreditRepository;
 import com.example.bankservice.repository.CreditRequestRepository;
 import lombok.AllArgsConstructor;
@@ -18,6 +20,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -27,6 +30,7 @@ public class CreditRequestService {
     private final CreditRequestMapper creditRequestMapper;
     private final CreditRepository creditRepository;
     private final CreditService creditService;
+    private final AccountRepository accountRepository;
 
     public List<CreditRequestDto> findAll() {
         return creditRequestRepository.findAll().stream()
@@ -44,6 +48,10 @@ public class CreditRequestService {
         creditRequest.setAmount(BigDecimal.valueOf(creditRequestCreateDto.getAmount()));
         creditRequest.setStatus(CreditRequestStatus.PROCESSING);
         creditRequest.setMonthlyPaycheck(creditRequest.getAmount().divide(BigDecimal.valueOf(creditRequestCreateDto.getPaymentPeriod()), 1, RoundingMode.DOWN));
+        Optional<Account> accountOptional = accountRepository.findByAccountNumber(creditRequest.getAccountNumber());
+        if (accountOptional.isPresent()){
+            creditRequest.setCurrencyMark(accountOptional.get().getCurrency().getMark());
+        }
 
         creditRequestRepository.save(creditRequest);
     }

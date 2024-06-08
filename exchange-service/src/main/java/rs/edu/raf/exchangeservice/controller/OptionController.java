@@ -6,9 +6,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyOptionDto;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyStockCompanyDto;
+import rs.edu.raf.exchangeservice.domain.dto.buySell.SellOptionDto;
 import rs.edu.raf.exchangeservice.domain.model.listing.Option;
+import rs.edu.raf.exchangeservice.domain.model.myListing.MyOption;
 import rs.edu.raf.exchangeservice.service.listingService.OptionService;
+import rs.edu.raf.exchangeservice.service.myListingService.MyOptionService;
 
 import java.util.List;
 
@@ -18,6 +22,7 @@ import java.util.List;
 @RequestMapping(value = "/api/v1/option")
 public class OptionController {
     private final OptionService optionService;
+    private final MyOptionService myOptionService;
 
     @GetMapping("/calls/{ticker}")
     @Operation(description = "vracamo sve calls vrednosti za odredjeni ticker")
@@ -37,22 +42,23 @@ public class OptionController {
         return ResponseEntity.ok(this.optionService.findAllRefreshed());
     }
 
-    //Firma kupuje od firme
-    @PostMapping("/companyBuy")
-    @Operation(description = "Firma salje zahtev drugoj firmi za kupovinu options")
-    public ResponseEntity requestToBuyOptionByCompany(@RequestBody BuyStockCompanyDto buyStockCompanyDto){
-        if(this.optionService.requestToBuyOptionByCompany(buyStockCompanyDto)){
-            return ResponseEntity.ok().build();
-        }else{
-            //nema para
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
-        }
 
+    @PostMapping("/bankBuyOption")
+    @Operation(description = "Banka kupuje odredjenu kolicinu opcija sa berze")
+    public ResponseEntity buyOptionsFromExchange(@RequestBody BuyOptionDto buyOptionDto) {
+        MyOption myOption = this.optionService.buyOptionsFromExchange(buyOptionDto);
+        if(myOption == null)
+            return ResponseEntity.badRequest().build();
+        else
+            return ResponseEntity.ok(myOption);
     }
 
-
-
-
+    @PostMapping("/bankSellOption")
+    @Operation(description = "Banka prodaje odredjenu kolicnu opcija berzi")
+    public ResponseEntity sellOptionsToExchange(@RequestBody SellOptionDto sellOptionDto) {
+        this.myOptionService.sellOptionsToExchange(sellOptionDto);
+        return ResponseEntity.ok().build();
+    }
 }
 
 

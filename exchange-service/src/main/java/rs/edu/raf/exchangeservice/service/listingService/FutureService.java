@@ -23,6 +23,7 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +35,9 @@ public class FutureService {
     //    private final String pathToFile = "exchange-service/src/main/resources/data/future_data.csv";
     //@PostConstruct
     public void loadData(){
-
+        if(futureRepository.count() > 0){
+            return;
+        }
             try (BufferedReader br = new BufferedReader(new InputStreamReader(new ClassPathResource("future_data.csv").getInputStream()))) {
                 String line;
                 // Skip the header line
@@ -47,27 +50,11 @@ public class FutureService {
                     future.setContractUnit(parts[2]);
                     future.setMaintenanceMargin(Integer.parseInt(parts[3]));
                     future.setType(parts[4]);
-                    if (parts[4].equals("bushel")) {
-                        future.setPrice(10.5); // Example price for a bushel
-                    } else if (parts[4].equals("pound")) {
-                        future.setPrice(1.2); // Example price for a pound
-                    } else if (parts[4].equals("board feet")) {
-                        future.setPrice(2.8); // Example price for board feet
-                    } else if (parts[4].equals("barrel")) {
-                        future.setPrice(65.0); // Example price for a barrel
-                    } else if (parts[4].equals("MMBtu")) {
-                        future.setPrice(3.1); // Example price for MMBtu
-                    } else if (parts[4].equals("gallon")) {
-                        future.setPrice(3.5); // Example price for a gallon
-                    } else if (parts[4].equals("ounce")) {
-                        future.setPrice(0.05); // Example price for an ounce
-                    } else if (parts[4].equals("troy ounce")) {
-                        future.setPrice(2000.0); // Example price for a troy ounce
-                    } else if (parts[4].equals("metric ton")) {
-                        future.setPrice(500.0); // Example price for a metric ton
-                    } else {
-                        future.setPrice(123.0); // Example price for a metric ton
-                    }
+                    Random random = new Random();
+                    double min = 10000;
+                    double max = 50000;
+                    double price = random.nextDouble((max - min) + 1) + min;
+                    future.setPrice(price);
                     future.setCurrencyMark("RSD");
 
                     this.futureRepository.save(future); //save in DB

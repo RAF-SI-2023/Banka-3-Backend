@@ -12,6 +12,7 @@ import rs.edu.raf.exchangeservice.domain.model.listing.Future;
 import rs.edu.raf.exchangeservice.domain.model.myListing.MyFuture;
 import rs.edu.raf.exchangeservice.domain.model.order.FutureOrder;
 import rs.edu.raf.exchangeservice.domain.model.order.StockOrder;
+import rs.edu.raf.exchangeservice.jacoco.ExcludeFromJacocoGeneratedReport;
 import rs.edu.raf.exchangeservice.repository.listingRepository.FutureRepository;
 import rs.edu.raf.exchangeservice.repository.orderRepository.FutureOrderRepository;
 import rs.edu.raf.exchangeservice.service.myListingService.MyFutureSerivce;
@@ -30,14 +31,6 @@ public class FuturOrderService {
     private final MyFutureSerivce myFutureSerivce;
     private final BankServiceClient bankServiceClient;
 
-    private static final double BUSHEL=6.5;
-    private static final double POUND=1.2;
-    private static final double BOARD_FEET=0.5;
-    private static final double BARREL=50.0;
-    private static final double GALLON=3.5;
-    private static final double TROY_OUNCE=500.0;
-    private static final double METRIC_TON=100.0;
-
     public CopyOnWriteArrayList<FutureOrder> ordersToBuy = new CopyOnWriteArrayList<>();
 
     public List<FutureOrder> findAll(){
@@ -53,22 +46,7 @@ public class FuturOrderService {
         futureOrder.setContractName(future.getContractName());
         futureOrder.setStatus(OrderStatus.PROCESSING);
 
-        //todo dodati price
-        if(future.getContractUnit().equalsIgnoreCase("BUSHEL")){
-            futureOrder.setPrice(BUSHEL*future.getContractSize());
-        }else if(future.getContractUnit().equalsIgnoreCase("POUND")){
-            futureOrder.setPrice(POUND*future.getContractSize());
-        }else if(future.getContractUnit().equalsIgnoreCase("BOARD FEET")){
-            futureOrder.setPrice(BOARD_FEET*future.getContractSize());
-        }else if(future.getContractUnit().equalsIgnoreCase("BARREL")){
-            futureOrder.setPrice(BARREL*future.getContractSize());
-        } else if(future.getContractUnit().equalsIgnoreCase("GALLON")) {
-            futureOrder.setPrice(GALLON * future.getContractSize());
-        } else if(future.getContractUnit().equalsIgnoreCase("TROY OUNCE")) {
-            futureOrder.setPrice(TROY_OUNCE * future.getContractSize());
-        } else if(future.getContractUnit().equalsIgnoreCase("METRIC TON")) {
-            futureOrder.setPrice(METRIC_TON * future.getContractSize());
-        }
+        futureOrder.setPrice(future.getPrice());
 
         futureOrderRepository.save(futureOrder);
 
@@ -77,13 +55,12 @@ public class FuturOrderService {
     }
 
     @Scheduled(fixedRate = 10000)
+    @ExcludeFromJacocoGeneratedReport
     public void executeOrders(){
         if(!ordersToBuy.isEmpty()){
             Random random = new Random();
             int futureNumber = random.nextInt(ordersToBuy.size());
             FutureOrder futureOrder = ordersToBuy.get(futureNumber);
-
-            //todo dodati naknadno za bank transakciju izvuci price iz futureOrder-a
 
             Future future = futureRepository.findByContractName(futureOrder.getContractName()).orElseThrow(() -> new RuntimeException("Future not found"));
 

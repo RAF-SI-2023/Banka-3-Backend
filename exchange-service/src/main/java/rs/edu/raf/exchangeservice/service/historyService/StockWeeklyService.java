@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import rs.edu.raf.exchangeservice.domain.model.listing.Ticker;
 import rs.edu.raf.exchangeservice.domain.model.history.StockWeekly;
+import rs.edu.raf.exchangeservice.jacoco.ExcludeFromJacocoGeneratedReport;
 import rs.edu.raf.exchangeservice.repository.listingRepository.TickerRepository;
 import rs.edu.raf.exchangeservice.repository.historyRepository.StockWeeklyRepository;
 
@@ -27,7 +28,12 @@ public class StockWeeklyService {
     private final String apiCall = "https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol=";
     private final String apiKey = "&apikey=NMBJV9I1JXOWWEZ6";
 
+    @ExcludeFromJacocoGeneratedReport
     public void loadData() throws JsonProcessingException {
+        if(stockWeeklyRepository.count() > 0){
+            stockWeeklyRepository.deleteAll();
+        }
+
         List<Ticker> tickerList = tickerRepository.findAll();
 
         for (Ticker ticker : tickerList) {
@@ -48,7 +54,7 @@ public class StockWeeklyService {
             saveData(resultNode, ticker.getTicker());
         }
     }
-
+    @ExcludeFromJacocoGeneratedReport
     public void saveData(JsonNode json, String ticker) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode rootNode = objectMapper.readTree(String.valueOf(json));

@@ -1,5 +1,6 @@
 package rs.edu.raf.exchangeservice.service.listingService;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -121,5 +122,21 @@ class StockServiceTest {
         stock.setCurrencyMark("USD");
 
         return stock;
+    }
+
+    @Test
+    void testFindAllRefreshed() throws JsonProcessingException {
+        // Priprema testnih podataka
+        List<Stock> expectedStockList = Arrays.asList(new Stock(), new Stock());
+        when(stockRepository.findAll()).thenReturn(expectedStockList);
+
+        // Poziv metode findAllRefreshed
+        List<Stock> actualStockList = stockService.findAllRefreshed();
+
+        // Provera da li je deleteAll pozvana na repozitorijumu
+        verify(stockRepository, times(1)).deleteAll();
+
+        // Provera da li su povratna lista i očekivana lista jednake
+        assertEquals(expectedStockList, actualStockList);
     }
 }

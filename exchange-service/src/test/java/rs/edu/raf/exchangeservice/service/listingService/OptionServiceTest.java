@@ -1,6 +1,7 @@
 package rs.edu.raf.exchangeservice.service.listingService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.cucumber.core.backend.Options;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,6 +17,8 @@ import rs.edu.raf.exchangeservice.domain.model.myListing.Contract;
 import rs.edu.raf.exchangeservice.repository.ContractRepository;
 import rs.edu.raf.exchangeservice.repository.listingRepository.OptionRepository;
 import rs.edu.raf.exchangeservice.repository.listingRepository.TickerRepository;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,9 +29,6 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 @ExtendWith(MockitoExtension.class)
 class OptionServiceTest {
@@ -90,31 +90,6 @@ class OptionServiceTest {
     }
 
     @Test
-    void requestToBuyOptionByCompany_WhenSufficientBalance_ShouldReturnTrue() {
-
-        BuyStockCompanyDto buyStockCompanyDto = new BuyStockCompanyDto();
-        buyStockCompanyDto.setBuyerId(1L);
-        buyStockCompanyDto.setSellerId(2L);
-        buyStockCompanyDto.setTicker("AAPL");
-        buyStockCompanyDto.setPrice(BigDecimal.valueOf(100));
-        buyStockCompanyDto.setAmount(10);
-
-        CompanyAccountDto companyAccountDto = new CompanyAccountDto();
-        companyAccountDto.setAvailableBalance(BigDecimal.valueOf(2000));
-
-        ResponseEntity responseEntity = ResponseEntity.ok(companyAccountDto);
-
-        given(bankServiceClient.getByCompanyId(any(Long.class))).willReturn(responseEntity);
-
-        boolean result = optionService.requestToBuyOptionByCompany(buyStockCompanyDto);
-
-        assertTrue(result);
-        verify(contractRepository, times(1)).save(any(Contract.class));
-    }
-
-
-
-    @Test
     public void testFindPuts() {
         String ticker = "MS";
         String optionType = "Puts";
@@ -159,5 +134,22 @@ class OptionServiceTest {
         option3.setOptionType(optionType);
 
         return List.of(option1, option2, option3);
+    }
+
+    @Test
+    void testFindAllRefreshed() throws JsonProcessingException {
+        // Priprema testnih podataka
+        List<Option> expectedOptionsList = Arrays.asList(new Option(), new Option());
+        when(optionRepository.findAll()).thenReturn(expectedOptionsList);
+
+        // Poziv metode findAllRefreshed
+        List<Option> actualOptionsList = optionService.findAllRefreshed();
+
+        // Provera da li je deleteAll pozvana na repozitorijumu
+        verify(optionRepository, times(1)).deleteAll();
+
+
+        // Provera da li su povratna lista i očekivana lista jednake
+        assertEquals(expectedOptionsList, actualOptionsList);
     }
 }

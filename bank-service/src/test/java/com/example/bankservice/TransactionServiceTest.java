@@ -18,6 +18,7 @@ import com.example.bankservice.repository.AccountRepository;
 import com.example.bankservice.repository.TransactionRepository;
 import com.example.bankservice.service.AccountService;
 import com.example.bankservice.service.TransactionService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -29,6 +30,7 @@ import java.math.BigDecimal;
 import java.util.*;
 
 
+import static com.example.bankservice.domain.model.enums.CurrencyMark.RSD;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -50,6 +52,146 @@ class TransactionServiceTest {
 
     @InjectMocks
     private TransactionService paymentTransactionService;
+
+    private StockTransactionDto stockTransactionDto;
+    private UserOtcTransactionDto userOtcTransactionDto;
+
+    private CompanyOtcTransactionDto companyOtcTransactionDto;
+
+    private Account accountFrom;
+    private Account accountTo;
+
+    private String accountNumber;
+
+    @BeforeEach
+    public void setUp() {
+        stockTransactionDto = new StockTransactionDto();
+        stockTransactionDto.setEmployeeId(1L);
+        stockTransactionDto.setCurrencyMark("USD");
+        stockTransactionDto.setAmount(100.0);
+
+        userOtcTransactionDto = new UserOtcTransactionDto();
+        userOtcTransactionDto.setUserFromId(1L);
+        userOtcTransactionDto.setUserToId(2L);
+        userOtcTransactionDto.setAmount(100.0);
+
+        companyOtcTransactionDto = new CompanyOtcTransactionDto();
+        companyOtcTransactionDto.setCompanyFromId(1L);
+        companyOtcTransactionDto.setCompanyToId(2L);
+        companyOtcTransactionDto.setAmount(100.0);
+
+        accountFrom = new Account();
+        accountFrom.setAccountNumber("12345");
+        accountFrom.setAvailableBalance(BigDecimal.valueOf(200));
+        accountFrom.setCurrency(new Currency(1L, CurrencyName.DINAR, "RSD"));
+
+        accountTo = new Account();
+        accountTo.setAccountNumber("67890");
+        accountTo.setCurrency(new Currency(2L, CurrencyName.DINAR, "RSD"));
+
+        accountNumber = "123456";
+    }
+
+    @Test
+    void testOtcCompanyTransaction() {
+        when(accountService.findCompanyAccountForIdAndCurrency(1L, "RSD")).thenReturn(accountFrom);
+        when(accountService.findCompanyAccountForIdAndCurrency(2L, "RSD")).thenReturn(accountTo);
+
+        // To allow spying on transactionService to verify the private method call
+        TransactionService transactionServiceSpy = spy(paymentTransactionService);
+
+        transactionServiceSpy.otcCompanyTransaction(companyOtcTransactionDto);
+
+        verify(accountService, times(1)).findCompanyAccountForIdAndCurrency(1L, "RSD");
+        verify(accountService, times(1)).findCompanyAccountForIdAndCurrency(2L, "RSD");
+    }
+    @Test
+    void testOtcUserTransaction() {
+        when(accountService.findUserAccountForIdAndCurrency(1L, "RSD")).thenReturn(accountFrom);
+        when(accountService.findUserAccountForIdAndCurrency(2L, "RSD")).thenReturn(accountTo);
+
+        paymentTransactionService.otcUserTransaction(userOtcTransactionDto);
+
+        verify(accountService, times(1)).findUserAccountForIdAndCurrency(1L, "RSD");
+        verify(accountService, times(1)).findUserAccountForIdAndCurrency(2L, "RSD");
+        // verify startOTCTransaction is called correctly
+        // we use reflection to access this method since it's not exposed by the service
+
+        // Assuming startOTCTransaction is a public method of TransactionService
+    }
+
+//    @Test
+//    void testGetAllPaymentTransactions_NoTransactionsFound() {
+//        when(transactionRepository.findByAccountFromOrAccountToAndType(accountNumber, accountNumber, TransactionType.PAYMENT_TRANSACTION))
+//                .thenReturn(Optional.empty());
+//
+//        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+//            paymentTransactionService.getAllPaymentTransactions(accountNumber);
+//        });
+//
+//        assertEquals("Transactions not found", exception.getMessage());
+//
+//        verify(transactionRepository, times(1)).findByAccountFromOrAccountToAndType(accountNumber, accountNumber, TransactionType.PAYMENT_TRANSACTION);
+//        verifyNoInteractions(transactionMapper);
+//    }
+
+    @Test
+    public void testStockSellTransaction_Uspesno() {
+        when(accountService.findExchangeAccountForGivenCurrency("USD")).thenReturn(accountFrom);
+        when(accountService.findBankAccountForGivenCurrency("USD")).thenReturn(accountTo);
+
+        paymentTransactionService.stockSellTransaction(stockTransactionDto);
+
+        verify(transactionRepository, times(1)).save(any(Transaction.class));
+    }
+
+    @Test
+    public void testStockSellTransaction_NedovoljnoSredstava() {
+        accountFrom.setAvailableBalance(BigDecimal.valueOf(50));  // Nedovoljno sredstava
+
+        when(accountService.findExchangeAccountForGivenCurrency("USD")).thenReturn(accountFrom);
+
+        assertThrows(RuntimeException.class, () -> {
+            paymentTransactionService.stockSellTransaction(stockTransactionDto);
+        });
+
+        verify(transactionRepository, never()).save(any(Transaction.class));
+    }
+
+    @Test
+    public void testStockSellTransaction_UserAccount() {
+        stockTransactionDto.setEmployeeId(null);
+
+        when(accountService.findExchangeAccountForGivenCurrency("USD")).thenReturn(accountFrom);
+        when(accountService.findAccount(stockTransactionDto)).thenReturn(accountTo);
+
+        paymentTransactionService.stockSellTransaction(stockTransactionDto);
+
+        verify(transactionRepository, times(1)).save(any(Transaction.class));
+    }
+
+    @Test
+    public void testStockBuyTransaction_Uspesno() {
+        when(accountService.findBankAccountForGivenCurrency("USD")).thenReturn(accountFrom);
+        when(accountService.findExchangeAccountForGivenCurrency("USD")).thenReturn(accountTo);
+
+        paymentTransactionService.stockBuyTransaction(stockTransactionDto);
+
+        verify(transactionRepository, times(1)).save(any(Transaction.class));
+    }
+
+    @Test
+    public void testStockBuyTransaction_NedovoljnoSredstava() {
+        accountFrom.setAvailableBalance(BigDecimal.valueOf(50));  // Nedovoljno sredstava
+
+        when(accountService.findBankAccountForGivenCurrency("USD")).thenReturn(accountFrom);
+
+        assertThrows(RuntimeException.class, () -> {
+            paymentTransactionService.stockBuyTransaction(stockTransactionDto);
+        });
+
+        verify(transactionRepository, never()).save(any(Transaction.class));
+    }
 
     @Test
     void testStartPaymentTransaction_InsufficientFunds() {
@@ -356,6 +498,7 @@ class TransactionServiceTest {
         assertEquals(TransactionStatus.FINISHED, transaction2.getTransactionStatus());
         verify(transactionRepository, times(1)).save(transaction1);
         verify(transactionRepository, times(1)).save(transaction2);
+
     }
 //    @Test
 //    void testGetAllPaymentTransactions() {

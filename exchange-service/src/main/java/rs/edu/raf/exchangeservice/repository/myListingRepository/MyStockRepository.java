@@ -12,15 +12,11 @@ import java.util.List;
 @Transactional(isolation = Isolation.SERIALIZABLE)
 public interface MyStockRepository extends JpaRepository<MyStock, Long> {
     MyStock findByMyStockId(Long id);
-
     List<MyStock> findAllByUserId(Long userId);
-
     List<MyStock> findAllByCompanyId(Long companyId);
-
     MyStock findByTickerAndUserId(String ticker, Long userId);
     MyStock findByTickerAndCompanyId(String ticker, Long companyId);
     MyStock findByTicker(String ticker);
-
     List<MyStock> findByUserIdIsNotNullAndCompanyIdIsNullAndPublicAmountGreaterThanAndUserIdNot(Integer publicAmount, Long excludeUserId);
     List<MyStock> findByCompanyIdIsNotNullAndUserIdIsNullAndPublicAmountGreaterThanAndCompanyIdNot(Integer publicAmount, Long excludeCompanyId);
 }
