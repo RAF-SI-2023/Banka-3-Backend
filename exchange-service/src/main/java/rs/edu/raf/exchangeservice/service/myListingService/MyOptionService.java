@@ -36,7 +36,7 @@ public class MyOptionService {
             throw new RuntimeException("Insufficient options");
 
         BankTransactionDto bankTransactionDto = new BankTransactionDto();
-        bankTransactionDto.setCompanyId(sellOptionDto.getCompanyId());
+        bankTransactionDto.setCompanyId(1L);
         bankTransactionDto.setUserId(null);
         bankTransactionDto.setAmount(quantity * ask);
         bankTransactionDto.setCurrencyMark(myOption.getCurrencyMark());

@@ -103,6 +103,7 @@ public class OptionService {
 
         BankTransactionDto bankTransactionDto = new BankTransactionDto();
         bankTransactionDto.setCompanyId(buyOptionDto.getCompanyId());
+
         bankTransactionDto.setUserId(null);
         bankTransactionDto.setCurrencyMark(option.getCurrencyMark());
         bankTransactionDto.setAmount(bid * quantity);
