@@ -123,7 +123,7 @@ public class EmployeeService {
     }
 
     protected String getText(String identifier) {
-        return "http://localhost:80/change-password/" + identifier;
+        return "https://banka-3-dev.si.raf.edu.rs/change-password/" + identifier;
     }
 
     protected String getReturnValue() {
@@ -131,6 +131,6 @@ public class EmployeeService {
     }
 
     protected String getLocation(String identifier) {
-        return "http://localhost:80/employee/password-confirm/" + identifier;
+        return "https://banka-3-dev.si.raf.edu.rs/employee/password-confirm/" + identifier;
     }
 }

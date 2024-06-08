@@ -101,8 +101,8 @@ public class TransactionService {
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void stockBuyTransaction(StockTransactionDto stockTransactionDto) {
-        //TODO: ovde umesto da trazi bank account, stavimo proveru da li StokcTransactionDto ima userId ili companyId
-        //TODO: i na osnovu njihovog id-a i marka nadjemo account
+        // ovde umesto da trazi bank account, stavimo proveru da li StokcTransactionDto ima userId ili companyId
+        // i na osnovu njihovog id-a i marka nadjemo account
 
         Account accountFrom = null;
         if (stockTransactionDto.getEmployeeId() != null) {
@@ -132,9 +132,9 @@ public class TransactionService {
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void stockSellTransaction(StockTransactionDto stockTransactionDto) {
         Account accountFrom = accountService.findExchangeAccountForGivenCurrency(stockTransactionDto.getCurrencyMark());
-        //TODO: ovde umesto da trazi bank account, stavimo proveru da li StokcTransactionDto ima userId ili companyId
-        //TODO: i na osnovu njihovog id-a i marka nadjemo account
-        //TODO: u bootstrapu da se doda korisniku dolarski racun
+        //ovde umesto da trazi bank account, stavimo proveru da li StokcTransactionDto ima userId ili companyId
+        // i na osnovu njihovog id-a i marka nadjemo account
+
         Account accountTo = null;
         if(stockTransactionDto.getEmployeeId() != null){
             accountTo = accountService.findBankAccountForGivenCurrency(stockTransactionDto.getCurrencyMark());
@@ -167,10 +167,15 @@ public class TransactionService {
     }
 
     public List<FinishedPaymentTransactionDto> getAllPaymentTransactions(String accountNumber) {
+//        List<Transaction> transactions =
+//                transactionRepository.findByAccountFromOrAccountToAndType(accountNumber,
+//                                accountNumber, TransactionType.PAYMENT_TRANSACTION)
+//                .orElseThrow(() -> new RuntimeException("Transactions not found"));
+
         List<Transaction> transactions =
-                transactionRepository.findByAccountFromOrAccountToAndType(accountNumber,
-                                accountNumber, TransactionType.PAYMENT_TRANSACTION)
-                .orElseThrow(() -> new RuntimeException("Transactions not found"));
+                transactionRepository.findByAccountFromOrAccountTo(accountNumber,
+                                accountNumber)
+                        .orElseThrow(() -> new RuntimeException("Transactions not found"));
 
         Collections.sort(transactions, new Comparator<Transaction>() {
             @Override

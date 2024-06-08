@@ -25,7 +25,6 @@ public class FutureContractService {
     }
 
     //ugovori koje supervizor nije obradio
-    //TODO ovo treba da vrati sve ugovore koje supervisor nije obradio i koji su prihvaceni od strane kompanija
     public List<FutureContract> getAllUnresolvedContracts(){
         return this.futureContractRepository.findBySellerCertificateAndBankCertificate(SellerCertificate.ACCEPTED, BankCertificate.PROCESSING);
     }
@@ -53,7 +52,6 @@ public class FutureContractService {
         futureContractRepository.save(contract);
         return true;
     }
-    //TODO
     public synchronized  boolean supervisorAccept(ContractAnswerDto dto){
         FutureContract contract = futureContractRepository.findByFutureContractId(dto.getContractId());
 
@@ -61,7 +59,6 @@ public class FutureContractService {
             return true;
         }
 
-        //todo odratiti transakciju na bank service-u, proveriti dal ove tranasakcije treba da idu na rsd
 
 //        MyFuture future = new MyFuture();
 //        future.setContractName(contract.getContractName());
@@ -83,7 +80,6 @@ public class FutureContractService {
 
         return true;
     }
-    //TODO
     public synchronized boolean supervisorDecline(ContractAnswerDto dto){
         FutureContract contract = futureContractRepository.findByFutureContractId(dto.getContractId());
 

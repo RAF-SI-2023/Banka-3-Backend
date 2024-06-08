@@ -23,7 +23,6 @@ public class ContractController {
     @Operation(description = "Supervizor dohvata sve ugovore")
     public ResponseEntity<?> getAllContracts(){
 
-        //TODO company accepted,supervisor proccesing
         return ResponseEntity.ok(contractService.getAllUnresolvedContracts());
     }
 
