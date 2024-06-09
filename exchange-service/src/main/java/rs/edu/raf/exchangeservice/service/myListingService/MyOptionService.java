@@ -28,6 +28,7 @@ public class MyOptionService {
             throw new RuntimeException("MyOption not found");
 
         Option option = this.optionRepository.findByContractSymbol(sellOptionDto.getContractSymbol());
+        option.setOpenInterest(option.getOpenInterest() + sellOptionDto.getQuantity());
         int quantity = sellOptionDto.getQuantity();
         double ask = option.getAsk();
 
@@ -50,5 +51,6 @@ public class MyOptionService {
         else
             myOptionRepository.save(myOption);
 
+        optionRepository.save(option);
     }
 }

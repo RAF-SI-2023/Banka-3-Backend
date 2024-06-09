@@ -17,4 +17,5 @@ public class BankTransactionDto {
     private Long employeeId;
     private Double amount;
     private String currencyMark;
+    private double tax;
 }

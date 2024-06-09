@@ -271,6 +271,7 @@ public class StockOrderService {
                 bankTransactionDto.setUserId(stockOrder.getUserId());
                 bankTransactionDto.setCompanyId(stockOrder.getCompanyId());
                 bankTransactionDto.setEmployeeId(stockOrder.getEmployeeId());
+                bankTransactionDto.setTax(0.0);
                 bankServiceClient.stockBuyTransaction(bankTransactionDto);
 
                 //dodajemo tranaskciju koju je obavio agent u profitStock
@@ -295,6 +296,7 @@ public class StockOrderService {
                     bankTransactionDto.setUserId(stockOrder.getUserId());
                     bankTransactionDto.setCompanyId(stockOrder.getCompanyId());
                     bankTransactionDto.setEmployeeId(stockOrder.getEmployeeId());
+                    bankTransactionDto.setTax(0.0);
                     bankServiceClient.stockBuyTransaction(bankTransactionDto);
 
                     //dodajemo tranaskciju koju je obavio agent u profitStock

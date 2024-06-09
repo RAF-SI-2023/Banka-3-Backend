@@ -34,7 +34,7 @@ public class ForexController {
 
     @GetMapping("/myForex/getAllForCompany/{companyId}")
     @Operation(description = "vraca sve myForex-e za kompaniju")
-    public ResponseEntity<?> getAllForCompany(Long companyId){
+    public ResponseEntity<?> getAllForCompany(@PathVariable Long companyId){
         return ResponseEntity.ok(this.myForexService.findAllMyForexByCompanyId(companyId));
     }
 

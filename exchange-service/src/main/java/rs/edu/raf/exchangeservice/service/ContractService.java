@@ -74,7 +74,7 @@ public class ContractService {
         myStockService.removeAmountFromMyStock(contract.getTicker(), contract.getAmount(),contract.getUserSellerId(), contract.getCompanySellerId());
 
         //racunamo porez na dobit
-        myStockService.calculateTaxForSellStock(contract.getCompanySellerId(), contract.getUserSellerId(), contract.getTicker(), contract.getAmount(), price);
+        double tax = myStockService.calculateTaxForSellStock(contract.getCompanySellerId(), contract.getUserSellerId(), contract.getTicker(), contract.getAmount(), price);
 
         //todo: propraviti sistem oporezivanja
         // salje se taksa sa bank servis
@@ -85,12 +85,14 @@ public class ContractService {
             companyOtcDto.setAmount(contract.getPrice().doubleValue());
             companyOtcDto.setCompanyFromId(contract.getCompanyBuyerId());
             companyOtcDto.setCompanyToId(contract.getCompanySellerId());
+            companyOtcDto.setTax(tax);
             bankServiceClient.otcBankTransaction(companyOtcDto);
         }else if(contract.getUserSellerId() != null){
             UserOtcDto userOtcDto = new UserOtcDto();
             userOtcDto.setAmount(contract.getPrice().doubleValue());
             userOtcDto.setUserFromId(contract.getUserBuyerId());
             userOtcDto.setUserToId(contract.getUserSellerId());
+            userOtcDto.setTax(tax);
             bankServiceClient.otcUserTransaction(userOtcDto);
         }
 

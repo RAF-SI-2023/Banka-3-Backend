@@ -148,6 +148,9 @@ public class TransactionService {
             throw new RuntimeException("Insufficient funds");
         }
 
+        Account bankAccount = accountService.findBankAccountForGivenCurrency(stockTransactionDto.getCurrencyMark());
+        startPayTax(accountTo, bankAccount, stockTransactionDto.getTax());
+
         Transaction transaction = new Transaction();
         transaction.setAccountFrom(accountFrom.getAccountNumber());
         transaction.setAccountTo(accountTo.getAccountNumber());
@@ -184,13 +187,6 @@ public class TransactionService {
             }
         });
 
-        Collections.sort(transactions, new Comparator<Transaction>() {
-            @Override
-            public int compare(Transaction t1, Transaction t2) {
-                return t2.getDate().compareTo(t1.getDate());
-            }
-        });
-
         return transactions.stream().filter(transaction -> transaction.getTransactionStatus() == TransactionStatus.FINISHED).map(transactionMapper::transactionToFinishedPaymentTransactionDto).toList();
     }
     
@@ -201,7 +197,10 @@ public class TransactionService {
                 userOtcTransactionDto.getUserToId(), "RSD");
         
         checkIfAccountsAreTheSame(accountFrom, accountTo);
-        
+
+        Account bankAccount = accountService.findBankAccountForGivenCurrency("RSD");
+        startPayTax(accountTo, bankAccount, userOtcTransactionDto.getTax());
+
         startOTCTransaction(accountFrom, accountTo, userOtcTransactionDto.getAmount());
     }
     
@@ -212,7 +211,11 @@ public class TransactionService {
                 companyOtcTransactionDto.getCompanyToId(), "RSD");
         
         checkIfAccountsAreTheSame(accountFrom, accountTo);
-        
+        //todo payTax(accTO, bankACC, tax)
+
+        Account bankAccount = accountService.findBankAccountForGivenCurrency("RSD");
+        startPayTax(accountTo, bankAccount, companyOtcTransactionDto.getTax());
+
         startOTCTransaction(accountFrom, accountTo, companyOtcTransactionDto.getAmount());
     }
 
@@ -233,6 +236,17 @@ public class TransactionService {
                 transaction.getTransactionId()));
 
         return transaction.getTransactionId();
+    }
+
+    private void startPayTax(Account accountFrom, Account accountTo, Double tax) {
+        Transaction transaction = new Transaction();
+        transaction.setAccountFrom(accountFrom.getAccountNumber());
+        transaction.setAccountTo(accountTo.getAccountNumber());
+        transaction.setAmount(BigDecimal.valueOf(tax));
+        transaction.setType(TransactionType.PAY_TAX_TRANSACTION);
+        transaction.setTransactionStatus(TransactionStatus.ACCEPTED);
+        transaction.setDate(System.currentTimeMillis());
+        transactionRepository.save(transaction);
     }
     
     private void startOTCTransaction(Account accountFrom, Account accountTo, Double amount) {
@@ -262,8 +276,21 @@ public class TransactionService {
                 finishStockTransaction(transaction);
             } else if (transaction.getType().equals(TransactionType.OTC_TRANSACTION)) {
                 finishOTCTransaction(transaction);
+            }else if(transaction.getType().equals(TransactionType.PAY_TAX_TRANSACTION)) {
+                finishTaxTransaction(transaction);
             }
         }
+    }
+
+    private void finishTaxTransaction(Transaction transaction) {
+        Account accountFrom = accountRepository.findByAccountNumber(transaction.getAccountFrom())
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+        Account accountTo = accountRepository.findByAccountNumber(transaction.getAccountTo())
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        accountService.transferOtcFunds(accountFrom, accountTo, transaction.getAmount());
+        transaction.setTransactionStatus(TransactionStatus.FINISHED);
+        transactionRepository.save(transaction);
     }
 
     private void finishTransaction(Transaction transaction) {
