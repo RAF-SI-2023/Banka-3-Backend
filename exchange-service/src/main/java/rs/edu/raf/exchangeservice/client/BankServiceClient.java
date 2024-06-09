@@ -44,6 +44,12 @@ public interface BankServiceClient {
     @Operation(description = "kompanija kupuje ili prodaje od kompanije")
     ResponseEntity<?> otcBankTransaction (@RequestBody CompanyOtcDto companyOtcDto);
 
+    @PostMapping(value = "/transaction/otcBank4transaction",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "kompanija kupuje ili prodaje od kompanije")
+    ResponseEntity<?> otcBank4transaction (@RequestBody CompanyOtcDto companyOtcDto);
+
     @PostMapping(value = "/account/checkAccountBalanceUser",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)

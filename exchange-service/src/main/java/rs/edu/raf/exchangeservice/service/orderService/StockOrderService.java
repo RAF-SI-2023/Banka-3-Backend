@@ -1,12 +1,14 @@
 package rs.edu.raf.exchangeservice.service.orderService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import rs.edu.raf.exchangeservice.client.BankServiceClient;
+import rs.edu.raf.exchangeservice.configuration.contract.ContractUpdateEvent;
 import rs.edu.raf.exchangeservice.domain.dto.CompanyAccountDto;
 import rs.edu.raf.exchangeservice.domain.dto.StockOrderDto;
 import rs.edu.raf.exchangeservice.domain.dto.bank.BankTransactionDto;
@@ -48,6 +50,8 @@ public class StockOrderService {
     private final ContractRepository contractRepository;
     private final BankServiceClient bankServiceClient;
     private final MyStockRepository myStockRepository;
+    private final ApplicationEventPublisher eventPublisher;
+
     public CopyOnWriteArrayList<StockOrder> ordersToBuy = new CopyOnWriteArrayList<>();
 
     public List<StockOrder> findAll() {
@@ -174,6 +178,7 @@ public class StockOrderService {
         }
 
         contractRepository.save(contract);
+        eventPublisher.publishEvent(new ContractUpdateEvent(this, contract));
         return true;
     }
 
@@ -215,6 +220,7 @@ public class StockOrderService {
 
 
         contractRepository.save(contract);
+        eventPublisher.publishEvent(new ContractUpdateEvent(this, contract));
         return true;
     }
 

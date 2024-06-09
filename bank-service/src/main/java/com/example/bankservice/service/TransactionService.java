@@ -148,8 +148,11 @@ public class TransactionService {
             throw new RuntimeException("Insufficient funds");
         }
 
-        Account bankAccount = accountService.findBankAccountForGivenCurrency(stockTransactionDto.getCurrencyMark());
-        startPayTax(accountTo, bankAccount, stockTransactionDto.getTax());
+        if(stockTransactionDto.getTax() > 0.0) {
+            Account bankAccount = accountService.findBankAccountForGivenCurrency(stockTransactionDto.getCurrencyMark());
+            if(!accountTo.getAccountNumber().equals(bankAccount.getAccountNumber()))
+                startPayTax(accountTo, bankAccount, stockTransactionDto.getTax());
+        }
 
         Transaction transaction = new Transaction();
         transaction.setAccountFrom(accountFrom.getAccountNumber());
@@ -198,8 +201,10 @@ public class TransactionService {
         
         checkIfAccountsAreTheSame(accountFrom, accountTo);
 
-        Account bankAccount = accountService.findBankAccountForGivenCurrency("RSD");
-        startPayTax(accountTo, bankAccount, userOtcTransactionDto.getTax());
+        if(userOtcTransactionDto.getTax() > 0.0) {
+            Account bankAccount = accountService.findBankAccountForGivenCurrency("RSD");
+            startPayTax(accountTo, bankAccount, userOtcTransactionDto.getTax());
+        }
 
         startOTCTransaction(accountFrom, accountTo, userOtcTransactionDto.getAmount());
     }
@@ -212,9 +217,22 @@ public class TransactionService {
         
         checkIfAccountsAreTheSame(accountFrom, accountTo);
         //todo payTax(accTO, bankACC, tax)
+        if(companyOtcTransactionDto.getTax() > 0.0) {
+            Account bankAccount = accountService.findBankAccountForGivenCurrency("RSD");
+            if(!accountTo.getAccountNumber().equals(bankAccount.getAccountNumber()))
+                startPayTax(accountTo, bankAccount, companyOtcTransactionDto.getTax());
+        }
 
-        Account bankAccount = accountService.findBankAccountForGivenCurrency("RSD");
-        startPayTax(accountTo, bankAccount, companyOtcTransactionDto.getTax());
+        startOTCTransaction(accountFrom, accountTo, companyOtcTransactionDto.getAmount());
+    }
+
+    public void otcBank4Transaction(CompanyOtcTransactionDto companyOtcTransactionDto){
+        Account accountFrom = accountService.findCompanyAccountForIdAndCurrency(
+                companyOtcTransactionDto.getCompanyFromId(), "RSD");
+        Account accountTo = accountService.findCompanyAccountForIdAndCurrency(
+                companyOtcTransactionDto.getCompanyToId(), "RSD");
+
+        checkIfAccountsAreTheSame(accountFrom, accountTo);
 
         startOTCTransaction(accountFrom, accountTo, companyOtcTransactionDto.getAmount());
     }

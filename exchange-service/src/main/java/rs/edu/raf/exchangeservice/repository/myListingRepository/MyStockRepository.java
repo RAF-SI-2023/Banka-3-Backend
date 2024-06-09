@@ -17,6 +17,9 @@ public interface MyStockRepository extends JpaRepository<MyStock, Long> {
     MyStock findByTickerAndUserId(String ticker, Long userId);
     MyStock findByTickerAndCompanyId(String ticker, Long companyId);
     MyStock findByTicker(String ticker);
+
+    List<MyStock> findAllByCompanyIdAndPublicAmountGreaterThan(Long companyId, Integer publicAmount);
+
     List<MyStock> findByUserIdIsNotNullAndCompanyIdIsNullAndPublicAmountGreaterThanAndUserIdNot(Integer publicAmount, Long excludeUserId);
     List<MyStock> findByCompanyIdIsNotNullAndUserIdIsNullAndPublicAmountGreaterThanAndCompanyIdNot(Integer publicAmount, Long excludeCompanyId);
 }
