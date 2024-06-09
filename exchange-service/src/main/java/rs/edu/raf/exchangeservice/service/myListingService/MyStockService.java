@@ -132,7 +132,7 @@ public class MyStockService {
         }
     }
 
-    public void calculateTaxForSellStock(Long companyId, Long userId, String ticker, Integer sellAmount, Double sellPrice){
+    public Double calculateTaxForSellStock(Long companyId, Long userId, String ticker, Integer sellAmount, Double sellPrice){
         MyStock myStock = null;
         if(userId != null){
             myStock = myStockRepository.findByTickerAndUserId(ticker, userId);
@@ -149,8 +149,7 @@ public class MyStockService {
             taxStock.setAmount(tax);
             taxStockRepository.save(taxStock);
         }
-
-        //todo: propraviti sistem oporezivanja
+        return tax;
     }
 
     public void addProfitForEmployee(Long employeeId, Double amount){
@@ -294,20 +293,21 @@ public class MyStockService {
             bankTransactionDto.setCurrencyMark(stock.getCurrencyMark());
 
             if (stockOrderSell.getType().equals(OrderType.MARKET)) {
+
+                double tax = this.calculateTaxForSellStock(stockOrderSell.getCompanyId(), stockOrderSell.getUserId(), stockOrderSell.getTicker(), amountToSell, currentPrice);
+
                 //TODO: izracunaj porez pa setuj amount
                 bankTransactionDto.setAmount(currentPrice * amountToSell);
                 bankTransactionDto.setEmployeeId(stockOrderSell.getEmployeeId());
                 bankTransactionDto.setUserId(stockOrderSell.getUserId());
                 bankTransactionDto.setCompanyId(stockOrderSell.getCompanyId());
+                bankTransactionDto.setTax(tax);
                 bankServiceClient.stockSellTransaction(bankTransactionDto);
 
                 //dodajemo agentu amount koji je zaradio
                 if(stockOrderSell.getEmployeeId() != null){
                     this.addProfitForEmployee(stockOrderSell.getEmployeeId(), currentPrice * amountToSell);
                 }
-
-                // racunamo porez na prodati stock
-                this.calculateTaxForSellStock(stockOrderSell.getCompanyId(), stockOrderSell.getUserId(), stockOrderSell.getTicker(), amountToSell, currentPrice);
 
                 this.removeAmountFromMyStock(stockOrderSell.getTicker(), amountToSell, stockOrderSell.getUserId(), stockOrderSell.getCompanyId());    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
                 stockOrderSell.setAmountLeft(stockOrderSell.getAmountLeft() - amountToSell);
@@ -322,19 +322,20 @@ public class MyStockService {
 
             if (stockOrderSell.getType().equals(OrderType.LIMIT)) {
                 if (currentPrice > stockOrderSell.getLimitValue()) {
+                    // racunamo porez na prodati stock
+                    double tax = this.calculateTaxForSellStock(stockOrderSell.getCompanyId(), stockOrderSell.getUserId(), stockOrderSell.getTicker(), amountToSell, currentPrice);
+
                     bankTransactionDto.setAmount(currentPrice * amountToSell);
                     bankTransactionDto.setEmployeeId(stockOrderSell.getEmployeeId());
                     bankTransactionDto.setUserId(stockOrderSell.getUserId());
                     bankTransactionDto.setCompanyId(stockOrderSell.getCompanyId());
+                    bankTransactionDto.setTax(tax);
                     bankServiceClient.stockSellTransaction(bankTransactionDto);
 
                     //dodajemo agentu amount koji je zaradio
                     if(stockOrderSell.getEmployeeId() != null){
                         this.addProfitForEmployee(stockOrderSell.getEmployeeId(), currentPrice * amountToSell);
                     }
-
-                    // racunamo porez na prodati stock
-                    this.calculateTaxForSellStock(stockOrderSell.getCompanyId(), stockOrderSell.getUserId(), stockOrderSell.getTicker(), amountToSell, currentPrice);
 
                     this.removeAmountFromMyStock(stockOrderSell.getTicker(), amountToSell, stockOrderSell.getUserId(), stockOrderSell.getCompanyId());    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
                     stockOrderSell.setAmountLeft(stockOrderSell.getAmountLeft() - amountToSell);

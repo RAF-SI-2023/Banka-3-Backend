@@ -13,4 +13,5 @@ public class UserOtcDto {
     private Long userFromId;
     private Long userToId;
     private Double amount;
+    private double tax;
 }
