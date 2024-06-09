@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import rs.edu.raf.exchangeservice.client.BankServiceClient;
+import rs.edu.raf.exchangeservice.configuration.option.OptionUpdateEvent;
 import rs.edu.raf.exchangeservice.domain.dto.CompanyAccountDto;
 import rs.edu.raf.exchangeservice.domain.dto.bank.BankTransactionDto;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyOptionDto;
@@ -38,7 +40,7 @@ public class OptionService {
     private final ContractRepository contractRepository;
     private final String apiCall = "https://query1.finance.yahoo.com/v6/finance/options/";
     private final BankServiceClient bankServiceClient;
-
+    private final ApplicationEventPublisher eventPublisher;
 
     public void loadData() throws JsonProcessingException {
         if(optionsRepository.count() > 0){
@@ -117,6 +119,7 @@ public class OptionService {
             MyOption myOption = this.myOptionRepository.findByContractSymbol(option.getContractSymbol());
             if(myOption == null) {
                 myOption = new MyOption();
+                myOption.setCompanyId(buyOptionDto.getCompanyId());
                 myOption.setContractSymbol(option.getContractSymbol());
                 myOption.setOptionType(option.getOptionType());
                 myOption.setCurrencyMark(option.getCurrencyMark());
@@ -128,7 +131,7 @@ public class OptionService {
 
             myOption.setQuantity(myOption.getQuantity() + quantity);
             myOptionRepository.save(myOption);
-
+            eventPublisher.publishEvent(new OptionUpdateEvent(this, myOption));
             return myOption;
         }
 

@@ -59,6 +59,12 @@ public class OptionController {
         this.myOptionService.sellOptionsToExchange(sellOptionDto);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("getAllForCompany/{companyId}")
+    @Operation(description = "Vracamo sve opcije za odredjenu kompaniju")
+    public ResponseEntity<List<MyOption>> getAllForCompany(@PathVariable Long companyId){
+        return ResponseEntity.ok(this.myOptionService.findAllByCompanyId(companyId));
+    }
 }
 
 
