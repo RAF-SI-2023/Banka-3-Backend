@@ -169,7 +169,7 @@ public class Banka4OtcService {
             }
             return dtos;
         } catch (Exception e){
-            e.printStackTrace();
+            System.out.println("ne radi banka 4");;
         }
 
         return null;

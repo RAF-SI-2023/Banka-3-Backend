@@ -42,6 +42,7 @@ public class MyFutureSerivce {
 
     public void addMyFuture(MyFuture myFuture){
         myFutureRepository.save(myFuture);
+        eventPublisher.publishEvent(new FutureUpdateEvent(this, myFuture));
     }
 
     public List<MyFuture> findAllByCompanyId(Long companyId){
