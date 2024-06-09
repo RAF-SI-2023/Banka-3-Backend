@@ -52,7 +52,7 @@ public class Banka4OtcService {
 
     private final MyStockService myStockService;
 
-    private static final String URL_TO_BANK4 =  "https://banka-4.si.raf.edu.rs/berza-service/api";
+    private static final String URL_TO_BANK4 =  "https://banka-4-dev.si.raf.edu.rs/berza-service/api";
 
 
 
@@ -245,7 +245,7 @@ public class Banka4OtcService {
 
         return myOffer1;
     }
-git
+
     public MyOffer offerAccepted(Long id){
         Optional<MyOffer> myOfferOptional = myOfferRepository.findById(id);
         if(myOfferOptional.isPresent()){
