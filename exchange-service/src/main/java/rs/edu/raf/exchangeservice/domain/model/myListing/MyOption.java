@@ -17,6 +17,7 @@ public class MyOption {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long myOptionId;
+    private Long companyId;
     private String contractSymbol; //unique
     private String optionType; //calls, puts
 

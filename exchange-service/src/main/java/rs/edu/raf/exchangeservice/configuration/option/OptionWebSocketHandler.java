@@ -7,6 +7,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import rs.edu.raf.exchangeservice.domain.model.listing.Option;
+import rs.edu.raf.exchangeservice.domain.model.myListing.MyOption;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -34,7 +35,7 @@ public class OptionWebSocketHandler extends TextWebSocketHandler {
 
     @EventListener
     public void sendOptionUpdate(OptionUpdateEvent event) {
-        Option optionUpdate = event.getOption();
+        MyOption optionUpdate = event.getOption();
         try {
             for (WebSocketSession session : this.sessions) {
                 System.out.println(optionUpdate.toString() + "\n\n\n\n\n");
