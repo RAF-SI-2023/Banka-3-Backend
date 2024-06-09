@@ -289,6 +289,17 @@ public class BootstrapData implements CommandLineRunner {
         badCompanyAccountUsd.setCurrency(currencyRepository.findById(3L).orElse(null));
         badCompanyAccountUsd.setActive(true);
 
+        CompanyAccount bank4AccountRSD = new CompanyAccount();
+        bank4AccountRSD.setCompanyId(5L);
+        bank4AccountRSD.setEmployeeId(1L);
+        bank4AccountRSD.setAccountNumber("9999999999999999");
+        bank4AccountRSD.setReservedAmount(new BigDecimal(0));
+        bank4AccountRSD.setAvailableBalance(new BigDecimal(100000000));
+        bank4AccountRSD.setCreationDate(System.currentTimeMillis());
+        bank4AccountRSD.setExpireDate(System.currentTimeMillis() + 60 * 60 * 24 * 365 * 10);
+        bank4AccountRSD.setCurrency(currencyRepository.findById(1L).orElse(null));
+        bank4AccountRSD.setActive(true);
+
         if (accountRepository.count() == 0) {
             loadUserAccountData(List.of(jankoRacunDinarski,
                     strahinjaRacunDinarski,
@@ -311,7 +322,8 @@ public class BootstrapData implements CommandLineRunner {
                     goodCompanyAccountUsd,
                     badCompanyAccountDin,
                     badCompanyAccountEur,
-                    badCompanyAccountUsd));
+                    badCompanyAccountUsd,
+                    bank4AccountRSD));
         }
 
         Card jankoDinarskiKartica = new Card();

@@ -20,8 +20,9 @@ public class Offer implements Serializable {
 
     private String ticker;
     private Integer amount;
-    private Integer price;
+    private Double price;
     private Long idBank4; //id koji ce stizati od banke
+    @Enumerated(EnumType.STRING)
     private OfferStatus offerStatus;
 
 }
