@@ -97,7 +97,7 @@ public class Banka4OtcService {
             Offer offer1 = offer.get();
             offer1.setOfferStatus(OfferStatus.ACCEPTED);
             offerRepository.save(offer1);
-            MyStock myStock = myStockRepository.findByTickerAndCompanyId(offer1.getTicker(), 1l);
+            MyStock myStock = myStockRepository.findByTickerAndCompanyId(offer1.getTicker(), 1l); // ovde
             myStock.setAmount(myStock.getAmount() - offer1.getAmount());
             myStock.setPublicAmount(myStock.getPublicAmount() - offer1.getAmount());
             myStockRepository.save(myStock);
@@ -182,7 +182,7 @@ public class Banka4OtcService {
         if(!offers.isEmpty()){
             for(Offer offer:offers){
                 /// TODO: proveriti tacan url
-                String url = URL_TO_BANK4 + "/api/v1/otcTrade/acceptOffer/" + offer.getIdBank4();
+                String url = URL_TO_BANK4 + "/offer/accept-our-offer/" + offer.getIdBank4();
                 RestTemplate restTemplate = new RestTemplate();
                 ResponseEntity<String> response = restTemplate.exchange(
                     url,
@@ -202,7 +202,7 @@ public class Banka4OtcService {
         if(!offers.isEmpty()){
             for(Offer offer:offers){
                 /// TODO: proveriti tacan url
-                String url = URL_TO_BANK4 + "/api/v1/otcTrade/acceptOffer/" + offer.getIdBank4();
+                String url = URL_TO_BANK4 + "/offer/decline-our-offer/" + offer.getIdBank4();
                 RestTemplate restTemplate = new RestTemplate();
                 ResponseEntity<String> response = restTemplate.exchange(
                         url,
@@ -225,7 +225,7 @@ public class Banka4OtcService {
         MyOffer myOffer1 = myOfferRepository.save(myOffer);
 
         //todo proveriti tacan url
-        String url = URL_TO_BANK4 + "/api/v1/otcTrade/sendOffer";
+        String url = URL_TO_BANK4 + "/offer/place-offer";
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();

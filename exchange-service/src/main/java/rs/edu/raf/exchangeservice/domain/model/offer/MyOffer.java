@@ -1,6 +1,7 @@
 package rs.edu.raf.exchangeservice.domain.model.offer;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -21,7 +22,8 @@ public class MyOffer implements Serializable {
 
     private String ticker;
     private Integer amount;
-    private Integer price;
+    private Double price;
 
+    @JsonIgnore
     private OfferStatus offerStatus;
 }

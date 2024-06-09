@@ -180,13 +180,13 @@ class Banka4OtcServiceTest {
         MyOffer offer1 = new MyOffer();
         offer1.setAmount(10);
         offer1.setTicker("ABC");
-        offer1.setPrice(100);
+        offer1.setPrice(100.0);
         myOffers.add(offer1);
 
         MyOffer offer2 = new MyOffer();
         offer2.setAmount(20);
         offer2.setTicker("XYZ");
-        offer2.setPrice(200);
+        offer2.setPrice(200.0);
         myOffers.add(offer2);
 
         when(myOfferRepository.findAll()).thenReturn(myOffers);
