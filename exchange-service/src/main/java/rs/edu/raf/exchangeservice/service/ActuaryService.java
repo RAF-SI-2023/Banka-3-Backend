@@ -24,6 +24,9 @@ public class ActuaryService {
     @PostConstruct
     @ExcludeFromJacocoGeneratedReport
     public void loadActuary() throws InterruptedException {
+        if(actuaryRepository.count() > 0){
+            return;
+        }
         Thread.sleep(5000);
         List<ActuaryDto> actuaryDtoList = userServiceClient.getEmployees();
         for (ActuaryDto actuaryDto : actuaryDtoList){
