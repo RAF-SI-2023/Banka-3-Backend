@@ -24,6 +24,5 @@ public class MyOffer implements Serializable {
     private Integer amount;
     private Double price;
 
-    @JsonIgnore
     private OfferStatus offerStatus;
 }

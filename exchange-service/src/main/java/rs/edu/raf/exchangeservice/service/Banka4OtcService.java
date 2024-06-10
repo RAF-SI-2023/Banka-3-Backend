@@ -215,7 +215,7 @@ public class Banka4OtcService {
             }
         }
     }
-        @ExcludeFromJacocoGeneratedReport
+    @ExcludeFromJacocoGeneratedReport
     public MyOffer makeOffer(FrontendOfferDto frontendOfferDto){
         MyOffer myOffer = new MyOffer();
         myOffer.setAmount(frontendOfferDto.getAmount());
@@ -223,6 +223,13 @@ public class Banka4OtcService {
         myOffer.setPrice(frontendOfferDto.getPrice());
         myOffer.setOfferStatus(OfferStatus.PROCESSING);
         MyOffer myOffer1 = myOfferRepository.save(myOffer);
+
+        MyOfferDto myOfferDto = new MyOfferDto();
+        myOfferDto.setAmount(myOffer1.getAmount());
+        myOfferDto.setTicker(myOffer1.getTicker());
+        myOfferDto.setMyOfferId(myOffer1.getMyOfferId());
+        myOfferDto.setPrice(myOffer1.getPrice());
+
 
         //todo proveriti tacan url
         String url = URL_TO_BANK4 + "/offer/place-offer";
@@ -233,7 +240,7 @@ public class Banka4OtcService {
 
         Gson gson = new Gson();
 
-        HttpEntity<String> entity = new HttpEntity<String>(gson.toJson(myOffer1), headers);
+        HttpEntity<String> entity = new HttpEntity<String>(gson.toJson(myOfferDto), headers);
 
         ResponseEntity<String> response = restTemplate.exchange(
                 url,
