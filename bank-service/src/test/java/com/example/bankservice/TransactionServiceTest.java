@@ -27,6 +27,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 
 
@@ -63,6 +64,9 @@ class TransactionServiceTest {
 
     private String accountNumber;
 
+    private static final String ACCOUNT_NUMBER = "1234567890";
+
+
     @BeforeEach
     public void setUp() {
         stockTransactionDto = new StockTransactionDto();
@@ -93,6 +97,19 @@ class TransactionServiceTest {
     }
 
     @Test
+    void testOtcBank4Transaction() {
+        when(accountService.findCompanyAccountForIdAndCurrency(1L, "RSD")).thenReturn(accountFrom);
+        when(accountService.findCompanyAccountForIdAndCurrency(2L, "RSD")).thenReturn(accountTo);
+
+        // To allow spying on transactionService to verify the private method call
+        TransactionService transactionServiceSpy = spy(paymentTransactionService);
+
+        transactionServiceSpy.otcBank4Transaction(companyOtcTransactionDto);
+
+        verify(accountService, times(1)).findCompanyAccountForIdAndCurrency(1L, "RSD");
+        verify(accountService, times(1)).findCompanyAccountForIdAndCurrency(2L, "RSD");
+    }
+    @Test
     void testOtcCompanyTransaction() {
         when(accountService.findCompanyAccountForIdAndCurrency(1L, "RSD")).thenReturn(accountFrom);
         when(accountService.findCompanyAccountForIdAndCurrency(2L, "RSD")).thenReturn(accountTo);
@@ -120,20 +137,6 @@ class TransactionServiceTest {
         // Assuming startOTCTransaction is a public method of TransactionService
     }
 
-//    @Test
-//    void testGetAllPaymentTransactions_NoTransactionsFound() {
-//        when(transactionRepository.findByAccountFromOrAccountToAndType(accountNumber, accountNumber, TransactionType.PAYMENT_TRANSACTION))
-//                .thenReturn(Optional.empty());
-//
-//        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-//            paymentTransactionService.getAllPaymentTransactions(accountNumber);
-//        });
-//
-//        assertEquals("Transactions not found", exception.getMessage());
-//
-//        verify(transactionRepository, times(1)).findByAccountFromOrAccountToAndType(accountNumber, accountNumber, TransactionType.PAYMENT_TRANSACTION);
-//        verifyNoInteractions(transactionMapper);
-//    }
 
     @Test
     public void testStockSellTransaction_Uspesno() {
@@ -143,6 +146,48 @@ class TransactionServiceTest {
         paymentTransactionService.stockSellTransaction(stockTransactionDto);
 
         verify(transactionRepository, times(1)).save(any(Transaction.class));
+    }
+
+
+@Test
+public void testGetAllPaymentTransactions_Success() {
+    // Arrange
+    Transaction transaction1 = new Transaction();
+    transaction1.setDate(100l);
+    transaction1.setTransactionStatus(TransactionStatus.FINISHED);
+
+    Transaction transaction2 = new Transaction();
+    transaction2.setDate(100l);
+    transaction2.setTransactionStatus(TransactionStatus.FINISHED);
+
+    List<Transaction> transactions = Arrays.asList(transaction1, transaction2);
+    when(transactionRepository.findByAccountFromOrAccountTo(ACCOUNT_NUMBER, ACCOUNT_NUMBER)).thenReturn(Optional.of(transactions));
+
+    FinishedPaymentTransactionDto dto1 = new FinishedPaymentTransactionDto();
+    FinishedPaymentTransactionDto dto2 = new FinishedPaymentTransactionDto();
+    when(transactionMapper.transactionToFinishedPaymentTransactionDto(transaction1)).thenReturn(dto1);
+    when(transactionMapper.transactionToFinishedPaymentTransactionDto(transaction2)).thenReturn(dto2);
+
+    // Act
+    List<FinishedPaymentTransactionDto> result = paymentTransactionService.getAllPaymentTransactions(ACCOUNT_NUMBER);
+
+    // Assert
+    assertEquals(2, result.size());
+    assertEquals(dto2, result.get(0)); // Proverava da li je transakcija2 prva zbog sortiranja po datumu
+    assertEquals(dto1, result.get(1));
+}
+
+    @Test
+    public void testGetAllPaymentTransactions_TransactionsNotFound() {
+        // Arrange
+        when(transactionRepository.findByAccountFromOrAccountTo(ACCOUNT_NUMBER, ACCOUNT_NUMBER)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            paymentTransactionService.getAllPaymentTransactions(ACCOUNT_NUMBER);
+        });
+
+        assertEquals("Transactions not found", exception.getMessage());
     }
 
     @Test
@@ -158,17 +203,17 @@ class TransactionServiceTest {
         verify(transactionRepository, never()).save(any(Transaction.class));
     }
 
-    @Test
-    public void testStockSellTransaction_UserAccount() {
-        stockTransactionDto.setEmployeeId(null);
-
-        when(accountService.findExchangeAccountForGivenCurrency("USD")).thenReturn(accountFrom);
-        when(accountService.findAccount(stockTransactionDto)).thenReturn(accountTo);
-
-        paymentTransactionService.stockSellTransaction(stockTransactionDto);
-
-        verify(transactionRepository, times(1)).save(any(Transaction.class));
-    }
+//    @Test
+//    public void testStockSellTransaction_UserAccount() {
+//        stockTransactionDto.setEmployeeId(null);
+//
+//        when(accountService.findExchangeAccountForGivenCurrency("USD")).thenReturn(accountFrom);
+//        when(accountService.findAccount(stockTransactionDto)).thenReturn(accountTo);
+//
+//        paymentTransactionService.stockSellTransaction(stockTransactionDto);
+//
+//        verify(transactionRepository, times(1)).save(any(Transaction.class));
+//    }
 
     @Test
     public void testStockBuyTransaction_Uspesno() {

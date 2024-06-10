@@ -51,9 +51,10 @@ public class FutureService {
                     future.setMaintenanceMargin(Integer.parseInt(parts[3]));
                     future.setType(parts[4]);
                     Random random = new Random();
-                    double min = 10000;
-                    double max = 50000;
-                    double price = random.nextDouble((max - min) + 1) + min;
+                    int min = 10000;
+                    int max = 50000;
+                    double price = random.nextInt((max - min) + 1) + min;
+
                     future.setPrice(price);
                     future.setCurrencyMark("RSD");
 

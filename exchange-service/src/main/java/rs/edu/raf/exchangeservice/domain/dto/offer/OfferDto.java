@@ -16,6 +16,6 @@ public class OfferDto implements Serializable {
 
     private String ticker;
     private Integer amount;
-    private Integer price;
+    private Double price;
     private Long idBank4; // id koji stize od banke 4
 }

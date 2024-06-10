@@ -116,4 +116,16 @@ public class TransactionController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @PostMapping(value = "/otcBank4transaction",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> otcBank4Transaction(@RequestBody CompanyOtcTransactionDto companyOtcTransactionDto) {
+        try {
+            transactionService.otcBank4Transaction(companyOtcTransactionDto);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

@@ -5,5 +5,6 @@ import rs.edu.raf.exchangeservice.domain.model.listing.Bank4Stock;
 import rs.edu.raf.exchangeservice.domain.model.listing.Forex;
 
 public interface Bank4StockRepository extends JpaRepository<Bank4Stock, Long> {
+    Bank4Stock findByTicker(String ticker);
 
 }

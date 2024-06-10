@@ -7,9 +7,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import rs.edu.raf.exchangeservice.client.BankServiceClient;
 import rs.edu.raf.exchangeservice.domain.dto.CompanyAccountDto;
+import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyOptionDto;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyStockCompanyDto;
 import rs.edu.raf.exchangeservice.domain.model.listing.Option;
 import rs.edu.raf.exchangeservice.domain.model.listing.Ticker;
@@ -17,6 +19,7 @@ import rs.edu.raf.exchangeservice.domain.model.myListing.Contract;
 import rs.edu.raf.exchangeservice.repository.ContractRepository;
 import rs.edu.raf.exchangeservice.repository.listingRepository.OptionRepository;
 import rs.edu.raf.exchangeservice.repository.listingRepository.TickerRepository;
+import rs.edu.raf.exchangeservice.repository.myListingRepository.MyOptionRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
@@ -38,6 +41,8 @@ class OptionServiceTest {
     private OptionRepository optionRepository;
     @Mock
     private ContractRepository contractRepository;
+    @Mock
+    private MyOptionRepository myOptionRepository;
 
     @InjectMocks
     private OptionService optionService;
@@ -117,6 +122,31 @@ class OptionServiceTest {
         }
     }
 
+    @Test
+    public void testFindByContractSymbol_WhenOptionExists() {
+        // Mocking an existing option
+        Option expectedOption = new Option(/* Provide necessary data for Option */);
+        when(optionRepository.findByContractSymbol(anyString())).thenReturn(expectedOption);
+
+        // Call the method
+        Option result = optionService.findByContractSymbol("yourContractSymbol");
+
+        // Assert that the result matches the expected option
+        assertEquals(expectedOption, result);
+    }
+
+    @Test
+    public void testFindByContractSymbol_WhenOptionDoesNotExist() {
+        // Mocking when option is not found
+        when(optionRepository.findByContractSymbol(anyString())).thenReturn(null);
+
+        // Call the method
+        Option result = optionService.findByContractSymbol("nonExistentSymbol");
+
+        // Assert that the result is null
+        assertEquals(null, result);
+    }
+
     private List<Option> createDummyCallsOptions(String ticker, String optionType) {
         Option option1 = new Option();
         option1.setStockListing(ticker);
@@ -151,5 +181,45 @@ class OptionServiceTest {
 
         // Provera da li su povratna lista i očekivana lista jednake
         assertEquals(expectedOptionsList, actualOptionsList);
+    }
+
+    @Test
+    public void testBuyOptionsFromExchange_OptionNotFound() {
+        // Mocking Option not found scenario
+        when(optionRepository.findByContractSymbol(any())).thenReturn(null);
+
+        BuyOptionDto buyOptionDto = new BuyOptionDto();
+
+        // Call the method, should throw RuntimeException
+        try {
+            optionService.buyOptionsFromExchange(buyOptionDto);
+            // If the method doesn't throw an exception, fail the test
+            fail("Expected RuntimeException was not thrown");
+        } catch (RuntimeException e) {
+            // Expected RuntimeException was thrown
+            // You can add more assertions here if needed
+        }
+    }
+
+    @Test
+    public void testBuyOptionsFromExchange_NotEnoughOptionsAvailable() {
+        // Mocking data
+        Option mockOption = new Option(/* Provide necessary data */);
+        when(optionRepository.findByContractSymbol(any())).thenReturn(mockOption);
+
+        BuyOptionDto buyOptionDto = new BuyOptionDto(/* Provide necessary data */);
+
+        // Making quantity higher than open interest to simulate not enough options available
+        when(bankServiceClient.stockBuyTransaction(any())).thenReturn(new ResponseEntity<>(HttpStatus.OK));
+
+        // Call the method, should throw RuntimeException
+        try {
+            optionService.buyOptionsFromExchange(buyOptionDto);
+            // If the method doesn't throw an exception, fail the test
+            fail("Expected RuntimeException was not thrown");
+        } catch (RuntimeException e) {
+            // Expected RuntimeException was thrown
+            // You can add more assertions here if needed
+        }
     }
 }

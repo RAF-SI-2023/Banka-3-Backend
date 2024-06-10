@@ -5,12 +5,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
+import rs.edu.raf.exchangeservice.client.BankServiceClient;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyFutureDto;
 import rs.edu.raf.exchangeservice.domain.model.enums.OrderStatus;
 import rs.edu.raf.exchangeservice.domain.model.listing.Future;
 import rs.edu.raf.exchangeservice.domain.model.order.FutureOrder;
 import rs.edu.raf.exchangeservice.repository.listingRepository.FutureRepository;
 import rs.edu.raf.exchangeservice.repository.orderRepository.FutureOrderRepository;
+import rs.edu.raf.exchangeservice.service.myListingService.MyFutureSerivce;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,15 +32,36 @@ class FuturOrderServiceTest {
     private FutureOrderRepository futureOrderRepository;
     @Mock
     private FutureRepository futureRepository;
-    private static final double BUSHEL=6.5;
-    private static final double POUND=1.2;
-    private static final double BOARD_FEET=0.5;
-    private static final double BARREL=50.0;
-    private static final double GALLON=3.5;
-    private static final double TROY_OUNCE=500.0;
-    private static final double METRIC_TON=100.0;
+    @Mock
+    private MyFutureSerivce myFutureSerivce;
+    @Mock
+    private ApplicationEventPublisher applicationEventPublisher;
+    @Mock
+    private BankServiceClient bankServiceClient;
 
 
+    @Test
+    public void testBuyFuture() {
+        // Priprema
+        BuyFutureDto buyFutureDto = createDummyBuyFutureDto();
+        Future dummyFuture = createDummyFuture();
+
+        when(futureRepository.findByFutureId(1L)).thenReturn(dummyFuture);
+        when(futureOrderRepository.save(any(FutureOrder.class))).thenAnswer(invocation -> {
+            FutureOrder arg = invocation.getArgument(0);
+            arg.setFutureOrderId(1L); // Postavljanje ID-a za simulaciju snimanja u bazu
+            return arg;
+        });
+
+        // Poziv metode koju testiramo
+        FutureOrder result = futurOrderService.buyFuture(buyFutureDto);
+
+        // Provera
+        assertNotNull(result);
+        assertEquals(buyFutureDto.getCompanyId(), result.getCompanyId());
+        assertEquals(OrderStatus.PROCESSING, result.getStatus());
+        // Dodajte dodatne provere po potrebi
+    }
     @Test
     public void testFindAll() {
         // Pripremite listu dummy objekata FutureOrder
@@ -52,129 +76,6 @@ class FuturOrderServiceTest {
         // Proverite da li je povratna vrednost jednaka dummy listi
         assertEquals(dummyFutureOrders, result);
     }
-
-//    @Test
-//    public void testBuyFuture() {
-//        // Pripremite DTO objekat za testiranje
-//        BuyFutureDto buyFutureDto = createDummyBuyFutureDto();
-//
-//        // Pripremite dummy objekte Future i FutureOrder koji će biti potrebni za testiranje
-//        Future dummyFuture = createDummyFuture();
-//        FutureOrder dummyFutureOrder = createDummyFutureOrder();
-//
-//        // Postavite ponašanje mock-ovanih repozitorijuma
-//        when(futureRepository.findByFutureId(anyLong())).thenReturn(dummyFuture);
-//        when(futureOrderRepository.save(any(FutureOrder.class))).thenReturn(dummyFutureOrder);
-//
-//        // Pozovite metodu koju testirate
-//        FutureOrder result = futurOrderService.buyFuture(buyFutureDto);
-//
-//        // Proverite da li je povratna vrednost metode jednaka dummy FutureOrder objektu
-//        assertEquals(dummyFutureOrder, result);
-//    }
-//
-//    @Test
-//    public void testBuyFuture_Bushel() {
-//        // Pripremite DTO objekat za testiranje
-//        BuyFutureDto buyFutureDto = createDummyBuyFutureDto();
-//
-//        // Pripremite dummy objekat Future sa CONTRACT_UNIT "BUSHEL"
-//        Future dummyFuture = createDummyFuture1("BUSHEL", 10);
-//
-//        // Postavite ponašanje mock-ovanih repozitorijuma
-//        when(futureRepository.findByFutureId(anyLong())).thenReturn(dummyFuture);
-//        when(futureOrderRepository.save(any(FutureOrder.class))).thenAnswer(invocation -> invocation.getArgument(0));
-//
-//        // Pozovite metodu koju testirate
-//        FutureOrder result = futurOrderService.buyFuture(buyFutureDto);
-//
-//        // Proverite da li je povratna vrednost metode postavljena pravilno
-//        assertEquals(BUSHEL * dummyFuture.getContractSize(), result.getPrice());
-//    }
-//
-//    @Test
-//    public void testBuyFuture_Pound() {
-//        // Pripremite DTO objekat za testiranje
-//        BuyFutureDto buyFutureDto = createDummyBuyFutureDto();
-//
-//        // Pripremite dummy objekat Future sa CONTRACT_UNIT "POUND"
-//        Future dummyFuture = createDummyFuture1("POUND", 20);
-//
-//        // Postavite ponašanje mock-ovanih repozitorijuma
-//        when(futureRepository.findByFutureId(anyLong())).thenReturn(dummyFuture);
-//        when(futureOrderRepository.save(any(FutureOrder.class))).thenAnswer(invocation -> invocation.getArgument(0));
-//
-//        // Pozovite metodu koju testirate
-//        FutureOrder result = futurOrderService.buyFuture(buyFutureDto);
-//
-//        // Proverite da li je povratna vrednost metode postavljena pravilno
-//        assertEquals(POUND * dummyFuture.getContractSize(), result.getPrice());
-//    }
-//
-//    @Test
-//    public void testBuyFuture_BoardFeet() {
-//        BuyFutureDto buyFutureDto = createDummyBuyFutureDto();
-//        Future dummyFuture = createDummyFuture1("BOARD FEET", 30);
-//
-//        when(futureRepository.findByFutureId(anyLong())).thenReturn(dummyFuture);
-//        when(futureOrderRepository.save(any(FutureOrder.class))).thenAnswer(invocation -> invocation.getArgument(0));
-//
-//        FutureOrder result = futurOrderService.buyFuture(buyFutureDto);
-//
-//        assertEquals(BOARD_FEET * dummyFuture.getContractSize(), result.getPrice());
-//    }
-//
-//    @Test
-//    public void testBuyFuture_Barrel() {
-//        BuyFutureDto buyFutureDto = createDummyBuyFutureDto();
-//        Future dummyFuture = createDummyFuture1("BARREL", 40);
-//
-//        when(futureRepository.findByFutureId(anyLong())).thenReturn(dummyFuture);
-//        when(futureOrderRepository.save(any(FutureOrder.class))).thenAnswer(invocation -> invocation.getArgument(0));
-//
-//        FutureOrder result = futurOrderService.buyFuture(buyFutureDto);
-//
-//        assertEquals(BARREL * dummyFuture.getContractSize(), result.getPrice());
-//    }
-//
-//    @Test
-//    public void testBuyFuture_Gallon() {
-//        BuyFutureDto buyFutureDto = createDummyBuyFutureDto();
-//        Future dummyFuture = createDummyFuture1("GALLON", 50);
-//
-//        when(futureRepository.findByFutureId(anyLong())).thenReturn(dummyFuture);
-//        when(futureOrderRepository.save(any(FutureOrder.class))).thenAnswer(invocation -> invocation.getArgument(0));
-//
-//        FutureOrder result = futurOrderService.buyFuture(buyFutureDto);
-//
-//        assertEquals(GALLON * dummyFuture.getContractSize(), result.getPrice());
-//    }
-//
-//    @Test
-//    public void testBuyFuture_TroyOunce() {
-//        BuyFutureDto buyFutureDto = createDummyBuyFutureDto();
-//        Future dummyFuture = createDummyFuture1("TROY OUNCE", 60);
-//
-//        when(futureRepository.findByFutureId(anyLong())).thenReturn(dummyFuture);
-//        when(futureOrderRepository.save(any(FutureOrder.class))).thenAnswer(invocation -> invocation.getArgument(0));
-//
-//        FutureOrder result = futurOrderService.buyFuture(buyFutureDto);
-//
-//        assertEquals(TROY_OUNCE * dummyFuture.getContractSize(), result.getPrice());
-//    }
-//
-//    @Test
-//    public void testBuyFuture_MetricTon() {
-//        BuyFutureDto buyFutureDto = createDummyBuyFutureDto();
-//        Future dummyFuture = createDummyFuture1("METRIC TON", 70);
-//
-//        when(futureRepository.findByFutureId(anyLong())).thenReturn(dummyFuture);
-//        when(futureOrderRepository.save(any(FutureOrder.class))).thenAnswer(invocation -> invocation.getArgument(0));
-//
-//        FutureOrder result = futurOrderService.buyFuture(buyFutureDto);
-//
-//        assertEquals(METRIC_TON * dummyFuture.getContractSize(), result.getPrice());
-//    }
 
 
     // Metoda za kreiranje dummy objekta Future sa specificiranom CONTRACT_UNIT vrednošću

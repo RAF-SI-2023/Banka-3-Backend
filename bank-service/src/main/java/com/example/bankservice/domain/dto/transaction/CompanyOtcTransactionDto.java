@@ -13,4 +13,5 @@ public class CompanyOtcTransactionDto {
     private Long companyFromId;
     private Long companyToId;
     private Double amount;
+    private double tax;
 }

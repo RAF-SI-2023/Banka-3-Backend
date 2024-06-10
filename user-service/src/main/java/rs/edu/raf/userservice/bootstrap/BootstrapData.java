@@ -275,7 +275,20 @@ public class BootstrapData implements CommandLineRunner {
                     .isActive(true)
                     .build();
 
-            companyRepository.saveAll(Arrays.asList(bank, stock, goodCompany, badCompany));
+            //BANKA 4
+            Company bank4 = Company.builder()
+                    .title("Banka4")
+                    .number("0113161099")
+                    .PIB(456456441)
+                    .maticniBroj(88997722)
+                    .sifraDelatnosti(5533)
+                    .email("banka4@banka.com")
+                    .password(passwordEncoder.encode("banka41234"))
+                    .codeActive(true)
+                    .isActive(true)
+                    .build();
+
+            companyRepository.saveAll(Arrays.asList(bank, stock, goodCompany, badCompany, bank4));
         }
     }
 }

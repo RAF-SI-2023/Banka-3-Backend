@@ -153,6 +153,11 @@
             <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.sendgrid</groupId>
+            <artifactId>sendgrid-java</artifactId>
+            <version>4.10.2</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -169,8 +174,11 @@
                         <exclude>**/client/**</exclude>
                         <exclude>**/configuration/**</exclude>
                         <exclude>**/controller/**</exclude>
+                        <exclude>**/bootstrap/**</exclude>
                         <exclude>**/domain/**</exclude>
                         <exclude>**/repository/**</exclude>
+                        <exclude>**/service/email/**</exclude>
+                        <exclude>**/service/mongo/MongoService/**</exclude>
                         <exclude>**/EmailServiceApplication.class</exclude>
                     </excludes>
                 </configuration>

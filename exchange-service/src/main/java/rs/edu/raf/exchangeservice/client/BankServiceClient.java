@@ -28,7 +28,6 @@ public interface BankServiceClient {
     @Operation(description = "kada banka prodaje nesto Exchange-u")
     ResponseEntity<?> stockSellTransaction (@RequestBody BankTransactionDto bankTransactionDto);
 
-
     @GetMapping("/getByCompany/{companyId}")
     @Operation(description = "Uzimamo firmu po id")
     ResponseEntity<?> getByCompanyId(@PathVariable Long companyId);
@@ -39,12 +38,17 @@ public interface BankServiceClient {
     @Operation(description = "user kupuje ili prodaje od drugog user-a")
     ResponseEntity<?> otcUserTransaction (@RequestBody UserOtcDto userOtcDto);
 
-
     @PostMapping(value = "/transaction/otcCompanyTransaction",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "kompanija kupuje ili prodaje od kompanije")
     ResponseEntity<?> otcBankTransaction (@RequestBody CompanyOtcDto companyOtcDto);
+
+    @PostMapping(value = "/transaction/otcBank4transaction",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "kompanija kupuje ili prodaje od kompanije")
+    ResponseEntity<?> otcBank4transaction (@RequestBody CompanyOtcDto companyOtcDto);
 
     @PostMapping(value = "/account/checkAccountBalanceUser",
             consumes = MediaType.APPLICATION_JSON_VALUE,

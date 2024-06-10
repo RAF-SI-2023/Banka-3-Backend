@@ -2,9 +2,11 @@ package rs.edu.raf.exchangeservice.service.orderService;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import rs.edu.raf.exchangeservice.client.BankServiceClient;
+import rs.edu.raf.exchangeservice.configuration.future.FutureUpdateEvent;
 import rs.edu.raf.exchangeservice.domain.dto.bank.BankTransactionDto;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyFutureDto;
 import rs.edu.raf.exchangeservice.domain.model.enums.OrderStatus;
@@ -30,6 +32,8 @@ public class FuturOrderService {
     private final FutureOrderRepository futureOrderRepository;
     private final MyFutureSerivce myFutureSerivce;
     private final BankServiceClient bankServiceClient;
+    private final ApplicationEventPublisher eventPublisher;
+
 
     public CopyOnWriteArrayList<FutureOrder> ordersToBuy = new CopyOnWriteArrayList<>();
 
@@ -91,6 +95,7 @@ public class FuturOrderService {
             ordersToBuy.remove(futureOrder);
 
             futureRepository.delete(future);
+            eventPublisher.publishEvent(new FutureUpdateEvent(this, myFuture));
         }
     }
 

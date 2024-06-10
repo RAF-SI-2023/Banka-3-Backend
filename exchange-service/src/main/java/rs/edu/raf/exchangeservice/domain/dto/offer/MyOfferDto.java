@@ -18,5 +18,5 @@ public class MyOfferDto implements Serializable {
     private Long myOfferId;
     private String ticker;
     private Integer amount;
-    private Integer price;
+    private Double price;
 }
