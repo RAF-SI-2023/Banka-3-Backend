@@ -25,6 +25,7 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -77,6 +78,11 @@ public class AccountServiceUnitTest {
     private static final String exchangeAccountEUR = "9876543219876543";
     private static final String exchangeAccountUSD = "1098765432101234";
     private static final String exchangeAccountGBP = "9988776655443322";
+
+    private static final Long USER_ID = 1L;
+    private static final Long COMPANY_ID = 1L;
+
+    private static final Double AMOUNT = 100.0;
 
     @BeforeEach
     void setUp() {
@@ -643,4 +649,65 @@ public class AccountServiceUnitTest {
         assertThrows(RuntimeException.class, () -> accountService.extractAccountForAccountNumber("1581231231231888"));
     }
 
+    @Test
+    public void testCheckBalanceUser_AccountNotFound() {
+        // Arrange
+        when(accountRepository.findUserAccountByUserId(USER_ID)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            accountService.checkBalanceUser(USER_ID, AMOUNT);
+        });
+
+        assertEquals("Account not found", exception.getMessage());
+    }
+
+    @Test
+    public void testCheckBalanceUser_NoRSDAccount() {
+        // Arrange
+        UserAccount account = new UserAccount();
+        account.setCurrency(new Currency(1l, CurrencyName.DINAR, "Serbian Dinar"));
+        account.setAvailableBalance(new BigDecimal("200.0"));
+
+        List<UserAccount> accounts = Arrays.asList(account);
+        when(accountRepository.findUserAccountByUserId(USER_ID)).thenReturn(Optional.of(accounts));
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            accountService.checkBalanceUser(USER_ID, AMOUNT);
+        });
+
+        assertEquals("Account not found", exception.getMessage());
+    }
+
+    @Test
+    public void testCheckBalanceCompany_AccountNotFound() {
+        // Arrange
+        when(accountRepository.findCompanyAccountByCompanyId(COMPANY_ID)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            accountService.checkBalanceCompany(COMPANY_ID, AMOUNT);
+        });
+
+        assertEquals("Account not found", exception.getMessage());
+    }
+
+    @Test
+    public void testCheckBalanceCompany_NoRSDAccount() {
+        // Arrange
+        CompanyAccount account = new CompanyAccount();
+        account.setCurrency(new Currency(1l, CurrencyName.DINAR, "Serbian Dinar"));
+        account.setAvailableBalance(new BigDecimal("200.0"));
+
+        List<CompanyAccount> accounts = Arrays.asList(account);
+        when(accountRepository.findCompanyAccountByCompanyId(COMPANY_ID)).thenReturn(Optional.of(accounts));
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            accountService.checkBalanceCompany(COMPANY_ID, AMOUNT);
+        });
+
+        assertEquals("Account not found", exception.getMessage());
+    }
 }

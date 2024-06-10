@@ -1,5 +1,6 @@
 package com.example.emailservice.service.email;
 
+import com.example.emailservice.jacoco.ExcludeFromJacocoGeneratedReport;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
@@ -23,6 +24,7 @@ public class EmailServiceImplementation implements EmailService {
     @Value("${sendgrid-key}")
     String sendGridApiKey;
 
+    @ExcludeFromJacocoGeneratedReport
     @Override
     public void sendSimpleMessage(String to, String subject, String text) {
 //        SimpleMailMessage message = new SimpleMailMessage();

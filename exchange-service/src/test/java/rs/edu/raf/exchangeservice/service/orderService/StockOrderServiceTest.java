@@ -5,6 +5,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.Answer;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import rs.edu.raf.exchangeservice.client.BankServiceClient;
 import rs.edu.raf.exchangeservice.domain.dto.CompanyAccountDto;
@@ -17,10 +20,12 @@ import rs.edu.raf.exchangeservice.domain.model.enums.OrderStatus;
 import rs.edu.raf.exchangeservice.domain.model.enums.OrderType;
 import rs.edu.raf.exchangeservice.domain.model.listing.Stock;
 import rs.edu.raf.exchangeservice.domain.model.myListing.Contract;
+import rs.edu.raf.exchangeservice.domain.model.myListing.MyStock;
 import rs.edu.raf.exchangeservice.domain.model.order.StockOrder;
 import rs.edu.raf.exchangeservice.repository.ActuaryRepository;
 import rs.edu.raf.exchangeservice.repository.ContractRepository;
 import rs.edu.raf.exchangeservice.repository.listingRepository.StockRepository;
+import rs.edu.raf.exchangeservice.repository.myListingRepository.MyStockRepository;
 import rs.edu.raf.exchangeservice.repository.orderRepository.StockOrderRepository;
 import rs.edu.raf.exchangeservice.service.myListingService.MyStockService;
 
@@ -51,9 +56,15 @@ class StockOrderServiceTest {
     BankServiceClient bankServiceClient;
     @Mock
     private ContractRepository contractRepository;
-
+    @Mock
+    private MyStockRepository myStockRepository;
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
     @InjectMocks
     StockOrderService stockOrderService;
+
+    @Mock
+    ResponseEntity<Object> mockResponseEntity = new ResponseEntity<>(false, HttpStatus.OK);
 
 
     @Test
@@ -143,25 +154,6 @@ class StockOrderServiceTest {
         // Provjera očekivanog rezultata
         assertEquals(OrderStatus.PROCESSING.toString(), result.getStatus());
     }
-//    @Test
-//    public void testBuyUserStockOtc() {
-//        // Postavite scenarij za test
-//        BuyStockUserOTCDto buyStockUserOTCDto = new BuyStockUserOTCDto();
-//        buyStockUserOTCDto.setUserBuyerId(1L);
-//        buyStockUserOTCDto.setUserSellerId(2L);
-//        buyStockUserOTCDto.setTicker("AAPL");
-//        buyStockUserOTCDto.setPrice(BigDecimal.valueOf(100));
-//        buyStockUserOTCDto.setAmount(10);
-//
-//        // Pozovite metodu koju testirate
-//        boolean result = stockOrderService.buyUserStockOtc(buyStockUserOTCDto);
-//
-//        // Proverite rezultat
-//        assertTrue(result);
-//
-//        // Proverite da li je metoda save pozvana na repository-ju
-//        verify(contractRepository, times(1)).save(any(Contract.class));
-//    }
     @Test
     public void testApproveStockOrder() {
         // Postavite scenarij za test
@@ -183,25 +175,6 @@ class StockOrderServiceTest {
         // Proverite da li je narudžbina sačuvana u bazi podataka
         verify(stockOrderRepository, times(1)).save(stockOrder);
     }
-//    @Test
-//    public void testBuyCompanyStockOtc() {
-//        // Postavite scenarij za test
-//        BuyStockCompanyDto buyStockCompanyDto = new BuyStockCompanyDto();
-//        buyStockCompanyDto.setBuyerId(1L);
-//        buyStockCompanyDto.setSellerId(2L);
-//        buyStockCompanyDto.setTicker("AAPL");
-//        buyStockCompanyDto.setPrice(BigDecimal.valueOf(100));
-//        buyStockCompanyDto.setAmount(10);
-//
-//        // Pozovite metodu koju testirate
-//        boolean result = stockOrderService.buyCompanyStockOtc(buyStockCompanyDto);
-//
-//        // Proverite rezultat
-//        assertTrue(result);
-//
-//        // Proverite da li je metoda save pozvana na repository-ju
-//        verify(contractRepository, times(1)).save(any(Contract.class));
-//    }
 
     @Test
     public void testFindAll() {
@@ -379,5 +352,4 @@ class StockOrderServiceTest {
 
         return stockOrder;
     }
-
 }
