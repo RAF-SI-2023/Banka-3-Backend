@@ -4,6 +4,7 @@ import io.cucumber.plugin.event.EventHandler;
 import io.cucumber.plugin.event.EventPublisher;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -26,6 +27,7 @@ import rs.edu.raf.exchangeservice.repository.listingRepository.StockRepository;
 import rs.edu.raf.exchangeservice.repository.listingRepository.TickerRepository;
 import rs.edu.raf.exchangeservice.repository.myListingRepository.MyStockRepository;
 import rs.edu.raf.exchangeservice.repository.orderRepository.StockOrderSellRepository;
+import rs.edu.raf.exchangeservice.service.listingService.TickerService;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -33,6 +35,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,7 +53,7 @@ class MyStockServiceTest {
     @Mock
     private StockRepository stockRepository;
     @Mock
-    private BankServiceClient bankServiceClient;
+    private TickerRepository tickerRepository;
     @Mock
     private ApplicationEventPublisher eventPublisher;
 
@@ -542,5 +545,74 @@ class MyStockServiceTest {
         assertTrue(myStockService.ordersToSell.contains(stopOrder));
         // Verify that the stock order is saved in the repository after type change
         verify(stockOrderSellRepository, times(1)).save(stopOrder);
+    }
+    @Test
+    public void testAddAmountToMyStock_WithUserId() {
+        // Priprema
+        String ticker = "AAPL";
+        Integer amount = 10;
+        Long userId = 1L;
+        Double minimumPrice = 90.0;
+        Ticker dummyTicker = new Ticker();
+        dummyTicker.setCurrencyName("USD");
+
+        when(myStockRepository.findByTickerAndUserId(ticker, userId)).thenReturn(null);
+        when(tickerRepository.findByTicker(ticker)).thenReturn(dummyTicker);
+
+        // Poziv metode koju testiramo
+        myStockService.addAmountToMyStock(ticker, amount, userId, null, minimumPrice);
+
+        // Provera
+        verify(myStockRepository, times(1)).findByTickerAndUserId(ticker, userId);
+        verify(tickerRepository, times(1)).findByTicker(ticker);
+
+        ArgumentCaptor<MyStock> myStockCaptor = ArgumentCaptor.forClass(MyStock.class);
+        verify(myStockRepository, times(1)).save(myStockCaptor.capture());
+
+        MyStock savedMyStock = myStockCaptor.getValue();
+        assertEquals(ticker, savedMyStock.getTicker());
+        assertEquals(userId, savedMyStock.getUserId());
+        assertEquals(amount, savedMyStock.getAmount());
+        assertEquals(amount, savedMyStock.getPrivateAmount());
+        assertEquals(0, savedMyStock.getPublicAmount());
+        assertEquals(minimumPrice, savedMyStock.getMinimumPrice());
+        assertEquals("USD", savedMyStock.getCurrencyMark());
+
+        //verify(eventPublisher, times(1)).publishEvent(savedMyStock);
+    }
+
+    @Test
+    public void testAddAmountToMyStock_WithCompanyId() {
+        // Priprema
+        String ticker = "AAPL";
+        Integer amount = 10;
+        Long companyId = 1L;
+        Double minimumPrice = 90.0;
+        Ticker dummyTicker = new Ticker();
+        dummyTicker.setCurrencyName("USD");
+
+        when(myStockRepository.findByTickerAndCompanyId(ticker, companyId)).thenReturn(null);
+        when(tickerRepository.findByTicker(ticker)).thenReturn(dummyTicker);
+
+        // Poziv metode koju testiramo
+        myStockService.addAmountToMyStock(ticker, amount, null, companyId, minimumPrice);
+
+        // Provera
+        verify(myStockRepository, times(1)).findByTickerAndCompanyId(ticker, companyId);
+        verify(tickerRepository, times(1)).findByTicker(ticker);
+
+        ArgumentCaptor<MyStock> myStockCaptor = ArgumentCaptor.forClass(MyStock.class);
+        verify(myStockRepository, times(1)).save(myStockCaptor.capture());
+
+        MyStock savedMyStock = myStockCaptor.getValue();
+        assertEquals(ticker, savedMyStock.getTicker());
+        assertEquals(companyId, savedMyStock.getCompanyId());
+        assertEquals(amount, savedMyStock.getAmount());
+        assertEquals(amount, savedMyStock.getPrivateAmount());
+        assertEquals(0, savedMyStock.getPublicAmount());
+        assertEquals(minimumPrice, savedMyStock.getMinimumPrice());
+        assertEquals("USD", savedMyStock.getCurrencyMark());
+
+        //verify(eventPublisher, times(1)).publishEvent(savedMyStock);
     }
 }

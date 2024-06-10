@@ -27,6 +27,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 
 
@@ -63,6 +64,9 @@ class TransactionServiceTest {
 
     private String accountNumber;
 
+    private static final String ACCOUNT_NUMBER = "1234567890";
+
+
     @BeforeEach
     public void setUp() {
         stockTransactionDto = new StockTransactionDto();
@@ -92,58 +96,99 @@ class TransactionServiceTest {
         accountNumber = "123456";
     }
 
-//    @Test
-//    void testOtcCompanyTransaction() {
-//        when(accountService.findCompanyAccountForIdAndCurrency(1L, "RSD")).thenReturn(accountFrom);
-//        when(accountService.findCompanyAccountForIdAndCurrency(2L, "RSD")).thenReturn(accountTo);
-//
-//        // To allow spying on transactionService to verify the private method call
-//        TransactionService transactionServiceSpy = spy(paymentTransactionService);
-//
-//        transactionServiceSpy.otcCompanyTransaction(companyOtcTransactionDto);
-//
-//        verify(accountService, times(1)).findCompanyAccountForIdAndCurrency(1L, "RSD");
-//        verify(accountService, times(1)).findCompanyAccountForIdAndCurrency(2L, "RSD");
-//    }
-//    @Test
-//    void testOtcUserTransaction() {
-//        when(accountService.findUserAccountForIdAndCurrency(1L, "RSD")).thenReturn(accountFrom);
-//        when(accountService.findUserAccountForIdAndCurrency(2L, "RSD")).thenReturn(accountTo);
-//
-//        paymentTransactionService.otcUserTransaction(userOtcTransactionDto);
-//
-//        verify(accountService, times(1)).findUserAccountForIdAndCurrency(1L, "RSD");
-//        verify(accountService, times(1)).findUserAccountForIdAndCurrency(2L, "RSD");
-//        // verify startOTCTransaction is called correctly
-//        // we use reflection to access this method since it's not exposed by the service
-//
-//        // Assuming startOTCTransaction is a public method of TransactionService
-//    }
+    @Test
+    void testOtcBank4Transaction() {
+        when(accountService.findCompanyAccountForIdAndCurrency(1L, "RSD")).thenReturn(accountFrom);
+        when(accountService.findCompanyAccountForIdAndCurrency(2L, "RSD")).thenReturn(accountTo);
 
-//    @Test
-//    void testGetAllPaymentTransactions_NoTransactionsFound() {
-//        when(transactionRepository.findByAccountFromOrAccountToAndType(accountNumber, accountNumber, TransactionType.PAYMENT_TRANSACTION))
-//                .thenReturn(Optional.empty());
-//
-//        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-//            paymentTransactionService.getAllPaymentTransactions(accountNumber);
-//        });
-//
-//        assertEquals("Transactions not found", exception.getMessage());
-//
-//        verify(transactionRepository, times(1)).findByAccountFromOrAccountToAndType(accountNumber, accountNumber, TransactionType.PAYMENT_TRANSACTION);
-//        verifyNoInteractions(transactionMapper);
-//    }
+        // To allow spying on transactionService to verify the private method call
+        TransactionService transactionServiceSpy = spy(paymentTransactionService);
 
-//    @Test
-//    public void testStockSellTransaction_Uspesno() {
-//        when(accountService.findExchangeAccountForGivenCurrency("USD")).thenReturn(accountFrom);
-//        when(accountService.findBankAccountForGivenCurrency("USD")).thenReturn(accountTo);
-//
-//        paymentTransactionService.stockSellTransaction(stockTransactionDto);
-//
-//        verify(transactionRepository, times(1)).save(any(Transaction.class));
-//    }
+        transactionServiceSpy.otcBank4Transaction(companyOtcTransactionDto);
+
+        verify(accountService, times(1)).findCompanyAccountForIdAndCurrency(1L, "RSD");
+        verify(accountService, times(1)).findCompanyAccountForIdAndCurrency(2L, "RSD");
+    }
+    @Test
+    void testOtcCompanyTransaction() {
+        when(accountService.findCompanyAccountForIdAndCurrency(1L, "RSD")).thenReturn(accountFrom);
+        when(accountService.findCompanyAccountForIdAndCurrency(2L, "RSD")).thenReturn(accountTo);
+
+        // To allow spying on transactionService to verify the private method call
+        TransactionService transactionServiceSpy = spy(paymentTransactionService);
+
+        transactionServiceSpy.otcCompanyTransaction(companyOtcTransactionDto);
+
+        verify(accountService, times(1)).findCompanyAccountForIdAndCurrency(1L, "RSD");
+        verify(accountService, times(1)).findCompanyAccountForIdAndCurrency(2L, "RSD");
+    }
+    @Test
+    void testOtcUserTransaction() {
+        when(accountService.findUserAccountForIdAndCurrency(1L, "RSD")).thenReturn(accountFrom);
+        when(accountService.findUserAccountForIdAndCurrency(2L, "RSD")).thenReturn(accountTo);
+
+        paymentTransactionService.otcUserTransaction(userOtcTransactionDto);
+
+        verify(accountService, times(1)).findUserAccountForIdAndCurrency(1L, "RSD");
+        verify(accountService, times(1)).findUserAccountForIdAndCurrency(2L, "RSD");
+        // verify startOTCTransaction is called correctly
+        // we use reflection to access this method since it's not exposed by the service
+
+        // Assuming startOTCTransaction is a public method of TransactionService
+    }
+
+
+    @Test
+    public void testStockSellTransaction_Uspesno() {
+        when(accountService.findExchangeAccountForGivenCurrency("USD")).thenReturn(accountFrom);
+        when(accountService.findBankAccountForGivenCurrency("USD")).thenReturn(accountTo);
+
+        paymentTransactionService.stockSellTransaction(stockTransactionDto);
+
+        verify(transactionRepository, times(1)).save(any(Transaction.class));
+    }
+
+
+@Test
+public void testGetAllPaymentTransactions_Success() {
+    // Arrange
+    Transaction transaction1 = new Transaction();
+    transaction1.setDate(100l);
+    transaction1.setTransactionStatus(TransactionStatus.FINISHED);
+
+    Transaction transaction2 = new Transaction();
+    transaction2.setDate(100l);
+    transaction2.setTransactionStatus(TransactionStatus.FINISHED);
+
+    List<Transaction> transactions = Arrays.asList(transaction1, transaction2);
+    when(transactionRepository.findByAccountFromOrAccountTo(ACCOUNT_NUMBER, ACCOUNT_NUMBER)).thenReturn(Optional.of(transactions));
+
+    FinishedPaymentTransactionDto dto1 = new FinishedPaymentTransactionDto();
+    FinishedPaymentTransactionDto dto2 = new FinishedPaymentTransactionDto();
+    when(transactionMapper.transactionToFinishedPaymentTransactionDto(transaction1)).thenReturn(dto1);
+    when(transactionMapper.transactionToFinishedPaymentTransactionDto(transaction2)).thenReturn(dto2);
+
+    // Act
+    List<FinishedPaymentTransactionDto> result = paymentTransactionService.getAllPaymentTransactions(ACCOUNT_NUMBER);
+
+    // Assert
+    assertEquals(2, result.size());
+    assertEquals(dto2, result.get(0)); // Proverava da li je transakcija2 prva zbog sortiranja po datumu
+    assertEquals(dto1, result.get(1));
+}
+
+    @Test
+    public void testGetAllPaymentTransactions_TransactionsNotFound() {
+        // Arrange
+        when(transactionRepository.findByAccountFromOrAccountTo(ACCOUNT_NUMBER, ACCOUNT_NUMBER)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            paymentTransactionService.getAllPaymentTransactions(ACCOUNT_NUMBER);
+        });
+
+        assertEquals("Transactions not found", exception.getMessage());
+    }
 
     @Test
     public void testStockSellTransaction_NedovoljnoSredstava() {

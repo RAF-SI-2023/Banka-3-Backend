@@ -23,6 +23,7 @@ import rs.edu.raf.exchangeservice.domain.model.listing.Option;
 import rs.edu.raf.exchangeservice.domain.model.listing.Ticker;
 import rs.edu.raf.exchangeservice.domain.model.myListing.Contract;
 import rs.edu.raf.exchangeservice.domain.model.myListing.MyOption;
+import rs.edu.raf.exchangeservice.jacoco.ExcludeFromJacocoGeneratedReport;
 import rs.edu.raf.exchangeservice.repository.ContractRepository;
 import rs.edu.raf.exchangeservice.repository.listingRepository.OptionRepository;
 import rs.edu.raf.exchangeservice.repository.listingRepository.TickerRepository;
@@ -42,6 +43,7 @@ public class OptionService {
     private final BankServiceClient bankServiceClient;
     private final ApplicationEventPublisher eventPublisher;
 
+    @ExcludeFromJacocoGeneratedReport
     public void loadData() throws JsonProcessingException {
         if(optionsRepository.count() > 0){
             optionsRepository.deleteAll();
