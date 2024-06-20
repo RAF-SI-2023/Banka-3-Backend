@@ -3,17 +3,15 @@ package rs.edu.raf.exchangeservice.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 import rs.edu.raf.exchangeservice.domain.dto.offer.FrontendOfferDto;
-import rs.edu.raf.exchangeservice.domain.dto.offer.MyOfferDto;
 import rs.edu.raf.exchangeservice.domain.dto.offer.MyStockDto;
 import rs.edu.raf.exchangeservice.domain.dto.offer.OfferDto;
+import rs.edu.raf.exchangeservice.domain.model.listing.BankOTCStock;
 import rs.edu.raf.exchangeservice.domain.model.offer.MyOffer;
 import rs.edu.raf.exchangeservice.domain.model.offer.Offer;
 import rs.edu.raf.exchangeservice.service.Banka4OtcService;
 
-import javax.websocket.server.PathParam;
 import java.util.List;
 
 @RestController
@@ -21,78 +19,139 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/v1/otcTrade")
 public class Banka4OtcController {
-
-    //https://banka-3.si.raf.edu.rs/api/v1/otcTrade
-
     private final Banka4OtcService banka4OtcService;
 
-    //radi testirano (janko i damir
-    @GetMapping("/getStocks")
+    @GetMapping("/getOurStocks")
     @Operation(description = "dohvata stockove nase banke")
     public ResponseEntity<List<MyStockDto>> getMyStocks(){
         return ResponseEntity.ok(this.banka4OtcService.findAllStocks());
     }
 
-    //radi radi testirano (janko i damir)
-    @PostMapping("/sendOffer")
-    @Operation(description = "primamo ponude od banke 4")
-    public ResponseEntity<Offer> receiveOffer(@RequestBody OfferDto dto){
-//        this.banka4OtcService.receiveOffer(dto);
-        return ResponseEntity.ok(this.banka4OtcService.receiveOffer(dto));
-
+    @PostMapping("/sendOffer/bank1")
+    @Operation(description = "primamo ponude od banke 1")
+    public ResponseEntity<Offer> receiveOfferBank1(@RequestBody OfferDto dto){
+        return ResponseEntity.ok(banka4OtcService.receiveOffer(dto,1));
     }
 
-    //radi testirano (janko i damir) FRONTEND NAS
+    @PostMapping("/sendOffer/bank2")
+    @Operation(description = "primamo ponude od banke 2")
+    public ResponseEntity<Offer> receiveOfferBank2(@RequestBody OfferDto dto){
+        return ResponseEntity.ok(banka4OtcService.receiveOffer(dto,2));
+    }
+
+    @PostMapping("/sendOffer/bank4")
+    @Operation(description = "primamo ponude od banke 4")
+    public ResponseEntity<Offer> receiveOfferBank4(@RequestBody OfferDto dto){
+        return ResponseEntity.ok(banka4OtcService.receiveOffer(dto,4));
+    }
+
+    @PostMapping("/offerAccepted/bank1/{id}")
+    @Operation(description = "od banke 1 stize poruka da su nam prihvatili ponudu")
+    public ResponseEntity<MyOffer> offerAcceptedBank1(@PathVariable Long id){
+        if (banka4OtcService.offerAccepted(id)){
+            return ResponseEntity.ok().build();
+        }else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/offerDeclined/bank1/{id}")
+    @Operation(description = "od banke 1 stize poruka da su nam odbili ponudu")
+    public ResponseEntity<MyOffer> offerDeclinedBank1(@PathVariable Long id){
+        if (banka4OtcService.offerDeclined(id)){
+            return ResponseEntity.ok().build();
+        }else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/offerAccepted/bank2/{id}")
+    @Operation(description = "od banke 2 stize poruka da su nam prihvatili ponudu")
+    public ResponseEntity<MyOffer> offerAcceptedBank2(@PathVariable Long id){
+        if (banka4OtcService.offerAccepted(id)){
+            return ResponseEntity.ok().build();
+        }else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/offerDeclined/bank2/{id}")
+    @Operation(description = "od banke 2 stize poruka da su nam odbili ponudu")
+    public ResponseEntity<MyOffer> offerDeclinedBank2(@PathVariable Long id){
+        if (banka4OtcService.offerDeclined(id)){
+            return ResponseEntity.ok().build();
+        }else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/offerAccepted/bank4/{id}")
+    @Operation(description = "od banke 4 stize poruka da su nam prihvatili ponudu")
+    public ResponseEntity<MyOffer> offerAcceptedBank4(@PathVariable Long id){
+        if (banka4OtcService.offerAccepted(id)){
+            return ResponseEntity.ok().build();
+        }else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/offerDeclined/bank4/{id}")
+    @Operation(description = "od banke 4 stize poruka da su nam odbili ponudu")
+    public ResponseEntity<MyOffer> offerDeclinedBank4(@PathVariable Long id){
+        if (banka4OtcService.offerDeclined(id)){
+            return ResponseEntity.ok().build();
+        }else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    ///////////////////////FRONTEND/////////////////////////////////////////////////
+
     @GetMapping("/getOffers")
-    @Operation(description = "dohvata sve ponude koje smo dobili")
+    @Operation(description = "frontend dohvata sve ponude od svih banaka koje smo dobili")
     public ResponseEntity<List<Offer>> getOffers(){
         return ResponseEntity.ok(this.banka4OtcService.findAllOffers());
     }
 
-    //radi testirano (janko i damir) FRONTEND NAS
-    @GetMapping("/getBank4Stocks")
-    @Operation(description = "fortend dohvata stockove od banke 4")
-    public ResponseEntity<List<MyStockDto>> getBank4Stocks(){
-        return ResponseEntity.ok(this.banka4OtcService.getAllStocksForBank4());
+    @GetMapping("/getBanksStocks")
+    @Operation(description = "frontend dohvata sve stocks koje su u ponudi za OTC od drugih banaka")
+    public ResponseEntity<List<BankOTCStock>> getBanksStocks(){
+        return ResponseEntity.ok(this.banka4OtcService.getAllStocksForBanks());
     }
 
-    //radi testirano (janko i damir) FRONTEND NAS
-    @PostMapping("/acceptOffer/{id}")
-    @Operation(description = "prihvatamo ponudu")
-    public ResponseEntity<Offer> acceptOffer(@PathVariable Long id){
-        return ResponseEntity.ok(this.banka4OtcService.acceptOffer(id));
-    }
-
-    //radi testirano (janko i damir) FRONTEND NAS
-    @PostMapping("/declineOffer/{id}")
-    @Operation(description = "odbijamo ponudu")
-    public ResponseEntity<Offer> declineOffer(@PathVariable Long id){
-        return ResponseEntity.ok(this.banka4OtcService.declineOffer(id));
-    }
-
-    //radi testirano (janko i damir) FRONTEND NAS
-    @PostMapping("/makeOffer")
-    @Operation(description = "sa frontenda stize ponuda koju treba proslediti banci 4")
-    public ResponseEntity<MyOffer> makeOffer(@RequestBody FrontendOfferDto frontendOfferDto){
-        return ResponseEntity.ok(this.banka4OtcService.makeOffer(frontendOfferDto));
-    }
-
-    @PostMapping("/offerAccepted/{id}")
-    @Operation(description = "od banke 4 stize poruka da su nam prihvatili ponudu")
-    public ResponseEntity<MyOffer> offerAccepted(@PathVariable Long id){
-        return ResponseEntity.ok(this.banka4OtcService.offerAccepted(id));
-    }
-
-    @PostMapping("/offerDeclined/{id}")
-    @Operation(description = "od banke 4 stize poruka da su nam odbili ponudu")
-    public ResponseEntity<MyOffer> offerDeclined(@PathVariable Long id){
-        return ResponseEntity.ok(this.banka4OtcService.offerDeclined(id));
-    }
-
-    // radi testirano (janko i damir) FRONTEND NAS
-    @GetMapping("/getMyOffers")
-    @Operation(description = "dohvata sve ponude koje smo poslali banci 4")
+    @GetMapping("/getOurOffers")
+    @Operation(description = "dohvata sve ponude koje smo poslali bankama")
     public ResponseEntity<List<MyOffer>> getMyOffers(){
         return ResponseEntity.ok(this.banka4OtcService.getMyOffers());
+    }
+
+    @PostMapping("/makeOffer")
+    @Operation(description = "sa frontenda stize ponuda koju treba proslediti odgovarajucoj banci")
+    public ResponseEntity<MyOffer> makeOffer(@RequestBody FrontendOfferDto frontendOfferDto){
+        if (this.banka4OtcService.makeOffer(frontendOfferDto)){
+            return ResponseEntity.ok().build();
+        }else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/acceptOffer/{id}")
+    @Operation(description = "sa frontenda nam stize koju ponudu prihvatamo, id je offer u nasoj bazi")
+    public ResponseEntity<Offer> acceptOffer(@PathVariable Long id){
+        if (this.banka4OtcService.acceptOffer(id)){
+            return ResponseEntity.ok().build();
+        }else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/declineOffer/{id}")
+    @Operation(description = "sa frontenda nam stize koju ponudu odbijamo, id je offer u nasoj bazi")
+    public ResponseEntity<Offer> declineOffer(@PathVariable Long id){
+        if (this.banka4OtcService.declineOffer(id)){
+            return ResponseEntity.ok().build();
+        }else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

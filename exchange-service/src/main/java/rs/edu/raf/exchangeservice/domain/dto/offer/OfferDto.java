@@ -13,9 +13,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OfferDto implements Serializable {
-
     private String ticker;
     private Integer amount;
     private Double price;
-    private Long idBank4; // id koji stize od banke 4
+    private Long idBank; // id koji je u bazi vase banke
 }

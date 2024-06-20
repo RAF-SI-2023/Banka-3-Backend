@@ -13,7 +13,7 @@ import java.util.List;
 @Transactional(isolation = Isolation.SERIALIZABLE)
 public interface OfferRepository extends JpaRepository<Offer, Long> {
 
-    Offer findByIdBank4(Long id);
+    Offer findByIdBank(Long id);
     List<Offer> findAllByOfferStatus(OfferStatus offerStatus);
 
 }
