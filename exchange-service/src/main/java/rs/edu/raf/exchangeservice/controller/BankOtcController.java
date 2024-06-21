@@ -45,6 +45,12 @@ public class Banka4OtcController {
         return ResponseEntity.ok(banka4OtcService.receiveOffer(dto,4));
     }
 
+    @PostMapping("/sendOffer/bank5")
+    @Operation(description = "primamo ponude od banke 5")
+    public ResponseEntity<Offer> receiveOfferBank5(@RequestBody OfferDto dto){
+        return ResponseEntity.ok(banka4OtcService.receiveOffer(dto,5));
+    }
+
     @PostMapping("/offerAccepted/bank1/{id}")
     @Operation(description = "od banke 1 stize poruka da su nam prihvatili ponudu")
     public ResponseEntity<MyOffer> offerAcceptedBank1(@PathVariable Long id){
@@ -105,13 +111,27 @@ public class Banka4OtcController {
         }
     }
 
-    ///////////////////////FRONTEND/////////////////////////////////////////////////
-
-    @GetMapping("/getOffers")
-    @Operation(description = "frontend dohvata sve ponude od svih banaka koje smo dobili")
-    public ResponseEntity<List<Offer>> getOffers(){
-        return ResponseEntity.ok(this.banka4OtcService.findAllOffers());
+    @PostMapping("/offerAccepted/bank5/{id}")
+    @Operation(description = "od banke 5 stize poruka da su nam prihvatili ponudu")
+    public ResponseEntity<MyOffer> offerAcceptedBank5(@PathVariable Long id){
+        if (banka4OtcService.offerAccepted(id)){
+            return ResponseEntity.ok().build();
+        }else {
+            return ResponseEntity.badRequest().build();
+        }
     }
+
+    @PostMapping("/offerDeclined/bank5/{id}")
+    @Operation(description = "od banke 5 stize poruka da su nam odbili ponudu")
+    public ResponseEntity<MyOffer> offerDeclinedBank5(@PathVariable Long id){
+        if (banka4OtcService.offerDeclined(id)){
+            return ResponseEntity.ok().build();
+        }else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    ///////////////////////FRONTEND/////////////////////////////////////////////////
 
     @GetMapping("/getBanksStocks")
     @Operation(description = "frontend dohvata sve stocks koje su u ponudi za OTC od drugih banaka")
@@ -119,10 +139,23 @@ public class Banka4OtcController {
         return ResponseEntity.ok(this.banka4OtcService.getAllStocksForBanks());
     }
 
+    @GetMapping("/getOffers")
+    @Operation(description = "frontend dohvata sve ponude od svih banaka koje smo dobili")
+    public ResponseEntity<List<Offer>> getOffers(){
+        return ResponseEntity.ok(this.banka4OtcService.findAllOffers());
+    }
+
     @GetMapping("/getOurOffers")
     @Operation(description = "dohvata sve ponude koje smo poslali bankama")
     public ResponseEntity<List<MyOffer>> getMyOffers(){
         return ResponseEntity.ok(this.banka4OtcService.getMyOffers());
+    }
+
+    @PutMapping("/refresh")
+    @Operation(description = "sa frontenda, da se osveze Stock-ovi drugih banaka za OTC")
+    public ResponseEntity<Offer> refreshOTC(){
+        this.banka4OtcService.getBankStocks();
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/makeOffer")
@@ -149,6 +182,16 @@ public class Banka4OtcController {
     @Operation(description = "sa frontenda nam stize koju ponudu odbijamo, id je offer u nasoj bazi")
     public ResponseEntity<Offer> declineOffer(@PathVariable Long id){
         if (this.banka4OtcService.declineOffer(id)){
+            return ResponseEntity.ok().build();
+        }else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @DeleteMapping("/deleteOffer/{id}")
+    @Operation(description = "sa fronta nam kaze da treba da obrisemo neku ponudu, id je iz nase baze")
+    public ResponseEntity<?> deleteOffer(@PathVariable Long id){
+        if (this.banka4OtcService.deleteOffer(id)){
             return ResponseEntity.ok().build();
         }else {
             return ResponseEntity.badRequest().build();

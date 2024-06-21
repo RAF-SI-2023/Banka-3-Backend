@@ -40,9 +40,10 @@ public class Banka4OtcService {
     private static final String URL_TO_BANK1 =  "https://banka-1-dev.si.raf.edu.rs/";
     private static final String URL_TO_BANK2 =  "https://banka-2-dev.si.raf.edu.rs/";
     private static final String URL_TO_BANK4 =  "https://banka-4-dev.si.raf.edu.rs/berza-service/api";
+    private static final String URL_TO_BANK5 =  "http://host.docker.internal:9999/api/v1/otcTrade";
 
-    //dohvatamo sve Stocks koje mi nudimo
     //GET: /getOurStocks
+    //dohvatamo sve Stocks koje mi nudimo
     public List<MyStockDto> findAllStocks(){
         List<MyStock> myStocks =  myStockRepository.findAllByCompanyIdAndPublicAmountGreaterThan(1L, 0);
         List<MyStockDto> dtos = new ArrayList<>();
@@ -55,8 +56,8 @@ public class Banka4OtcService {
         return dtos;
     }
 
-    //primamo ponude od drugih banaka
     //POST: /sendOffer/bank
+    //primamo ponude od drugih banaka
     public Offer receiveOffer(OfferDto offerDto, Integer owner){
         Offer offer = new Offer();
         offer.setTicker(offerDto.getTicker());
@@ -78,8 +79,8 @@ public class Banka4OtcService {
         return offer;
     }
 
-    //stize poruka da su nam prihvatili ponudu
     //POST: /offerAccepted/bank/{id}
+    //stize poruka da su nam prihvatili ponudu
     public boolean offerAccepted(Long id){
         Optional<MyOffer> myOfferOptional = myOfferRepository.findById(id);
 
@@ -121,8 +122,8 @@ public class Banka4OtcService {
         return false;
     }
 
-    //stize poruka da su nam odbili ponudu
     //POST: /offerDeclined/bank/{id}
+    //stize poruka da su nam odbili ponudu
     public boolean offerDeclined(Long id){
         Optional<MyOffer> myOfferOptional = myOfferRepository.findById(id);
         if(myOfferOptional.isPresent()){
@@ -135,30 +136,38 @@ public class Banka4OtcService {
         return false;
     }
 
-    ///////////////////////FRONTEND/////////////////////////////////////////////////
+    /////////////////////////////FRONTEND/////////////////////////////////////////////////
 
-    //pohvatamo sve ponude koje su nam stigle
-    //GET: /getOffers
-    public List<Offer> findAllOffers(){
-        return offerRepository.findAll();
-    }
-
-    //dohvatamo sve Stocks od drugih banaka
     //GET: /getBanksStocks
+    //dohvatamo sve Stocks od drugih banaka
     public List<BankOTCStock> getAllStocksForBanks(){
         return bankOTCStockRepository.findAll();
     }
 
+    //GET: /getOffers
+    //pohvatamo sve ponude koje su nam stigle
+    public List<Offer> findAllOffers(){
+        return offerRepository.findAll();
+    }
+
+    //GET: /getOurOffers
+    //dohvatamo sve ponude koje smo mi poslali
+    public List<MyOffer> getMyOffers(){
+        return myOfferRepository.findAll();
+    }
+
+    //PUT: /refresh
     //pozivi ka drugim bankama, da uzmemo njihove Stocks
-    @Scheduled(fixedRate = 30000)
     @ExcludeFromJacocoGeneratedReport
     public void getBankStocks(){
         bankOTCStockRepository.deleteAll();
-//        getStocksFromBank1();
-//        getStocksFromBank2();
-//        getStocksFromBank4();
+        getStocksFromBank1();
+        getStocksFromBank2();
+        getStocksFromBank4();
+        getStocksFromBank5();
     }
 
+    @ExcludeFromJacocoGeneratedReport
     private void getStocksFromBank1(){
         try {
             RestTemplate restTemplate = new RestTemplate();
@@ -189,6 +198,7 @@ public class Banka4OtcService {
         }
     }
 
+    @ExcludeFromJacocoGeneratedReport
     private void getStocksFromBank2(){
         try {
             RestTemplate restTemplate = new RestTemplate();
@@ -219,6 +229,7 @@ public class Banka4OtcService {
         }
     }
 
+    @ExcludeFromJacocoGeneratedReport
     private void getStocksFromBank4(){
         try {
             RestTemplate restTemplate = new RestTemplate();
@@ -249,14 +260,39 @@ public class Banka4OtcService {
         }
     }
 
-    //dohvatamo sve ponude koje smo mi poslali
-    //GET: /getOurOffers
-    public List<MyOffer> getMyOffers(){
-        return myOfferRepository.findAll();
+    @ExcludeFromJacocoGeneratedReport
+    private void getStocksFromBank5(){
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            String url = URL_TO_BANK5 + "/getOurStocks";
+
+            ResponseEntity<List<MyStockDto>> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<List<MyStockDto>>() {
+                    });
+
+            if (response.getStatusCode() == HttpStatus.OK){
+                List<MyStockDto> dtos = response.getBody();
+
+                for(MyStockDto myStockDto: dtos){
+                    BankOTCStock stock = new BankOTCStock();
+                    stock.setOwner(5);
+                    stock.setTicker(myStockDto.getTicker());
+                    stock.setAmount(myStockDto.getAmount());
+                    bankOTCStockRepository.save(stock);
+                }
+            }else {
+                System.out.println("ne radi banka 5");
+            }
+        } catch (Exception e){
+            System.out.println("ne radi banka 5");
+        }
     }
 
-    //sa frontenda nam stize ponuda koju treba proslediti
     //POST: /makeOffer
+    //sa frontenda nam stize ponuda koju treba proslediti
     @ExcludeFromJacocoGeneratedReport
     public boolean makeOffer(FrontendOfferDto frontendOfferDto){
         MyOffer myOffer = new MyOffer();
@@ -273,61 +309,45 @@ public class Banka4OtcService {
         myOfferDto.setPrice(myOffer1.getPrice());
         myOfferDto.setIdBank(myOffer1.getMyOfferId());
 
+        String url = "";
+
         if (myOffer.getOwner() == 1){
-            String url = URL_TO_BANK1 + "";
-            RestTemplate restTemplate = new RestTemplate();
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Content-Type", "application/json");
-
-            HttpEntity<MyOfferDto> requestEntity = new HttpEntity<>(myOfferDto, headers);
-
-            ResponseEntity<MyOfferDto> response = restTemplate.exchange(
-                    url,
-                    HttpMethod.POST,
-                    requestEntity,
-                    new ParameterizedTypeReference<MyOfferDto>() {}
-            );
-            return true;
+            url += URL_TO_BANK1 + "";
         }else if (myOffer.getOwner() == 2){
-            String url = URL_TO_BANK2 + "";
-            RestTemplate restTemplate = new RestTemplate();
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Content-Type", "application/json");
-
-            HttpEntity<MyOfferDto> requestEntity = new HttpEntity<>(myOfferDto, headers);
-
-            ResponseEntity<MyOfferDto> response = restTemplate.exchange(
-                    url,
-                    HttpMethod.POST,
-                    requestEntity,
-                    new ParameterizedTypeReference<MyOfferDto>() {}
-            );
-            return true;
+            url += URL_TO_BANK2 + "";
         }else if (myOffer.getOwner() == 4){
-            String url = URL_TO_BANK4 + "";
-            RestTemplate restTemplate = new RestTemplate();
+            url += URL_TO_BANK4 + "";
+        }else if (myOffer.getOwner() == 5){
+            url += URL_TO_BANK5 + "/sendOffer/bank3";
+        }else {
+            return false; //nije dobar owner
+        }
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Content-Type", "application/json");
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+        HttpEntity<MyOfferDto> requestEntity = new HttpEntity<>(myOfferDto, headers);
 
-            HttpEntity<MyOfferDto> requestEntity = new HttpEntity<>(myOfferDto, headers);
-
+        try {
             ResponseEntity<MyOfferDto> response = restTemplate.exchange(
                     url,
                     HttpMethod.POST,
                     requestEntity,
                     new ParameterizedTypeReference<MyOfferDto>() {}
             );
-            return true;
+
+            if (response.getStatusCode() == HttpStatus.OK){
+                return true;
+            }
+        }catch (Exception e){
+            return false;
         }
 
         return false;
     }
 
-    //kad mi prihvatamo njihovu ponudu
     //POST: /acceptOffer/{id}
+    //kad mi prihvatamo njihovu ponudu
     public boolean acceptOffer(Long id){
         Optional<Offer> offer = offerRepository.findById(id);
         if(offer.isPresent()){
@@ -356,8 +376,8 @@ public class Banka4OtcService {
         return false;
     }
 
-    //kad mi odbijemo njihovu ponudu
     //POST: /declineOffer/{id}
+    //kad mi odbijemo njihovu ponudu
     public boolean declineOffer(Long id){
         Optional<Offer> offer = offerRepository.findById(id);
         if(offer.isPresent()){
@@ -371,7 +391,18 @@ public class Banka4OtcService {
         return false;
     }
 
+    //DELETE: /deleteOffer/id
+    //kada treba neka ponuda da se obrise iz baze
+    public boolean deleteOffer(Long id){
+        Optional<MyOffer> myOfferOptional = myOfferRepository.findById(id);
+        if(myOfferOptional.isPresent()) {
+            MyOffer myOffer = myOfferOptional.get();
+            myOfferRepository.delete(myOffer);
+            return true;
+        }
 
+        return false;
+    }
 
     @Scheduled(fixedRate = 10000)
     @ExcludeFromJacocoGeneratedReport
@@ -387,28 +418,36 @@ public class Banka4OtcService {
                     url += URL_TO_BANK2 + "" + offer.getIdBank();
                 }else if (offer.getOwner() == 4){
                     url += URL_TO_BANK4 + "/offer/accept-our-offer/" + offer.getIdBank();
+                }else if (offer.getOwner() == 5){
+                    url += URL_TO_BANK5 + "/offerAccepted/bank3/" + offer.getIdBank();
                 }else {
                     return;
                 }
 
-                RestTemplate restTemplate = new RestTemplate();
-                ResponseEntity<String> response = restTemplate.exchange(
-                    url,
-                    HttpMethod.POST,
-                    new HttpEntity<>(offer),
-                    new ParameterizedTypeReference<String>() {
-                });
+                try {
+                    RestTemplate restTemplate = new RestTemplate();
+                    ResponseEntity<String> response = restTemplate.exchange(
+                            url,
+                            HttpMethod.POST,
+                            new HttpEntity<>(offer),
+                            new ParameterizedTypeReference<String>() {
+                            });
 
-                //zavrsavamo sa ponudom
-                offer.setOfferStatus(OfferStatus.FINISHED);
-                offerRepository.save(offer);
+                    if (response.getStatusCode() == HttpStatus.OK){
+                        //zavrsavamo sa ponudom
+                        offer.setOfferStatus(OfferStatus.FINISHED_ACCEPTED);
+                        offerRepository.save(offer);
+                    }
+                }catch (Exception e){
+                    return;
+                }
             }
         }
     }
 
     @Scheduled(fixedRate = 10000)
     @ExcludeFromJacocoGeneratedReport
-    private void sandDeclinedOffers(){
+    private void sendDeclinedOffers(){
         List<Offer> offers = offerRepository.findAllByOfferStatus(OfferStatus.DECLINED);
         if(!offers.isEmpty()){
             for(Offer offer : offers){
@@ -420,21 +459,29 @@ public class Banka4OtcService {
                     url += URL_TO_BANK2 + "" + offer.getIdBank();
                 }else if (offer.getOwner() == 4){
                     url += URL_TO_BANK4 + "/offer/decline-our-offer/" + offer.getIdBank();
+                }else if (offer.getOwner() == 5){
+                    url += URL_TO_BANK5 + "/offerDeclined/bank3/" + offer.getIdBank();
                 }else {
                     return;
                 }
 
-                RestTemplate restTemplate = new RestTemplate();
-                ResponseEntity<String> response = restTemplate.exchange(
-                        url,
-                        HttpMethod.POST,
-                        new HttpEntity<>(offer),
-                        new ParameterizedTypeReference<String>() {
-                        });
+                try {
+                    RestTemplate restTemplate = new RestTemplate();
+                    ResponseEntity<String> response = restTemplate.exchange(
+                            url,
+                            HttpMethod.POST,
+                            new HttpEntity<>(offer),
+                            new ParameterizedTypeReference<String>() {
+                            });
 
-                //zavrsavamo sa ponudom
-                offer.setOfferStatus(OfferStatus.FINISHED);
-                offerRepository.save(offer);
+                    if (response.getStatusCode() == HttpStatus.OK){
+                        //zavrsavamo sa ponudom
+                        offer.setOfferStatus(OfferStatus.FINISHED_DECLINED);
+                        offerRepository.save(offer);
+                    }
+                }catch (Exception e){
+                    return;
+                }
             }
         }
     }
