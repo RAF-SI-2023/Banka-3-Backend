@@ -12,15 +12,12 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(schema = "exchange_service_schema")
-public class Bank4Stock implements Serializable {
+public class BankOTCStock implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-            //bank4StockId;
-
     private String ticker;
     private Integer amount;
-
-
+    private Integer owner;
 }

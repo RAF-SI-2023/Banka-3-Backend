@@ -12,7 +12,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MyStockDto implements Serializable {
-
     private Integer amount;
     private String ticker;
 }

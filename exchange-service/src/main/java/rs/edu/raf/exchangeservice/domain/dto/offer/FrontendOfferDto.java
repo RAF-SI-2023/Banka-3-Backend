@@ -17,4 +17,5 @@ public class FrontendOfferDto implements Serializable {
     private String ticker;
     private Integer amount;
     private Double price;
+    private Integer owner;
 }

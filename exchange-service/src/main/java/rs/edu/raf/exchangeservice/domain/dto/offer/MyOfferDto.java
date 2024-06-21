@@ -15,7 +15,7 @@ import java.io.Serializable;
 public class MyOfferDto implements Serializable {
 
 
-    private Long myOfferId;
+    private Long idBank;
     private String ticker;
     private Integer amount;
     private Double price;
