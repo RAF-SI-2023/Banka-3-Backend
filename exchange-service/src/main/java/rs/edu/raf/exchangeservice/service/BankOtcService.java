@@ -29,7 +29,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class Banka4OtcService {
+public class BankOtcService {
     private final OfferRepository offerRepository;
     private final MyStockRepository myStockRepository;
     private final BankOTCStockRepository bankOTCStockRepository;
@@ -37,8 +37,8 @@ public class Banka4OtcService {
     private final BankServiceClient bankServiceClient;
 
     //URL
-    private static final String URL_TO_BANK1 =  "https://banka-1-dev.si.raf.edu.rs/";
-    private static final String URL_TO_BANK2 =  "https://banka-2-dev.si.raf.edu.rs/";
+    private static final String URL_TO_BANK1 =  "https://banka-1-dev.si.raf.edu.rs//api/v1/otcTrade";
+    private static final String URL_TO_BANK2 =  "https://banka-2-dev.si.raf.edu.rs//api/v1/otcTrade";
     private static final String URL_TO_BANK4 =  "https://banka-4-dev.si.raf.edu.rs/berza-service/api";
     private static final String URL_TO_BANK5 =  "http://host.docker.internal:9999/api/v1/otcTrade";
 
@@ -66,7 +66,7 @@ public class Banka4OtcService {
         offer.setIdBank(offerDto.getIdBank());
         offer.setOwner(owner);
 
-        MyStock myStock = myStockRepository.findByTickerAndCompanyId(offer.getTicker(), 1l);
+        MyStock myStock = myStockRepository.findByTickerAndCompanyId(offer.getTicker(), 1L);
 
         //provera da li mi imamo taj Stock
         if(myStock != null && myStock.getPublicAmount() >= offer.getAmount() && offer.getAmount() >= 0) {
@@ -92,7 +92,7 @@ public class Banka4OtcService {
             if(myStockRepository.findByTicker(myOffer.getTicker()) == null) {
                 MyStock myStock = new MyStock();
                 myStock.setTicker(myOffer.getTicker());
-                myStock.setCompanyId(1l);
+                myStock.setCompanyId(1L);
                 myStock.setAmount(myOffer.getAmount());
                 myStock.setPrivateAmount(0);
                 myStock.setPublicAmount(myOffer.getAmount());
@@ -101,7 +101,7 @@ public class Banka4OtcService {
                 myStock.setMinimumPrice(minimumPrice);
                 myStockRepository.save(myStock);
             }else {
-                MyStock myStock = myStockRepository.findByTickerAndCompanyId(myOffer.getTicker(), 1l);
+                MyStock myStock = myStockRepository.findByTickerAndCompanyId(myOffer.getTicker(), 1L);
                 myStock.setAmount(myStock.getAmount() + myOffer.getAmount());
                 myStock.setPublicAmount(myStock.getPublicAmount() + myOffer.getAmount());
                 myStockRepository.save(myStock);
@@ -109,8 +109,8 @@ public class Banka4OtcService {
 
             //skidamo pare sa naseg racuna
             CompanyOtcDto companyOtcDto = new CompanyOtcDto();
-            companyOtcDto.setCompanyFromId(1l);
-            companyOtcDto.setCompanyToId(5l);
+            companyOtcDto.setCompanyFromId(1L);
+            companyOtcDto.setCompanyToId(5L);
             companyOtcDto.setAmount(myOffer.getPrice().doubleValue());
             companyOtcDto.setTax(0.0);
             bankServiceClient.otcBank4transaction(companyOtcDto);
@@ -171,7 +171,7 @@ public class Banka4OtcService {
     private void getStocksFromBank1(){
         try {
             RestTemplate restTemplate = new RestTemplate();
-            String url = URL_TO_BANK1 + "";
+            String url = URL_TO_BANK1 + "/getOurStocks";
 
             ResponseEntity<List<MyStockDto>> response = restTemplate.exchange(
                     url,
@@ -202,7 +202,7 @@ public class Banka4OtcService {
     private void getStocksFromBank2(){
         try {
             RestTemplate restTemplate = new RestTemplate();
-            String url = URL_TO_BANK2 + "";
+            String url = URL_TO_BANK2 + "/getOurStocks";
 
             ResponseEntity<List<MyStockDto>> response = restTemplate.exchange(
                     url,
@@ -242,7 +242,7 @@ public class Banka4OtcService {
                     new ParameterizedTypeReference<List<MyStockDto>>() {
                     });
 
-            if (response.getStatusCode() == HttpStatus.OK){
+            if (response != null && response.getStatusCode() == HttpStatus.OK){
                 List<MyStockDto> dtos = response.getBody();
 
                 for(MyStockDto myStockDto: dtos){
@@ -273,7 +273,7 @@ public class Banka4OtcService {
                     new ParameterizedTypeReference<List<MyStockDto>>() {
                     });
 
-            if (response.getStatusCode() == HttpStatus.OK){
+            if (response != null && response.getStatusCode() == HttpStatus.OK){
                 List<MyStockDto> dtos = response.getBody();
 
                 for(MyStockDto myStockDto: dtos){
@@ -312,11 +312,11 @@ public class Banka4OtcService {
         String url = "";
 
         if (myOffer.getOwner() == 1){
-            url += URL_TO_BANK1 + "";
+            url += URL_TO_BANK1 + "/sendOffer/bank3";
         }else if (myOffer.getOwner() == 2){
-            url += URL_TO_BANK2 + "";
+            url += URL_TO_BANK2 + "/sendOffer/bank3";
         }else if (myOffer.getOwner() == 4){
-            url += URL_TO_BANK4 + "";
+            url += URL_TO_BANK4 + "/sendOffer/bank3";
         }else if (myOffer.getOwner() == 5){
             url += URL_TO_BANK5 + "/sendOffer/bank3";
         }else {
@@ -356,15 +356,15 @@ public class Banka4OtcService {
             offerRepository.save(offer1);
 
             //smanjujemo kolicinu, uzimamo pare
-            MyStock myStock = myStockRepository.findByTickerAndCompanyId(offer1.getTicker(), 1l);
+            MyStock myStock = myStockRepository.findByTickerAndCompanyId(offer1.getTicker(), 1L);
             myStock.setAmount(myStock.getAmount() - offer1.getAmount());
             myStock.setPublicAmount(myStock.getPublicAmount() - offer1.getAmount());
             myStockRepository.save(myStock);
 
             //dodajemo pare na nas racun
             CompanyOtcDto companyOtcDto = new CompanyOtcDto();
-            companyOtcDto.setCompanyFromId(5l);
-            companyOtcDto.setCompanyToId(1l);
+            companyOtcDto.setCompanyFromId(5L);
+            companyOtcDto.setCompanyToId(1L);
             companyOtcDto.setAmount(offer1.getPrice().doubleValue());
             companyOtcDto.setTax(0.0);
             bankServiceClient.otcBank4transaction(companyOtcDto);
@@ -413,9 +413,9 @@ public class Banka4OtcService {
                 String url = "";
 
                 if (offer.getOwner() == 1){
-                    url += URL_TO_BANK1 + "" + offer.getIdBank();
+                    url += URL_TO_BANK1 + "/offerAccepted/bank3/" + offer.getIdBank();
                 }else if(offer.getOwner() == 2){
-                    url += URL_TO_BANK2 + "" + offer.getIdBank();
+                    url += URL_TO_BANK2 + "/offerAccepted/bank3/" + offer.getIdBank();
                 }else if (offer.getOwner() == 4){
                     url += URL_TO_BANK4 + "/offer/accept-our-offer/" + offer.getIdBank();
                 }else if (offer.getOwner() == 5){
@@ -454,9 +454,9 @@ public class Banka4OtcService {
                 String url = "";
 
                 if (offer.getOwner() == 1){
-                    url += URL_TO_BANK1 + "" + offer.getIdBank();
+                    url += URL_TO_BANK1 + "/offerDeclined/bank3/" + offer.getIdBank();
                 }else if(offer.getOwner() == 2){
-                    url += URL_TO_BANK2 + "" + offer.getIdBank();
+                    url += URL_TO_BANK2 + "/offerDeclined/bank3/" + offer.getIdBank();
                 }else if (offer.getOwner() == 4){
                     url += URL_TO_BANK4 + "/offer/decline-our-offer/" + offer.getIdBank();
                 }else if (offer.getOwner() == 5){

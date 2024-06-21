@@ -20,6 +20,4 @@ public class BankOTCStock implements Serializable {
     private String ticker;
     private Integer amount;
     private Integer owner;
-
-
 }
