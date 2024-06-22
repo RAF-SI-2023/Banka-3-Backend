@@ -189,8 +189,18 @@ public class BankOtcController {
         }
     }
 
+    @DeleteMapping("/deleteMyOffer/{id}")
+    @Operation(description = "sa fronta nam kaze da treba da obrisemo neku ponudu koju smo mi poslali, id je iz nase baze")
+    public ResponseEntity<?> deleteMyOffer(@PathVariable Long id){
+        if (this.bankOtcService.deleteMyOffer(id)){
+            return ResponseEntity.ok().build();
+        }else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @DeleteMapping("/deleteOffer/{id}")
-    @Operation(description = "sa fronta nam kaze da treba da obrisemo neku ponudu, id je iz nase baze")
+    @Operation(description = "sa fronta nam kaze da treba da obrisemo neku ponudu koja nam je stigla, id je iz nase baze")
     public ResponseEntity<?> deleteOffer(@PathVariable Long id){
         if (this.bankOtcService.deleteOffer(id)){
             return ResponseEntity.ok().build();
