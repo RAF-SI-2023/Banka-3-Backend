@@ -20,6 +20,7 @@ import java.util.List;
 @RequestMapping(value = "/api/v1/otcTrade")
 public class BankOtcController {
     private final BankOtcService bankOtcService;
+    ////
 
     @GetMapping("/getOurStocks")
     @Operation(description = "dohvata stockove nase banke")
