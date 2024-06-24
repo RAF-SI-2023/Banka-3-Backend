@@ -38,7 +38,7 @@ public class BankOtcService {
 
     //URL
     private static final String URL_TO_BANK1 =  "https://banka-1-dev.si.raf.edu.rs//api/v1/otcTrade";
-    private static final String URL_TO_BANK2 =  "https://banka-2-dev.si.raf.edu.rs/otc_service/api/v1/otcTrade";
+    private static final String URL_TO_BANK2 =  "https://banka-2-dev.si.raf.edu.rs/otc-service/api/v1/otcTrade";
     private static final String URL_TO_BANK4 =  "https://banka-4-dev.si.raf.edu.rs/berza-service/api";
     private static final String URL_TO_BANK5 =  "http://host.docker.internal:9999/api/v1/otcTrade";
 
