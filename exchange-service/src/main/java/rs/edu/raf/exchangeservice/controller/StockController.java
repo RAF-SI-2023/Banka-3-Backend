@@ -15,6 +15,7 @@ import rs.edu.raf.exchangeservice.domain.dto.listing.StockDto;
 import rs.edu.raf.exchangeservice.domain.dto.StockOrderDto;
 import rs.edu.raf.exchangeservice.domain.model.listing.Stock;
 import rs.edu.raf.exchangeservice.service.listingService.StockService;
+import rs.edu.raf.exchangeservice.service.myListingService.MyMarginStockService;
 import rs.edu.raf.exchangeservice.service.myListingService.MyStockService;
 import rs.edu.raf.exchangeservice.service.orderService.StockOrderService;
 
@@ -28,6 +29,7 @@ public class StockController {
     private final StockService stockService;
     private final MyStockService myStockService;
     private final StockOrderService stockOrderService;
+    private final MyMarginStockService myMarginStockService;
 
     @GetMapping
     @Operation(description = "vraca ste Stock iz baze")
@@ -63,6 +65,18 @@ public class StockController {
     @Operation(description = "ova ruta se gadja ako hoces da vidis sve deonice koje ima neka kompanija (i banka) u svom vlasnistu")
     public ResponseEntity<?> getAllMyStockForCompany(@Param("companyId") Long companyId){
         return ResponseEntity.ok(this.myStockService.getAllForCompany(companyId));
+    }
+
+    @GetMapping("/myMarginStock/getAllForUser")
+    @Operation(description = "ova ruta se gadja ako hoces da vidis sve deonice koje ima neki korisnik u svom vlasnistu kupljene marznim racunom")
+    public ResponseEntity<?> getAllMyMarginStockForUser(@Param("userId") Long userId){
+        return ResponseEntity.ok(this.myMarginStockService.findAllByUserId(userId));
+    }
+
+    @GetMapping("/myMarginStock/getAllForCompany")
+    @Operation(description = "ova ruta se gadja ako hoces da vidis sve deonice koje ima neka kompanija u svom vlasnistu kupljene marznim racunom")
+    public ResponseEntity<?> getAllMyMarginStockForCompany(@Param("companyId") Long companyId){
+        return ResponseEntity.ok(this.myMarginStockService.findAllByCompanyId(companyId));
     }
 
     @GetMapping("/myStock/getAllForUserOtcBuy/{userId}")

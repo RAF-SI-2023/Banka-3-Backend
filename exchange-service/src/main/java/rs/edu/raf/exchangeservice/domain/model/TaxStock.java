@@ -17,4 +17,5 @@ public class TaxStock implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long taxStockId;
     private Double amount;
+    private Long date;
 }

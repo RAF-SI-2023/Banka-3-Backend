@@ -34,4 +34,7 @@ public class CurrencyExchange  implements Serializable {
 
     @NotNull(message = "This field cannot be NULL")
     private String currencyMark;
+
+    @NotNull(message = "This field cannot be NULL")
+    private Long date;
 }
