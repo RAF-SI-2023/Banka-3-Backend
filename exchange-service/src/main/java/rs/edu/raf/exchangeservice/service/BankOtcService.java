@@ -39,7 +39,7 @@ public class BankOtcService {
     //URL
     private static final String URL_TO_BANK1 =  "https://banka-1-dev.si.raf.edu.rs//api/v1/otcTrade";
     private static final String URL_TO_BANK2 =  "https://banka-2-dev.si.raf.edu.rs/otc-service/api/v1/otcTrade";
-    private static final String URL_TO_BANK4 =  "https://banka-4-dev.si.raf.edu.rs/berza-service/api";
+    private static final String URL_TO_BANK4 =  "https://banka-4-dev.si.raf.edu.rs/berza-service/api/v1/otcTrade";
     private static final String URL_TO_BANK5 =  "http://host.docker.internal:9999/api/v1/otcTrade";
 
     //GET: /getOurStocks
@@ -233,7 +233,7 @@ public class BankOtcService {
     private void getStocksFromBank4(){
         try {
             RestTemplate restTemplate = new RestTemplate();
-            String url = URL_TO_BANK4 + "/user-stocks/get-our-banks-stocks";
+            String url = URL_TO_BANK4 + "/getOurStocks";
 
             ResponseEntity<List<MyStockDto>> response = restTemplate.exchange(
                     url,
@@ -430,7 +430,7 @@ public class BankOtcService {
                 }else if(offer.getOwner() == 2){
                     url += URL_TO_BANK2 + "/offerAccepted/bank3/" + offer.getIdBank();
                 }else if (offer.getOwner() == 4){
-                    url += URL_TO_BANK4 + "/offer/accept-our-offer/" + offer.getIdBank();
+                    url += URL_TO_BANK4 + "/offerAccepted/bank3/" + offer.getIdBank();
                 }else if (offer.getOwner() == 5){
                     url += URL_TO_BANK5 + "/offerAccepted/bank3/" + offer.getIdBank();
                 }else {
@@ -471,7 +471,7 @@ public class BankOtcService {
                 }else if(offer.getOwner() == 2){
                     url += URL_TO_BANK2 + "/offerDeclined/bank3/" + offer.getIdBank();
                 }else if (offer.getOwner() == 4){
-                    url += URL_TO_BANK4 + "/offer/decline-our-offer/" + offer.getIdBank();
+                    url += URL_TO_BANK4 + "/offerDeclined/bank3/" + offer.getIdBank();
                 }else if (offer.getOwner() == 5){
                     url += URL_TO_BANK5 + "/offerDeclined/bank3/" + offer.getIdBank();
                 }else {
