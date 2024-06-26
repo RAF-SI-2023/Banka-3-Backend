@@ -29,10 +29,12 @@ class TaxServiceTest {
         TaxStock taxStock1 = new TaxStock();
         taxStock1.setTaxStockId(1L);
         taxStock1.setAmount(10.0);
+        taxStock1.setDate(System.currentTimeMillis());
 
         TaxStock taxStock2 = new TaxStock();
         taxStock2.setTaxStockId(2L);
         taxStock2.setAmount(15.0);
+        taxStock2.setDate(System.currentTimeMillis());
 
         List<TaxStock> dummyTaxStocks = Arrays.asList(taxStock1, taxStock2);
 
