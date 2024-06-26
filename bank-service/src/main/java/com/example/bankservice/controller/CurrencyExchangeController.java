@@ -38,4 +38,22 @@ public class CurrencyExchangeController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("/commission")
+    public ResponseEntity<?> getCommission() {
+        try {
+            return ResponseEntity.ok(currencyExchangeService.getCommissons());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/commissionByMark")
+    public ResponseEntity<?> getCommissionByMark() {
+        try {
+            return ResponseEntity.ok(currencyExchangeService.getCommissionByMark());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

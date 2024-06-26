@@ -8,10 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import rs.edu.raf.exchangeservice.domain.dto.bank.BankTransactionDto;
-import rs.edu.raf.exchangeservice.domain.dto.bank.CheckAccountBalanceDto;
-import rs.edu.raf.exchangeservice.domain.dto.bank.CompanyOtcDto;
-import rs.edu.raf.exchangeservice.domain.dto.bank.UserOtcDto;
+import rs.edu.raf.exchangeservice.domain.dto.bank.*;
 
 @FeignClient(name = "bankServiceClient", url = "${bankServiceLocation}")
 public interface BankServiceClient {
@@ -61,4 +58,16 @@ public interface BankServiceClient {
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "Provera stanja racuna racuna kompanije")
     ResponseEntity<?> checkAccountBalanceCompany (@RequestBody CheckAccountBalanceDto checkAccountBalanceDto);
+
+    @PostMapping(value = "/transaction/buyStockMarginTransaction",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "kupovina deonica preko marznog racuna")
+    ResponseEntity<?> marginStockBuyTransaction (@RequestBody BankMarginTransactionDto BankMarginTransactionDto);
+
+    @PostMapping(value = "/transaction/sellStockMarginTransaction",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "prodaja deonica preko marznog racuna")
+    ResponseEntity<?> marginStockSellTransaction (@RequestBody BankMarginTransactionDto BankMarginTransactionDto);
 }

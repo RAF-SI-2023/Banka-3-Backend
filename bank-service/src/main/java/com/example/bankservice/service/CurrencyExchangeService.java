@@ -1,5 +1,7 @@
 package com.example.bankservice.service;
 
+import com.example.bankservice.domain.dto.currencyExchange.CommissionByMarkDto;
+import com.example.bankservice.domain.dto.currencyExchange.CommissionDto;
 import com.example.bankservice.domain.dto.currencyExchange.CurrencyExchangeDto;
 import com.example.bankservice.domain.model.CommissionFromCurrencyExchange;
 import com.example.bankservice.domain.model.CurrencyExchange;
@@ -17,7 +19,9 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -72,7 +76,8 @@ public class CurrencyExchangeService {
                 accountTo.getAccountNumber(),
                 BigDecimal.valueOf(currencyExchangeDto.getAmount()),
                 new BigDecimal("0.05").multiply(BigDecimal.valueOf(currencyExchangeDto.getAmount())),
-                accountFrom.getCurrency().getMark()));
+                accountFrom.getCurrency().getMark(),
+                System.currentTimeMillis()));
         
         BigDecimal commissionInRSD = null;
         if (!accountFrom.getCurrency().getMark().equals("RSD")) {
@@ -99,6 +104,52 @@ public class CurrencyExchangeService {
             return BigDecimal.ZERO;
         }
         return commissionFromCurrencyExhangeRepository.findAll().get(0).getAmount();
+    }
+
+    public List<CommissionDto> getCommissons() {
+        List<CurrencyExchange> currencyExchanges = currencyExchangeRepository.findAll();
+
+        return currencyExchanges.stream()
+                .map(currencyExchange -> new CommissionDto(
+                        currencyExchange.getAccountFrom(),
+                        currencyExchange.getCommission(),
+                        currencyExchange.getCurrencyMark(),
+                        currencyExchange.getDate()
+                ))
+                .sorted((dto1, dto2) -> dto2.getDate().compareTo(dto1.getDate())) // Sortiranje po datumu, najnoviji prvo
+                .collect(Collectors.toList());
+    }
+
+    public List<CommissionByMarkDto> getCommissionByMark(){
+        List<CurrencyExchange> currencyExchanges = currencyExchangeRepository.findAll();
+
+        List<CommissionByMarkDto> commissionByMarkDtos = new ArrayList<>();
+        CommissionByMarkDto commissionByMarkDtoEUR = new CommissionByMarkDto();
+        commissionByMarkDtoEUR.setCurrencyMark("EUR");
+        commissionByMarkDtoEUR.setCommission(BigDecimal.ZERO);
+        CommissionByMarkDto commissionByMarkDtoUSD = new CommissionByMarkDto();
+        commissionByMarkDtoUSD.setCurrencyMark("USD");
+        commissionByMarkDtoUSD.setCommission(BigDecimal.ZERO);
+        CommissionByMarkDto commissionByMarkDtoRSD = new CommissionByMarkDto();
+        commissionByMarkDtoRSD.setCurrencyMark("RSD");
+        commissionByMarkDtoRSD.setCommission(BigDecimal.ZERO);
+
+        commissionByMarkDtos.addAll(List.of(commissionByMarkDtoEUR, commissionByMarkDtoUSD, commissionByMarkDtoRSD));
+
+        for (CurrencyExchange currencyExchange :currencyExchanges) {
+            if (currencyExchange.getCurrencyMark().equals("EUR")) {
+                commissionByMarkDtoEUR.setCommission(commissionByMarkDtoEUR.getCommission()
+                        .add(currencyExchange.getCommission()));
+            } else if (currencyExchange.getCurrencyMark().equals("USD")) {
+                commissionByMarkDtoUSD.setCommission(commissionByMarkDtoUSD.getCommission()
+                        .add(currencyExchange.getCommission()));
+            } else if (currencyExchange.getCurrencyMark().equals("RSD")) {
+                commissionByMarkDtoRSD.setCommission(commissionByMarkDtoRSD.getCommission()
+                        .add(currencyExchange.getCommission()));
+            }
+        }
+
+        return commissionByMarkDtos;
     }
 
     private BigDecimal convertCurrency(String fromCurrency, String toCurrency, Double amount) {

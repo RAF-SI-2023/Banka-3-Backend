@@ -11,6 +11,7 @@ import rs.edu.raf.exchangeservice.client.BankServiceClient;
 import rs.edu.raf.exchangeservice.configuration.contract.ContractUpdateEvent;
 import rs.edu.raf.exchangeservice.domain.dto.CompanyAccountDto;
 import rs.edu.raf.exchangeservice.domain.dto.StockOrderDto;
+import rs.edu.raf.exchangeservice.domain.dto.bank.BankMarginTransactionDto;
 import rs.edu.raf.exchangeservice.domain.dto.bank.BankTransactionDto;
 import rs.edu.raf.exchangeservice.domain.dto.bank.CheckAccountBalanceDto;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuySellStockDto;
@@ -32,6 +33,7 @@ import rs.edu.raf.exchangeservice.repository.ContractRepository;
 import rs.edu.raf.exchangeservice.repository.listingRepository.StockRepository;
 import rs.edu.raf.exchangeservice.repository.myListingRepository.MyStockRepository;
 import rs.edu.raf.exchangeservice.repository.orderRepository.StockOrderRepository;
+import rs.edu.raf.exchangeservice.service.myListingService.MyMarginStockService;
 import rs.edu.raf.exchangeservice.service.myListingService.MyStockService;
 
 import java.math.BigDecimal;
@@ -51,6 +53,7 @@ public class StockOrderService {
     private final BankServiceClient bankServiceClient;
     private final MyStockRepository myStockRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final MyMarginStockService myMarginStockService;
 
     public CopyOnWriteArrayList<StockOrder> ordersToBuy = new CopyOnWriteArrayList<>();
 
@@ -273,19 +276,30 @@ public class StockOrderService {
             bankTransactionDto.setCurrencyMark(stock.getCurrencyMark());
 
             if (stockOrder.getType().equals(OrderType.MARKET)) {
-                bankTransactionDto.setAmount(currentPrice * amountToBuy);
-                bankTransactionDto.setUserId(stockOrder.getUserId());
-                bankTransactionDto.setCompanyId(stockOrder.getCompanyId());
-                bankTransactionDto.setEmployeeId(stockOrder.getEmployeeId());
-                bankTransactionDto.setTax(0.0);
-                bankServiceClient.stockBuyTransaction(bankTransactionDto);
+                if(!stockOrder.isMargin()) {
+                    bankTransactionDto.setAmount(currentPrice * amountToBuy);
+                    bankTransactionDto.setUserId(stockOrder.getUserId());
+                    bankTransactionDto.setCompanyId(stockOrder.getCompanyId());
+                    bankTransactionDto.setEmployeeId(stockOrder.getEmployeeId());
+                    bankTransactionDto.setTax(0.0);
+                    bankServiceClient.stockBuyTransaction(bankTransactionDto);
 
-                //dodajemo tranaskciju koju je obavio agent u profitStock
-                if(stockOrder.getEmployeeId() != null){
-                    myStockService.addProfitForEmployee(stockOrder.getEmployeeId(), currentPrice * amountToBuy * (-1));
+                    //dodajemo tranaskciju koju je obavio agent u profitStock
+                    if (stockOrder.getEmployeeId() != null) {
+                        myStockService.addProfitForEmployee(stockOrder.getEmployeeId(), currentPrice * amountToBuy * (-1));
+                    }
+
+                    myStockService.addAmountToMyStock(stockOrder.getTicker(), amountToBuy, stockOrder.getUserId(), stockOrder.getCompanyId(), currentPrice);    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
+                }else{
+                    BankMarginTransactionDto bankMarginTransactionDto = new BankMarginTransactionDto();
+                    bankMarginTransactionDto.setAmount(currentPrice * amountToBuy);
+                    bankMarginTransactionDto.setUserId(stockOrder.getUserId());
+                    bankMarginTransactionDto.setCompanyId(stockOrder.getCompanyId());
+                    //todo otkomentarisati kada se implementira
+                   // bankServiceClient.marginStockBuyTransaction(bankMarginTransactionDto);
+                    myMarginStockService.addAmountToMyMarginStock(stockOrder.getTicker(), amountToBuy, stockOrder.getUserId(), stockOrder.getCompanyId(), currentPrice);
                 }
 
-                myStockService.addAmountToMyStock(stockOrder.getTicker(), amountToBuy, stockOrder.getUserId(), stockOrder.getCompanyId(), currentPrice);    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
                 stockOrder.setAmountLeft(stockOrder.getAmountLeft() - amountToBuy);
                 if (stockOrder.getAmountLeft() <= 0) {
                     stockOrder.setStatus(OrderStatus.FINISHED);
@@ -298,19 +312,30 @@ public class StockOrderService {
 
             if (stockOrder.getType().equals(OrderType.LIMIT)) {
                 if (currentPrice < stockOrder.getLimitValue()) {
-                    bankTransactionDto.setAmount(currentPrice * amountToBuy);
-                    bankTransactionDto.setUserId(stockOrder.getUserId());
-                    bankTransactionDto.setCompanyId(stockOrder.getCompanyId());
-                    bankTransactionDto.setEmployeeId(stockOrder.getEmployeeId());
-                    bankTransactionDto.setTax(0.0);
-                    bankServiceClient.stockBuyTransaction(bankTransactionDto);
+                    if(!stockOrder.isMargin()) {
+                        bankTransactionDto.setAmount(currentPrice * amountToBuy);
+                        bankTransactionDto.setUserId(stockOrder.getUserId());
+                        bankTransactionDto.setCompanyId(stockOrder.getCompanyId());
+                        bankTransactionDto.setEmployeeId(stockOrder.getEmployeeId());
+                        bankTransactionDto.setTax(0.0);
+                        bankServiceClient.stockBuyTransaction(bankTransactionDto);
 
-                    //dodajemo tranaskciju koju je obavio agent u profitStock
-                    if(stockOrder.getEmployeeId() != null){
-                        myStockService.addProfitForEmployee(stockOrder.getEmployeeId(), currentPrice * amountToBuy * (-1));
+                        //dodajemo tranaskciju koju je obavio agent u profitStock
+                        if (stockOrder.getEmployeeId() != null) {
+                            myStockService.addProfitForEmployee(stockOrder.getEmployeeId(), currentPrice * amountToBuy * (-1));
+                        }
+
+                        myStockService.addAmountToMyStock(stockOrder.getTicker(), amountToBuy, stockOrder.getUserId(), stockOrder.getCompanyId(), currentPrice);    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
+                    }else{
+                        BankMarginTransactionDto bankMarginTransactionDto = new BankMarginTransactionDto();
+                        bankMarginTransactionDto.setAmount(currentPrice * amountToBuy);
+                        bankMarginTransactionDto.setUserId(stockOrder.getUserId());
+                        bankMarginTransactionDto.setCompanyId(stockOrder.getCompanyId());
+                        //todo otkomentarisati kada se implementira
+                        //bankServiceClient.marginStockBuyTransaction(bankMarginTransactionDto);
+                        myMarginStockService.addAmountToMyMarginStock(stockOrder.getTicker(), amountToBuy, stockOrder.getUserId(), stockOrder.getCompanyId(), currentPrice);
                     }
 
-                    myStockService.addAmountToMyStock(stockOrder.getTicker(), amountToBuy, stockOrder.getUserId(), stockOrder.getCompanyId(), currentPrice);    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
                     stockOrder.setAmountLeft(stockOrder.getAmountLeft() - amountToBuy);
                     if (stockOrder.getAmountLeft() <= 0) {
                         stockOrder.setStatus(OrderStatus.FINISHED);
