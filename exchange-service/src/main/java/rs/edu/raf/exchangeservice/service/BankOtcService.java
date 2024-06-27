@@ -37,7 +37,7 @@ public class BankOtcService {
     private final BankServiceClient bankServiceClient;
 
     //URL
-    private static final String URL_TO_BANK1 =  "https://banka-1-dev.si.raf.edu.rs/market-servic/api/v1/otcTrade";
+    private static final String URL_TO_BANK1 =  "https://banka-1-dev.si.raf.edu.rs/market-service/api/v1/otcTrade";
     private static final String URL_TO_BANK2 =  "https://banka-2-dev.si.raf.edu.rs/otc-service/api/v1/otcTrade";
     private static final String URL_TO_BANK4 =  "https://banka-4-dev.si.raf.edu.rs/berza-service/api/v1/otcTrade";
     private static final String URL_TO_BANK5 =  "http://host.docker.internal:9999/api/v1/otcTrade";
