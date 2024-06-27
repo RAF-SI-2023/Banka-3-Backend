@@ -2,7 +2,6 @@ package com.example.bankservice.controller;
 
 import com.example.bankservice.domain.dto.transaction.*;
 import com.example.bankservice.service.TransactionService;
-import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -54,6 +53,16 @@ public class TransactionController {
         }
     }
 
+    @GetMapping(value = "/getAllMarginTransactions", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getAllMarginTransactions() {
+        try {
+            List<MarginTransactionDto> transactions = transactionService.getAllMarginTransactions();
+            return ResponseEntity.ok(transactions);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @GetMapping(value = "/getAllPaymentTransactions/{accountNumber}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
@@ -77,6 +86,35 @@ public class TransactionController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    @PostMapping(value = "/stockBuyMarginTransaction",consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> stockBuyMarginTransaction(@RequestBody StockMarginTransactionDto stockTransactionDto) {
+        try {
+            transactionService.stockBuyMarginTransaction(stockTransactionDto);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @PostMapping(value = "/addToMargin/{userId}",consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> stockBuyMarginTransaction(@RequestBody AddToMarginDto dto,@PathVariable Long userId) {
+        try {
+            transactionService.addToMargin(dto,userId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @PostMapping(value = "/withdrawFromMargin/{userId}",consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> stockBuyMarginTransaction(@RequestBody WithdrawFromMarginDto dto,@PathVariable Long userId) {
+        try {
+            transactionService.withdrawFromMargin(dto,userId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
 
     @PostMapping(value = "/stockSellTransaction",
             consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -84,6 +122,15 @@ public class TransactionController {
     public ResponseEntity<?> stockSellTransaction(@RequestBody StockTransactionDto stockTransactionDto) {
         try {
             transactionService.stockSellTransaction(stockTransactionDto);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @PostMapping(value = "/stockSellMarginTransaction",consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> stockSellMarginTransaction(@RequestBody StockMarginTransactionDto dto) {
+        try {
+            transactionService.stockSellMarginTransaction(dto);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

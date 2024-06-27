@@ -5,9 +5,14 @@ import com.example.bankservice.client.EmailServiceClient;
 import com.example.bankservice.client.UserServiceClient;
 import com.example.bankservice.domain.dto.account.UserAccountCreateDto;
 import com.example.bankservice.domain.dto.account.UserAccountDto;
+import com.example.bankservice.domain.dto.account.UserMarginAccountCreateDto;
+import com.example.bankservice.domain.dto.account.UserMarginAccountDto;
 import com.example.bankservice.domain.dto.companyaccount.CompanyAccountCreateDto;
 import com.example.bankservice.domain.dto.companyaccount.CompanyAccountDto;
+import com.example.bankservice.domain.dto.companyaccount.CompanyMarginAccountCreateDto;
+import com.example.bankservice.domain.dto.companyaccount.CompanyMarginAccountDto;
 import com.example.bankservice.domain.dto.emailService.TransactionFinishedDto;
+import com.example.bankservice.domain.dto.transaction.StockMarginTransactionDto;
 import com.example.bankservice.domain.dto.transaction.StockTransactionDto;
 import com.example.bankservice.domain.mapper.CompanyAccountMapper;
 import com.example.bankservice.domain.mapper.UserAccountMapper;
@@ -22,6 +27,10 @@ import com.example.bankservice.repository.CompanyAccountRepository;
 import com.example.bankservice.repository.CurrencyRepository;
 import com.example.bankservice.repository.UserAccountRepository;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
+import com.example.bankservice.domain.model.marginAccounts.CompanyMarginAccount;
+import com.example.bankservice.domain.model.marginAccounts.MarginAccount;
+import com.example.bankservice.domain.model.marginAccounts.UserMarginAccount;
+import com.example.bankservice.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +57,7 @@ public class AccountService {
     private static final String exchangeAccountGBP = "9988776655443322";
 
     private final AccountRepository accountRepository;
+    private final MarginAccountRepository marginAccountRepository;
     private final UserAccountMapper userAccountMapper;
     private final CardRepository cardRepository;
     private final UserAccountRepository userAccountRepository;
@@ -90,12 +100,25 @@ public class AccountService {
         return accountRepository.findUserAccountByUserId(userId).orElseThrow(() -> new RuntimeException("Not found")).stream()
                 .map(userAccountMapper::userAccountToUserAccountDto).collect(Collectors.toList());
     }
+    public UserMarginAccountDto findUserMarginAccountByUser(Long userId) {
+        return marginAccountRepository.findUserMarginAccountByUserId(userId)
+                .map(userAccountMapper::userMarginAccountToUserMarginAccountDto)
+                .orElseThrow(() -> new RuntimeException("User margin account not found for user ID: " + userId));
+    }
+
+
 
     public List<CompanyAccountDto> findCompanyAccountByCompany(Long companyId) {
         return accountRepository.findCompanyAccountByCompanyId(companyId).orElseThrow().stream()
                 .map(companyAccountMapper::companyAccountToCompanyAccountDto)
                 .collect(Collectors.toList());
     }
+    public CompanyMarginAccountDto findCompanyMarginAccountByCompany(Long companyId) {
+        return marginAccountRepository.findCompanyMarginAccountByCompanyId(companyId)
+                .map(companyAccountMapper::companyMarginAccountToCompanyMarginAccountDto)
+                .orElseThrow(() -> new RuntimeException("Company margin account not found for company ID: " + companyId));
+    }
+
 
     public UserAccountDto findUserAccountByAccountNumber(String accountNumber) {
         return userAccountMapper.userAccountToUserAccountDto((UserAccount) accountRepository.findByAccountNumber(accountNumber)
@@ -116,7 +139,18 @@ public class AccountService {
         accountRepository.save(userAccount);
         return userAccountMapper.userAccountToUserAccountDto(userAccount);
     }
+    public UserMarginAccountDto createMarginAccount(UserMarginAccountCreateDto userMarginAccountCreateDto) {
 
+        UserMarginAccount userMarginAccount = userAccountMapper.userMarginAccountCreateDtoToUserMarginAccount(userMarginAccountCreateDto);
+        Currency currency=currencyRepository.findByMark("RSD").orElseThrow(() -> new IllegalArgumentException("Invalid currency mark: DINAR"));
+        userMarginAccount.setCurrency(currency);
+        userMarginAccount.setAccountNumber(String.valueOf(new BigInteger(53, new Random())));
+        userMarginAccount.setLoanValue(BigDecimal.ZERO);
+        userMarginAccount.setActive(true);
+
+        marginAccountRepository.save(userMarginAccount);
+        return userAccountMapper.userMarginAccountToUserMarginAccountDto(userMarginAccount);
+    }
     public CompanyAccountDto createCompanyAccount(CompanyAccountCreateDto companyAccountCreateDto) {
 
         CompanyAccount account = companyAccountMapper.companyAccountCreateDtoToCompanyAccount(companyAccountCreateDto);
@@ -125,9 +159,18 @@ public class AccountService {
         account.setExpireDate(System.currentTimeMillis() + 31556952000L);
         account.setReservedAmount(new BigDecimal(0));
         account.setActive(true);
-
         createCard(account);
         return companyAccountMapper.companyAccountToCompanyAccountDto(accountRepository.save(account));
+    }
+    public CompanyMarginAccountDto createCompanyMarginAccount(CompanyMarginAccountCreateDto companyMarginAccountCreateDto) {
+        CompanyMarginAccount companyMarginAccount = companyAccountMapper.companyMarginAccountCreateDtoToCompanyMarginAccount(companyMarginAccountCreateDto);
+        Currency currency=currencyRepository.findByMark("RSD").orElseThrow(() -> new IllegalArgumentException("Invalid currency mark: DINAR"));
+        companyMarginAccount.setCurrency(currency);
+        companyMarginAccount.setAccountNumber(String.valueOf(new BigInteger(53, new Random())));
+        companyMarginAccount.setLoanValue(BigDecimal.ZERO);
+        companyMarginAccount.setActive(true);
+        marginAccountRepository.save(companyMarginAccount);
+        return companyAccountMapper.companyMarginAccountToCompanyMarginAccountDto(companyMarginAccount);
     }
 
     public void reserveFunds(Account account, BigDecimal amount) {
@@ -178,6 +221,11 @@ public class AccountService {
     public boolean checkBalance(String accountNumber, Double amount) {
         Account account = accountRepository.findByAccountNumber(accountNumber).orElseThrow(() -> new RuntimeException("Account not found"));
         return account.getAvailableBalance().compareTo(new BigDecimal(amount)) >= 0;
+    }
+    public Account getByUserIdAndCurrency(Long userId, String currencyMark) {
+        Currency currency = currencyRepository.findByMark(currencyMark)
+                .orElseThrow(() -> new RuntimeException("Currency not found"));
+        return userAccountRepository.findByUserIdAndCurrency(userId, currency);
     }
     
     public boolean checkBalanceUser(Long userId, Double amount) {
@@ -240,6 +288,19 @@ public class AccountService {
             account = userAccountRepository.findByUserIdAndCurrency(stockTransactionDto.getUserId(), currency);
         } else if (stockTransactionDto.getCompanyId() != null) {
             account = companyAccountRepository.findByCompanyIdAndCurrency(stockTransactionDto.getCompanyId(), currency);
+        }
+        return account;
+    }
+    public MarginAccount findMarginAccount(StockMarginTransactionDto dto){
+
+        //I userMarginAccount i CompanyMarginAccount koriste isti repository
+        //To je moguce zbog anotacije @Inheritance(strategy = InheritanceType.JOINED) u MarginAccount
+
+        MarginAccount account = null;
+        if (dto.getUserId() != null) {
+            account = marginAccountRepository.findUserMarginAccountByUserId(dto.getUserId()).get();
+        } else if (dto.getCompanyId() != null) {
+            account = marginAccountRepository.findCompanyMarginAccountByCompanyId(dto.getCompanyId()).get();
         }
         return account;
     }
