@@ -16,7 +16,6 @@ import java.io.Serializable;
 @SuperBuilder
 @AllArgsConstructor
 @RequiredArgsConstructor
-@ToString
 @Entity
 @Table(schema = "bank_service_schema")
 public class CompanyMarginAccount extends MarginAccount implements Serializable {

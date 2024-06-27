@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@RequiredArgsConstructor
+
 public class MarginTransactionDto {
     //TODO dodati sta treba
 }

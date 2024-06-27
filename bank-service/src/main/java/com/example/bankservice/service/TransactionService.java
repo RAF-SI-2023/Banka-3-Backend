@@ -99,17 +99,21 @@ public class TransactionService {
     public void stockBuyTransaction(StockTransactionDto stockTransactionDto) {
         // ovde umesto da trazi bank account, stavimo proveru da li StokcTransactionDto ima userId ili companyId
         // i na osnovu njihovog id-a i marka nadjemo account
+
         Account accountFrom = null;
         if (stockTransactionDto.getEmployeeId() != null) {
             accountFrom = accountService.findBankAccountForGivenCurrency(stockTransactionDto.getCurrencyMark());
         } else {
             accountFrom = accountService.findAccount(stockTransactionDto);
         }
-        Account accountTo = accountService.findExchangeAccountForGivenCurrency("RSD");
+        Account accountTo = accountService.findExchangeAccountForGivenCurrency(stockTransactionDto.getCurrencyMark());
+
         checkIfAccountsAreTheSame(accountFrom, accountTo);
+
         if (accountFrom.getAvailableBalance().compareTo(BigDecimal.valueOf(stockTransactionDto.getAmount())) < 0) {
             throw new RuntimeException("Insufficient funds");
         }
+
         Transaction transaction = new Transaction();
         transaction.setAccountFrom(accountFrom.getAccountNumber());
         transaction.setAccountTo(accountTo.getAccountNumber());
@@ -117,6 +121,7 @@ public class TransactionService {
         transaction.setType(TransactionType.STOCK_TRANSACTION);
         transaction.setTransactionStatus(TransactionStatus.ACCEPTED);
         transaction.setDate(System.currentTimeMillis());
+
         transactionRepository.save(transaction);
     }
     @Transactional(isolation = Isolation.SERIALIZABLE)
