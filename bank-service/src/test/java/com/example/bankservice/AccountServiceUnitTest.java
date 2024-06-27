@@ -18,6 +18,7 @@ import com.example.bankservice.domain.model.accounts.UserAccount;
 import com.example.bankservice.domain.model.enums.CurrencyName;
 import com.example.bankservice.repository.*;
 import com.example.bankservice.service.AccountService;
+import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,6 +59,9 @@ public class AccountServiceUnitTest {
     private Random mockRandom;
     @Mock
     private CurrencyRepository currencyRepository;
+
+    @Mock
+    private CompositeMeterRegistry meterRegistry;
     @InjectMocks
     private AccountService accountService;
 
