@@ -2,8 +2,11 @@ package com.example.bankservice.domain.mapper;
 
 import com.example.bankservice.domain.dto.companyaccount.CompanyAccountCreateDto;
 import com.example.bankservice.domain.dto.companyaccount.CompanyAccountDto;
+import com.example.bankservice.domain.dto.companyaccount.CompanyMarginAccountCreateDto;
+import com.example.bankservice.domain.dto.companyaccount.CompanyMarginAccountDto;
 import com.example.bankservice.domain.model.accounts.CompanyAccount;
 import com.example.bankservice.domain.model.Currency;
+import com.example.bankservice.domain.model.marginAccounts.CompanyMarginAccount;
 import com.example.bankservice.repository.CurrencyRepository;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -22,6 +25,11 @@ public abstract class CompanyAccountMapper {
 
     @Mapping(target = "currency", source = "currencyMark", qualifiedByName = "stringToCurrency")
     public abstract CompanyAccount companyAccountCreateDtoToCompanyAccount(CompanyAccountCreateDto companyAccountCreateDto);
+
+    public abstract CompanyMarginAccount companyMarginAccountCreateDtoToCompanyMarginAccount(CompanyMarginAccountCreateDto companyMarginAccountCreateDto);
+
+    public abstract CompanyMarginAccountDto companyMarginAccountToCompanyMarginAccountDto(CompanyMarginAccount companyMarginAccountCreateDto);
+
 
     @Named("stringToCurrency")
     protected Currency stringToCurrency(String currencyMark) {
