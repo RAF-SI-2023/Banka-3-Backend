@@ -1,5 +1,6 @@
 package com.example.bankservice.service;
 
+import io.micrometer.core.instrument.Counter;
 import com.example.bankservice.client.EmailServiceClient;
 import com.example.bankservice.client.UserServiceClient;
 import com.example.bankservice.domain.dto.account.UserAccountCreateDto;
@@ -20,6 +21,7 @@ import com.example.bankservice.repository.CardRepository;
 import com.example.bankservice.repository.CompanyAccountRepository;
 import com.example.bankservice.repository.CurrencyRepository;
 import com.example.bankservice.repository.UserAccountRepository;
+import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +29,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,6 +56,23 @@ public class AccountService {
     private final EmailServiceClient emailServiceClient;
     private final UserServiceClient userServiceClient;
     private final CurrencyRepository currencyRepository;
+
+    private Counter listUsers = null;
+    private AtomicInteger randomInt;
+
+    public AccountService(AccountRepository accountRepository, UserAccountMapper userAccountMapper, CardRepository cardRepository, UserAccountRepository userAccountRepository, CompanyAccountRepository companyAccountRepository, CompanyAccountMapper companyAccountMapper, EmailServiceClient emailServiceClient, UserServiceClient userServiceClient, CurrencyRepository currencyRepository, CompositeMeterRegistry meterRegistry) {
+        this.accountRepository = accountRepository;
+        this.userAccountMapper = userAccountMapper;
+        this.cardRepository = cardRepository;
+        this.userAccountRepository = userAccountRepository;
+        this.companyAccountRepository = companyAccountRepository;
+        this.companyAccountMapper = companyAccountMapper;
+        this.emailServiceClient = emailServiceClient;
+        this.userServiceClient = userServiceClient;
+        this.currencyRepository = currencyRepository;
+        this.listUsers = meterRegistry.counter("users.lists");
+        this.randomInt = meterRegistry.gauge("users.gauge", new AtomicInteger(0));
+    }
 
     public List<UserAccountDto> findAllUserAccounts() {
         return userAccountRepository.findAll().stream().filter(Account::isActive)
