@@ -1,8 +1,7 @@
 package com.example.bankservice.controller;
 
-import com.example.bankservice.domain.dto.account.CheckAccountBalanceDto;
-import com.example.bankservice.domain.dto.account.UserAccountCreateDto;
-import com.example.bankservice.domain.dto.account.UserAccountDto;
+import com.example.bankservice.domain.dto.account.*;
+
 import com.example.bankservice.service.AccountService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +38,17 @@ public class AccountController {
             return ResponseEntity.badRequest().body("Unable to get accounts by user");
         }
     }
+    @GetMapping("/getMarginByUser/{userId}")
+    public ResponseEntity<?> getMarginByUser(@PathVariable Long userId) {
+        try {
+            UserMarginAccountDto userAccountDtos = accountService.findUserMarginAccountByUser(userId);
+            return ResponseEntity.ok(userAccountDtos);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Unable to get accounts by user");
+        }
+    }
+
+
 
     @PostMapping("/createAccount")
     public ResponseEntity<?> createAccount(@RequestBody UserAccountCreateDto userAccountCreateDto) {
@@ -49,6 +59,17 @@ public class AccountController {
             e.printStackTrace();
             return ResponseEntity.badRequest().body("Unable to create account");
         }
+    }
+    @PostMapping("/createMarginAccount")
+    public ResponseEntity<?> createMarginAccount(@RequestBody UserMarginAccountCreateDto dto) {
+        try {
+            UserMarginAccountDto userMarginAccountDto = accountService.createMarginAccount(dto);
+            return ResponseEntity.ok(userMarginAccountDto);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Unable to create margin account");
+        }
+
     }
 
     @DeleteMapping("/deleteAccount/{id}")
@@ -84,4 +105,7 @@ public class AccountController {
             return ResponseEntity.badRequest().body("Unable to check account balance");
         }
     }
+
+
+
 }
