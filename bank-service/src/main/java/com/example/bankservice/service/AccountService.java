@@ -42,7 +42,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
 public class AccountService {
 
     private static final String bankAccountRSD = "3333333333333333";
@@ -70,8 +69,9 @@ public class AccountService {
     private Counter listUsers = null;
     private AtomicInteger randomInt;
 
-    public AccountService(AccountRepository accountRepository, UserAccountMapper userAccountMapper, CardRepository cardRepository, UserAccountRepository userAccountRepository, CompanyAccountRepository companyAccountRepository, CompanyAccountMapper companyAccountMapper, EmailServiceClient emailServiceClient, UserServiceClient userServiceClient, CurrencyRepository currencyRepository, CompositeMeterRegistry meterRegistry) {
+    public AccountService(AccountRepository accountRepository, MarginAccountRepository marginAccountRepository, UserAccountMapper userAccountMapper, CardRepository cardRepository, UserAccountRepository userAccountRepository, CompanyAccountRepository companyAccountRepository, CompanyAccountMapper companyAccountMapper, EmailServiceClient emailServiceClient, UserServiceClient userServiceClient, CurrencyRepository currencyRepository, CompositeMeterRegistry meterRegistry) {
         this.accountRepository = accountRepository;
+        this.marginAccountRepository = marginAccountRepository;
         this.userAccountMapper = userAccountMapper;
         this.cardRepository = cardRepository;
         this.userAccountRepository = userAccountRepository;
