@@ -167,6 +167,20 @@ public class AccountService {
         }
     }
 
+    public void transferFromMarginFunds(MarginAccount accountFrom, Account accountTo, BigDecimal amount) {
+        accountFrom.setInitialMargin(accountFrom.getInitialMargin().subtract(amount));
+        accountTo.setAvailableBalance(accountTo.getAvailableBalance().add(amount));
+        marginAccountRepository.save(accountFrom);
+        accountRepository.save(accountTo);
+    }
+
+    public void transferToMarginFunds(Account accountFrom, MarginAccount accountTo, BigDecimal amount) {
+        accountFrom.setAvailableBalance(accountFrom.getAvailableBalance().subtract(amount));
+        accountTo.setInitialMargin(accountTo.getInitialMargin().add(amount));
+        accountRepository.save(accountFrom);
+        marginAccountRepository.save(accountTo);
+    }
+
     public void transferCreditFunds(Account accountFrom, Account accountTo, BigDecimal amount) {
         accountFrom.setAvailableBalance(accountFrom.getAvailableBalance().subtract(amount));
         accountTo.setAvailableBalance(accountTo.getAvailableBalance().add(amount));
