@@ -95,26 +95,44 @@ public class TransactionController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    @PostMapping(value = "/addToMargin/{userId}",consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/addToMarginUser/{userId}",consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> stockBuyMarginTransaction(@RequestBody AddToMarginDto dto,@PathVariable Long userId) {
         try {
-            transactionService.addToMargin(dto,userId);
+            transactionService.addToMarginUser(dto,userId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    @PostMapping(value = "/withdrawFromMargin/{userId}",consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/withdrawFromMarginUser/{userId}",consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> stockBuyMarginTransaction(@RequestBody WithdrawFromMarginDto dto,@PathVariable Long userId) {
         try {
-            transactionService.withdrawFromMargin(dto,userId);
+            transactionService.withdrawFromMarginUser(dto,userId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
+    @PostMapping(value = "/addToMarginCompany/{companyId}",consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> stockBuyMarginCompanyTransaction(@RequestBody AddToMarginDto dto,@PathVariable Long companyId) {
+        try {
+            transactionService.addToMarginCompany(dto,companyId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
+    @PostMapping(value = "/withdrawFromMarginCompany/{companyId}",consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> stockBuyMarginCompanyTransaction(@RequestBody WithdrawFromMarginDto dto,@PathVariable Long companyId) {
+        try {
+            transactionService.withdrawFromMarginCompany(dto,companyId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     @PostMapping(value = "/stockSellTransaction",
             consumes = MediaType.APPLICATION_JSON_VALUE,

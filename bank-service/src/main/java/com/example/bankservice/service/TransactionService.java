@@ -11,6 +11,7 @@ import com.example.bankservice.domain.model.accounts.CompanyAccount;
 import com.example.bankservice.domain.model.accounts.UserAccount;
 import com.example.bankservice.domain.model.enums.TransactionStatus;
 import com.example.bankservice.domain.model.enums.TransactionType;
+import com.example.bankservice.domain.model.marginAccounts.CompanyMarginAccount;
 import com.example.bankservice.domain.model.marginAccounts.MarginAccount;
 import com.example.bankservice.domain.model.marginAccounts.UserMarginAccount;
 import com.example.bankservice.repository.AccountRepository;
@@ -27,6 +28,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -124,6 +126,7 @@ public class TransactionService {
 
         transactionRepository.save(transaction);
     }
+
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void stockBuyMarginTransaction(StockMarginTransactionDto stockMarginTransactionDto) {
 
@@ -135,35 +138,52 @@ public class TransactionService {
         //I -skidanje sa racuna banke
         Double forBank=stockMarginTransactionDto.getAmount()*(1+marginAccount.getBankParticipation());
 
-        marginAccount.getLoanValue().add(BigDecimal.valueOf(forBank));
+
         //II
         Double forAccount=stockMarginTransactionDto.getAmount()-forBank;
 
         if (marginAccount.getInitialMargin().compareTo(BigDecimal.valueOf(forAccount)) < 0) {
             throw new RuntimeException("Insufficient funds");
         }
-
-        marginAccount.setInitialMargin(marginAccount.getInitialMargin().subtract(BigDecimal.valueOf(forAccount)));
+        //TODO staviti dole u finishTransaction
+        //marginAccount.setInitialMargin(marginAccount.getInitialMargin().subtract(BigDecimal.valueOf(forAccount)));
         //Deaktivacija: Ako padnemo ispod
         if(marginAccount.getInitialMargin().compareTo(marginAccount.getMaitenanceMargin())==-1){
             marginAccount.setActive(false);
         }
 
+        /**prva transackija je bank->exchange, druga transakcija je margin->exchange */
+
         //Skidanje sa racuna banke
-        Account bankAccount = accountService.findExchangeAccountForGivenCurrency("RSD");
-        Transaction transaction = new Transaction();
-        //nece raditi, jer transakcije rade sa accountom, ne i marginAccount
-        transaction.setAccountFrom(marginAccount.getAccountNumber());
-        transaction.setAccountTo(bankAccount.getAccountNumber());
-        transaction.setAmount(BigDecimal.valueOf(forBank));
-        transaction.setType(TransactionType.MARGIN_TRANSACTION);
-        transaction.setTransactionStatus(TransactionStatus.ACCEPTED);
-        transaction.setDate(System.currentTimeMillis());
-        transactionRepository.save(transaction);
+        Account exchangeAccount = accountService.findExchangeAccountForGivenCurrency("RSD");
+        Account bankAccount = accountService.findBankAccountForGivenCurrency("RSD");
+
+        //bank->exchange
+        Transaction bankToExchange = new Transaction();
+        bankToExchange.setAccountFrom(bankAccount.getAccountNumber());
+        bankToExchange.setAccountTo(exchangeAccount.getAccountNumber());
+        bankToExchange.setAmount(BigDecimal.valueOf(forBank));
+        bankToExchange.setType(TransactionType.PAYMENT_TRANSACTION);
+        bankToExchange.setTransactionStatus(TransactionStatus.ACCEPTED);
+        bankToExchange.setDate(System.currentTimeMillis());
+        transactionRepository.save(bankToExchange);
+
+        //margin->exchange
+        Transaction marginToExchange = new Transaction();
+        marginToExchange.setAccountFrom(marginAccount.getAccountNumber());
+        marginToExchange.setAccountTo(exchangeAccount.getAccountNumber());
+        marginToExchange.setAmount(BigDecimal.valueOf(forAccount));
+        marginToExchange.setType(TransactionType.MARGIN_TRANSACTION);
+        marginToExchange.setTransactionStatus(TransactionStatus.ACCEPTED);
+        marginToExchange.setDate(System.currentTimeMillis());
+        transactionRepository.save(marginToExchange);
+
+        marginAccount.getLoanValue().add(BigDecimal.valueOf(forBank));
         marginAccountRepository.save(marginAccount);
     }
+
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void addToMargin(AddToMarginDto dto,Long userId){
+    public void addToMarginUser(AddToMarginDto dto,Long userId){
         //Provera da li imamo novca na tekucem RSD racunu
         if(accountService.checkBalanceUser(userId,dto.getAmount())){
             throw new RuntimeException("Insufficient funds");
@@ -175,36 +195,31 @@ public class TransactionService {
         }
         UserMarginAccount account = optional.get();
 
+        //Dodajemo na marzni
         if(!account.isActive()){
-            throw new RuntimeException("Margin account is not active");
+            Double checkInitialMargin = dto.getAmount() + account.getInitialMargin().doubleValue();
+            if(checkInitialMargin >= account.getMaitenanceMargin().doubleValue()){
+                account.setActive(true);
+            }
         }
 
         //Skidamo sa tekuceg
         Account userRSDAccount=accountService.findUserAccountForIdAndCurrency(userId,"RSD");
 
-
-        //Dodajemo na marzni
-        if(account.getInitialMargin().compareTo(account.getMaitenanceMargin())==1){
-            account.setActive(false);
-        }
-
-        //Skidanje sa tekuceg
-        Account bankAccount = accountService.findExchangeAccountForGivenCurrency("RSD");
         Transaction transaction = new Transaction();
-        //transaction.setAccountFrom(marginAccount.getAccountNumber());
-        transaction.setAccountTo(bankAccount.getAccountNumber());
-        //transaction.setAmount(BigDecimal.valueOf(forBank));
+        transaction.setAccountFrom(account.getAccountNumber());
+        transaction.setAccountTo(userRSDAccount.getAccountNumber());
+        transaction.setAmount(BigDecimal.valueOf(dto.getAmount()));
         transaction.setType(TransactionType.MARGIN_TRANSACTION);
         transaction.setTransactionStatus(TransactionStatus.ACCEPTED);
         transaction.setDate(System.currentTimeMillis());
         transactionRepository.save(transaction);
-        //marginAccountRepository.save(marginAccount);
 
-        account.setInitialMargin(account.getInitialMargin().add(BigDecimal.valueOf(dto.getAmount())));
         marginAccountRepository.save(account);
     }
+
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void withdrawFromMargin(WithdrawFromMarginDto dto,Long userId){
+    public void withdrawFromMarginUser(WithdrawFromMarginDto dto,Long userId){
         Optional<UserMarginAccount> optional = marginAccountRepository.findUserMarginAccountByUserId(userId);
         if(optional.isEmpty()){
             throw new RuntimeException("Margin account not found");
@@ -215,46 +230,138 @@ public class TransactionService {
             throw new RuntimeException("Margin account is not active");
         }
         //Ako bismo otisli isbog Maitenance
-        if(account.getInitialMargin().subtract(BigDecimal.valueOf(dto.getAmount())).compareTo(account.getMaitenanceMargin())==-1){
-            throw new RuntimeException("Not enough funds");
+        Double checkInitialMargin = account.getInitialMargin().doubleValue() - dto.getAmount();
+        if(checkInitialMargin >= 0){
+            if(checkInitialMargin < account.getMaitenanceMargin().doubleValue()){
+                account.setActive(false);
+            }
+        }else {
+            throw new RuntimeException("Insufficient funds");
         }
-        account.setInitialMargin(account.getInitialMargin().subtract(BigDecimal.valueOf(dto.getAmount())));
+
+        //transakcija margin->user
+        Account userRSDAccount=accountService.findUserAccountForIdAndCurrency(userId,"RSD");
+
+        Transaction transaction = new Transaction();
+        transaction.setAccountFrom(account.getAccountNumber());
+        transaction.setAccountTo(userRSDAccount.getAccountNumber());
+        transaction.setAmount(BigDecimal.valueOf(dto.getAmount()));
+        transaction.setType(TransactionType.MARGIN_TRANSACTION);
+        transaction.setTransactionStatus(TransactionStatus.ACCEPTED);
+        transaction.setDate(System.currentTimeMillis());
+        transactionRepository.save(transaction);
+
         marginAccountRepository.save(account);
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public void addToMarginCompany(AddToMarginDto dto,Long companyId){
+        //Provera da li imamo novca na tekucem RSD racunu
+        if(accountService.checkBalanceCompany(companyId,dto.getAmount())){
+            throw new RuntimeException("Insufficient funds");
+        }
+
+        Optional<CompanyMarginAccount> optional = marginAccountRepository.findCompanyMarginAccountByCompanyId(companyId);
+        if(optional.isEmpty()){
+            throw new RuntimeException("Margin account not found");
+        }
+        MarginAccount account = optional.get();
+
+        //Dodajemo na marzni
+        if(!account.isActive()){
+            Double checkInitialMargin = dto.getAmount() + account.getInitialMargin().doubleValue();
+            if(checkInitialMargin >= account.getMaitenanceMargin().doubleValue()){
+                account.setActive(true);
+            }
+        }
+
+        //Skidamo sa tekuceg
+        Account companyRSDAccount=accountService.findCompanyAccountForIdAndCurrency(companyId,"RSD");
+
+        Transaction transaction = new Transaction();
+        transaction.setAccountFrom(account.getAccountNumber());
+        transaction.setAccountTo(companyRSDAccount.getAccountNumber());
+        transaction.setAmount(BigDecimal.valueOf(dto.getAmount()));
+        transaction.setType(TransactionType.MARGIN_TRANSACTION);
+        transaction.setTransactionStatus(TransactionStatus.ACCEPTED);
+        transaction.setDate(System.currentTimeMillis());
+        transactionRepository.save(transaction);
+
+        marginAccountRepository.save(account);
+    }
+
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public void withdrawFromMarginCompany(WithdrawFromMarginDto dto,Long companyId){
+        Optional<CompanyMarginAccount> optional = marginAccountRepository.findCompanyMarginAccountByCompanyId(companyId);
+        if(optional.isEmpty()){
+            throw new RuntimeException("Margin account not found");
+        }
+        CompanyMarginAccount account = optional.get();
+
+        if(!account.isActive()){
+            throw new RuntimeException("Margin account is not active");
+        }
+        //Ako bismo otisli isbog Maitenance
+        Double checkInitialMargin = account.getInitialMargin().doubleValue() - dto.getAmount();
+        if(checkInitialMargin >= 0){
+            if(checkInitialMargin < account.getMaitenanceMargin().doubleValue()){
+                account.setActive(false);
+            }
+        }else {
+            throw new RuntimeException("Insufficient funds");
+        }
+
+        //transakcija margin->company
+        Account companyRSDAccount=accountService.findCompanyAccountForIdAndCurrency(companyId,"RSD");
+
+        Transaction transaction = new Transaction();
+        transaction.setAccountFrom(account.getAccountNumber());
+        transaction.setAccountTo(companyRSDAccount.getAccountNumber());
+        transaction.setAmount(BigDecimal.valueOf(dto.getAmount()));
+        transaction.setType(TransactionType.MARGIN_TRANSACTION);
+        transaction.setTransactionStatus(TransactionStatus.ACCEPTED);
+        transaction.setDate(System.currentTimeMillis());
+        transactionRepository.save(transaction);
+
+        marginAccountRepository.save(account);
+    }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void stockSellMarginTransaction(StockMarginTransactionDto dto) {
-        Account bankAccount = accountService.findExchangeAccountForGivenCurrency("RSD");
         MarginAccount marginAccount = accountService.findMarginAccount(dto);
         if(!marginAccount.isActive()){
             throw new RuntimeException("Margin account is not active");
         }
         //Prvo skidamo dug prema banci
         Double takeFromAccGiveToBank=dto.getAmount()*(1+marginAccount.getBankParticipation());
+
+
+        /** dve transakcije, prva je exchange->bank, druga je exchange->margin */
+
+
+        Account exchangeaccount = accountService.findExchangeAccountForGivenCurrency("RSD");
+        Account bankAccount = accountService.findBankAccountForGivenCurrency("RSD");
+
+        Transaction exchangeToBank = new Transaction();
+        exchangeToBank.setAccountFrom(exchangeaccount.getAccountNumber());
+        exchangeToBank.setAccountTo(bankAccount.getAccountNumber());
+        exchangeToBank.setAmount(BigDecimal.valueOf(takeFromAccGiveToBank));
+        exchangeToBank.setType(TransactionType.PAYMENT_TRANSACTION);
+        exchangeToBank.setTransactionStatus(TransactionStatus.ACCEPTED);
+        exchangeToBank.setDate(System.currentTimeMillis());
+        transactionRepository.save(exchangeToBank);
+
+        Transaction exchangeToMargin = new Transaction();
+        exchangeToMargin.setAccountFrom(exchangeaccount.getAccountNumber());
+        exchangeToMargin.setAccountTo(marginAccount.getAccountNumber());
+        exchangeToMargin.setAmount(BigDecimal.valueOf(dto.getAmount()-takeFromAccGiveToBank));
+        exchangeToMargin.setType(TransactionType.MARGIN_TRANSACTION);
+        exchangeToMargin.setTransactionStatus(TransactionStatus.ACCEPTED);
+        exchangeToMargin.setDate(System.currentTimeMillis());
+        transactionRepository.save(exchangeToMargin);
+
         marginAccount.setLoanValue(marginAccount.getLoanValue().subtract(BigDecimal.valueOf(takeFromAccGiveToBank)));
-
-        //Drugi deo
-        marginAccount.setInitialMargin(marginAccount.getInitialMargin().add(BigDecimal.valueOf(dto.getAmount()-takeFromAccGiveToBank)));
-
-        //Ne znam sta ovo treba da znaci za metodu:
-        //	Ako loanValue padne na 0, ne placamo banci vise nista, sve do ponovnog zaduzivanja
-
-        //Deaktivacija: Ako predjemo preko
-        if(marginAccount.getInitialMargin().compareTo(marginAccount.getMaitenanceMargin())==1){
-            marginAccount.setActive(false);
-        }
-
-        //Saljemo banci takeFromAccGiveToBank
-        Transaction transaction = new Transaction();
-        transaction.setAccountFrom(bankAccount.getAccountNumber());
-        transaction.setAccountTo(marginAccount.getAccountNumber());
-        transaction.setAmount(BigDecimal.valueOf(takeFromAccGiveToBank));
-        transaction.setType(TransactionType.MARGIN_TRANSACTION);
-        transaction.setTransactionStatus(TransactionStatus.ACCEPTED);
-        transaction.setDate(System.currentTimeMillis());
-        transactionRepository.save(transaction);
-        marginAccountRepository.save(marginAccount);;
+        marginAccountRepository.save(marginAccount);
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
@@ -299,7 +406,10 @@ public class TransactionService {
         List<Transaction> transactions = transactionRepository.findAllByType(TransactionType.MARGIN_TRANSACTION)
                 .orElseThrow(() -> new RuntimeException("Transactions not found"));
 
-        return transactions.stream().map(transactionMapper::transactionToMarginTransactionDto).toList();
+        return transactions.stream()
+                .sorted((t1, t2) -> t2.getDate().compareTo(t1.getDate())) // Sortiranje po datumu, najnoviji prvo
+                .map(transactionMapper::transactionToMarginTransactionDto)
+                .collect(Collectors.toList());
     }
 
     public List<FinishedPaymentTransactionDto> getAllPaymentTransactions(String accountNumber) {
@@ -454,31 +564,33 @@ public class TransactionService {
         transactionRepository.save(transaction);
     }
     private void finishMarginTransaction(Transaction transaction) {
-        //TODO uraditi!
-        //Moramo proveriti koji je margin a koji tekuci
         Optional<MarginAccount> marginOptional = marginAccountRepository.findByAccountNumber(transaction.getAccountFrom());
-        //ako je FROM margin
+
         MarginAccount marginAccount=null;
-        Account account=null;
         if(marginOptional.isPresent()){
-            //From
+            /** PRVI SLUCAJ AKO KUPUJEMO */
             marginAccount=marginOptional.get();
-            //to
-            account = accountRepository.findByAccountNumber(transaction.getAccountTo())
+            Account accountTo = accountRepository.findByAccountNumber(transaction.getAccountTo())
                     .orElseThrow(() -> new RuntimeException("Account not found"));
 
-        }else{
-            //from
-            account = accountRepository.findByAccountNumber(transaction.getAccountFrom()).orElseThrow(() -> new RuntimeException("Account not found"));
+            accountService.transferFromMarginFunds(marginAccount, accountTo, transaction.getAmount());
+            transaction.setTransactionStatus(TransactionStatus.FINISHED);
 
-            //to
-            marginAccount = marginAccountRepository.findByAccountNumber(transaction.getAccountTo()).orElseThrow(() -> new RuntimeException("Account not found"));
+        }else if(marginAccountRepository.findByAccountNumber(transaction.getAccountTo()).isPresent()){
+            /** DRUGI SLUCAJ AKO PRODAJEMO */
 
+            marginAccount=marginAccountRepository.findByAccountNumber(transaction.getAccountTo()).get();
+            Account accountFrom = accountRepository.findByAccountNumber(transaction.getAccountFrom())
+                    .orElseThrow(() -> new RuntimeException("Account not found"));
+
+            accountService.transferToMarginFunds(accountFrom, marginAccount, transaction.getAmount());
+            transaction.setTransactionStatus(TransactionStatus.FINISHED);
+
+        }else {
+            transaction.setTransactionStatus(TransactionStatus.FAILED);
+            new RuntimeException("Margin account not found");
         }
-        //Treba da se resi problematika reservedAmount,AvailableBalance,jer to nemamo na marznom racunu
 
-        //accountService.transferFunds(accountFrom, accountTo, transaction.getAmount());
-        transaction.setTransactionStatus(TransactionStatus.FINISHED);
         transactionRepository.save(transaction);
     }
 

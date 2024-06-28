@@ -1,10 +1,13 @@
 package rs.edu.raf.exchangeservice.service.listingService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import rs.edu.raf.exchangeservice.domain.model.Exchange;
 import rs.edu.raf.exchangeservice.domain.model.listing.Ticker;
+import rs.edu.raf.exchangeservice.jacoco.ExcludeFromJacocoGeneratedReport;
 import rs.edu.raf.exchangeservice.repository.ExchangeRepository;
 import rs.edu.raf.exchangeservice.repository.listingRepository.TickerRepository;
 import rs.edu.raf.exchangeservice.service.historyService.StockDailyService;
@@ -13,6 +16,9 @@ import rs.edu.raf.exchangeservice.service.historyService.StockMonthlyService;
 import rs.edu.raf.exchangeservice.service.historyService.StockWeeklyService;
 import rs.edu.raf.exchangeservice.service.myListingService.MyStockService;
 
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,5 +83,36 @@ public class TickerService {
         stockWeeklyService.loadData();
         stockMonthlyService.loadData();
         futureService.loadData();
+    }
+
+    @ExcludeFromJacocoGeneratedReport
+    public void addTicker(String ticker){
+        String url = "https://api.polygon.io/v3/reference/tickers?ticker=" + ticker + "&apiKey=RTKplv_CDK1Lh7kx0yPTPEsaqUy14wiT";
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(java.net.URI.create(url))
+                .build();
+        try{
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if(response.statusCode() == 200){
+                Gson gson = new Gson();
+                JsonObject jsonObject = gson.fromJson(response.body(), JsonObject.class);
+                Ticker newTicker = new Ticker();
+                newTicker.setTicker(ticker);
+                newTicker.setName(jsonObject.get("results").getAsJsonArray().get(0).getAsJsonObject().get("name").getAsString());
+                newTicker.setCurrencyName("RSD");
+
+                List<Exchange> exchanges = exchangeRepository.findAll();
+                Random random = new Random();
+                int randomIndex = random.nextInt(exchanges.size());
+                Exchange exchange = exchanges.get(randomIndex);
+                newTicker.setPrimaryExchange(exchange.getExchange());
+                tickerRepository.save(newTicker);
+            } else{
+                System.out.println("Error: " + response.statusCode());
+            }
+        } catch (Exception e){
+            System.out.println("Error while adding ticker");
+        }
     }
 }
