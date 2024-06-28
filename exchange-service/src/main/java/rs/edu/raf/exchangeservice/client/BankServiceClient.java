@@ -59,13 +59,13 @@ public interface BankServiceClient {
     @Operation(description = "Provera stanja racuna racuna kompanije")
     ResponseEntity<?> checkAccountBalanceCompany (@RequestBody CheckAccountBalanceDto checkAccountBalanceDto);
 
-    @PostMapping(value = "/transaction/buyStockMarginTransaction",
+    @PostMapping(value = "/transaction/stockBuyMarginTransaction",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "kupovina deonica preko marznog racuna")
     ResponseEntity<?> marginStockBuyTransaction (@RequestBody BankMarginTransactionDto BankMarginTransactionDto);
 
-    @PostMapping(value = "/transaction/sellStockMarginTransaction",
+    @PostMapping(value = "/transaction/stockSellMarginTransaction",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(description = "prodaja deonica preko marznog racuna")
