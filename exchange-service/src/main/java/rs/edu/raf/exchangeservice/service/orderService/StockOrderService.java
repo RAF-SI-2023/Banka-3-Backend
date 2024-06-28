@@ -295,8 +295,7 @@ public class StockOrderService {
                     bankMarginTransactionDto.setAmount(currentPrice * amountToBuy);
                     bankMarginTransactionDto.setUserId(stockOrder.getUserId());
                     bankMarginTransactionDto.setCompanyId(stockOrder.getCompanyId());
-                    //todo otkomentarisati kada se implementira
-                   // bankServiceClient.marginStockBuyTransaction(bankMarginTransactionDto);
+                    bankServiceClient.marginStockBuyTransaction(bankMarginTransactionDto);
                     myMarginStockService.addAmountToMyMarginStock(stockOrder.getTicker(), amountToBuy, stockOrder.getUserId(), stockOrder.getCompanyId(), currentPrice);
                 }
 
@@ -331,8 +330,7 @@ public class StockOrderService {
                         bankMarginTransactionDto.setAmount(currentPrice * amountToBuy);
                         bankMarginTransactionDto.setUserId(stockOrder.getUserId());
                         bankMarginTransactionDto.setCompanyId(stockOrder.getCompanyId());
-                        //todo otkomentarisati kada se implementira
-                        //bankServiceClient.marginStockBuyTransaction(bankMarginTransactionDto);
+                        bankServiceClient.marginStockBuyTransaction(bankMarginTransactionDto);
                         myMarginStockService.addAmountToMyMarginStock(stockOrder.getTicker(), amountToBuy, stockOrder.getUserId(), stockOrder.getCompanyId(), currentPrice);
                     }
 
