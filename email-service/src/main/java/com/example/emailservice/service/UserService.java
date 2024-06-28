@@ -32,6 +32,7 @@ public class UserService {
     private final UserServiceClient userServiceClient;
     private final UserActivationRepository userActivationRepository;
     private final PasswordResetRepository passwordResetRepository;
+    private final String URL = "https://banka-3-dev.si.raf.edu.rs";
 
     //generise sestocifreni kod koji se salje na mail
     public void userActivation(String email) {
@@ -80,7 +81,7 @@ public class UserService {
                 LocalDateTime.now(),
                 true);
         passwordResetRepository.save(passwordReset);
-        emailService.sendSimpleMessage(email, "Reset password request", "https://banka-3.si.raf.edu.rs/resetPassword/" + identifier);
+        emailService.sendSimpleMessage(email, "Reset password request", URL + "/resetPassword/" + identifier);
         new Thread(() -> {
             long activationAvailableTime = 5 * 60 * 1000;
             try {
