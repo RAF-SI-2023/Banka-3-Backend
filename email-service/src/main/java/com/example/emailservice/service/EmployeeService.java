@@ -24,6 +24,7 @@ public class EmployeeService {
     private final EmailService emailService;
     private final UserServiceClient userServiceClient;
     private final EmployeeActivationRepository employeeActivationRepository;
+    private final String URL = "https://banka-3-dev.si.raf.edu.rs";
 
     /***
      *Pravi se random identifier, objekat employeeActivation i cuva se u bazu
@@ -123,7 +124,7 @@ public class EmployeeService {
     }
 
     protected String getText(String identifier) {
-        return "https://banka-3.si.raf.edu.rs/change-password/" + identifier;
+        return URL + "/change-password/" + identifier;
     }
 
     protected String getReturnValue() {
@@ -131,6 +132,6 @@ public class EmployeeService {
     }
 
     protected String getLocation(String identifier) {
-        return "https://banka-3.si.raf.edu.rs/employee/password-confirm/" + identifier;
+        return URL + "/employee/password-confirm/" + identifier;
     }
 }

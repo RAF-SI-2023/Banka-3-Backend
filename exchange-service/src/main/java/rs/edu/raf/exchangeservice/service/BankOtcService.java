@@ -19,9 +19,11 @@ import rs.edu.raf.exchangeservice.domain.model.offer.Offer;
 import rs.edu.raf.exchangeservice.domain.model.offer.OfferStatus;
 import rs.edu.raf.exchangeservice.jacoco.ExcludeFromJacocoGeneratedReport;
 import rs.edu.raf.exchangeservice.repository.listingRepository.BankOTCStockRepository;
+import rs.edu.raf.exchangeservice.repository.listingRepository.TickerRepository;
 import rs.edu.raf.exchangeservice.repository.myListingRepository.MyStockRepository;
 import rs.edu.raf.exchangeservice.repository.offerRepository.MyOfferRepository;
 import rs.edu.raf.exchangeservice.repository.offerRepository.OfferRepository;
+import rs.edu.raf.exchangeservice.service.listingService.TickerService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +37,8 @@ public class BankOtcService {
     private final BankOTCStockRepository bankOTCStockRepository;
     private final MyOfferRepository myOfferRepository;
     private final BankServiceClient bankServiceClient;
+    private final TickerRepository tickerRepository;
+    private final TickerService tickerService;
 
     //URL
 
@@ -101,6 +105,13 @@ public class BankOtcService {
                 double minimumPrice = myOffer.getPrice()/myOffer.getAmount();
                 myStock.setMinimumPrice(minimumPrice);
                 myStockRepository.save(myStock);
+
+                ///DODAJEMO TICKER U BAZU
+                if(tickerRepository.findByTicker(myOffer.getTicker()) == null){
+                    tickerService.addTicker(myOffer.getTicker());
+                }
+
+
             }else {
                 MyStock myStock = myStockRepository.findByTickerAndCompanyId(myOffer.getTicker(), 1L);
                 myStock.setAmount(myStock.getAmount() + myOffer.getAmount());
