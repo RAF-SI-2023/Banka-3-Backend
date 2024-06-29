@@ -31,7 +31,7 @@ public class MarginAccount {
 
     //kolicina novca koju moramo imati na racunu, kako bi mogli da koristimo racun
     @NotNull(message = "This field cannot be NULL")
-    private BigDecimal maitenanceMargin;
+    private BigDecimal maintenanceMargin;
 
     //koliko smo duzni banci (na pocetku nula)
     @NotNull(message = "This field cannot be NULL")
@@ -47,6 +47,8 @@ public class MarginAccount {
     private String accountNumber;
 
     //Uvek RSD
+    @ManyToOne
+    @JoinColumn(name = "currencyId")
     private Currency currency;
 
     //boolean da li je racun dostupan za koriscenje (default je true)

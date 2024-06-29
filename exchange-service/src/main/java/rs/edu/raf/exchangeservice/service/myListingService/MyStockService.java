@@ -320,21 +320,34 @@ public class MyStockService {
                     bankTransactionDto.setUserId(stockOrderSell.getUserId());
                     bankTransactionDto.setCompanyId(stockOrderSell.getCompanyId());
                     bankTransactionDto.setTax(tax);
-                    bankServiceClient.stockSellTransaction(bankTransactionDto);
+                    try {
+                        bankServiceClient.stockSellTransaction(bankTransactionDto);
 
-                    //dodajemo agentu amount koji je zaradio
-                    if (stockOrderSell.getEmployeeId() != null) {
-                        this.addProfitForEmployee(stockOrderSell.getEmployeeId(), currentPrice * amountToSell);
+                        //dodajemo agentu amount koji je zaradio
+                        if (stockOrderSell.getEmployeeId() != null) {
+                            this.addProfitForEmployee(stockOrderSell.getEmployeeId(), currentPrice * amountToSell);
+                        }
+
+                        this.removeAmountFromMyStock(stockOrderSell.getTicker(), amountToSell, stockOrderSell.getUserId(), stockOrderSell.getCompanyId());    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
+
+                    }catch (Exception e) {
+                        stockOrderSell.setStatus(OrderStatus.FAILED);
+                        ordersToSell.remove(stockNumber);
+                        return;
                     }
-
-                    this.removeAmountFromMyStock(stockOrderSell.getTicker(), amountToSell, stockOrderSell.getUserId(), stockOrderSell.getCompanyId());    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
-                }else {
+                    }else {
                     BankMarginTransactionDto bankMarginTransactionDto = new BankMarginTransactionDto();
                     bankMarginTransactionDto.setAmount(currentPrice * amountToSell);
                     bankMarginTransactionDto.setUserId(stockOrderSell.getUserId());
                     bankMarginTransactionDto.setCompanyId(stockOrderSell.getCompanyId());
-                    bankServiceClient.marginStockSellTransaction(bankMarginTransactionDto);
-                    myMarginStockService.removeAmountFromMyMarginStock(stockOrderSell.getTicker(), amountToSell, stockOrderSell.getUserId(), stockOrderSell.getCompanyId());
+                    try{
+                        bankServiceClient.marginStockSellTransaction(bankMarginTransactionDto);
+                        myMarginStockService.removeAmountFromMyMarginStock(stockOrderSell.getTicker(), amountToSell, stockOrderSell.getUserId(), stockOrderSell.getCompanyId());
+                    }catch (Exception e) {
+                        stockOrderSell.setStatus(OrderStatus.FAILED);
+                        ordersToSell.remove(stockNumber);
+                        return;
+                    }
                 }
 
                 stockOrderSell.setAmountLeft(stockOrderSell.getAmountLeft() - amountToSell);
@@ -358,21 +371,34 @@ public class MyStockService {
                         bankTransactionDto.setUserId(stockOrderSell.getUserId());
                         bankTransactionDto.setCompanyId(stockOrderSell.getCompanyId());
                         bankTransactionDto.setTax(tax);
-                        bankServiceClient.stockSellTransaction(bankTransactionDto);
+                        try{
+                            bankServiceClient.stockSellTransaction(bankTransactionDto);
 
-                        //dodajemo agentu amount koji je zaradio
-                        if (stockOrderSell.getEmployeeId() != null) {
-                            this.addProfitForEmployee(stockOrderSell.getEmployeeId(), currentPrice * amountToSell);
+                            //dodajemo agentu amount koji je zaradio
+                            if (stockOrderSell.getEmployeeId() != null) {
+                                this.addProfitForEmployee(stockOrderSell.getEmployeeId(), currentPrice * amountToSell);
+                            }
+
+                            this.removeAmountFromMyStock(stockOrderSell.getTicker(), amountToSell, stockOrderSell.getUserId(), stockOrderSell.getCompanyId());    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
+                        }catch (Exception e) {
+                            stockOrderSell.setStatus(OrderStatus.FAILED);
+                            ordersToSell.remove(stockNumber);
+                            return;
                         }
-
-                        this.removeAmountFromMyStock(stockOrderSell.getTicker(), amountToSell, stockOrderSell.getUserId(), stockOrderSell.getCompanyId());    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
-                    }else {
+                        }else {
                         BankMarginTransactionDto bankMarginTransactionDto = new BankMarginTransactionDto();
                         bankMarginTransactionDto.setAmount(currentPrice * amountToSell);
                         bankMarginTransactionDto.setUserId(stockOrderSell.getUserId());
                         bankMarginTransactionDto.setCompanyId(stockOrderSell.getCompanyId());
-                        bankServiceClient.marginStockSellTransaction(bankMarginTransactionDto);
-                        myMarginStockService.removeAmountFromMyMarginStock(stockOrderSell.getTicker(), amountToSell, stockOrderSell.getUserId(), stockOrderSell.getCompanyId());
+                        try {
+                            bankServiceClient.marginStockSellTransaction(bankMarginTransactionDto);
+                            myMarginStockService.removeAmountFromMyMarginStock(stockOrderSell.getTicker(), amountToSell, stockOrderSell.getUserId(), stockOrderSell.getCompanyId());
+                        }catch (Exception e) {
+                            stockOrderSell.setStatus(OrderStatus.FAILED);
+                            ordersToSell.remove(stockNumber);
+                            return;
+                        }
+
                     }
                     stockOrderSell.setAmountLeft(stockOrderSell.getAmountLeft() - amountToSell);
                     if (stockOrderSell.getAmountLeft() <= 0) {
