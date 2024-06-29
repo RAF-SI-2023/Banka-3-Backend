@@ -282,21 +282,36 @@ public class StockOrderService {
                     bankTransactionDto.setCompanyId(stockOrder.getCompanyId());
                     bankTransactionDto.setEmployeeId(stockOrder.getEmployeeId());
                     bankTransactionDto.setTax(0.0);
-                    bankServiceClient.stockBuyTransaction(bankTransactionDto);
+                    try {
+                        bankServiceClient.stockBuyTransaction(bankTransactionDto);
 
-                    //dodajemo tranaskciju koju je obavio agent u profitStock
-                    if (stockOrder.getEmployeeId() != null) {
-                        myStockService.addProfitForEmployee(stockOrder.getEmployeeId(), currentPrice * amountToBuy * (-1));
+                        //dodajemo tranaskciju koju je obavio agent u profitStock
+                        if (stockOrder.getEmployeeId() != null) {
+                            myStockService.addProfitForEmployee(stockOrder.getEmployeeId(), currentPrice * amountToBuy * (-1));
+                        }
+
+                        myStockService.addAmountToMyStock(stockOrder.getTicker(), amountToBuy, stockOrder.getUserId(), stockOrder.getCompanyId(), currentPrice);    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
+                    }catch (Exception e) {
+                        stockOrder.setStatus(OrderStatus.FAILED);
+                        ordersToBuy.remove(stockNumber);
+                        stockOrderRepository.save(stockOrder);
+                        return;
                     }
-
-                    myStockService.addAmountToMyStock(stockOrder.getTicker(), amountToBuy, stockOrder.getUserId(), stockOrder.getCompanyId(), currentPrice);    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
-                }else{
+                   }else{
                     BankMarginTransactionDto bankMarginTransactionDto = new BankMarginTransactionDto();
                     bankMarginTransactionDto.setAmount(currentPrice * amountToBuy);
                     bankMarginTransactionDto.setUserId(stockOrder.getUserId());
                     bankMarginTransactionDto.setCompanyId(stockOrder.getCompanyId());
-                    bankServiceClient.marginStockBuyTransaction(bankMarginTransactionDto);
-                    myMarginStockService.addAmountToMyMarginStock(stockOrder.getTicker(), amountToBuy, stockOrder.getUserId(), stockOrder.getCompanyId(), currentPrice);
+                    try {
+                        bankServiceClient.marginStockBuyTransaction(bankMarginTransactionDto);
+                        myMarginStockService.addAmountToMyMarginStock(stockOrder.getTicker(), amountToBuy, stockOrder.getUserId(), stockOrder.getCompanyId(), currentPrice);
+                    }catch (Exception e) {
+                        System.out.println("Error in margin transaction");
+                        stockOrder.setStatus(OrderStatus.FAILED);
+                        ordersToBuy.remove(stockNumber);
+                        stockOrderRepository.save(stockOrder);
+                        return;
+                    }
                 }
 
                 stockOrder.setAmountLeft(stockOrder.getAmountLeft() - amountToBuy);
@@ -317,21 +332,35 @@ public class StockOrderService {
                         bankTransactionDto.setCompanyId(stockOrder.getCompanyId());
                         bankTransactionDto.setEmployeeId(stockOrder.getEmployeeId());
                         bankTransactionDto.setTax(0.0);
-                        bankServiceClient.stockBuyTransaction(bankTransactionDto);
+                        try{
+                            bankServiceClient.stockBuyTransaction(bankTransactionDto);
 
-                        //dodajemo tranaskciju koju je obavio agent u profitStock
-                        if (stockOrder.getEmployeeId() != null) {
-                            myStockService.addProfitForEmployee(stockOrder.getEmployeeId(), currentPrice * amountToBuy * (-1));
+                            //dodajemo tranaskciju koju je obavio agent u profitStock
+                            if (stockOrder.getEmployeeId() != null) {
+                                myStockService.addProfitForEmployee(stockOrder.getEmployeeId(), currentPrice * amountToBuy * (-1));
+                            }
+
+                            myStockService.addAmountToMyStock(stockOrder.getTicker(), amountToBuy, stockOrder.getUserId(), stockOrder.getCompanyId(), currentPrice);    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
+                        }catch (Exception e) {
+                            stockOrder.setStatus(OrderStatus.FAILED);
+                            ordersToBuy.remove(stockNumber);
+                            stockOrderRepository.save(stockOrder);
+                            return;
                         }
-
-                        myStockService.addAmountToMyStock(stockOrder.getTicker(), amountToBuy, stockOrder.getUserId(), stockOrder.getCompanyId(), currentPrice);    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
-                    }else{
+                        }else{
                         BankMarginTransactionDto bankMarginTransactionDto = new BankMarginTransactionDto();
                         bankMarginTransactionDto.setAmount(currentPrice * amountToBuy);
                         bankMarginTransactionDto.setUserId(stockOrder.getUserId());
                         bankMarginTransactionDto.setCompanyId(stockOrder.getCompanyId());
-                        bankServiceClient.marginStockBuyTransaction(bankMarginTransactionDto);
-                        myMarginStockService.addAmountToMyMarginStock(stockOrder.getTicker(), amountToBuy, stockOrder.getUserId(), stockOrder.getCompanyId(), currentPrice);
+                        try {
+                            bankServiceClient.marginStockBuyTransaction(bankMarginTransactionDto);
+                            myMarginStockService.addAmountToMyMarginStock(stockOrder.getTicker(), amountToBuy, stockOrder.getUserId(), stockOrder.getCompanyId(), currentPrice);
+                        }catch (Exception e) {
+                            stockOrder.setStatus(OrderStatus.FAILED);
+                            ordersToBuy.remove(stockNumber);
+                            stockOrderRepository.save(stockOrder);
+                            return;
+                        }
                     }
 
                     stockOrder.setAmountLeft(stockOrder.getAmountLeft() - amountToBuy);

@@ -7,6 +7,7 @@ import com.example.bankservice.domain.model.accounts.CompanyAccount;
 import com.example.bankservice.domain.model.accounts.UserAccount;
 import com.example.bankservice.domain.model.enums.CreditRequestStatus;
 import com.example.bankservice.domain.model.enums.CurrencyName;
+import com.example.bankservice.domain.model.marginAccounts.UserMarginAccount;
 import com.example.bankservice.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
@@ -26,6 +27,7 @@ public class BootstrapData implements CommandLineRunner {
     private final CreditRepository creditRepository;
     private final CreditRequestRepository creditRequestRepository;
     private final CardRepository cardRepository;
+    private final MarginAccountRepository marginAccountRepository;
 
     @Override
     public void run(String... args) {
@@ -69,6 +71,18 @@ public class BootstrapData implements CommandLineRunner {
         jankoRacunEuro.setCurrency(currencyRepository.findById(2L).orElse(null));
         jankoRacunEuro.setAccountType("DEBIT");
         jankoRacunEuro.setActive(true);
+
+        UserMarginAccount jankoMarginRacun = new UserMarginAccount();
+        jankoMarginRacun.setUserId(1L);
+        jankoMarginRacun.setAccountNumber("8888888888888888");
+        jankoMarginRacun.setInitialMargin(new BigDecimal(100000));
+        jankoMarginRacun.setCurrency(currencyRepository.findById(1L).orElse(null));
+        jankoMarginRacun.setActive(true);
+        jankoMarginRacun.setLoanValue(new BigDecimal(0));
+        jankoMarginRacun.setMaintenanceMargin(new BigDecimal(500));
+        jankoMarginRacun.setBankParticipation(0.5);
+
+
 
         UserAccount strahinjaRacunDinarski = new UserAccount();
         strahinjaRacunDinarski.setUserId(2L);
@@ -324,6 +338,10 @@ public class BootstrapData implements CommandLineRunner {
                     badCompanyAccountEur,
                     badCompanyAccountUsd,
                     bank4AccountRSD));
+        }
+
+        if(marginAccountRepository.count() == 0){
+            marginAccountRepository.save(jankoMarginRacun);
         }
 
         Card jankoDinarskiKartica = new Card();

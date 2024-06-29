@@ -136,11 +136,12 @@ public class TransactionService {
         }
 
         //I -skidanje sa racuna banke
-        Double forBank=stockMarginTransactionDto.getAmount()*(1+marginAccount.getBankParticipation());
+        Double forBank=stockMarginTransactionDto.getAmount()*(marginAccount.getBankParticipation());
 
 
         //II
         Double forAccount=stockMarginTransactionDto.getAmount()-forBank;
+        System.out.println("FOR ACCOUNT: "+forAccount + " FOR BANK: "+forBank + " AMOUNT: "+stockMarginTransactionDto.getAmount());
 
         if (marginAccount.getInitialMargin().compareTo(BigDecimal.valueOf(forAccount)) < 0) {
             throw new RuntimeException("Insufficient funds");
@@ -148,7 +149,7 @@ public class TransactionService {
         //TODO staviti dole u finishTransaction
         //marginAccount.setInitialMargin(marginAccount.getInitialMargin().subtract(BigDecimal.valueOf(forAccount)));
         //Deaktivacija: Ako padnemo ispod
-        if(marginAccount.getInitialMargin().compareTo(marginAccount.getMaitenanceMargin())==-1){
+        if(marginAccount.getInitialMargin().compareTo(marginAccount.getMaintenanceMargin())==-1){
             marginAccount.setActive(false);
         }
 
@@ -163,7 +164,7 @@ public class TransactionService {
         bankToExchange.setAccountFrom(bankAccount.getAccountNumber());
         bankToExchange.setAccountTo(exchangeAccount.getAccountNumber());
         bankToExchange.setAmount(BigDecimal.valueOf(forBank));
-        bankToExchange.setType(TransactionType.PAYMENT_TRANSACTION);
+        bankToExchange.setType(TransactionType.STOCK_TRANSACTION);
         bankToExchange.setTransactionStatus(TransactionStatus.ACCEPTED);
         bankToExchange.setDate(System.currentTimeMillis());
         transactionRepository.save(bankToExchange);
@@ -185,7 +186,7 @@ public class TransactionService {
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void addToMarginUser(AddToMarginDto dto,Long userId){
         //Provera da li imamo novca na tekucem RSD racunu
-        if(accountService.checkBalanceUser(userId,dto.getAmount())){
+        if(!accountService.checkBalanceUser(userId,dto.getAmount())){
             throw new RuntimeException("Insufficient funds");
         }
 
@@ -198,7 +199,7 @@ public class TransactionService {
         //Dodajemo na marzni
         if(!account.isActive()){
             Double checkInitialMargin = dto.getAmount() + account.getInitialMargin().doubleValue();
-            if(checkInitialMargin >= account.getMaitenanceMargin().doubleValue()){
+            if(checkInitialMargin >= account.getMaintenanceMargin().doubleValue()){
                 account.setActive(true);
             }
         }
@@ -207,8 +208,8 @@ public class TransactionService {
         Account userRSDAccount=accountService.findUserAccountForIdAndCurrency(userId,"RSD");
 
         Transaction transaction = new Transaction();
-        transaction.setAccountFrom(account.getAccountNumber());
-        transaction.setAccountTo(userRSDAccount.getAccountNumber());
+        transaction.setAccountFrom(userRSDAccount.getAccountNumber());
+        transaction.setAccountTo(account.getAccountNumber());
         transaction.setAmount(BigDecimal.valueOf(dto.getAmount()));
         transaction.setType(TransactionType.MARGIN_TRANSACTION);
         transaction.setTransactionStatus(TransactionStatus.ACCEPTED);
@@ -229,10 +230,14 @@ public class TransactionService {
         if(!account.isActive()){
             throw new RuntimeException("Margin account is not active");
         }
+
+        if(account.getInitialMargin().compareTo(BigDecimal.valueOf(dto.getAmount())) < 0){
+            throw new RuntimeException("Insufficient funds");
+        }
         //Ako bismo otisli isbog Maitenance
         Double checkInitialMargin = account.getInitialMargin().doubleValue() - dto.getAmount();
         if(checkInitialMargin >= 0){
-            if(checkInitialMargin < account.getMaitenanceMargin().doubleValue()){
+            if(checkInitialMargin < account.getMaintenanceMargin().doubleValue()){
                 account.setActive(false);
             }
         }else {
@@ -257,7 +262,7 @@ public class TransactionService {
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void addToMarginCompany(AddToMarginDto dto,Long companyId){
         //Provera da li imamo novca na tekucem RSD racunu
-        if(accountService.checkBalanceCompany(companyId,dto.getAmount())){
+        if(!accountService.checkBalanceCompany(companyId,dto.getAmount())){
             throw new RuntimeException("Insufficient funds");
         }
 
@@ -270,7 +275,7 @@ public class TransactionService {
         //Dodajemo na marzni
         if(!account.isActive()){
             Double checkInitialMargin = dto.getAmount() + account.getInitialMargin().doubleValue();
-            if(checkInitialMargin >= account.getMaitenanceMargin().doubleValue()){
+            if(checkInitialMargin >= account.getMaintenanceMargin().doubleValue()){
                 account.setActive(true);
             }
         }
@@ -279,8 +284,8 @@ public class TransactionService {
         Account companyRSDAccount=accountService.findCompanyAccountForIdAndCurrency(companyId,"RSD");
 
         Transaction transaction = new Transaction();
-        transaction.setAccountFrom(account.getAccountNumber());
-        transaction.setAccountTo(companyRSDAccount.getAccountNumber());
+        transaction.setAccountFrom(companyRSDAccount.getAccountNumber());
+        transaction.setAccountTo(account.getAccountNumber());
         transaction.setAmount(BigDecimal.valueOf(dto.getAmount()));
         transaction.setType(TransactionType.MARGIN_TRANSACTION);
         transaction.setTransactionStatus(TransactionStatus.ACCEPTED);
@@ -301,10 +306,15 @@ public class TransactionService {
         if(!account.isActive()){
             throw new RuntimeException("Margin account is not active");
         }
+
+        if(account.getInitialMargin().compareTo(BigDecimal.valueOf(dto.getAmount())) < 0){
+            throw new RuntimeException("Insufficient funds");
+        }
+
         //Ako bismo otisli isbog Maitenance
         Double checkInitialMargin = account.getInitialMargin().doubleValue() - dto.getAmount();
         if(checkInitialMargin >= 0){
-            if(checkInitialMargin < account.getMaitenanceMargin().doubleValue()){
+            if(checkInitialMargin < account.getMaintenanceMargin().doubleValue()){
                 account.setActive(false);
             }
         }else {
@@ -333,7 +343,7 @@ public class TransactionService {
             throw new RuntimeException("Margin account is not active");
         }
         //Prvo skidamo dug prema banci
-        Double takeFromAccGiveToBank=dto.getAmount()*(1+marginAccount.getBankParticipation());
+        Double takeFromAccGiveToBank=dto.getAmount()*(marginAccount.getBankParticipation());
 
 
         /** dve transakcije, prva je exchange->bank, druga je exchange->margin */
@@ -346,7 +356,7 @@ public class TransactionService {
         exchangeToBank.setAccountFrom(exchangeaccount.getAccountNumber());
         exchangeToBank.setAccountTo(bankAccount.getAccountNumber());
         exchangeToBank.setAmount(BigDecimal.valueOf(takeFromAccGiveToBank));
-        exchangeToBank.setType(TransactionType.PAYMENT_TRANSACTION);
+        exchangeToBank.setType(TransactionType.STOCK_TRANSACTION);
         exchangeToBank.setTransactionStatus(TransactionStatus.ACCEPTED);
         exchangeToBank.setDate(System.currentTimeMillis());
         transactionRepository.save(exchangeToBank);

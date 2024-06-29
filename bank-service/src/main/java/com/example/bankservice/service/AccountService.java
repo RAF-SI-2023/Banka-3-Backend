@@ -107,7 +107,7 @@ public class AccountService {
     public UserAccountDto createUserAccount(UserAccountCreateDto userAccountCreateDto) {
 
         UserAccount userAccount = userAccountMapper.userAccountCreateDtoToUserAccount(userAccountCreateDto);
-        userAccount.setAccountNumber(String.valueOf(new BigInteger(53, new Random())));
+        userAccount.setAccountNumber(this.generateAccountNumber());
         userAccount.setCreationDate(System.currentTimeMillis());
         userAccount.setExpireDate(System.currentTimeMillis() + 31556952000L);
         userAccount.setReservedAmount(new BigDecimal(0));
@@ -122,7 +122,7 @@ public class AccountService {
         UserMarginAccount userMarginAccount = userAccountMapper.userMarginAccountCreateDtoToUserMarginAccount(userMarginAccountCreateDto);
         Currency currency=currencyRepository.findByMark("RSD").orElseThrow(() -> new IllegalArgumentException("Invalid currency mark: DINAR"));
         userMarginAccount.setCurrency(currency);
-        userMarginAccount.setAccountNumber(String.valueOf(new BigInteger(53, new Random())));
+        userMarginAccount.setAccountNumber(this.generateAccountNumber());
         userMarginAccount.setLoanValue(BigDecimal.ZERO);
         userMarginAccount.setActive(true);
 
@@ -132,7 +132,7 @@ public class AccountService {
     public CompanyAccountDto createCompanyAccount(CompanyAccountCreateDto companyAccountCreateDto) {
 
         CompanyAccount account = companyAccountMapper.companyAccountCreateDtoToCompanyAccount(companyAccountCreateDto);
-        account.setAccountNumber(String.valueOf(new BigInteger(53, new Random())));
+        account.setAccountNumber(this.generateAccountNumber());
         account.setCreationDate(System.currentTimeMillis());
         account.setExpireDate(System.currentTimeMillis() + 31556952000L);
         account.setReservedAmount(new BigDecimal(0));
@@ -144,7 +144,7 @@ public class AccountService {
         CompanyMarginAccount companyMarginAccount = companyAccountMapper.companyMarginAccountCreateDtoToCompanyMarginAccount(companyMarginAccountCreateDto);
         Currency currency=currencyRepository.findByMark("RSD").orElseThrow(() -> new IllegalArgumentException("Invalid currency mark: DINAR"));
         companyMarginAccount.setCurrency(currency);
-        companyMarginAccount.setAccountNumber(String.valueOf(new BigInteger(53, new Random())));
+        companyMarginAccount.setAccountNumber(this.generateAccountNumber());
         companyMarginAccount.setLoanValue(BigDecimal.ZERO);
         companyMarginAccount.setActive(true);
         marginAccountRepository.save(companyMarginAccount);
@@ -354,5 +354,11 @@ public class AccountService {
             String email = userServiceClient.getEmailByUserId(String.valueOf(((UserAccount) account).getUserId())).getEmail();
             emailServiceClient.sendTransactionFinishedEmailToEmailService(new TransactionFinishedDto(email, account.getCurrency().getMark(), amount));
         }
+    }
+
+    private String generateAccountNumber(){
+        Long lowerLimit = 999999999999999L;
+        Long upperLimit = 10000000000000000L;
+        return String.valueOf( lowerLimit + (long)(new Random().nextDouble() * (upperLimit - lowerLimit)));
     }
 }
