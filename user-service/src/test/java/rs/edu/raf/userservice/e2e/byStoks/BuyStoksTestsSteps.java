@@ -106,7 +106,6 @@ public class BuyStoksTestsSteps extends BuyStoksTestsConfig{
                     userAccountDtoBeforeCredit = userAccountDto;
                 }
             }
-            System.out.println(userAccountDtoBeforeCredit);
         } else {
             fail(response.getStatusCode().toString());
         }

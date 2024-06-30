@@ -243,7 +243,6 @@ public class StockOrderService {
             if (optionalStock.isPresent())
                 stock = optionalStock.get();  //uzimao stock iz baze koji kupujemo
             else {
-//                System.out.println("No stocks available with ticker "+stockOrder.getTicker()+", restarting in 15 seconds...");
                 return;
             }
 
@@ -307,7 +306,6 @@ public class StockOrderService {
                         bankServiceClient.marginStockBuyTransaction(bankMarginTransactionDto);
                         myMarginStockService.addAmountToMyMarginStock(stockOrder.getTicker(), amountToBuy, stockOrder.getUserId(), stockOrder.getCompanyId(), currentPrice);
                     }catch (Exception e) {
-                        System.out.println("Error in margin transaction");
                         stockOrder.setStatus(OrderStatus.FAILED);
                         ordersToBuy.remove(stockNumber);
                         stockOrderRepository.save(stockOrder);

@@ -51,7 +51,6 @@ public class EmailServiceImplementation implements EmailService {
 
            Response response = sg.api(request);
 
-           System.out.println(response.getBody());
        } catch (Exception e) {
            e.printStackTrace();
        }

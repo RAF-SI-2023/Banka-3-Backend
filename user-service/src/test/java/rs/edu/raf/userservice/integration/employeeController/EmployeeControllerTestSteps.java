@@ -85,8 +85,6 @@ public class EmployeeControllerTestSteps extends EmployeeControllerTestsConfig{
         try{
             String employeeCreateDtoJson = objectMapper.writeValueAsString(employeeCreateDto);
 
-            System.out.println(employeeCreateDtoJson);
-
             ResultActions resultActions = mockMvc.perform(
                     post("/api/v1/employee")
                             .contentType(MediaType.APPLICATION_JSON)

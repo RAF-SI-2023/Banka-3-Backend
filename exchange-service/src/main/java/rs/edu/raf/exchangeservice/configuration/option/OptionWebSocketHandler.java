@@ -19,7 +19,6 @@ public class OptionWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
-        System.out.println("Connection established");
         this.sessions.add(session);
     }
 
@@ -29,7 +28,6 @@ public class OptionWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        System.out.println("Connection closed");
         this.sessions.remove(session);
     }
 
@@ -38,7 +36,6 @@ public class OptionWebSocketHandler extends TextWebSocketHandler {
         MyOption optionUpdate = event.getOption();
         try {
             for (WebSocketSession session : this.sessions) {
-                System.out.println(optionUpdate.toString() + "\n\n\n\n\n");
                 session.sendMessage(new TextMessage(optionUpdate.toString()));
             }
         } catch (Exception e) {
