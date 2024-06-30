@@ -1,5 +1,6 @@
 package com.example.bankservice.service;
 
+import io.micrometer.core.instrument.Counter;
 import com.example.bankservice.client.EmailServiceClient;
 import com.example.bankservice.client.UserServiceClient;
 import com.example.bankservice.domain.dto.account.UserAccountCreateDto;
@@ -20,6 +21,12 @@ import com.example.bankservice.domain.model.Currency;
 import com.example.bankservice.domain.model.accounts.Account;
 import com.example.bankservice.domain.model.accounts.CompanyAccount;
 import com.example.bankservice.domain.model.accounts.UserAccount;
+import com.example.bankservice.repository.AccountRepository;
+import com.example.bankservice.repository.CardRepository;
+import com.example.bankservice.repository.CompanyAccountRepository;
+import com.example.bankservice.repository.CurrencyRepository;
+import com.example.bankservice.repository.UserAccountRepository;
+import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import com.example.bankservice.domain.model.marginAccounts.CompanyMarginAccount;
 import com.example.bankservice.domain.model.marginAccounts.MarginAccount;
 import com.example.bankservice.domain.model.marginAccounts.UserMarginAccount;
@@ -31,10 +38,10 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
 public class AccountService {
 
     private static final String bankAccountRSD = "3333333333333333";
@@ -59,8 +66,23 @@ public class AccountService {
     private final UserServiceClient userServiceClient;
     private final CurrencyRepository currencyRepository;
 
+    private Counter listUsers = null;
+    private AtomicInteger randomInt;
 
-
+    public AccountService(AccountRepository accountRepository, MarginAccountRepository marginAccountRepository, UserAccountMapper userAccountMapper, CardRepository cardRepository, UserAccountRepository userAccountRepository, CompanyAccountRepository companyAccountRepository, CompanyAccountMapper companyAccountMapper, EmailServiceClient emailServiceClient, UserServiceClient userServiceClient, CurrencyRepository currencyRepository, CompositeMeterRegistry meterRegistry) {
+        this.accountRepository = accountRepository;
+        this.marginAccountRepository = marginAccountRepository;
+        this.userAccountMapper = userAccountMapper;
+        this.cardRepository = cardRepository;
+        this.userAccountRepository = userAccountRepository;
+        this.companyAccountRepository = companyAccountRepository;
+        this.companyAccountMapper = companyAccountMapper;
+        this.emailServiceClient = emailServiceClient;
+        this.userServiceClient = userServiceClient;
+        this.currencyRepository = currencyRepository;
+        this.listUsers = meterRegistry.counter("account");
+        this.randomInt = meterRegistry.gauge("account.gauge", new AtomicInteger(0));
+    }
 
     public List<UserAccountDto> findAllUserAccounts() {
         return userAccountRepository.findAll().stream().filter(Account::isActive)

@@ -3,6 +3,7 @@ package com.example.bankservice.controller;
 import com.example.bankservice.domain.dto.account.*;
 
 import com.example.bankservice.service.AccountService;
+import io.micrometer.core.annotation.Timed;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -20,16 +21,19 @@ import java.util.List;
 @AllArgsConstructor
 @RestController
 @RequestMapping("api/v1/account")
+@Timed
 public class AccountController {
 
     private AccountService accountService;
 
     @GetMapping("/getAll")
+    @Timed("controller.account.getAll")
     public List<UserAccountDto> getAll() {
         return accountService.findAllUserAccounts();
     }
 
     @GetMapping("/getByUser/{userId}")
+    @Timed("controller.account.getByUser")
     public ResponseEntity<?> getByUser(@PathVariable Long userId) {
         try {
             List<UserAccountDto> userAccountDtos = accountService.findUserAccountByUser(userId);
@@ -51,6 +55,7 @@ public class AccountController {
 
 
     @PostMapping("/createAccount")
+    @Timed("controller.account.createAccount")
     public ResponseEntity<?> createAccount(@RequestBody UserAccountCreateDto userAccountCreateDto) {
         try {
             UserAccountDto userAccountDto = accountService.createUserAccount(userAccountCreateDto);
@@ -73,6 +78,7 @@ public class AccountController {
     }
 
     @DeleteMapping("/deleteAccount/{id}")
+    @Timed("controller.account.deleteAccount")
     public ResponseEntity<?> deleteAccount(@PathVariable Long id) {
         try {
             accountService.deleteAccount(id);
@@ -83,6 +89,7 @@ public class AccountController {
     }
     
     @PostMapping("/checkAccountBalanceUser")
+    @Timed("controller.account.checkAccountBalanceUser")
     public ResponseEntity<?> checkAccountBalanceUser(
             @RequestBody CheckAccountBalanceDto checkAccountBalanceDto) {
         try {
@@ -95,6 +102,7 @@ public class AccountController {
     }
     
     @PostMapping("/checkAccountBalanceCompany")
+    @Timed("controller.account.checkAccountBalanceCompany")
     public ResponseEntity<?> checkAccountBalanceCompany(
             @RequestBody CheckAccountBalanceDto checkAccountBalanceDto) {
         try {

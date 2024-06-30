@@ -1,5 +1,6 @@
 package rs.edu.raf.userservice.controller;
 
+import io.micrometer.core.annotation.Timed;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -16,12 +17,14 @@ import java.util.List;
 @AllArgsConstructor
 @CrossOrigin()
 @RequestMapping("/api/v1/contact")
+@Timed
 public class ContactController {
     private final ContactService contactService;
 
     @Cacheable(value = "contactsByUser", key = "#userId")
     @GetMapping(path = "/{userId}")
     @Operation(description = "vraca sve kontakte od User-a")
+    @Timed("controller.contact.getByUser")
     public List<ContactDto> getByUser(@PathVariable Long userId) {
         return contactService.findByUserId(userId);
     }
