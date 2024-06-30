@@ -2,6 +2,7 @@ package rs.edu.raf.exchangeservice.service.orderService;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -10,14 +11,18 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import rs.edu.raf.exchangeservice.client.BankServiceClient;
+import rs.edu.raf.exchangeservice.configuration.contract.ContractUpdateEvent;
 import rs.edu.raf.exchangeservice.domain.dto.CompanyAccountDto;
 import rs.edu.raf.exchangeservice.domain.dto.StockOrderDto;
+import rs.edu.raf.exchangeservice.domain.dto.bank.CheckAccountBalanceDto;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuySellStockDto;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyStockCompanyDto;
 import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyStockUserOTCDto;
 import rs.edu.raf.exchangeservice.domain.model.Actuary;
+import rs.edu.raf.exchangeservice.domain.model.enums.BankCertificate;
 import rs.edu.raf.exchangeservice.domain.model.enums.OrderStatus;
 import rs.edu.raf.exchangeservice.domain.model.enums.OrderType;
+import rs.edu.raf.exchangeservice.domain.model.enums.SellerCertificate;
 import rs.edu.raf.exchangeservice.domain.model.listing.Stock;
 import rs.edu.raf.exchangeservice.domain.model.myListing.Contract;
 import rs.edu.raf.exchangeservice.domain.model.myListing.MyStock;
@@ -300,6 +305,78 @@ class StockOrderServiceTest {
 
     }
 
+    @Test
+    public void testBuyUserStockOtc_InsufficientFunds() {
+        // Mock input DTO
+        BuyStockUserOTCDto buyStockUserOTCDto = new BuyStockUserOTCDto();
+        buyStockUserOTCDto.setUserBuyerId(1L);
+        buyStockUserOTCDto.setUserSellerId(2L);
+        buyStockUserOTCDto.setTicker("AAPL");
+        buyStockUserOTCDto.setPrice(BigDecimal.valueOf(100));
+        buyStockUserOTCDto.setAmount(10);
+
+        // Mock bank service response
+        CheckAccountBalanceDto checkAccountBalanceDto = new CheckAccountBalanceDto();
+        checkAccountBalanceDto.setId(buyStockUserOTCDto.getUserBuyerId());
+        checkAccountBalanceDto.setAmount(100.0);
+
+        when(bankServiceClient.checkAccountBalanceUser(any(CheckAccountBalanceDto.class)))
+                .thenAnswer(invocation -> ResponseEntity.ok(false));
+
+        // Calling the method to test
+        boolean result = stockOrderService.buyUserStockOtc(buyStockUserOTCDto);
+
+        // Verifying behavior
+        assertFalse(result); // Expecting transaction to fail due to insufficient funds
+
+        // Verify that contract was saved with appropriate certificates and comment
+        verify(contractRepository).save(argThat(contract ->
+                contract.getBankCertificate() == BankCertificate.DECLINED &&
+                        contract.getSellerCertificate() == SellerCertificate.DECLINED &&
+                        contract.getComment().equals("Nema dovoljno sredstava na racunu")
+        ));
+
+        // Verify that event was not published
+        verify(eventPublisher, never()).publishEvent(any());
+    }
+
+    @Test
+    public void testBuyUserStockOtc_SuccessfulTransaction() {
+        // Mock input DTO
+        BuyStockUserOTCDto buyStockUserOTCDto = new BuyStockUserOTCDto();
+        buyStockUserOTCDto.setUserBuyerId(1L);
+        buyStockUserOTCDto.setUserSellerId(2L);
+        buyStockUserOTCDto.setTicker("AAPL");
+        buyStockUserOTCDto.setPrice(BigDecimal.valueOf(100));
+        buyStockUserOTCDto.setAmount(10);
+
+        // Mock bank service response
+        when(bankServiceClient.checkAccountBalanceUser(any(CheckAccountBalanceDto.class)))
+                .thenAnswer(invocation -> ResponseEntity.ok(true));
+
+        // Mock MyStock repository response (enough stocks)
+        MyStock mockMyStock = new MyStock();
+        mockMyStock.setTicker("AAPL");
+        mockMyStock.setUserId(buyStockUserOTCDto.getUserSellerId());
+        mockMyStock.setPublicAmount(20); // Enough stocks available
+        when(myStockRepository.findByTickerAndUserId(buyStockUserOTCDto.getTicker(), buyStockUserOTCDto.getUserSellerId()))
+                .thenReturn(mockMyStock);
+
+        // Calling the method to test
+        boolean result = stockOrderService.buyUserStockOtc(buyStockUserOTCDto);
+
+        // Verifying behavior
+        assertTrue(result); // Expecting transaction to succeed
+
+        // Verify that contract was saved with processing certificates
+        verify(contractRepository).save(argThat(contract ->
+                contract.getBankCertificate() == BankCertificate.PROCESSING &&
+                        contract.getSellerCertificate() == SellerCertificate.PROCESSING
+        ));
+
+        // Verify that event was published
+        verify(eventPublisher).publishEvent(any(ContractUpdateEvent.class));
+    }
     public List<StockOrder> createDummyStockOrders() {
         StockOrder stockOrder1 = new StockOrder();
         stockOrder1.setStockOrderId(1L);

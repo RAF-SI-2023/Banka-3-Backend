@@ -1,5 +1,7 @@
 package com.example.bankservice;
 
+import com.example.bankservice.domain.dto.currencyExchange.CommissionByMarkDto;
+import com.example.bankservice.domain.dto.currencyExchange.CommissionDto;
 import com.example.bankservice.domain.dto.currencyExchange.CurrencyExchangeDto;
 import com.example.bankservice.domain.model.CommissionFromCurrencyExchange;
 import com.example.bankservice.domain.model.Currency;
@@ -18,7 +20,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -126,5 +130,72 @@ class CurrencyExchangeServiceTest {
 
         // Assert
         assertEquals(expectedAmount, result);
+    }
+    @Test
+    public void testGetCommissions() {
+        // Given
+        CurrencyExchange exchange1 = new CurrencyExchange(1L, "Account1", "Account2", new BigDecimal("100.00"), new BigDecimal("10.00"), "USD", 20230601L);
+        CurrencyExchange exchange2 = new CurrencyExchange(2L, "Account2", "Account3", new BigDecimal("200.00"), new BigDecimal("20.00"), "EUR", 20230602L);
+        CurrencyExchange exchange3 = new CurrencyExchange(3L, "Account3", "Account4", new BigDecimal("300.00"), new BigDecimal("30.00"), "GBP", 20230603L);
+
+        List<CurrencyExchange> currencyExchanges = Arrays.asList(exchange1, exchange2, exchange3);
+        when(currencyExchangeRepository.findAll()).thenReturn(currencyExchanges);
+
+        // When
+        List<CommissionDto> result = currencyExchangeService.getCommissons();
+
+        // Then
+        assertEquals(3, result.size());
+
+        assertEquals("Account3", result.get(0).getAccountFrom());
+        assertEquals(new BigDecimal("30.00"), result.get(0).getCommission());
+        assertEquals("GBP", result.get(0).getCurrencyMark());
+        assertEquals(20230603L, result.get(0).getDate());
+
+        assertEquals("Account2", result.get(1).getAccountFrom());
+        assertEquals(new BigDecimal("20.00"), result.get(1).getCommission());
+        assertEquals("EUR", result.get(1).getCurrencyMark());
+        assertEquals(20230602L, result.get(1).getDate());
+
+        assertEquals("Account1", result.get(2).getAccountFrom());
+        assertEquals(new BigDecimal("10.00"), result.get(2).getCommission());
+        assertEquals("USD", result.get(2).getCurrencyMark());
+        assertEquals(20230601L, result.get(2).getDate());
+
+    }
+    @Test
+    public void testGetCommissionByMark() {
+        // Given
+        CurrencyExchange exchange1 = new CurrencyExchange(1L, "Account1", "Account2", new BigDecimal("100.00"), new BigDecimal("10.00"), "EUR", 20230601L);
+        CurrencyExchange exchange2 = new CurrencyExchange(2L, "Account2", "Account3", new BigDecimal("200.00"), new BigDecimal("20.00"), "USD", 20230602L);
+        CurrencyExchange exchange3 = new CurrencyExchange(3L, "Account3", "Account4", new BigDecimal("300.00"), new BigDecimal("30.00"), "RSD", 20230603L);
+        CurrencyExchange exchange4 = new CurrencyExchange(4L, "Account4", "Account5", new BigDecimal("400.00"), new BigDecimal("40.00"), "EUR", 20230604L);
+
+        List<CurrencyExchange> currencyExchanges = Arrays.asList(exchange1, exchange2, exchange3, exchange4);
+        when(currencyExchangeRepository.findAll()).thenReturn(currencyExchanges);
+
+        // When
+        List<CommissionByMarkDto> result = currencyExchangeService.getCommissionByMark();
+
+        // Then
+        assertEquals(3, result.size());
+
+        CommissionByMarkDto eurCommission = result.stream()
+                .filter(dto -> dto.getCurrencyMark().equals("EUR"))
+                .findFirst()
+                .orElse(null);
+        assertEquals(new BigDecimal("50.00"), eurCommission.getCommission());
+
+        CommissionByMarkDto usdCommission = result.stream()
+                .filter(dto -> dto.getCurrencyMark().equals("USD"))
+                .findFirst()
+                .orElse(null);
+        assertEquals(new BigDecimal("20.00"), usdCommission.getCommission());
+
+        CommissionByMarkDto rsdCommission = result.stream()
+                .filter(dto -> dto.getCurrencyMark().equals("RSD"))
+                .findFirst()
+                .orElse(null);
+        assertEquals(new BigDecimal("30.00"), rsdCommission.getCommission());
     }
 }
