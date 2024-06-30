@@ -1,5 +1,6 @@
 package rs.edu.raf.userservice.services;
 
+import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,6 +32,9 @@ public class ContactServiceUnitTests {
     private ContactRepository contactRepository;
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private CompositeMeterRegistry meterRegistry;
     @InjectMocks
     private ContactService contactService;
 
