@@ -25,9 +25,7 @@ presubmits:
 
               start-docker.sh
 
-              docker compose up -d database
-              docker compose up -d user-service
-              docker compose up -d exchange-service
+              docker compose up -d database user-service exchange-service
 
               SERVICE_NAME="exchange-service"
 
