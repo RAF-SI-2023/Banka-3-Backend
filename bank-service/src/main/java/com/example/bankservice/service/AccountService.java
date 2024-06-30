@@ -80,8 +80,8 @@ public class AccountService {
         this.emailServiceClient = emailServiceClient;
         this.userServiceClient = userServiceClient;
         this.currencyRepository = currencyRepository;
-        this.listUsers = meterRegistry.counter("users.lists");
-        this.randomInt = meterRegistry.gauge("users.gauge", new AtomicInteger(0));
+        this.listUsers = meterRegistry.counter("account");
+        this.randomInt = meterRegistry.gauge("account.gauge", new AtomicInteger(0));
     }
 
     public List<UserAccountDto> findAllUserAccounts() {

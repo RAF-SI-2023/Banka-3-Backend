@@ -55,7 +55,7 @@ public class AccountController {
 
 
     @PostMapping("/createAccount")
-    @Timed("controller.users.account.createAccount")
+    @Timed("controller.account.createAccount")
     public ResponseEntity<?> createAccount(@RequestBody UserAccountCreateDto userAccountCreateDto) {
         try {
             UserAccountDto userAccountDto = accountService.createUserAccount(userAccountCreateDto);
@@ -78,7 +78,7 @@ public class AccountController {
     }
 
     @DeleteMapping("/deleteAccount/{id}")
-    @Timed("controller.users.account.deleteAccount")
+    @Timed("controller.account.deleteAccount")
     public ResponseEntity<?> deleteAccount(@PathVariable Long id) {
         try {
             accountService.deleteAccount(id);
@@ -89,7 +89,7 @@ public class AccountController {
     }
     
     @PostMapping("/checkAccountBalanceUser")
-    @Timed("controller.users.account.checkAccountBalanceUser")
+    @Timed("controller.account.checkAccountBalanceUser")
     public ResponseEntity<?> checkAccountBalanceUser(
             @RequestBody CheckAccountBalanceDto checkAccountBalanceDto) {
         try {
@@ -102,7 +102,7 @@ public class AccountController {
     }
     
     @PostMapping("/checkAccountBalanceCompany")
-    @Timed("controller.users.account.checkAccountBalanceCompany")
+    @Timed("controller.account.checkAccountBalanceCompany")
     public ResponseEntity<?> checkAccountBalanceCompany(
             @RequestBody CheckAccountBalanceDto checkAccountBalanceDto) {
         try {
