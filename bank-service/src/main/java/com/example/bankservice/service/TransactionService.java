@@ -412,8 +412,8 @@ public class TransactionService {
         return transactions.stream().map(transactionMapper::transactionToCreditTransactionDto).toList();
     }
 
-    public List<MarginTransactionDto> getAllMarginTransactions() {
-        List<Transaction> transactions = transactionRepository.findAllByType(TransactionType.MARGIN_TRANSACTION)
+    public List<MarginTransactionDto> getAllMarginTransactions(String accountNumber) {
+        List<Transaction> transactions = transactionRepository.findByAccountFromOrAccountToAndType(accountNumber, accountNumber, TransactionType.MARGIN_TRANSACTION)
                 .orElseThrow(() -> new RuntimeException("Transactions not found"));
 
         return transactions.stream()

@@ -53,10 +53,10 @@ public class TransactionController {
         }
     }
 
-    @GetMapping(value = "/getAllMarginTransactions", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getAllMarginTransactions() {
+    @GetMapping(value = "/getAllMarginTransactions/{accountNumber}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getAllMarginTransactions(@PathVariable String accountNumber) {
         try {
-            List<MarginTransactionDto> transactions = transactionService.getAllMarginTransactions();
+            List<MarginTransactionDto> transactions = transactionService.getAllMarginTransactions(accountNumber);
             return ResponseEntity.ok(transactions);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
