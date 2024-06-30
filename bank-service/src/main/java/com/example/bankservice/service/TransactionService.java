@@ -625,7 +625,8 @@ public class TransactionService {
         transaction.setTransactionStatus(TransactionStatus.FINISHED);
         transactionRepository.save(transaction);
     }
-    
+
+
     private void finishOTCTransaction(Transaction transaction) {
         Account accountFrom = accountRepository.findByAccountNumber(transaction.getAccountFrom())
                 .orElseThrow(() -> new RuntimeException("Account not found"));

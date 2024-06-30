@@ -4,9 +4,14 @@ import com.example.bankservice.client.EmailServiceClient;
 import com.example.bankservice.client.UserServiceClient;
 import com.example.bankservice.domain.dto.account.UserAccountCreateDto;
 import com.example.bankservice.domain.dto.account.UserAccountDto;
+import com.example.bankservice.domain.dto.account.UserMarginAccountCreateDto;
+import com.example.bankservice.domain.dto.account.UserMarginAccountDto;
 import com.example.bankservice.domain.dto.companyaccount.CompanyAccountCreateDto;
 import com.example.bankservice.domain.dto.companyaccount.CompanyAccountDto;
+import com.example.bankservice.domain.dto.companyaccount.CompanyMarginAccountCreateDto;
+import com.example.bankservice.domain.dto.companyaccount.CompanyMarginAccountDto;
 import com.example.bankservice.domain.dto.emailService.TransactionFinishedDto;
+import com.example.bankservice.domain.dto.transaction.StockMarginTransactionDto;
 import com.example.bankservice.domain.dto.transaction.StockTransactionDto;
 import com.example.bankservice.domain.dto.userService.UserEmailDto;
 import com.example.bankservice.domain.mapper.CompanyAccountMapper;
@@ -16,6 +21,9 @@ import com.example.bankservice.domain.model.accounts.Account;
 import com.example.bankservice.domain.model.accounts.CompanyAccount;
 import com.example.bankservice.domain.model.accounts.UserAccount;
 import com.example.bankservice.domain.model.enums.CurrencyName;
+import com.example.bankservice.domain.model.marginAccounts.CompanyMarginAccount;
+import com.example.bankservice.domain.model.marginAccounts.MarginAccount;
+import com.example.bankservice.domain.model.marginAccounts.UserMarginAccount;
 import com.example.bankservice.repository.*;
 import com.example.bankservice.service.AccountService;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
@@ -26,6 +34,7 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -41,6 +50,8 @@ public class AccountServiceUnitTest {
 
     @Mock
     private CardRepository cardRepository;
+    @Mock
+    private MarginAccountRepository marginAccountRepository;
     @Mock
     private UserAccountRepository userAccountRepository;
     @Mock
@@ -713,5 +724,232 @@ public class AccountServiceUnitTest {
         });
 
         assertEquals("Account not found", exception.getMessage());
+    }
+
+    @Test
+    public void testFindMarginAccountByUserId() {
+        // Given
+        StockMarginTransactionDto dto = new StockMarginTransactionDto();
+        dto.setUserId(1L);
+
+        UserMarginAccount expectedAccount = new UserMarginAccount();
+        expectedAccount.setMarginAccountId(1L);
+
+        when(marginAccountRepository.findUserMarginAccountByUserId(1L)).thenReturn(Optional.of(expectedAccount));
+
+        // When
+        MarginAccount result = accountService.findMarginAccount(dto);
+
+        // Then
+        assertEquals(expectedAccount, result);
+    }
+
+    @Test
+    public void testFindMarginAccountByCompanyId() {
+        // Given
+        StockMarginTransactionDto dto = new StockMarginTransactionDto();
+        dto.setCompanyId(1L);
+
+        CompanyMarginAccount expectedAccount = new CompanyMarginAccount();
+        expectedAccount.setMarginAccountId(2L);
+
+        when(marginAccountRepository.findCompanyMarginAccountByCompanyId(1L)).thenReturn(Optional.of(expectedAccount));
+
+        // When
+        MarginAccount result = accountService.findMarginAccount(dto);
+
+        // Then
+        assertEquals(expectedAccount, result);
+    }
+
+    @Test
+    public void testTransferToMarginFunds() {
+        // Given
+        Account accountFrom = new Account();
+        accountFrom.setAvailableBalance(new BigDecimal("1000.00"));
+
+        MarginAccount accountTo = new MarginAccount();
+        accountTo.setInitialMargin(new BigDecimal("200.00"));
+
+        BigDecimal amount = new BigDecimal("100.00");
+
+        // When
+        accountService.transferToMarginFunds(accountFrom, accountTo, amount);
+
+        // Then
+        assertEquals(new BigDecimal("900.00"), accountFrom.getAvailableBalance());
+        assertEquals(new BigDecimal("300.00"), accountTo.getInitialMargin());
+
+        verify(accountRepository, times(1)).save(accountFrom);
+        verify(marginAccountRepository, times(1)).save(accountTo);
+    }
+
+    @Test
+    public void testTransferFromMarginFunds() {
+        // Given
+        MarginAccount accountFrom = new MarginAccount();
+        accountFrom.setInitialMargin(new BigDecimal("300.00"));
+
+        Account accountTo = new Account();
+        accountTo.setAvailableBalance(new BigDecimal("1000.00"));
+
+        BigDecimal amount = new BigDecimal("100.00");
+
+        // When
+        accountService.transferFromMarginFunds(accountFrom, accountTo, amount);
+
+        // Then
+        assertEquals(new BigDecimal("200.00"), accountFrom.getInitialMargin());
+        assertEquals(new BigDecimal("1100.00"), accountTo.getAvailableBalance());
+
+        verify(marginAccountRepository, times(1)).save(accountFrom);
+        verify(accountRepository, times(1)).save(accountTo);
+    }
+
+    @Test
+    public void testCreateCompanyMarginAccount() {
+        // Given
+        CompanyMarginAccountCreateDto createDto = new CompanyMarginAccountCreateDto();
+        CompanyMarginAccount companyMarginAccount = new CompanyMarginAccount();
+        Currency currency = new Currency();
+        currency.setMark("RSD");
+
+        CompanyMarginAccountDto expectedDto = new CompanyMarginAccountDto();
+
+        when(companyAccountMapper.companyMarginAccountCreateDtoToCompanyMarginAccount(createDto)).thenReturn(companyMarginAccount);
+        when(currencyRepository.findByMark("RSD")).thenReturn(Optional.of(currency));
+        when(companyAccountMapper.companyMarginAccountToCompanyMarginAccountDto(companyMarginAccount)).thenReturn(expectedDto);
+
+        // When
+        CompanyMarginAccountDto result = accountService.createCompanyMarginAccount(createDto);
+
+        // Then
+        verify(marginAccountRepository, times(1)).save(companyMarginAccount);
+        assertEquals(currency, companyMarginAccount.getCurrency());
+        assertEquals(BigDecimal.ZERO, companyMarginAccount.getLoanValue());
+        assertEquals(true, companyMarginAccount.isActive());
+        assertEquals(expectedDto, result);
+    }
+
+    @Test
+    public void testCreateCompanyMarginAccountCurrencyNotFound() {
+        // Given
+        CompanyMarginAccountCreateDto createDto = new CompanyMarginAccountCreateDto();
+
+        when(currencyRepository.findByMark("RSD")).thenReturn(Optional.empty());
+
+        // When/Then
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            accountService.createCompanyMarginAccount(createDto);
+        });
+
+        assertEquals("Invalid currency mark: DINAR", exception.getMessage());
+        verify(marginAccountRepository, never()).save(any());
+    }
+
+    @Test
+    public void testCreateMarginAccount() {
+        // Given
+        UserMarginAccountCreateDto createDto = new UserMarginAccountCreateDto();
+        UserMarginAccount userMarginAccount = new UserMarginAccount();
+        Currency currency = new Currency();
+        currency.setMark("RSD");
+
+        UserMarginAccountDto expectedDto = new UserMarginAccountDto();
+
+        when(userAccountMapper.userMarginAccountCreateDtoToUserMarginAccount(createDto)).thenReturn(userMarginAccount);
+        when(currencyRepository.findByMark("RSD")).thenReturn(Optional.of(currency));
+        when(userAccountMapper.userMarginAccountToUserMarginAccountDto(userMarginAccount)).thenReturn(expectedDto);
+
+        // When
+        UserMarginAccountDto result = accountService.createMarginAccount(createDto);
+
+        // Then
+        verify(marginAccountRepository, times(1)).save(userMarginAccount);
+        assertEquals(currency, userMarginAccount.getCurrency());
+        assertEquals(BigDecimal.ZERO, userMarginAccount.getLoanValue());
+        assertEquals(true, userMarginAccount.isActive());
+        //assertEquals(53, new BigInteger(userMarginAccount.getAccountNumber()).bitLength());
+        assertEquals(expectedDto, result);
+    }
+
+    @Test
+    public void testCreateMarginAccountCurrencyNotFound() {
+        // Given
+        UserMarginAccountCreateDto createDto = new UserMarginAccountCreateDto();
+
+        when(currencyRepository.findByMark("RSD")).thenReturn(Optional.empty());
+
+        // When/Then
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            accountService.createMarginAccount(createDto);
+        });
+
+        assertEquals("Invalid currency mark: DINAR", exception.getMessage());
+        verify(marginAccountRepository, never()).save(any());
+    }
+
+    @Test
+    public void testFindCompanyMarginAccountByCompany() {
+        // Given
+        Long companyId = 1L;
+        CompanyMarginAccount companyMarginAccount = new CompanyMarginAccount();
+        CompanyMarginAccountDto expectedDto = new CompanyMarginAccountDto();
+
+        when(marginAccountRepository.findCompanyMarginAccountByCompanyId(companyId)).thenReturn(Optional.of(companyMarginAccount));
+        when(companyAccountMapper.companyMarginAccountToCompanyMarginAccountDto(companyMarginAccount)).thenReturn(expectedDto);
+
+        // When
+        CompanyMarginAccountDto result = accountService.findCompanyMarginAccountByCompany(companyId);
+
+        // Then
+        assertEquals(expectedDto, result);
+    }
+
+    @Test
+    public void testFindCompanyMarginAccountByCompanyNotFound() {
+        // Given
+        Long companyId = 1L;
+
+        when(marginAccountRepository.findCompanyMarginAccountByCompanyId(companyId)).thenReturn(Optional.empty());
+
+        // When/Then
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            accountService.findCompanyMarginAccountByCompany(companyId);
+        });
+
+        assertEquals("Company margin account not found for company ID: " + companyId, exception.getMessage());
+    }
+
+    @Test
+    public void testFindUserMarginAccountByUser() {
+        // Given
+        Long userId = 1L;
+        UserMarginAccount userMarginAccount = new UserMarginAccount();
+        UserMarginAccountDto expectedDto = new UserMarginAccountDto();
+
+        when(marginAccountRepository.findUserMarginAccountByUserId(userId)).thenReturn(Optional.of(userMarginAccount));
+        when(userAccountMapper.userMarginAccountToUserMarginAccountDto(userMarginAccount)).thenReturn(expectedDto);
+
+        // When
+        UserMarginAccountDto result = accountService.findUserMarginAccountByUser(userId);
+
+        // Then
+        assertEquals(expectedDto, result);
+    }
+
+    @Test
+    public void testFindUserMarginAccountByUserNotFound() {
+        // Given
+        Long userId = 1L;
+
+        when(marginAccountRepository.findUserMarginAccountByUserId(userId)).thenReturn(Optional.empty());
+
+        // When/Then
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            accountService.findUserMarginAccountByUser(userId);
+        });
+
+        assertEquals("User margin account not found for user ID: " + userId, exception.getMessage());
     }
 }

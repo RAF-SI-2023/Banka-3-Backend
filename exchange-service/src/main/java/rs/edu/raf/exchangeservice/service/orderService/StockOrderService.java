@@ -143,6 +143,7 @@ public class StockOrderService {
     }
 
     //Kompanija salje zahtev za kupovinu. Pravi se ugovor.Druga firma ima pregled pristiglih ugovora i moze da ih prihvati ili odbije.
+    @ExcludeFromJacocoGeneratedReport
     public boolean buyCompanyStockOtc(BuyStockCompanyDto buyStockCompanyDto) {
 
         Contract contract = new Contract();

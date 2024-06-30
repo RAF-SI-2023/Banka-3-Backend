@@ -14,7 +14,11 @@ import com.example.bankservice.domain.model.accounts.UserAccount;
 import com.example.bankservice.domain.model.enums.CurrencyName;
 import com.example.bankservice.domain.model.enums.TransactionStatus;
 import com.example.bankservice.domain.model.enums.TransactionType;
+import com.example.bankservice.domain.model.marginAccounts.CompanyMarginAccount;
+import com.example.bankservice.domain.model.marginAccounts.MarginAccount;
+import com.example.bankservice.domain.model.marginAccounts.UserMarginAccount;
 import com.example.bankservice.repository.AccountRepository;
+import com.example.bankservice.repository.MarginAccountRepository;
 import com.example.bankservice.repository.TransactionRepository;
 import com.example.bankservice.service.AccountService;
 import com.example.bankservice.service.TransactionService;
@@ -25,7 +29,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.transaction.annotation.Isolation;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -40,6 +46,8 @@ class TransactionServiceTest {
 
     @Mock
     private AccountRepository accountRepository;
+    @Mock
+    private MarginAccountRepository marginAccountRepository;
     @Mock
     private EmailServiceClient emailServiceClient;
     @Mock
@@ -640,5 +648,359 @@ public void testGetAllPaymentTransactions_Success() {
         verify(transactionRepository).findAllByType(TransactionType.CREDIT_APPROVE_TRANSACTION);
         verify(transactionMapper).transactionToCreditTransactionDto(transaction1);
         verify(transactionMapper).transactionToCreditTransactionDto(transaction2);
+    }
+
+    @Test
+    public void testStockSellMarginTransaction_InactiveAccount() {
+        // Given
+        StockMarginTransactionDto dto = new StockMarginTransactionDto();
+        dto.setAmount(100.0); // Set amount
+
+        MarginAccount marginAccount = new MarginAccount();
+        marginAccount.setActive(false); // Set account as inactive
+
+        when(accountService.findMarginAccount(dto)).thenReturn(marginAccount);
+
+        // When / Then
+        RuntimeException exception = org.junit.jupiter.api.Assertions.assertThrows(
+                RuntimeException.class,
+                () -> paymentTransactionService.stockSellMarginTransaction(dto)
+        );
+
+        assertEquals("Margin account is not active", exception.getMessage());
+        verify(transactionRepository, never()).save(any()); // Verify that transactionRepository.save was never called
+        verify(marginAccountRepository, never()).save(any()); // Verify that marginAccountRepository.save was never called
+    }
+    @Test
+    public void testStockSellMarginTransaction_Success() {
+        // Given
+        StockMarginTransactionDto dto = new StockMarginTransactionDto();
+        dto.setAmount(100.0); // Set amount
+
+        MarginAccount marginAccount = new MarginAccount();
+        marginAccount.setActive(true);
+        marginAccount.setBankParticipation(0.1); // Example bank participation
+
+        Account exchangeAccount = new Account();
+        exchangeAccount.setAccountNumber("EXCHANGE_ACCOUNT");
+
+        Account bankAccount = new Account();
+        bankAccount.setAccountNumber("BANK_ACCOUNT");
+
+        when(accountService.findMarginAccount(dto)).thenReturn(marginAccount);
+        when(accountService.findExchangeAccountForGivenCurrency("RSD")).thenReturn(exchangeAccount);
+        when(accountService.findBankAccountForGivenCurrency("RSD")).thenReturn(bankAccount);
+
+        // When
+        paymentTransactionService.stockSellMarginTransaction(dto);
+
+        // Then
+        verify(transactionRepository, times(2)).save(any()); // Verify that transactionRepository.save was called twice
+        verify(marginAccountRepository, times(1)).save(any()); // Verify that marginAccountRepository.save was called once
+    }
+    @Test
+    public void testWithdrawFromMarginCompany_Success() {
+        // Given
+        WithdrawFromMarginDto dto = new WithdrawFromMarginDto();
+        dto.setAmount(500.0); // Set amount
+
+        Long companyId = 1L; // Example company ID
+
+        CompanyMarginAccount account = new CompanyMarginAccount();
+        account.setActive(true);
+        account.setInitialMargin(BigDecimal.valueOf(1000.0)); // Example initial margin
+        account.setMaintenanceMargin(BigDecimal.valueOf(500.0)); // Example maintenance margin
+
+        Account companyRSDAccount = new Account();
+        companyRSDAccount.setAccountNumber("COMPANY_RSD_ACCOUNT");
+
+        when(marginAccountRepository.findCompanyMarginAccountByCompanyId(companyId)).thenReturn(Optional.of(account));
+        when(accountService.findCompanyAccountForIdAndCurrency(companyId, "RSD")).thenReturn(companyRSDAccount);
+
+        // When
+        paymentTransactionService.withdrawFromMarginCompany(dto, companyId);
+
+        // Then
+        verify(transactionRepository, times(1)).save(any()); // Verify that transactionRepository.save was called once
+        verify(marginAccountRepository, times(1)).save(any()); // Verify that marginAccountRepository.save was called once
+    }
+    @Test
+    public void testWithdrawFromMarginCompany_InsufficientFunds() {
+        // Given
+        WithdrawFromMarginDto dto = new WithdrawFromMarginDto();
+        dto.setAmount(1500.0); // Set amount greater than available initial margin
+
+        Long companyId = 1L; // Example company ID
+
+        CompanyMarginAccount account = new CompanyMarginAccount();
+        account.setActive(true);
+        account.setInitialMargin(BigDecimal.valueOf(1000.0)); // Example initial margin
+        account.setMaintenanceMargin(BigDecimal.valueOf(500.0)); // Example maintenance margin
+
+        when(marginAccountRepository.findCompanyMarginAccountByCompanyId(companyId)).thenReturn(Optional.of(account));
+
+        // When / Then
+        RuntimeException exception = org.junit.jupiter.api.Assertions.assertThrows(
+                RuntimeException.class,
+                () -> paymentTransactionService.withdrawFromMarginCompany(dto, companyId)
+        );
+
+        assertEquals("Insufficient funds", exception.getMessage());
+        verify(transactionRepository, never()).save(any()); // Verify that transactionRepository.save was never called
+        verify(marginAccountRepository, never()).save(any()); // Verify that marginAccountRepository.save was never called
+    }
+
+    @Test
+    public void testWithdrawFromMarginCompany_InactiveAccount() {
+        // Given
+        WithdrawFromMarginDto dto = new WithdrawFromMarginDto();
+        dto.setAmount(500.0); // Set amount
+
+        Long companyId = 1L; // Example company ID
+
+        CompanyMarginAccount account = new CompanyMarginAccount();
+        account.setActive(false); // Set account as inactive
+
+        when(marginAccountRepository.findCompanyMarginAccountByCompanyId(companyId)).thenReturn(Optional.of(account));
+
+        // When / Then
+        RuntimeException exception = org.junit.jupiter.api.Assertions.assertThrows(
+                RuntimeException.class,
+                () -> paymentTransactionService.withdrawFromMarginCompany(dto, companyId)
+        );
+
+        assertEquals("Margin account is not active", exception.getMessage());
+        verify(transactionRepository, never()).save(any()); // Verify that transactionRepository.save was never called
+        verify(marginAccountRepository, never()).save(any()); // Verify that marginAccountRepository.save was never called
+    }
+
+//    @Test
+//    public void testAddToMarginCompany_Success() {
+//        // Given
+//        AddToMarginDto dto = new AddToMarginDto();
+//        dto.setAmount(1000.0); // Set amount
+//
+//        Long companyId = 1L; // Example company ID
+//
+//        CompanyMarginAccount account = new CompanyMarginAccount();
+//        account.setActive(true);
+//        account.setInitialMargin(BigDecimal.valueOf(500.0)); // Example initial margin
+//        account.setMaintenanceMargin(BigDecimal.valueOf(1000.0)); // Example maintenance margin
+//
+//        Account companyRSDAccount = new Account();
+//        companyRSDAccount.setAccountNumber("COMPANY_RSD_ACCOUNT");
+//
+//        when(accountService.checkBalanceCompany(companyId, dto.getAmount())).thenReturn(false); // Mock insufficient funds check
+//        when(marginAccountRepository.findCompanyMarginAccountByCompanyId(companyId)).thenReturn(Optional.of(account));
+//        when(accountService.findCompanyAccountForIdAndCurrency(companyId, "RSD")).thenReturn(companyRSDAccount);
+//
+//        // When
+//        paymentTransactionService.addToMarginCompany(dto, companyId);
+//
+//        // Then
+//        verify(transactionRepository, times(1)).save(any()); // Verify that transactionRepository.save was called once
+//        verify(marginAccountRepository, times(1)).save(any()); // Verify that marginAccountRepository.save was called once
+//    }
+    @Test
+    public void testAddToMarginCompany_InsufficientFunds() {
+        // Given
+        AddToMarginDto dto = new AddToMarginDto();
+        dto.setAmount(2000.0); // Set amount greater than available balance
+
+        Long companyId = 1L; // Example company ID
+
+        when(accountService.checkBalanceCompany(companyId, dto.getAmount())).thenReturn(false); // Mock insufficient funds check
+
+        // When / Then
+        RuntimeException exception = org.junit.jupiter.api.Assertions.assertThrows(
+                RuntimeException.class,
+                () -> paymentTransactionService.addToMarginCompany(dto, companyId)
+        );
+
+        assertEquals("Insufficient funds", exception.getMessage());
+        verify(transactionRepository, never()).save(any()); // Verify that transactionRepository.save was never called
+        verify(marginAccountRepository, never()).save(any()); // Verify that marginAccountRepository.save was never called
+    }
+    @Test
+    public void testWithdrawFromMarginUser_Success() {
+        // Given
+        WithdrawFromMarginDto dto = new WithdrawFromMarginDto();
+        dto.setAmount(500.0); // Set amount
+
+        Long userId = 1L; // Example user ID
+
+        UserMarginAccount account = new UserMarginAccount();
+        account.setActive(true);
+        account.setInitialMargin(BigDecimal.valueOf(1000.0)); // Example initial margin
+        account.setMaintenanceMargin(BigDecimal.valueOf(500.0)); // Example maintenance margin
+
+        Account userRSDAccount = new Account();
+        userRSDAccount.setAccountNumber("USER_RSD_ACCOUNT");
+
+        when(marginAccountRepository.findUserMarginAccountByUserId(userId)).thenReturn(Optional.of(account));
+        when(accountService.findUserAccountForIdAndCurrency(userId, "RSD")).thenReturn(userRSDAccount);
+
+        // When
+        paymentTransactionService.withdrawFromMarginUser(dto, userId);
+
+        // Then
+        verify(transactionRepository, times(1)).save(any()); // Verify that transactionRepository.save was called once
+        verify(marginAccountRepository, times(1)).save(any()); // Verify that marginAccountRepository.save was called once
+    }
+    @Test
+    public void testWithdrawFromMarginUser_InsufficientFunds() {
+        // Given
+        WithdrawFromMarginDto dto = new WithdrawFromMarginDto();
+        dto.setAmount(1500.0); // Set amount greater than available initial margin
+
+        Long userId = 1L; // Example user ID
+
+        UserMarginAccount account = new UserMarginAccount();
+        account.setActive(true);
+        account.setInitialMargin(BigDecimal.valueOf(1000.0)); // Example initial margin
+        account.setMaintenanceMargin(BigDecimal.valueOf(500.0)); // Example maintenance margin
+
+        when(marginAccountRepository.findUserMarginAccountByUserId(userId)).thenReturn(Optional.of(account));
+
+        // When / Then
+        RuntimeException exception = org.junit.jupiter.api.Assertions.assertThrows(
+                RuntimeException.class,
+                () -> paymentTransactionService.withdrawFromMarginUser(dto, userId)
+        );
+
+        assertEquals("Insufficient funds", exception.getMessage());
+        verify(transactionRepository, never()).save(any()); // Verify that transactionRepository.save was never called
+        verify(marginAccountRepository, never()).save(any()); // Verify that marginAccountRepository.save was never called
+    }
+    @Test
+    public void testStockBuyMarginTransaction_Success() {
+        // Given
+        StockMarginTransactionDto dto = new StockMarginTransactionDto();
+        dto.setAmount(1000.0); // Set amount
+
+        MarginAccount marginAccount = new MarginAccount();
+        marginAccount.setActive(true);
+        marginAccount.setInitialMargin(BigDecimal.valueOf(2000.0)); // Example initial margin
+        marginAccount.setMaintenanceMargin(BigDecimal.valueOf(1000.0)); // Example maintenance margin
+        marginAccount.setBankParticipation(0.1); // Example bank participation
+
+        Account exchangeAccount = new Account();
+        exchangeAccount.setAccountNumber("EXCHANGE_RSD_ACCOUNT");
+
+        Account bankAccount = new Account();
+        bankAccount.setAccountNumber("BANK_RSD_ACCOUNT");
+
+        when(accountService.findMarginAccount(dto)).thenReturn(marginAccount);
+        when(accountService.findExchangeAccountForGivenCurrency("RSD")).thenReturn(exchangeAccount);
+        when(accountService.findBankAccountForGivenCurrency("RSD")).thenReturn(bankAccount);
+
+        // When
+        paymentTransactionService.stockBuyMarginTransaction(dto);
+
+        // Then
+        verify(transactionRepository, times(2)).save(any()); // Verify that transactionRepository.save was called twice
+        verify(marginAccountRepository, times(1)).save(any()); // Verify that marginAccountRepository.save was called once
+    }
+    @Test
+    void testAddToMarginUser_InsufficientFunds() {
+        AddToMarginDto dto = new AddToMarginDto();
+        dto.setAmount(1000.0);
+
+        when(accountService.checkBalanceUser(anyLong(), anyDouble())).thenReturn(false);
+
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
+            paymentTransactionService.addToMarginUser(dto, 1L);
+        });
+
+        assertEquals("Insufficient funds", thrown.getMessage());
+    }
+
+    @Test
+    void testAddToMarginUser_MarginAccountNotFound() {
+        AddToMarginDto dto = new AddToMarginDto();
+        dto.setAmount(1000.0);
+
+        when(accountService.checkBalanceUser(anyLong(), anyDouble())).thenReturn(true);
+        when(marginAccountRepository.findUserMarginAccountByUserId(anyLong())).thenReturn(Optional.empty());
+
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
+            paymentTransactionService.addToMarginUser(dto, 1L);
+        });
+
+        assertEquals("Margin account not found", thrown.getMessage());
+    }
+
+    @Test
+    void testAddToMarginUser_Success() {
+        AddToMarginDto dto = new AddToMarginDto();
+        dto.setAmount(1000.0);
+
+        UserMarginAccount marginAccount = new UserMarginAccount();
+        marginAccount.setActive(false);
+        marginAccount.setInitialMargin(BigDecimal.valueOf(500));
+        marginAccount.setMaintenanceMargin(BigDecimal.valueOf(1200));
+
+        when(accountService.checkBalanceUser(anyLong(), anyDouble())).thenReturn(true);
+        when(marginAccountRepository.findUserMarginAccountByUserId(anyLong())).thenReturn(Optional.of(marginAccount));
+
+        Account rsdAccount = new Account();
+        rsdAccount.setAccountNumber("12345");
+
+        when(accountService.findUserAccountForIdAndCurrency(anyLong(), eq("RSD"))).thenReturn(rsdAccount);
+
+        paymentTransactionService.addToMarginUser(dto, 1L);
+
+        assertTrue(marginAccount.isActive());
+        verify(transactionRepository, times(1)).save(any(Transaction.class));
+        verify(marginAccountRepository, times(1)).save(marginAccount);
+    }
+
+    @Test
+    void testGetAllMarginTransactions_TransactionsNotFound() {
+        when(transactionRepository.findByAccountFromOrAccountToAndType(anyString(), anyString(), eq(TransactionType.MARGIN_TRANSACTION)))
+                .thenReturn(Optional.empty());
+
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
+            paymentTransactionService.getAllMarginTransactions("12345");
+        });
+
+        assertEquals("Transactions not found", thrown.getMessage());
+    }
+
+    @Test
+    void testGetAllMarginTransactions_Success() {
+        String accountNumber = "12345";
+        List<Transaction> transactions = new ArrayList<>();
+
+        Transaction transaction1 = new Transaction();
+        transaction1.setAccountFrom("12345");
+        transaction1.setAccountTo("67890");
+        transaction1.setAmount(BigDecimal.valueOf(1000));
+        transaction1.setType(TransactionType.MARGIN_TRANSACTION);
+        transaction1.setDate(System.currentTimeMillis());
+        transactions.add(transaction1);
+
+        Transaction transaction2 = new Transaction();
+        transaction2.setAccountFrom("12345");
+        transaction2.setAccountTo("67891");
+        transaction2.setAmount(BigDecimal.valueOf(2000));
+        transaction2.setType(TransactionType.MARGIN_TRANSACTION);
+        transaction2.setDate(System.currentTimeMillis() - 1000);
+        transactions.add(transaction2);
+
+        when(transactionRepository.findByAccountFromOrAccountToAndType(accountNumber, accountNumber, TransactionType.MARGIN_TRANSACTION))
+                .thenReturn(Optional.of(transactions));
+
+        MarginTransactionDto dto1 = new MarginTransactionDto(transaction1.getAccountFrom(), transaction1.getAccountTo(), transaction1.getAmount().doubleValue(), transaction1.getType().name(), transaction1.getDate());
+        MarginTransactionDto dto2 = new MarginTransactionDto(transaction2.getAccountFrom(), transaction2.getAccountTo(), transaction2.getAmount().doubleValue(), transaction2.getType().name(), transaction2.getDate());
+
+        when(transactionMapper.transactionToMarginTransactionDto(transaction1)).thenReturn(dto1);
+        when(transactionMapper.transactionToMarginTransactionDto(transaction2)).thenReturn(dto2);
+
+        List<MarginTransactionDto> result = paymentTransactionService.getAllMarginTransactions(accountNumber);
+
+        assertEquals(2, result.size());
+        assertSame(dto1, result.get(0));
+        assertSame(dto2, result.get(1));
     }
 }
