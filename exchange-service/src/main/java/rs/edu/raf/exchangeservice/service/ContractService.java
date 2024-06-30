@@ -70,11 +70,11 @@ public class ContractService {
 
         Double price =  contract.getPrice().doubleValue() / contract.getAmount();
 
-        myStockService.addAmountToMyStock(contract.getTicker(), contract.getAmount(),contract.getUserBuyerId(), contract.getCompanyBuyerId(), price);
-        myStockService.removeAmountFromMyStock(contract.getTicker(), contract.getAmount(),contract.getUserSellerId(), contract.getCompanySellerId());
-
         //racunamo porez na dobit
         double tax = myStockService.calculateTaxForSellStock(contract.getCompanySellerId(), contract.getUserSellerId(), contract.getTicker(), contract.getAmount(), price);
+
+        myStockService.addAmountToMyStock(contract.getTicker(), contract.getAmount(),contract.getUserBuyerId(), contract.getCompanyBuyerId(), price);
+        myStockService.removeAmountFromMyStock(contract.getTicker(), contract.getAmount(),contract.getUserSellerId(), contract.getCompanySellerId());
 
         //todo: propraviti sistem oporezivanja
         // salje se taksa sa bank servis

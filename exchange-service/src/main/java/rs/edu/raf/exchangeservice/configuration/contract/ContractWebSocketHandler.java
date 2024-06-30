@@ -18,7 +18,6 @@ public class ContractWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
-        System.out.println("Connection established");
         this.sessions.add(session);
     }
     @Override
@@ -26,7 +25,6 @@ public class ContractWebSocketHandler extends TextWebSocketHandler {
     }
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        System.out.println("Connection closed");
         this.sessions.remove(session);
     }
 
@@ -35,7 +33,6 @@ public class ContractWebSocketHandler extends TextWebSocketHandler {
         Contract contractUpdate = event.getContract();
         try {
             for (WebSocketSession session : this.sessions) {
-                System.out.println(contractUpdate.toString() + "\n\n\n\n\n");
                 session.sendMessage(new TextMessage(contractUpdate.toString()));
             }
         } catch (Exception e) {

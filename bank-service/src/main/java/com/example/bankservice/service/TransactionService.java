@@ -141,14 +141,11 @@ public class TransactionService {
 
         //II
         Double forAccount=stockMarginTransactionDto.getAmount()-forBank;
-        System.out.println("FOR ACCOUNT: "+forAccount + " FOR BANK: "+forBank + " AMOUNT: "+stockMarginTransactionDto.getAmount());
 
         if (marginAccount.getInitialMargin().compareTo(BigDecimal.valueOf(forAccount)) < 0) {
             throw new RuntimeException("Insufficient funds");
         }
-        //TODO staviti dole u finishTransaction
-        //marginAccount.setInitialMargin(marginAccount.getInitialMargin().subtract(BigDecimal.valueOf(forAccount)));
-        //Deaktivacija: Ako padnemo ispod
+
         if(marginAccount.getInitialMargin().compareTo(marginAccount.getMaintenanceMargin())==-1){
             marginAccount.setActive(false);
         }
@@ -179,7 +176,7 @@ public class TransactionService {
         marginToExchange.setDate(System.currentTimeMillis());
         transactionRepository.save(marginToExchange);
 
-        marginAccount.getLoanValue().add(BigDecimal.valueOf(forBank));
+        marginAccount.setLoanValue(marginAccount.getLoanValue().add(BigDecimal.valueOf(forBank)));
         marginAccountRepository.save(marginAccount);
     }
 

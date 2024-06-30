@@ -135,7 +135,7 @@ public class AccountService {
         userAccount.setReservedAmount(new BigDecimal(0));
         userAccount.setActive(true);
 
-        createCard(userAccount);
+        //createCard(userAccount);
         accountRepository.save(userAccount);
         return userAccountMapper.userAccountToUserAccountDto(userAccount);
     }
@@ -159,7 +159,7 @@ public class AccountService {
         account.setExpireDate(System.currentTimeMillis() + 31556952000L);
         account.setReservedAmount(new BigDecimal(0));
         account.setActive(true);
-        createCard(account);
+        //createCard(account);
         return companyAccountMapper.companyAccountToCompanyAccountDto(accountRepository.save(account));
     }
     public CompanyMarginAccountDto createCompanyMarginAccount(CompanyMarginAccountCreateDto companyMarginAccountCreateDto) {

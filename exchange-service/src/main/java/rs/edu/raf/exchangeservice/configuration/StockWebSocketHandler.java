@@ -19,7 +19,6 @@ public class StockWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        System.out.println("Connection established");
         this.sessions.add(session);
     }
 
@@ -29,7 +28,6 @@ public class StockWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        System.out.println("Connection closed");
         this.sessions.remove(session);
     }
 
@@ -38,7 +36,6 @@ public class StockWebSocketHandler extends TextWebSocketHandler {
         MyStock stockUpdate = event.getStock();
         try {
             for (WebSocketSession session : this.sessions) {
-                    System.out.println(stockUpdate.toString()+ "\n\n\n\n\n");
                     session.sendMessage(new TextMessage(stockUpdate.toString()));
             }
         } catch (IOException e) {

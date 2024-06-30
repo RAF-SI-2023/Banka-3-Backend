@@ -18,7 +18,6 @@ public class FutureWebSockettHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        System.out.println("Connection established");
         this.sessions.add(session);
     }
 
@@ -29,7 +28,6 @@ public class FutureWebSockettHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        System.out.println("Connection closed");
         this.sessions.remove(session);
     }
 
@@ -38,7 +36,6 @@ public class FutureWebSockettHandler extends TextWebSocketHandler {
         MyFuture futureUpdate = event.getFuture();
         try {
             for (WebSocketSession session : this.sessions) {
-                System.out.println(futureUpdate.toString() + "\n\n\n\n\n");
                 session.sendMessage(new TextMessage(futureUpdate.toString()));
             }
         } catch (Exception e) {
