@@ -64,7 +64,6 @@ public class TransactionController {
     }
 
     @GetMapping(value = "/getAllPaymentTransactions/{accountNumber}",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAllPaymentTransactions(@PathVariable String accountNumber) {
         try {
