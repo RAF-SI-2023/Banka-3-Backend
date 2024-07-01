@@ -14,6 +14,7 @@ import com.example.bankservice.domain.model.enums.TransactionType;
 import com.example.bankservice.domain.model.marginAccounts.CompanyMarginAccount;
 import com.example.bankservice.domain.model.marginAccounts.MarginAccount;
 import com.example.bankservice.domain.model.marginAccounts.UserMarginAccount;
+import com.example.bankservice.jacoco.ExcludeFromJacocoGeneratedReport;
 import com.example.bankservice.repository.AccountRepository;
 import com.example.bankservice.repository.MarginAccountRepository;
 import com.example.bankservice.repository.TransactionRepository;
@@ -472,6 +473,7 @@ public class TransactionService {
         startOTCTransaction(accountFrom, accountTo, companyOtcTransactionDto.getAmount());
     }
 
+    @ExcludeFromJacocoGeneratedReport
     private Long startSameCurrencyPaymentTransaction(PaymentTransactionDto paymentTransactionDto,
                                                      Account accountFrom,
                                                      Account accountTo) {
@@ -491,6 +493,7 @@ public class TransactionService {
         return transaction.getTransactionId();
     }
 
+    @ExcludeFromJacocoGeneratedReport
     private void startPayTax(Account accountFrom, Account accountTo, Double tax) {
         Transaction transaction = new Transaction();
         transaction.setAccountFrom(accountFrom.getAccountNumber());
@@ -501,7 +504,7 @@ public class TransactionService {
         transaction.setDate(System.currentTimeMillis());
         transactionRepository.save(transaction);
     }
-    
+    @ExcludeFromJacocoGeneratedReport
     private void startOTCTransaction(Account accountFrom, Account accountTo, Double amount) {
         Transaction transaction = new Transaction();
         transaction.setAccountFrom(accountFrom.getAccountNumber());
@@ -537,6 +540,7 @@ public class TransactionService {
         }
     }
 
+    @ExcludeFromJacocoGeneratedReport
     private void finishTaxTransaction(Transaction transaction) {
         Account accountFrom = accountRepository.findByAccountNumber(transaction.getAccountFrom())
                 .orElseThrow(() -> new RuntimeException("Account not found"));
@@ -548,6 +552,7 @@ public class TransactionService {
         transactionRepository.save(transaction);
     }
 
+    @ExcludeFromJacocoGeneratedReport
     private void finishTransaction(Transaction transaction) {
         Account accountFrom = accountRepository.findByAccountNumber(transaction.getAccountFrom())
                 .orElseThrow(() -> new RuntimeException("Account not found"));
@@ -559,6 +564,7 @@ public class TransactionService {
         transactionRepository.save(transaction);
     }
 
+    @ExcludeFromJacocoGeneratedReport
     private void finishMarginTransaction(Transaction transaction) {
         Optional<MarginAccount> marginOptional = marginAccountRepository.findByAccountNumber(transaction.getAccountFrom());
 
@@ -590,6 +596,7 @@ public class TransactionService {
         transactionRepository.save(transaction);
     }
 
+    @ExcludeFromJacocoGeneratedReport
     private void finishCreditTransaction(Transaction transaction) {
         Account accountFrom = accountRepository.findByAccountNumber(transaction.getAccountFrom())
                 .orElseThrow(() -> new RuntimeException("Account not found"));
@@ -601,6 +608,7 @@ public class TransactionService {
         transactionRepository.save(transaction);
     }
 
+    @ExcludeFromJacocoGeneratedReport
     private void finishStockTransaction(Transaction transaction) {
         Account accountFrom = accountRepository.findByAccountNumber(transaction.getAccountFrom())
                 .orElseThrow(() -> new RuntimeException("Account not found"));
@@ -612,7 +620,7 @@ public class TransactionService {
         transactionRepository.save(transaction);
     }
 
-
+    @ExcludeFromJacocoGeneratedReport
     private void finishOTCTransaction(Transaction transaction) {
         Account accountFrom = accountRepository.findByAccountNumber(transaction.getAccountFrom())
                 .orElseThrow(() -> new RuntimeException("Account not found"));
@@ -624,11 +632,13 @@ public class TransactionService {
         transactionRepository.save(transaction);
     }
 
+    @ExcludeFromJacocoGeneratedReport
     private void acceptTransaction(Transaction transaction) {
         transaction.setTransactionStatus(TransactionStatus.ACCEPTED);
         transactionRepository.save(transaction);
     }
-    
+
+    @ExcludeFromJacocoGeneratedReport
     private void checkIfAccountsAreTheSame(Account accountFrom, Account accountTo) {
         if (accountFrom.getAccountNumber().equals(accountTo.getAccountNumber())) {
             throw new RuntimeException("Accounts are the same");

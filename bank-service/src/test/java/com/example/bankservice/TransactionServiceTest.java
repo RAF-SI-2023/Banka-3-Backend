@@ -75,6 +75,11 @@ class TransactionServiceTest {
     private static final String ACCOUNT_NUMBER = "1234567890";
 
 
+    private AddToMarginDto addToMarginDto;
+    private CompanyMarginAccount companyMarginAccount;
+    private Account companyRSDAccount;
+    private MarginAccount marginAccount;
+
     @BeforeEach
     public void setUp() {
         stockTransactionDto = new StockTransactionDto();
@@ -102,6 +107,28 @@ class TransactionServiceTest {
         accountTo.setCurrency(new Currency(2L, CurrencyName.DINAR, "RSD"));
 
         accountNumber = "123456";
+
+        addToMarginDto = new AddToMarginDto();
+        addToMarginDto.setAmount(1000.0);
+
+        companyMarginAccount = new CompanyMarginAccount();
+        companyMarginAccount.setCompanyId(1L);
+        companyMarginAccount.setAccountNumber("123456");
+        companyMarginAccount.setInitialMargin(BigDecimal.valueOf(5000.0));
+        companyMarginAccount.setMaintenanceMargin(BigDecimal.valueOf(6000.0));
+        companyMarginAccount.setActive(false);
+
+        companyRSDAccount = new Account();
+        companyRSDAccount.setAccountId(1L);
+        companyRSDAccount.setAccountNumber("654321");
+        //companyRSDAccount.setCurrency("RSD");
+
+        marginAccount = new MarginAccount();
+        marginAccount.setMarginAccountId(1L);
+        marginAccount.setAccountNumber("123456");
+        marginAccount.setInitialMargin(BigDecimal.valueOf(5000.0));
+        marginAccount.setMaintenanceMargin(BigDecimal.valueOf(6000.0));
+        marginAccount.setActive(false);
     }
 
     @Test
@@ -210,18 +237,6 @@ public void testGetAllPaymentTransactions_Success() {
 
         verify(transactionRepository, never()).save(any(Transaction.class));
     }
-
-//    @Test
-//    public void testStockSellTransaction_UserAccount() {
-//        stockTransactionDto.setEmployeeId(null);
-//
-//        when(accountService.findExchangeAccountForGivenCurrency("USD")).thenReturn(accountFrom);
-//        when(accountService.findAccount(stockTransactionDto)).thenReturn(accountTo);
-//
-//        paymentTransactionService.stockSellTransaction(stockTransactionDto);
-//
-//        verify(transactionRepository, times(1)).save(any(Transaction.class));
-//    }
 
     @Test
     public void testStockBuyTransaction_Uspesno() {
@@ -553,54 +568,6 @@ public void testGetAllPaymentTransactions_Success() {
         verify(transactionRepository, times(1)).save(transaction2);
 
     }
-//    @Test
-//    void testGetAllPaymentTransactions() {
-//        Transaction transaction1 = new Transaction();
-//        transaction1.setType(TransactionType.CREDIT_APPROVE_TRANSACTION);
-//        transaction1.setTransactionStatus(TransactionStatus.ACCEPTED);
-//        transaction1.setAccountFrom("123456");
-//        transaction1.setAccountTo("789012");
-//        transaction1.setAmount(new BigDecimal("100.00"));
-//        transaction1.setTransactionId(1L);
-//        transaction1.setPozivNaBroj("Da");
-//        transaction1.setDate(100L);
-//        transaction1.setSifraPlacanja(125);
-//
-//        Transaction transaction2 = new Transaction();
-//        transaction2.setType(TransactionType.CREDIT_APPROVE_TRANSACTION);
-//        transaction2.setTransactionStatus(TransactionStatus.ACCEPTED);
-//        transaction2.setAccountFrom("123456");
-//        transaction2.setAccountTo("789012");
-//        transaction2.setAmount(new BigDecimal("100.00"));
-//        transaction1.setTransactionId(2L);
-//        transaction1.setPozivNaBroj("Da");
-//        transaction1.setDate(100L);
-//        transaction1.setSifraPlacanja(125);
-//
-//        List<Transaction> transactions = new ArrayList<>();
-//        transactions.add(transaction1);
-//        transactions.add(transaction2);
-//
-//        PaymentTransactionDto paymentTransactionDto1 = new PaymentTransactionDto();
-//        PaymentTransactionDto paymentTransactionDto2 = new PaymentTransactionDto();
-//
-//
-//        List<PaymentTransactionDto> expectedDtoList = List.of(paymentTransactionDto1, paymentTransactionDto2);
-//
-//        when(transactionRepository.findAllByType(TransactionType.CREDIT_APPROVE_TRANSACTION))
-//                .thenReturn(Optional.of(transactions));
-//
-//        when(transactionMapper.transactionToPaymentTransactionDto(transaction1)).thenReturn(paymentTransactionDto1);
-//        when(transactionMapper.transactionToPaymentTransactionDto(transaction2)).thenReturn(paymentTransactionDto2);
-//
-//        List<FinishedPaymentTransactionDto> actualDtoList = paymentTransactionService.getAllPaymentTransactions("123456");
-//
-//        assertEquals(expectedDtoList, actualDtoList);
-//
-//        verify(transactionRepository).findAllByType(TransactionType.CREDIT_APPROVE_TRANSACTION);
-//        verify(transactionMapper).transactionToPaymentTransactionDto(transaction1);
-//        verify(transactionMapper).transactionToPaymentTransactionDto(transaction2);
-//    }
     @Test
     void testGetAllCreditTransactions() {
         Transaction transaction1 = new Transaction();
@@ -774,33 +741,6 @@ public void testGetAllPaymentTransactions_Success() {
         verify(marginAccountRepository, never()).save(any()); // Verify that marginAccountRepository.save was never called
     }
 
-//    @Test
-//    public void testAddToMarginCompany_Success() {
-//        // Given
-//        AddToMarginDto dto = new AddToMarginDto();
-//        dto.setAmount(1000.0); // Set amount
-//
-//        Long companyId = 1L; // Example company ID
-//
-//        CompanyMarginAccount account = new CompanyMarginAccount();
-//        account.setActive(true);
-//        account.setInitialMargin(BigDecimal.valueOf(500.0)); // Example initial margin
-//        account.setMaintenanceMargin(BigDecimal.valueOf(1000.0)); // Example maintenance margin
-//
-//        Account companyRSDAccount = new Account();
-//        companyRSDAccount.setAccountNumber("COMPANY_RSD_ACCOUNT");
-//
-//        when(accountService.checkBalanceCompany(companyId, dto.getAmount())).thenReturn(false); // Mock insufficient funds check
-//        when(marginAccountRepository.findCompanyMarginAccountByCompanyId(companyId)).thenReturn(Optional.of(account));
-//        when(accountService.findCompanyAccountForIdAndCurrency(companyId, "RSD")).thenReturn(companyRSDAccount);
-//
-//        // When
-//        paymentTransactionService.addToMarginCompany(dto, companyId);
-//
-//        // Then
-//        verify(transactionRepository, times(1)).save(any()); // Verify that transactionRepository.save was called once
-//        verify(marginAccountRepository, times(1)).save(any()); // Verify that marginAccountRepository.save was called once
-//    }
     @Test
     public void testAddToMarginCompany_InsufficientFunds() {
         // Given
@@ -1002,5 +942,19 @@ public void testGetAllPaymentTransactions_Success() {
         assertEquals(2, result.size());
         assertSame(dto1, result.get(0));
         assertSame(dto2, result.get(1));
+    }
+    @Test
+    void testAddToMarginCompany_InsufficientFunds1() {
+        when(accountService.checkBalanceCompany(1L, 1000.0)).thenReturn(false);
+
+        assertThrows(RuntimeException.class, () -> paymentTransactionService.addToMarginCompany(addToMarginDto, 1L), "Insufficient funds");
+    }
+
+    @Test
+    void testAddToMarginCompany_MarginAccountNotFound() {
+        when(accountService.checkBalanceCompany(1L, 1000.0)).thenReturn(true);
+        when(marginAccountRepository.findCompanyMarginAccountByCompanyId(1L)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> paymentTransactionService.addToMarginCompany(addToMarginDto, 1L), "Margin account not found");
     }
 }
