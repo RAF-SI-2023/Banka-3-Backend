@@ -11,13 +11,11 @@ import rs.edu.raf.exchangeservice.domain.dto.buySell.BuyFutureDto;
 import rs.edu.raf.exchangeservice.domain.model.enums.OrderStatus;
 import rs.edu.raf.exchangeservice.domain.model.listing.Future;
 import rs.edu.raf.exchangeservice.domain.model.myListing.MyFuture;
-import rs.edu.raf.exchangeservice.domain.model.order.FutureOrder;
 import rs.edu.raf.exchangeservice.domain.model.order.FutureOrderSell;
 import rs.edu.raf.exchangeservice.jacoco.ExcludeFromJacocoGeneratedReport;
 import rs.edu.raf.exchangeservice.repository.listingRepository.FutureRepository;
 import rs.edu.raf.exchangeservice.repository.myListingRepository.MyFutureRepository;
 import rs.edu.raf.exchangeservice.repository.orderRepository.FutureOrderSellRepository;
-import rs.edu.raf.exchangeservice.service.orderService.FuturOrderService;
 
 import java.util.List;
 import java.util.Random;
@@ -42,7 +40,7 @@ public class MyFutureSerivce {
 
     public void addMyFuture(MyFuture myFuture){
         myFutureRepository.save(myFuture);
-        eventPublisher.publishEvent(new FutureUpdateEvent(this, myFuture));
+//        eventPublisher.publishEvent(new FutureUpdateEvent(this, myFuture));
     }
 
     public List<MyFuture> findAllByCompanyId(Long companyId){
