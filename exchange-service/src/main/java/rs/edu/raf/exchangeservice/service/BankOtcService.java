@@ -110,7 +110,6 @@ public class BankOtcService {
                     tickerService.addTicker(myOffer.getTicker());
                 }
 
-
             }else {
                 MyStock myStock = myStockRepository.findByTickerAndCompanyId(myOffer.getTicker(), 1L);
                 myStock.setAmount(myStock.getAmount() + myOffer.getAmount());
@@ -175,7 +174,7 @@ public class BankOtcService {
         getStocksFromBank1();
         getStocksFromBank2();
         getStocksFromBank4();
-        getStocksFromBank5();
+//        getStocksFromBank5();
     }
 
     @ExcludeFromJacocoGeneratedReport
