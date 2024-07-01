@@ -9,12 +9,8 @@ import rs.edu.raf.exchangeservice.domain.dto.bank.UserOtcDto;
 import rs.edu.raf.exchangeservice.domain.dto.contract.ContractAnswerDto;
 import rs.edu.raf.exchangeservice.domain.model.enums.BankCertificate;
 import rs.edu.raf.exchangeservice.domain.model.enums.SellerCertificate;
-import rs.edu.raf.exchangeservice.domain.model.listing.Ticker;
 import rs.edu.raf.exchangeservice.domain.model.myListing.Contract;
-import rs.edu.raf.exchangeservice.domain.model.myListing.MyStock;
 import rs.edu.raf.exchangeservice.repository.ContractRepository;
-import rs.edu.raf.exchangeservice.repository.listingRepository.TickerRepository;
-import rs.edu.raf.exchangeservice.repository.myListingRepository.MyStockRepository;
 import rs.edu.raf.exchangeservice.service.myListingService.MyStockService;
 
 import java.util.List;
@@ -33,7 +29,6 @@ public class ContractService {
         return this.contractRepository.findBySellerCertificateAndBankCertificate(SellerCertificate.ACCEPTED, BankCertificate.PROCESSING);
     }
 
-
     public boolean companyAccept(ContractAnswerDto dto){
         Contract contract = contractRepository.findById(dto.getContractId()).orElseThrow(() -> new RuntimeException("Contract not found"));
         contract.setSellerCertificate(SellerCertificate.ACCEPTED);
@@ -48,7 +43,6 @@ public class ContractService {
         contractRepository.save(contract);
         return true;
     }
-
 
     public synchronized boolean supervisorAccept(ContractAnswerDto dto){
 

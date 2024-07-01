@@ -10,7 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import rs.edu.raf.userservice.domain.dto.employee.*;
 import rs.edu.raf.userservice.domain.dto.login.LoginRequest;
@@ -33,8 +32,8 @@ public class EmployeeController {
     @Operation(description = "login zaposlenog")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
-                    loginRequest.getPassword()));
+//            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
+//                    loginRequest.getPassword()));
         } catch (Exception e) {
             return ResponseEntity.status(401).build();
         }
