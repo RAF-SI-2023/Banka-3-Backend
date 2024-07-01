@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class TransactionService {
-
     private final UserServiceClient userServiceClient;
     private final EmailServiceClient emailServiceClient;
     private final AccountRepository accountRepository;
@@ -94,7 +93,6 @@ public class TransactionService {
         } else {
             throw new RuntimeException("Different currency transactions are not supported");
         }
-
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
@@ -135,18 +133,16 @@ public class TransactionService {
             throw new RuntimeException("Margin account is not active");
         }
 
-        //I -skidanje sa racuna banke
-        Double forBank=stockMarginTransactionDto.getAmount()*(marginAccount.getBankParticipation());
-
-
-        //II
-        Double forAccount=stockMarginTransactionDto.getAmount()-forBank;
+        //I - skidanje sa racuna banke
+        Double forBank = stockMarginTransactionDto.getAmount()*(marginAccount.getBankParticipation());
+        //II - skidanje para sa korisnickog marznog racuna
+        Double forAccount = stockMarginTransactionDto.getAmount()-forBank;
 
         if (marginAccount.getInitialMargin().compareTo(BigDecimal.valueOf(forAccount)) < 0) {
             throw new RuntimeException("Insufficient funds");
         }
 
-        if(marginAccount.getInitialMargin().compareTo(marginAccount.getMaintenanceMargin())==-1){
+        if(marginAccount.getInitialMargin().subtract(BigDecimal.valueOf(forAccount)).compareTo(marginAccount.getMaintenanceMargin()) < 0){
             marginAccount.setActive(false);
         }
 
@@ -269,7 +265,7 @@ public class TransactionService {
         }
         MarginAccount account = optional.get();
 
-        //Dodajemo na marzni
+        //Ako je blokiran, odblokiramo ga
         if(!account.isActive()){
             Double checkInitialMargin = dto.getAmount() + account.getInitialMargin().doubleValue();
             if(checkInitialMargin >= account.getMaintenanceMargin().doubleValue()){
@@ -342,10 +338,7 @@ public class TransactionService {
         //Prvo skidamo dug prema banci
         Double takeFromAccGiveToBank=dto.getAmount()*(marginAccount.getBankParticipation());
 
-
         /** dve transakcije, prva je exchange->bank, druga je exchange->margin */
-
-
         Account exchangeaccount = accountService.findExchangeAccountForGivenCurrency("RSD");
         Account bankAccount = accountService.findBankAccountForGivenCurrency("RSD");
 
@@ -420,11 +413,6 @@ public class TransactionService {
     }
 
     public List<FinishedPaymentTransactionDto> getAllPaymentTransactions(String accountNumber) {
-//        List<Transaction> transactions =
-//                transactionRepository.findByAccountFromOrAccountToAndType(accountNumber,
-//                                accountNumber, TransactionType.PAYMENT_TRANSACTION)
-//                .orElseThrow(() -> new RuntimeException("Transactions not found"));
-
         List<Transaction> transactions =
                 transactionRepository.findByAccountFromOrAccountTo(accountNumber,
                                 accountNumber)
@@ -525,7 +513,7 @@ public class TransactionService {
         transactionRepository.save(transaction);
     }
 
-    @Scheduled(fixedRate = 30000) // Postavljanje cron izraza da se metoda izvrsava svakih 5 minuta
+    @Scheduled(fixedRate = 20000) // Postavljanje cron izraza da se metoda izvrsava svakih 5 minuta
     public void processTransactions() {
 
         Optional<List<Transaction>> optionalTransactions = transactionRepository.findAllByTransactionStatus(TransactionStatus.ACCEPTED);
@@ -570,6 +558,7 @@ public class TransactionService {
         transaction.setTransactionStatus(TransactionStatus.FINISHED);
         transactionRepository.save(transaction);
     }
+
     private void finishMarginTransaction(Transaction transaction) {
         Optional<MarginAccount> marginOptional = marginAccountRepository.findByAccountNumber(transaction.getAccountFrom());
 

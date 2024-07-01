@@ -2,7 +2,6 @@ package rs.edu.raf.userservice.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -80,6 +79,7 @@ public class EmployeeService implements UserDetailsService {
         }
         Employee employee = EmployeeMapper.INSTANCE.employeeCreateDtoToEmployee(employeeCreateDto);
         employee.setIsActive(true);
+        employee.setPassword(passwordEncoder.encode("employee1234"));
         Employee addedEmployee = employeeRepository.save(employee);
 
         emailServiceClient.sendEmailToEmailService(addedEmployee.getEmail());    //slanje mail-a za aktivaciju

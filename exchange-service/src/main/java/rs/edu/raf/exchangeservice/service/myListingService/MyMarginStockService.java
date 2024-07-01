@@ -1,9 +1,11 @@
 package rs.edu.raf.exchangeservice.service.myListingService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import rs.edu.raf.exchangeservice.configuration.margin.MarginUpdateEvent;
 import rs.edu.raf.exchangeservice.domain.model.listing.Ticker;
 import rs.edu.raf.exchangeservice.domain.model.myListing.MyMarginStock;
 import rs.edu.raf.exchangeservice.repository.listingRepository.TickerRepository;
@@ -16,6 +18,7 @@ import java.util.List;
 public class MyMarginStockService {
     private final MyMarginStockRepository myMarginStockRepository;
     private final TickerRepository tickerRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public List<MyMarginStock> findAllByUserId(Long userId) {
         return myMarginStockRepository.findAllByUserId(userId);
@@ -38,12 +41,14 @@ public class MyMarginStockService {
                 myMarginStock.setCurrencyMark(ticker1.getCurrencyName());
                 myMarginStock.setMinimumPrice(minimumPrice);
                 myMarginStockRepository.save(myMarginStock);
+                eventPublisher.publishEvent(new MarginUpdateEvent(this, myMarginStock));
             } else {
                 if(myMarginStock.getMinimumPrice() > minimumPrice){
                     myMarginStock.setMinimumPrice(minimumPrice);
                 }
                 myMarginStock.setAmount(myMarginStock.getAmount() + amount);
                 myMarginStockRepository.save(myMarginStock);
+                eventPublisher.publishEvent(new MarginUpdateEvent(this, myMarginStock));
             }
         } else if(companyId != null){
             MyMarginStock myMarginStock = myMarginStockRepository.findByTickerAndUserId(ticker, userId);
@@ -57,12 +62,14 @@ public class MyMarginStockService {
                 myMarginStock.setCurrencyMark(ticker1.getCurrencyName());
                 myMarginStock.setMinimumPrice(minimumPrice);
                 myMarginStockRepository.save(myMarginStock);
+                eventPublisher.publishEvent(new MarginUpdateEvent(this, myMarginStock));
             } else {
                 if(myMarginStock.getMinimumPrice() > minimumPrice){
                     myMarginStock.setMinimumPrice(minimumPrice);
                 }
                 myMarginStock.setAmount(myMarginStock.getAmount() + amount);
                 myMarginStockRepository.save(myMarginStock);
+                eventPublisher.publishEvent(new MarginUpdateEvent(this, myMarginStock));
             }
         }
     }
@@ -74,20 +81,28 @@ public class MyMarginStockService {
             if(myMarginStock != null){
                 myMarginStock.setAmount(myMarginStock.getAmount() - amount);
 
-                if(myMarginStock.getAmount() == 0)
+                if(myMarginStock.getAmount() == 0){
                     myMarginStockRepository.delete(myMarginStock);
-                else
+                    eventPublisher.publishEvent(new MarginUpdateEvent(this, myMarginStock));
+                }
+                else{
                     myMarginStockRepository.save(myMarginStock);
+                    eventPublisher.publishEvent(new MarginUpdateEvent(this, myMarginStock));
+                }
+
             }
         } else if(companyId != null){
             MyMarginStock myMarginStock = myMarginStockRepository.findByTickerAndCompanyId(ticker, companyId);
             if(myMarginStock != null){
                 myMarginStock.setAmount(myMarginStock.getAmount() - amount);
 
-                if(myMarginStock.getAmount() == 0)
+                if(myMarginStock.getAmount() == 0) {
                     myMarginStockRepository.delete(myMarginStock);
-                else
+                    eventPublisher.publishEvent(new MarginUpdateEvent(this, myMarginStock));
+                } else{
                     myMarginStockRepository.save(myMarginStock);
+                    myMarginStockRepository.delete(myMarginStock);
+                }
             }
         }
     }
