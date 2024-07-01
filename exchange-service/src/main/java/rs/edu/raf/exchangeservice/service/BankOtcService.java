@@ -358,6 +358,7 @@ public class BankOtcService {
 
     //POST: /acceptOffer/{id}
     //kad mi prihvatamo njihovu ponudu
+    @ExcludeFromJacocoGeneratedReport
     public boolean acceptOffer(Long id){
         Optional<Offer> offer = offerRepository.findById(id);
         if(offer.isPresent()){
@@ -388,6 +389,7 @@ public class BankOtcService {
 
     //POST: /declineOffer/{id}
     //kad mi odbijemo njihovu ponudu
+    @ExcludeFromJacocoGeneratedReport
     public boolean declineOffer(Long id){
         Optional<Offer> offer = offerRepository.findById(id);
         if(offer.isPresent()){
@@ -403,6 +405,7 @@ public class BankOtcService {
 
     //DELETE: /deleteMyOffer/id
     //kada treba neka nasu ponuda da obrisemo iz baze
+    @ExcludeFromJacocoGeneratedReport
     public boolean deleteMyOffer(Long id){
         Optional<MyOffer> myOfferOptional = myOfferRepository.findById(id);
         if(myOfferOptional.isPresent()) {
@@ -416,6 +419,7 @@ public class BankOtcService {
 
     //DELETE: /deleteOffer/id
     //kada treba neka tudju ponuda da obrisemo iz baze
+    @ExcludeFromJacocoGeneratedReport
     public boolean deleteOffer(Long id){
         Optional<Offer> offerOptional = offerRepository.findById(id);
         if(offerOptional.isPresent()) {
