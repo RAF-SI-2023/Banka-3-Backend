@@ -10,8 +10,8 @@ import rs.edu.raf.exchangeservice.client.BankServiceClient;
 import rs.edu.raf.exchangeservice.configuration.StockUpdateEvent;
 import rs.edu.raf.exchangeservice.domain.dto.MakePublicStockDto;
 import rs.edu.raf.exchangeservice.domain.dto.bank.BankMarginTransactionDto;
-import rs.edu.raf.exchangeservice.domain.dto.buySell.BuySellStockDto;
 import rs.edu.raf.exchangeservice.domain.dto.bank.BankTransactionDto;
+import rs.edu.raf.exchangeservice.domain.dto.buySell.BuySellStockDto;
 import rs.edu.raf.exchangeservice.domain.model.ProfitStock;
 import rs.edu.raf.exchangeservice.domain.model.TaxStock;
 import rs.edu.raf.exchangeservice.domain.model.enums.OrderStatus;
@@ -51,104 +51,104 @@ public class MyStockService {
     public CopyOnWriteArrayList<StockOrderSell> ordersToSell = new CopyOnWriteArrayList<>();
 
     public void addAmountToMyStock(String ticker, Integer amount, Long userId, Long companyId, Double minimumPrice) {
-       if(userId != null){
-           MyStock myStock = myStockRepository.findByTickerAndUserId(ticker, userId);
-           if(myStock == null){
-               Ticker ticker1 = tickerRepository.findByTicker(ticker);
-               myStock = new MyStock();
-               myStock.setTicker(ticker);
-               myStock.setUserId(userId);
-               myStock.setAmount(amount);
-               myStock.setCurrencyMark(ticker1.getCurrencyName());
-               myStock.setPrivateAmount(amount);
-               myStock.setPublicAmount(0);
-               myStock.setMinimumPrice(minimumPrice);
-               myStockRepository.save(myStock);
-               eventPublisher.publishEvent(new StockUpdateEvent(this, myStock));
-           } else {
-               if(myStock.getMinimumPrice() > minimumPrice){
-                   myStock.setMinimumPrice(minimumPrice);
-               }
-               myStock.setAmount(myStock.getAmount() + amount);
-               myStock.setPrivateAmount(myStock.getPrivateAmount() + amount);
-               myStockRepository.save(myStock);
-               eventPublisher.publishEvent(new StockUpdateEvent(this, myStock));
-           }
-       }else if(companyId != null){
-           MyStock myStock = myStockRepository.findByTickerAndCompanyId(ticker, companyId);
-           if(myStock == null){
-               Ticker ticker1 = tickerRepository.findByTicker(ticker);
-               myStock = new MyStock();
-               myStock.setTicker(ticker);
-               myStock.setCompanyId(companyId);
-               myStock.setAmount(amount);
-               myStock.setCurrencyMark(ticker1.getCurrencyName());
-               myStock.setPrivateAmount(amount);
-               myStock.setPublicAmount(0);
-               myStock.setMinimumPrice(minimumPrice);
-               myStockRepository.save(myStock);
-               eventPublisher.publishEvent(new StockUpdateEvent(this, myStock));
-           } else {
-                if(myStock.getMinimumPrice() > minimumPrice){
-                     myStock.setMinimumPrice(minimumPrice);
+        if (userId != null) {
+            MyStock myStock = myStockRepository.findByTickerAndUserId(ticker, userId);
+            if (myStock == null) {
+                Ticker ticker1 = tickerRepository.findByTicker(ticker);
+                myStock = new MyStock();
+                myStock.setTicker(ticker);
+                myStock.setUserId(userId);
+                myStock.setAmount(amount);
+                myStock.setCurrencyMark(ticker1.getCurrencyName());
+                myStock.setPrivateAmount(amount);
+                myStock.setPublicAmount(0);
+                myStock.setMinimumPrice(minimumPrice);
+                myStockRepository.save(myStock);
+                eventPublisher.publishEvent(new StockUpdateEvent(this, myStock));
+            } else {
+                if (myStock.getMinimumPrice() > minimumPrice) {
+                    myStock.setMinimumPrice(minimumPrice);
                 }
-               myStock.setAmount(myStock.getAmount() + amount);
-               myStock.setPrivateAmount(myStock.getPrivateAmount() + amount);
-               myStockRepository.save(myStock);
-               eventPublisher.publishEvent(new StockUpdateEvent(this, myStock));
-           }
-       }
+                myStock.setAmount(myStock.getAmount() + amount);
+                myStock.setPrivateAmount(myStock.getPrivateAmount() + amount);
+                myStockRepository.save(myStock);
+                eventPublisher.publishEvent(new StockUpdateEvent(this, myStock));
+            }
+        } else if (companyId != null) {
+            MyStock myStock = myStockRepository.findByTickerAndCompanyId(ticker, companyId);
+            if (myStock == null) {
+                Ticker ticker1 = tickerRepository.findByTicker(ticker);
+                myStock = new MyStock();
+                myStock.setTicker(ticker);
+                myStock.setCompanyId(companyId);
+                myStock.setAmount(amount);
+                myStock.setCurrencyMark(ticker1.getCurrencyName());
+                myStock.setPrivateAmount(amount);
+                myStock.setPublicAmount(0);
+                myStock.setMinimumPrice(minimumPrice);
+                myStockRepository.save(myStock);
+                eventPublisher.publishEvent(new StockUpdateEvent(this, myStock));
+            } else {
+                if (myStock.getMinimumPrice() > minimumPrice) {
+                    myStock.setMinimumPrice(minimumPrice);
+                }
+                myStock.setAmount(myStock.getAmount() + amount);
+                myStock.setPrivateAmount(myStock.getPrivateAmount() + amount);
+                myStockRepository.save(myStock);
+                eventPublisher.publishEvent(new StockUpdateEvent(this, myStock));
+            }
+        }
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void removeAmountFromMyStock(String ticker, Integer amount, Long userId, Long companyId) {
-        if(userId != null){
+        if (userId != null) {
             MyStock myStock = myStockRepository.findByTickerAndUserId(ticker, userId);
-            for(int i = amount; i > 0; i--){
-                if(myStock.getPublicAmount() > 0){
+            for (int i = amount; i > 0; i--) {
+                if (myStock.getPublicAmount() > 0) {
                     myStock.setPublicAmount(myStock.getPublicAmount() - 1);
                 } else {
                     myStock.setPrivateAmount(myStock.getPrivateAmount() - 1);
                 }
                 myStock.setAmount(myStock.getAmount() - 1);
             }
-            if(myStock.getAmount() == 0){
+            if (myStock.getAmount() == 0) {
                 myStockRepository.delete(myStock);
-            }else {
+            } else {
                 myStockRepository.save(myStock);
             }
             eventPublisher.publishEvent(new StockUpdateEvent(this, myStock));
-        }else if(companyId != null){
+        } else if (companyId != null) {
             MyStock myStock = myStockRepository.findByTickerAndCompanyId(ticker, companyId);
-            for(int i = amount; i > 0; i--){
-                if(myStock.getPublicAmount() > 0){
+            for (int i = amount; i > 0; i--) {
+                if (myStock.getPublicAmount() > 0) {
                     myStock.setPublicAmount(myStock.getPublicAmount() - 1);
                 } else {
                     myStock.setPrivateAmount(myStock.getPrivateAmount() - 1);
                 }
                 myStock.setAmount(myStock.getAmount() - 1);
             }
-            if(myStock.getAmount() == 0){
+            if (myStock.getAmount() == 0) {
                 myStockRepository.delete(myStock);
-            }else {
+            } else {
                 myStockRepository.save(myStock);
             }
             eventPublisher.publishEvent(new StockUpdateEvent(this, myStock));
         }
     }
 
-    public Double calculateTaxForSellStock(Long companyId, Long userId, String ticker, Integer sellAmount, Double sellPrice){
+    public Double calculateTaxForSellStock(Long companyId, Long userId, String ticker, Integer sellAmount, Double sellPrice) {
         MyStock myStock = null;
-        if(userId != null){
+        if (userId != null) {
             myStock = myStockRepository.findByTickerAndUserId(ticker, userId);
-        }else if(companyId != null){
+        } else if (companyId != null) {
             myStock = myStockRepository.findByTickerAndCompanyId(ticker, companyId);
         }
-        Double minimumPrice = myStock.getMinimumPrice()*sellAmount;
-        Double priceForSell = sellPrice*sellAmount;
+        Double minimumPrice = myStock.getMinimumPrice() * sellAmount;
+        Double priceForSell = sellPrice * sellAmount;
 
         Double tax = 0.0;
-        if(priceForSell > minimumPrice){
+        if (priceForSell > minimumPrice) {
             tax = (priceForSell - minimumPrice) * 0.15;
             TaxStock taxStock = new TaxStock();
             taxStock.setAmount(tax);
@@ -158,15 +158,16 @@ public class MyStockService {
         return tax;
     }
 
-    public void addProfitForEmployee(Long employeeId, Double amount){
+    public void addProfitForEmployee(Long employeeId, Double amount) {
         ProfitStock profitStock = new ProfitStock();
         profitStock.setEmployeeId(employeeId);
         profitStock.setAmount(amount);
         profitStockRepositorty.save(profitStock);
     }
+
     public MyStock makeCompanyStockPublic(MakePublicStockDto makePublicStockDto) {
         MyStock myStock = myStockRepository.findByTickerAndCompanyId(makePublicStockDto.getTicker(), makePublicStockDto.getOwnerId());
-        if(myStock.getAmount() >= makePublicStockDto.getAmount() && makePublicStockDto.getAmount() >= 0){
+        if (myStock.getAmount() >= makePublicStockDto.getAmount() && makePublicStockDto.getAmount() >= 0) {
             myStock.setPublicAmount(makePublicStockDto.getAmount());
             myStock.setPrivateAmount(myStock.getAmount() - makePublicStockDto.getAmount());
             myStockRepository.save(myStock);
@@ -174,9 +175,10 @@ public class MyStockService {
         }
         return myStock;
     }
+
     public MyStock makeUserStockPublic(MakePublicStockDto makePublicStockDto) {
         MyStock myStock = myStockRepository.findByTickerAndUserId(makePublicStockDto.getTicker(), makePublicStockDto.getOwnerId());
-        if(myStock.getAmount() >= makePublicStockDto.getAmount() && makePublicStockDto.getAmount() >= 0){
+        if (myStock.getAmount() >= makePublicStockDto.getAmount() && makePublicStockDto.getAmount() >= 0) {
             myStock.setPublicAmount(makePublicStockDto.getAmount());
             myStock.setPrivateAmount(myStock.getAmount() - makePublicStockDto.getAmount());
             myStockRepository.save(myStock);
@@ -218,13 +220,13 @@ public class MyStockService {
         MyStock myStock = null;
         MyMarginStock myMarginStock = null;
 
-        if(sellStockDto.isMargin()) {
-            if(sellStockDto.getUserId() != null)
+        if (sellStockDto.isMargin()) {
+            if (sellStockDto.getUserId() != null)
                 myMarginStock = myMarginStockRepository.findByTickerAndUserId(sellStockDto.getTicker(), sellStockDto.getUserId());
             else
                 myMarginStock = myMarginStockRepository.findByTickerAndCompanyId(sellStockDto.getTicker(), sellStockDto.getCompanyId());
-        }else {
-            if(sellStockDto.getUserId() != null)
+        } else {
+            if (sellStockDto.getUserId() != null)
                 myStock = myStockRepository.findByTickerAndUserId(sellStockDto.getTicker(), sellStockDto.getUserId());
             else
                 myStock = myStockRepository.findByTickerAndCompanyId(sellStockDto.getTicker(), sellStockDto.getCompanyId());
@@ -267,12 +269,12 @@ public class MyStockService {
             stockOrderSell.setType(OrderType.STOP_LIMIT);
         }
 
-        if(sellStockDto.isMargin()){
+        if (sellStockDto.isMargin()) {
             if (stockOrderSell.getAmount() > myMarginStock.getAmount()) {
                 stockOrderSell.setStatus(OrderStatus.FAILED);
                 stockOrderSellRepository.save(stockOrderSell);
             }
-        }else {
+        } else {
             if (stockOrderSell.getAmount() > myStock.getAmount()) {
                 stockOrderSell.setStatus(OrderStatus.FAILED);
                 stockOrderSellRepository.save(stockOrderSell);
@@ -291,30 +293,86 @@ public class MyStockService {
     @ExcludeFromJacocoGeneratedReport
     public void executeTask() {
         if (ordersToSell.isEmpty()) {
-        } else {
-            Random rand = new Random();
-            int stockNumber = rand.nextInt(ordersToSell.size());
-            StockOrderSell stockOrderSell = ordersToSell.get(stockNumber);   //StockOrder koji obradjujemo
+            return;
+        }
+        Random rand = new Random();
+        int stockNumber = rand.nextInt(ordersToSell.size());
+        StockOrderSell stockOrderSell = ordersToSell.get(stockNumber);   //StockOrder koji obradjujemo
 
-                Stock stock = stockRepository.findByTicker(stockOrderSell.getTicker()).get();  //uzimao stock iz baze koji kupujemo
-            double currentPrice = stock.getBid();   //trenutna cena po kojoj prodajemo
-            int amountToSell = rand.nextInt(stockOrderSell.getAmountLeft()) + 1;
+        if (!stockRepository.findByTicker(stockOrderSell.getTicker()).isPresent()) {
+            ordersToSell.remove(stockOrderSell);
+            return;
+        }
+        Stock stock = stockRepository.findByTicker(stockOrderSell.getTicker()).get();  //uzimao stock iz baze koji kupujemo
+        double currentPrice = stock.getBid();   //trenutna cena po kojoj prodajemo
+        int amountToSell = rand.nextInt(stockOrderSell.getAmountLeft()) + 1;
 
-            if (stockOrderSell.isAon()) {
-                amountToSell = stockOrderSell.getAmount();
+        if (stockOrderSell.isAon()) {
+            amountToSell = stockOrderSell.getAmount();
+        }
+
+
+        //kreirati stockTransactionDto koji sadrzi sracunatu kolicinu novca u zavisnosti od tipa stock-a,
+        //broj racuna banke, broj racuna berze.
+        BankTransactionDto bankTransactionDto = new BankTransactionDto();
+        bankTransactionDto.setCurrencyMark(stock.getCurrencyMark());
+
+        if (stockOrderSell.getType().equals(OrderType.MARKET)) {
+            if (!stockOrderSell.isMargin()) {
+                double tax = this.calculateTaxForSellStock(stockOrderSell.getCompanyId(), stockOrderSell.getUserId(), stockOrderSell.getTicker(), amountToSell, currentPrice);
+
+                //TODO: izracunaj porez pa setuj amount
+                bankTransactionDto.setAmount(currentPrice * amountToSell);
+                bankTransactionDto.setEmployeeId(stockOrderSell.getEmployeeId());
+                bankTransactionDto.setUserId(stockOrderSell.getUserId());
+                bankTransactionDto.setCompanyId(stockOrderSell.getCompanyId());
+                bankTransactionDto.setTax(tax);
+                try {
+                    bankServiceClient.stockSellTransaction(bankTransactionDto);
+
+                    //dodajemo agentu amount koji je zaradio
+                    if (stockOrderSell.getEmployeeId() != null) {
+                        this.addProfitForEmployee(stockOrderSell.getEmployeeId(), currentPrice * amountToSell);
+                    }
+
+                    this.removeAmountFromMyStock(stockOrderSell.getTicker(), amountToSell, stockOrderSell.getUserId(), stockOrderSell.getCompanyId());    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
+
+                } catch (Exception e) {
+                    stockOrderSell.setStatus(OrderStatus.FAILED);
+                    ordersToSell.remove(stockNumber);
+                    return;
+                }
+            } else {
+                BankMarginTransactionDto bankMarginTransactionDto = new BankMarginTransactionDto();
+                bankMarginTransactionDto.setAmount(currentPrice * amountToSell);
+                bankMarginTransactionDto.setUserId(stockOrderSell.getUserId());
+                bankMarginTransactionDto.setCompanyId(stockOrderSell.getCompanyId());
+                try {
+                    bankServiceClient.marginStockSellTransaction(bankMarginTransactionDto);
+                    myMarginStockService.removeAmountFromMyMarginStock(stockOrderSell.getTicker(), amountToSell, stockOrderSell.getUserId(), stockOrderSell.getCompanyId());
+                } catch (Exception e) {
+                    stockOrderSell.setStatus(OrderStatus.FAILED);
+                    ordersToSell.remove(stockNumber);
+                    return;
+                }
             }
 
+            stockOrderSell.setAmountLeft(stockOrderSell.getAmountLeft() - amountToSell);
+            if (stockOrderSell.getAmountLeft() <= 0) {
+                stockOrderSell.setStatus(OrderStatus.FINISHED);
+                ordersToSell.remove(stockNumber);    //uklanjamo ga iz liste jer je zavrsio
+            } else {
+                ordersToSell.remove(stockNumber);
+                ordersToSell.add(stockNumber, stockOrderSell);    //update Objekta u listi
+            }
+        }
 
-            //kreirati stockTransactionDto koji sadrzi sracunatu kolicinu novca u zavisnosti od tipa stock-a,
-            //broj racuna banke, broj racuna berze.
-            BankTransactionDto bankTransactionDto = new BankTransactionDto();
-            bankTransactionDto.setCurrencyMark(stock.getCurrencyMark());
-
-            if (stockOrderSell.getType().equals(OrderType.MARKET)) {
-                if(!stockOrderSell.isMargin()) {
+        if (stockOrderSell.getType().equals(OrderType.LIMIT)) {
+            if (currentPrice > stockOrderSell.getLimitValue()) {
+                if (!stockOrderSell.isMargin()) {
+                    // racunamo porez na prodati stock
                     double tax = this.calculateTaxForSellStock(stockOrderSell.getCompanyId(), stockOrderSell.getUserId(), stockOrderSell.getTicker(), amountToSell, currentPrice);
 
-                    //TODO: izracunaj porez pa setuj amount
                     bankTransactionDto.setAmount(currentPrice * amountToSell);
                     bankTransactionDto.setEmployeeId(stockOrderSell.getEmployeeId());
                     bankTransactionDto.setUserId(stockOrderSell.getUserId());
@@ -329,27 +387,26 @@ public class MyStockService {
                         }
 
                         this.removeAmountFromMyStock(stockOrderSell.getTicker(), amountToSell, stockOrderSell.getUserId(), stockOrderSell.getCompanyId());    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
-
-                    }catch (Exception e) {
+                    } catch (Exception e) {
                         stockOrderSell.setStatus(OrderStatus.FAILED);
                         ordersToSell.remove(stockNumber);
                         return;
                     }
-                    }else {
+                } else {
                     BankMarginTransactionDto bankMarginTransactionDto = new BankMarginTransactionDto();
                     bankMarginTransactionDto.setAmount(currentPrice * amountToSell);
                     bankMarginTransactionDto.setUserId(stockOrderSell.getUserId());
                     bankMarginTransactionDto.setCompanyId(stockOrderSell.getCompanyId());
-                    try{
+                    try {
                         bankServiceClient.marginStockSellTransaction(bankMarginTransactionDto);
                         myMarginStockService.removeAmountFromMyMarginStock(stockOrderSell.getTicker(), amountToSell, stockOrderSell.getUserId(), stockOrderSell.getCompanyId());
-                    }catch (Exception e) {
+                    } catch (Exception e) {
                         stockOrderSell.setStatus(OrderStatus.FAILED);
                         ordersToSell.remove(stockNumber);
                         return;
                     }
-                }
 
+                }
                 stockOrderSell.setAmountLeft(stockOrderSell.getAmountLeft() - amountToSell);
                 if (stockOrderSell.getAmountLeft() <= 0) {
                     stockOrderSell.setStatus(OrderStatus.FINISHED);
@@ -358,76 +415,26 @@ public class MyStockService {
                     ordersToSell.remove(stockNumber);
                     ordersToSell.add(stockNumber, stockOrderSell);    //update Objekta u listi
                 }
+            } else {
+                stockOrderSell.setStatus(OrderStatus.FAILED);
+                ordersToSell.remove(stockNumber);
             }
-
-            if (stockOrderSell.getType().equals(OrderType.LIMIT)) {
-                if (currentPrice > stockOrderSell.getLimitValue()) {
-                    if(!stockOrderSell.isMargin()) {
-                        // racunamo porez na prodati stock
-                        double tax = this.calculateTaxForSellStock(stockOrderSell.getCompanyId(), stockOrderSell.getUserId(), stockOrderSell.getTicker(), amountToSell, currentPrice);
-
-                        bankTransactionDto.setAmount(currentPrice * amountToSell);
-                        bankTransactionDto.setEmployeeId(stockOrderSell.getEmployeeId());
-                        bankTransactionDto.setUserId(stockOrderSell.getUserId());
-                        bankTransactionDto.setCompanyId(stockOrderSell.getCompanyId());
-                        bankTransactionDto.setTax(tax);
-                        try{
-                            bankServiceClient.stockSellTransaction(bankTransactionDto);
-
-                            //dodajemo agentu amount koji je zaradio
-                            if (stockOrderSell.getEmployeeId() != null) {
-                                this.addProfitForEmployee(stockOrderSell.getEmployeeId(), currentPrice * amountToSell);
-                            }
-
-                            this.removeAmountFromMyStock(stockOrderSell.getTicker(), amountToSell, stockOrderSell.getUserId(), stockOrderSell.getCompanyId());    //dodajemo kolicinu kupljenih deonica u vlasnistvo banke
-                        }catch (Exception e) {
-                            stockOrderSell.setStatus(OrderStatus.FAILED);
-                            ordersToSell.remove(stockNumber);
-                            return;
-                        }
-                        }else {
-                        BankMarginTransactionDto bankMarginTransactionDto = new BankMarginTransactionDto();
-                        bankMarginTransactionDto.setAmount(currentPrice * amountToSell);
-                        bankMarginTransactionDto.setUserId(stockOrderSell.getUserId());
-                        bankMarginTransactionDto.setCompanyId(stockOrderSell.getCompanyId());
-                        try {
-                            bankServiceClient.marginStockSellTransaction(bankMarginTransactionDto);
-                            myMarginStockService.removeAmountFromMyMarginStock(stockOrderSell.getTicker(), amountToSell, stockOrderSell.getUserId(), stockOrderSell.getCompanyId());
-                        }catch (Exception e) {
-                            stockOrderSell.setStatus(OrderStatus.FAILED);
-                            ordersToSell.remove(stockNumber);
-                            return;
-                        }
-
-                    }
-                    stockOrderSell.setAmountLeft(stockOrderSell.getAmountLeft() - amountToSell);
-                    if (stockOrderSell.getAmountLeft() <= 0) {
-                        stockOrderSell.setStatus(OrderStatus.FINISHED);
-                        ordersToSell.remove(stockNumber);    //uklanjamo ga iz liste jer je zavrsio
-                    } else {
-                        ordersToSell.remove(stockNumber);
-                        ordersToSell.add(stockNumber, stockOrderSell);    //update Objekta u listi
-                    }
-                } else {
-                    stockOrderSell.setStatus(OrderStatus.FAILED);
-                    ordersToSell.remove(stockNumber);
-                }
-            }
-
-            if (stockOrderSell.getType().equals(OrderType.STOP)) {
-                if (currentPrice < stockOrderSell.getStopValue()) {
-                    stockOrderSell.setType(OrderType.MARKET);
-                }
-
-                if (stockOrderSell.getType().equals(OrderType.STOP_LIMIT)) {
-                    if (currentPrice < stockOrderSell.getStopValue()) {
-                        stockOrderSell.setType(OrderType.LIMIT);
-                    }
-
-                }
-            }
-           this.stockOrderSellRepository.save(stockOrderSell); //cuvamo promenjene vrednosti u bazi
         }
+
+        if (stockOrderSell.getType().equals(OrderType.STOP)) {
+            if (currentPrice < stockOrderSell.getStopValue()) {
+                stockOrderSell.setType(OrderType.MARKET);
+            }
+
+            if (stockOrderSell.getType().equals(OrderType.STOP_LIMIT)) {
+                if (currentPrice < stockOrderSell.getStopValue()) {
+                    stockOrderSell.setType(OrderType.LIMIT);
+                }
+
+            }
+        }
+        this.stockOrderSellRepository.save(stockOrderSell); //cuvamo promenjene vrednosti u bazi
     }
+
 }
 
